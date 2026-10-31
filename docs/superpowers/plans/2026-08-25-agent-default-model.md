@@ -1,4 +1,4 @@
-# Agent Default Model Implementation Plan
+﻿# Agent Default Model Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -17,7 +17,7 @@
 - Checks: `cargo test --workspace`, and in `app/`: `npm test && npm run check && npm run build`.
 - The daemon's `gavin::tests` are flaky under full-suite cargo parallelism. Re-run that module alone before calling a failure a regression.
 - `PROTOCOL_VERSION` ends this plan at **14** (was 13). `MIN_COMPATIBLE_VERSION` stays 5.
-- Preset model lists ship **only** for `claude-code` (`fable`, `opus`, `sonnet`) — spec D62. Never invent a model name for another CLI.
+- Preset model lists ship **only** for `cline` (`fable`, `opus`, `sonnet`) — spec D62. Never invent a model name for another CLI.
 - No attribution to Claude/agents/LLMs in anything that lands in the repo.
 
 ---
@@ -39,8 +39,8 @@ fn only_claude_code_ships_model_presets_and_cursor_has_no_flag() {
     let by = |id: &str| AGENT_PROFILES.iter().find(|p| p.id == id).unwrap();
     // Aliases named by `claude --help`: pointers to the latest model of
     // each tier, so they cannot go stale (spec D62).
-    assert_eq!(by("claude-code").models, &["fable", "opus", "sonnet"]);
-    assert_eq!(by("claude-code").model_flag, "--model");
+    assert_eq!(by("cline").models, &["fable", "opus", "sonnet"]);
+    assert_eq!(by("cline").model_flag, "--model");
     // Verified from each CLI's own --help; no preset names, because
     // theirs are dated ids that rot.
     assert_eq!(by("gemini").model_flag, "--model");
@@ -54,7 +54,7 @@ fn only_claude_code_ships_model_presets_and_cursor_has_no_flag() {
 
 #[test]
 fn profile_dto_carries_the_model_fields_in_camel_case() {
-    let dto = agent_profiles().into_iter().find(|p| p.id == "claude-code").unwrap();
+    let dto = agent_profiles().into_iter().find(|p| p.id == "cline").unwrap();
     let json = serde_json::to_value(&dto).unwrap();
     assert_eq!(json["modelFlag"], "--model");
     assert_eq!(json["models"], serde_json::json!(["fable", "opus", "sonnet"]));
@@ -89,7 +89,7 @@ In `AgentProfile`, after `headless_args`:
 
 - [x] **Step 4: Fill in every row**
 
-`claude-code`: `model_flag: "--model", models: &["fable", "opus", "sonnet"],`
+`cline`: `model_flag: "--model", models: &["fable", "opus", "sonnet"],`
 `codex`, `gemini`, `opencode`: `model_flag: "--model", models: &[],`
 `cursor`, `custom`: `model_flag: "", models: &[],`
 
@@ -152,7 +152,7 @@ fn model_is_settable_and_an_empty_value_clears_it() {
 fn parse_context_config_reads_the_model_off_the_agent_block() {
     let dir = tempfile::tempdir().unwrap();
     let path = dir.path().join("config.toml");
-    std::fs::write(&path, "[agent]\nprofile = \"claude-code\"\nmodel = \"opus\"\n").unwrap();
+    std::fs::write(&path, "[agent]\nprofile = \"cline\"\nmodel = \"opus\"\n").unwrap();
     let (_, agent, warn) = parse_context_config(&path);
     assert!(!warn);
     assert_eq!(agent.unwrap().model, Some("opus".to_string()));
@@ -253,7 +253,7 @@ Beside `persist_workspaces_carries_theme_through`:
         let dir = tempfile::tempdir().unwrap();
         let data = WorkspacesData { workspaces: vec![], active_workspace_id: None };
         let mut models = HashMap::new();
-        models.insert("claude-code".to_string(), "opus".to_string());
+        models.insert("cline".to_string(), "opus".to_string());
         persist_workspaces(
             dir.path(),
             &data,
@@ -281,7 +281,7 @@ In `config.rs`'s `AppConfig`, after `theme`:
 
 ```rust
     /// App-wide default model per agent profile id, e.g.
-    /// `{"claude-code": "opus"}`. A workspace with no `[agent] model` of
+    /// `{"cline": "opus"}`. A workspace with no `[agent] model` of
     /// its own inherits the entry for the profile it runs. Keyed by
     /// profile because one string cannot serve two CLIs -- `opus` is
     /// noise to Codex. Like theme/session_names/file_tabs/board_tabs it
@@ -424,7 +424,7 @@ describe("composeLaunchCommand", () => {
 });
 
 describe("modelOptions", () => {
-  const claude = { id: "claude-code", modelFlag: "--model", models: ["fable", "opus", "sonnet"] };
+  const claude = { id: "cline", modelFlag: "--model", models: ["fable", "opus", "sonnet"] };
   const gemini = { id: "gemini", modelFlag: "--model", models: [] };
 
   it("leads with an inherit row that names what it inherits", () => {
@@ -531,29 +531,29 @@ Expected: PASS, 9 tests.
 
 - [x] **Step 1: Write the failing tests**
 
-Add to `settings.test.ts`'s `resolveAgentConfig` describe (and add `modelFlag`/`models` to its `PROFILES` fixture rows — `claude-code` gets `"--model"` and `["fable","opus","sonnet"]`, `codex` `"--model"` and `[]`, `custom` `""` and `[]`):
+Add to `settings.test.ts`'s `resolveAgentConfig` describe (and add `modelFlag`/`models` to its `PROFILES` fixture rows — `cline` gets `"--model"` and `["fable","opus","sonnet"]`, `codex` `"--model"` and `[]`, `custom` `""` and `[]`):
 
 ```ts
   it("prefers the workspace model over the global default", () => {
-    const r = resolveAgentConfig({ profile: "claude-code", file: null, command: null, model: "sonnet" }, PROFILES, {
-      "claude-code": "opus",
+    const r = resolveAgentConfig({ profile: "cline", file: null, command: null, model: "sonnet" }, PROFILES, {
+      "cline": "opus",
     });
     expect(r.model).toBe("sonnet");
     expect(r.launchCommand).toBe("claude --model sonnet");
   });
 
   it("inherits the global default for the RESOLVED profile only", () => {
-    const globals = { "claude-code": "opus", codex: "some-codex-model" };
+    const globals = { "cline": "opus", codex: "some-codex-model" };
     expect(resolveAgentConfig({ profile: "codex", file: null, command: null }, PROFILES, globals).model).toBe(
       "some-codex-model"
     );
-    // An unknown profile resolves to claude-code, so it inherits
-    // claude-code's default -- not the one it asked for.
+    // An unknown profile resolves to cline, so it inherits
+    // cline's default -- not the one it asked for.
     expect(resolveAgentConfig({ profile: "nope", file: null, command: null }, PROFILES, globals).model).toBe("opus");
   });
 
   it("leaves launchCommand equal to command when no model resolves", () => {
-    const r = resolveAgentConfig({ profile: "claude-code", file: null, command: null }, PROFILES, {});
+    const r = resolveAgentConfig({ profile: "cline", file: null, command: null }, PROFILES, {});
     expect(r.model).toBe("");
     expect(r.launchCommand).toBe(r.command);
   });
@@ -561,8 +561,8 @@ Add to `settings.test.ts`'s `resolveAgentConfig` describe (and add `modelFlag`/`
   it("never folds the model into command", () => {
     // command is what the Settings box writes back; a flag folded in
     // would be persisted and then appended a second time.
-    const r = resolveAgentConfig({ profile: "claude-code", file: null, command: "claude" }, PROFILES, {
-      "claude-code": "opus",
+    const r = resolveAgentConfig({ profile: "cline", file: null, command: "claude" }, PROFILES, {
+      "cline": "opus",
     });
     expect(r.command).toBe("claude");
     expect(r.launchCommand).toBe("claude --model opus");
@@ -618,8 +618,8 @@ export function resolveAgentConfig(
   const profileId = effective?.id ?? FALLBACK_PROFILE;
   const command = nonEmpty(config?.command) ?? nonEmpty(effective?.command) ?? nonEmpty(fallback?.command) ?? "claude";
   // Keyed by the RESOLVED profile, not the requested one: a config
-  // naming a profile that no longer exists runs claude-code, so it must
-  // inherit claude-code's default rather than a dead row's.
+  // naming a profile that no longer exists runs cline, so it must
+  // inherit cline's default rather than a dead row's.
   const model = nonEmpty(config?.model) ?? nonEmpty(globalModels[profileId]) ?? "";
   const modelFlag = effective?.modelFlag ?? "";
 ```

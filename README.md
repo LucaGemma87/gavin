@@ -112,7 +112,7 @@ is clicking while it tests the UI it just built.
 
 ### Every agent CLI you use
 
-Six agents come configured — **Claude Code, Codex, Antigravity (the
+Six agents come configured — **cline, Codex, Antigravity (the
 successor to Gemini CLI, which still works when it is the only one
 installed), opencode, Cursor and Kimi Code** — and you can add named
 custom profiles for any other CLI. An **Agents** settings hub holds the

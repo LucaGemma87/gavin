@@ -1,18 +1,18 @@
----
+﻿---
 order: 5120
 title: [feat] kimi integration
 status: Done
 ---
-Add Kimi Code CLI (`kimi`) as Gavin's sixth stock agent profile with full parity to claude-code. Designed in a grilling session (2026-10-05); facts verified against kimi 2.1.1 on this machine plus the official docs (moonshotai.github.io/kimi-code, www.kimi.com/code/docs/en/).
+Add Kimi Code CLI (`kimi`) as Gavin's sixth stock agent profile with full parity to cline. Designed in a grilling session (2026-10-05); facts verified against kimi 2.1.1 on this machine plus the official docs (moonshotai.github.io/kimi-code, www.kimi.com/code/docs/en/).
 
 ## Decided (2026-10-05)
 
-- **K1 — Full parity (claude-code), one card.** Every profile column Kimi's surface can support; what it cannot is a documented absence, never a stub. Repo rule stands: no row on an unverified convention — the spike lands first, like opencode.
+- **K1 — Full parity (cline), one card.** Every profile column Kimi's surface can support; what it cannot is a documented absence, never a stub. Repo rule stands: no row on an unverified convention — the spike lands first, like opencode.
 - **K2 — Stock profile, not custom.** Custom profiles cannot get: instructions-block/skill installation, usage probe, token log, headroom recipe, failure patterns, wizard detection.
 - **K3 — Visible runs get their prompt by injection, not argv.** Kimi has NO interactive prompt flag (verified `kimi --help` + docs): `-p` is non-interactive and exits; there is no positional. Mechanism (the human's design): spawn `kimi` bare; when kimi connects to the gavin MCP server at session start, that `initialize` handshake IS the "agent ready" callback (gavin-mcp already knows its `GAVIN_SESSION_ID`/`GAVIN_SESSION_SOCKET`); the daemon then writes the composed card prompt + Enter into the PTY — the same write path as human keystrokes. Spike must confirm: MCP connects eagerly at TUI start, and the TUI is input-ready by handshake time. Fallback ready-signal: the daemon's existing OSC-133/quiet heuristics. If injection proves unworkable, escalate to the human before falling back to `prompt_args: None` (which would mean no visible card runs — `buildRunCommand` returns null).
 - **K4 — Headless runs: `kimi -p '<prompt>'`.** Runs under the `auto` permission policy by default (no approvals; static deny rules apply). Flag conflicts: `-p` cannot combine with `--yolo`/`--auto`/`--plan`. `--output-format stream-json` available if wanted.
 - **K5 — Model via `-m <alias>`; effort via env prefix, not a flag.** No effort CLI flag exists (docs-verified); the TUI picker is config-backed. `KIMI_MODEL_THINKING_EFFORT=<low|medium|high|xhigh|max>` is a documented runtime switch (kimi provider only, bypasses `support_efforts`); Gavin composes launch commands through `sh -c`, so an env prefix composes like a flag. Live-spike-verified before the column ships; if it fights, effort ships absent (documented gap).
-- **K6 — MCP layout: project `.mcp.json`, `JsonServers` dialect — same as claude-code.** Proven live: this repo's root `.mcp.json` is what loaded gavin's tools into a kimi session. No new `McpFormat` variant. Kimi also reads `~/.kimi-code/mcp.json` and `<cwd>/.kimi-code/mcp.json`; gavin writes only the project `.mcp.json` under the `gavin` key, with the existing foreign-server disclosure gate.
+- **K6 — MCP layout: project `.mcp.json`, `JsonServers` dialect — same as cline.** Proven live: this repo's root `.mcp.json` is what loaded gavin's tools into a kimi session. No new `McpFormat` variant. Kimi also reads `~/.kimi-code/mcp.json` and `<cwd>/.kimi-code/mcp.json`; gavin writes only the project `.mcp.json` under the `gavin` key, with the existing foreign-server disclosure gate.
 - **K7 — Instructions file: `AGENTS.md`** (kimi reads AGENTS.md/agents.md only — NOT CLAUDE.md/KIMI.md). Shared with codex; the marker-block writer already merges.
 - **K8 — Skills install to `.kimi-code/skills/<name>/SKILL.md`.** Kimi also reads the shared `.agents/skills/`, but gavin keeps its files in kimi's own root — same reasoning as opencode's O5.
 - **K9 — Resume is discover-not-mint (opencode pattern).** Gavin cannot mint session ids (verified: `--session <unknown>` hard-errors). Discovery: kimi prints `To resume this session: kimi -r session_<uuid>` on stderr after `-p` runs; also `kimi session list --json [--cwd]` and `~/.kimi-code/session_index.jsonl`. `resume_args`: `--session`. `--continue` is newest-for-cwd — same race opencode's V11e demonstrated; do not use it for card resume.

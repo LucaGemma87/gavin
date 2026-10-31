@@ -14,7 +14,7 @@
 //!
 //! What this module holds is what more than one crate spells: the
 //! subcommand and the hook commands that run it (written by the daemon
-//! into a Claude Code launch, by the app into kimi's config), and
+//! into a cline launch, by the app into kimi's config), and
 //! `may_write`, which both the hook (to skip the snapshot for a command
 //! that plainly writes nothing) and the transcript reader (to decide
 //! which commands' paths count) apply. One table, so a command the hook
@@ -67,10 +67,10 @@ pub fn hook_command(phase: &str) -> String {
 /// ahead unobserved rather than wait.
 pub const HOOK_TIMEOUT_SECS: u32 = 10;
 
-/// The Claude Code tool whose calls are observed.
+/// The cline tool whose calls are observed.
 pub const CLAUDE_SHELL_TOOL: &str = "Bash";
 
-/// The `--settings` document a Claude Code launch is given: the hook
+/// The `--settings` document a cline launch is given: the hook
 /// before every `Bash` call, and after it on both outcomes -- a command
 /// that exits non-zero fires `PostToolUseFailure` and not `PostToolUse`
 /// (measured against 2.1.296), and a failing `npm run format` has still
@@ -188,7 +188,7 @@ fn reads_only(segment: &str) -> bool {
 #[derive(Debug, Clone, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ShellWrites {
-    /// The CLI's id for every call the hook watched: Claude Code's
+    /// The CLI's id for every call the hook watched: cline's
     /// `tool_use_id`, kimi's `tool_call_id` -- the id the call carries in
     /// the transcript too. A watched call that wrote nothing is here and
     /// adds nothing to `files`, which is the answer for it.
@@ -275,3 +275,4 @@ mod tests {
         );
     }
 }
+

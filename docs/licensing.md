@@ -103,7 +103,7 @@ Apache-2.0 in the notices file and MPL never enters the frontend at all.
   using those words in prose.
 - **No git, path or `file:` dependencies** in either lockfile: every third-party
   component comes from crates.io or the npm registry, pinned with checksums.
-- **The agent CLIs are not dependencies.** Claude Code, Codex, Gemini and opencode are
+- **The agent CLIs are not dependencies.** cline, Codex, Gemini and opencode are
   spawned as separate processes over a PTY and are never linked or redistributed.
   Their terms bind the user who installs them, not Gavin. Shipping *profiles* that
   describe how to invoke them is configuration data, not derivation.
@@ -263,3 +263,4 @@ withdrawn from copies already taken.
 - Creative Commons on software — <https://creativecommons.org/faq/#can-i-apply-a-creative-commons-license-to-software>.
 - US Copyright Office, *Copyright and Artificial Intelligence, Part 2: Copyrightability*
   (2025) — <https://www.copyright.gov/ai/>.
+

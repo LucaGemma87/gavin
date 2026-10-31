@@ -18,7 +18,7 @@ pub struct ManagedFile {
 /// where the file sits. Verified against upstream docs 2026-08-23.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum McpFormat {
-    /// JSON `mcpServers.<key>` = `{ command, args }` — Claude Code
+    /// JSON `mcpServers.<key>` = `{ command, args }` — cline
     /// (`.mcp.json`), legacy Gemini CLI (`.gemini/settings.json`), and
     /// Antigravity CLI (`.agents/mcp_config.json`).
     JsonServers,
@@ -570,7 +570,7 @@ pub struct AgentProfile {
     /// Re-checked against each CLI 2026-09-07, by running it rather than
     /// by reading about it:
     ///
-    /// - claude-code -- `claude --model` takes `fable`, `opus`,
+    /// - cline -- `claude --model` takes `fable`, `opus`,
     ///   `sonnet` and `haiku` (one per tier), `opusplan` (opus while
     ///   planning, sonnet while executing), `best` (the latest Fable
     ///   where the account has one, else opus) and the `[1m]` variants
@@ -642,7 +642,7 @@ pub struct AgentProfile {
     /// consult mid-task -- the advisor. Takes the model as the next
     /// argument. Empty where the CLI has none, which hides the advisor
     /// control a complexity row would otherwise offer for the profile.
-    /// Only claude-code has one (checked 2026-10-08).
+    /// Only cline has one (checked 2026-10-08).
     pub advisor_flag: &'static str,
     /// The text this agent prints on screen when it has STOPPED because
     /// something BROKE, rather than because its turn ended. Handed to the
@@ -655,7 +655,7 @@ pub struct AgentProfile {
     /// "nothing failed". A guessed pattern is worse than none -- it
     /// paints healthy sessions as broken and pauses rails for nothing.
     ///
-    /// claude-code's was measured, not guessed: a connection reset
+    /// cline's was measured, not guessed: a connection reset
     /// before the response, a stream killed mid-flight, a 429 usage
     /// limit and an expired token all leave the process ALIVE and quiet
     /// with one line on screen, and the only thing every one of them
@@ -674,7 +674,7 @@ pub struct AgentProfile {
     /// no amount of retrying brings forward.
     ///
     /// Ordered, and FIRST MATCH WINS -- which is load-bearing, not
-    /// incidental. Claude Code's expired-token line reads "Please run
+    /// incidental. cline's expired-token line reads "Please run
     /// /login" followed by "API Error: 401 OAuth token has expired", so
     /// it carries the generic marker too; the auth row has to be reached
     /// first or an auth failure classifies as a network one and gavin
@@ -700,7 +700,7 @@ pub struct AgentProfile {
     /// A shell one-liner the naming skill runs (v38) to find THIS agent's
     /// own newest conversation id, for a CLI that mints its own instead
     /// of taking one from the caller -- codex/gemini/opencode, unlike
-    /// Claude Code, which `session_id_args` already covers. The agent
+    /// cline, which `session_id_args` already covers. The agent
     /// runs it itself and self-reports the result over
     /// `gavin_name_session`'s `agent_conversation_id` argument
     /// (`agent-session-id-self-report.md`), which the daemon stores in
@@ -736,7 +736,7 @@ pub struct AgentProfile {
     ///
     /// What was checked, 2026-09-11:
     ///
-    /// - `claude-code` -- Anthropic OAuth usage endpoint.
+    /// - `cline` -- Anthropic OAuth usage endpoint.
     /// - `codex` -- newest rollout `token_count` with rate_limits.
     /// - `cursor` -- `GET https://cursor.com/api/usage-summary` with the
     ///   CLI's session JWT (Keychain `cursor-access-token`, else the
@@ -810,7 +810,7 @@ pub struct AgentProfile {
 /// flattening them into a string would move all three into the caller.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum UsageProbe {
-    /// Claude Code. `GET https://api.anthropic.com/api/oauth/usage` with
+    /// cline. `GET https://api.anthropic.com/api/oauth/usage` with
     /// the CLI's own OAuth token, which answers with a `five_hour` and a
     /// `seven_day` object, each `{utilization, resets_at}`.
     ///
@@ -883,7 +883,7 @@ pub enum UsageProbe {
     /// Kimi Code. `GET <managed base>/usages` with
     /// `Authorization: Bearer <access_token>` from
     /// `~/.kimi-code/credentials/kimi-code-env-*.json` (the same
-    /// AnthropicOauth-shaped credential file Claude Code's probe reads).
+    /// AnthropicOauth-shaped credential file cline's probe reads).
     /// Verified live 2026-10-05 against kimi 2.1.1: HTTP 200 on BOTH
     /// `api.kimi.ai/coding/v1` and `api.kimi.com/coding/v1`, and the body
     /// is snake_case:
@@ -920,7 +920,7 @@ impl UsageProbe {
 /// and in how a total is arrived at.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum TokenLog {
-    /// Claude Code. `~/.claude/projects/<slugged cwd>/<session id>.jsonl`,
+    /// cline. `~/.claude/projects/<slugged cwd>/<session id>.jsonl`,
     /// one JSON record per line, where a record of type `assistant`
     /// carries `message.usage` with `input_tokens`,
     /// `cache_creation_input_tokens`, `cache_read_input_tokens` and
@@ -928,7 +928,7 @@ pub enum TokenLog {
     ///
     /// Found by GLOBBING the project directories for `<id>.jsonl` rather
     /// than by slugging a cwd: the file is named for the session, the
-    /// slug rule is Claude Code's and undocumented, and the launch cwd on
+    /// slug rule is cline's and undocumented, and the launch cwd on
     /// the run is where gavin STARTED the agent -- which is not
     /// necessarily the directory the transcript was filed under.
     ///
@@ -1050,7 +1050,7 @@ pub struct FailureCausePattern {
 
 pub const AGENT_PROFILES: &[AgentProfile] = &[
     AgentProfile {
-        id: "claude-code",
+        id: "cline",
         model_flag: "--model",
         models: &[
             "fable",
@@ -1079,9 +1079,9 @@ pub const AGENT_PROFILES: &[AgentProfile] = &[
         // advisor") rather than mid-run. The advisor has to be at least
         // as capable as the main model or the CLI ignores it.
         advisor_flag: "--advisor",
-        label: "Claude Code",
-        instructions_file: "CLAUDE.md",
-        command: "claude",
+        label: "cline",
+        instructions_file: "Cline.md",
+        command: "cline",
         // `claude "<prompt>"`: the bare positional starts the session.
         prompt_args: Some(""),
         prompt_injection: false,
@@ -1107,7 +1107,7 @@ pub const AGENT_PROFILES: &[AgentProfile] = &[
         // matched by the most distinctive fragment of its line, because
         // every entry is tried against the WHOLE rendered screen -- and
         // two obvious fragments are not safe. `limit · resets` and
-        // `/usage-credits` also end Claude Code's near-limit WARNING
+        // `/usage-credits` also end cline's near-limit WARNING
         // ("You've used 90% of your session limit · resets ... ·
         // Run /usage-credits to ...", read off the v2.1.278 binary's
         // message templates), which paints on healthy sessions. A wrapped
@@ -1119,7 +1119,7 @@ pub const AGENT_PROFILES: &[AgentProfile] = &[
         //    continue or switch models with /model."
         //   "Login expired · Please run /login"
         //   "Your organization has disabled Claude subscription access for
-        //    Claude Code · Use an Anthropic API key instead, ..."
+        //    cline · Use an Anthropic API key instead, ..."
         //   "Request timed out"
         //
         // `Request timed out` is the whole line, so it has no longer
@@ -1133,7 +1133,7 @@ pub const AGENT_PROFILES: &[AgentProfile] = &[
             "disabled Claude subscription access",
             "Request timed out",
         ],
-        // Two provenances, both real Claude Code output and neither
+        // Two provenances, both real cline output and neither
         // invented. Ten rows are the fake-API session's (the two auth
         // rows `/login` and `OAuth token has expired`, the two `usage
         // limit` rows, the two `Overloaded` rows and four network
@@ -1315,7 +1315,7 @@ pub const AGENT_PROFILES: &[AgentProfile] = &[
     // resolving. The preferred binary is Antigravity CLI (`agy`); see
     // `resolved_google_cli_profile` and `detect_google_cli`. Verified
     // 2026-10-16 against local `agy --help`, antigravity.google docs
-    // (migration, headless), and the Gemini→Antigravity announcement.
+    // (migration, headless), and the Gemini?Antigravity announcement.
     AgentProfile {
         id: "gemini",
         model_flag: "--model",
@@ -1441,7 +1441,7 @@ pub const AGENT_PROFILES: &[AgentProfile] = &[
         failure_causes: &[],
         session_id_args: "",
         // `--resume [chatId]` exists, but gavin does not yet mint or
-        // discover Cursor chat ids the way it does for claude-code /
+        // discover Cursor chat ids the way it does for cline /
         // opencode, so resume stays off rather than opening a picker.
         session_id_discovery: "",
         resume_args: "",
@@ -1457,7 +1457,7 @@ pub const AGENT_PROFILES: &[AgentProfile] = &[
             // loads project skills from `.cursor/skills/<name>/SKILL.md`
             // (and also discovers `.claude/skills/` / `.codex/skills/`
             // for compatibility). Install under Cursor's own root so a
-            // workspace that never chose Claude Code does not grow a
+            // workspace that never chose cline does not grow a
             // `.claude/` directory. Same four skills as the other skill-
             // capable rows; Cursor's frontmatter (`name` + `description`)
             // matches what gavin already authors.
@@ -1556,7 +1556,7 @@ pub const AGENT_PROFILES: &[AgentProfile] = &[
         token_log: None,
         folder_trust: None,
         // opencode reads `.claude/skills/` too, but a workspace that
-        // never chose Claude Code should not grow a `.claude/`
+        // never chose cline should not grow a `.claude/`
         // directory. Its own validator accepts gavin's existing
         // `name` + `description` frontmatter unchanged, so the four
         // files install verbatim.
@@ -1645,7 +1645,7 @@ pub const AGENT_PROFILES: &[AgentProfile] = &[
             "Context size exceeded",
             "Cannot connect to the model service",
         ],
-        // Auth first, the same ordering rule claude-code's table
+        // Auth first, the same ordering rule cline's table
         // carries: a line that is an auth failure must never classify as
         // a network blip worth retrying. Only verified strings carry a
         // row -- the same posture as every other profile.
@@ -1684,7 +1684,7 @@ pub const AGENT_PROFILES: &[AgentProfile] = &[
         // policy, not an agent definition.
         agent_file: None,
         mcp: Some(McpLayout {
-            // The SAME file and dialect as claude-code (K6): kimi reads
+            // The SAME file and dialect as cline (K6): kimi reads
             // the project `.mcp.json`, proven live with this repo's own
             // committed file. The merge writer and the foreign-server
             // gate already handle two profiles sharing one file.
@@ -1827,7 +1827,7 @@ pub fn profile_by_id(id: &str) -> &'static AgentProfile {
 
 /// The stock row for an id, or None for anything else. Read paths that
 /// attribute machine state BY profile (the usage probe, the token log)
-/// take this rather than `profile_by_id`: the claude-code fallback there
+/// take this rather than `profile_by_id`: the cline fallback there
 /// serves reads of shipped defaults, and a named custom is not claude --
 /// probing claude under a custom's id would cache claude's usage as the
 /// custom's, reading the custom as spent whenever claude is.
@@ -1871,7 +1871,7 @@ static CUSTOM_WRITE_PROFILE: AgentProfile = AgentProfile {
 };
 
 /// The profile a WRITE through the workspace's files resolves to. Unlike
-/// `profile_by_id` -- whose claude-code fallback serves READS of shipped
+/// `profile_by_id` -- whose cline fallback serves READS of shipped
 /// defaults -- a write must never put claude's skill file or MCP layout
 /// down for someone's own binary: a named custom (or a config still
 /// naming the retired `custom` id) gets the custom-like row above.
@@ -1883,7 +1883,7 @@ pub(crate) fn profile_for_writes(id: &str) -> &'static AgentProfile {
     }
 }
 
-/// The profile id recorded in config.toml, defaulting to claude-code.
+/// The profile id recorded in config.toml, defaulting to cline.
 /// Read directly rather than routed through the daemon: this is a
 /// one-shot read on a user-initiated action, and agent_setup already
 /// touches the root's files directly.
@@ -1893,12 +1893,12 @@ pub fn read_profile_id(root: &Path) -> String {
 
 /// `read_profile_id`, on whichever disk the workspace is.
 pub fn read_profile_id_in(fs: &dyn WorkspaceFiles, root: &Path) -> String {
-    root_agent_key_in(fs, root, "profile").unwrap_or_else(|| "claude-code".to_string())
+    root_agent_key_in(fs, root, "profile").unwrap_or_else(|| "cline".to_string())
 }
 
 /// The profile id a profile-less workspace resolves to: config.toml's
 /// `[agent] profile` when it names one, else the app-wide default agent
-/// (config.json's `agentDefaults.defaultAgent`), else claude-code -- the
+/// (config.json's `agentDefaults.defaultAgent`), else cline -- the
 /// same order the frontend's `resolveAgentConfig` answers with, so what
 /// an integration or a prompt composer writes FOR is the agent the
 /// launch will actually run.
@@ -1909,7 +1909,7 @@ pub(crate) fn resolved_profile_id_in(fs: &dyn WorkspaceFiles, root: &Path, defau
             default_agent
                 .map(str::trim)
                 .filter(|s| !s.is_empty())
-                .unwrap_or("claude-code")
+                .unwrap_or("cline")
                 .to_string()
         })
 }
@@ -2914,7 +2914,7 @@ fn try_grant_folder_trust(
 // of the live screen, so scrolling the terminal up to read earlier output
 // takes the input out of view, and typing snaps the view back down. Its
 // "fullscreen" mode draws on the alternate screen, owns scrolling and
-// keeps the prompt pinned -- the same arrangement Claude Code's fullscreen
+// keeps the prompt pinned -- the same arrangement cline's fullscreen
 // mode has. Only the file switches it: `KIMI_CODE_TUI_FULL_SCREEN` appears
 // in the binary but does not override a `tui_mode = "regular"` line
 // (checked against kimi 2.1.1, 2026-10-08). The file is the user's own
@@ -4347,11 +4347,11 @@ pub fn move_agent_file(root_path: String, from: String, to: String) -> Result<()
 mod tests {
     use super::*;
 
-    /// The claude-code row's MCP layout, for the writer tests below.
+    /// The cline row's MCP layout, for the writer tests below.
     /// Reaches through profile_by_id so the tests exercise the real table
     /// rather than a second copy of the same constants.
     fn claude_layout() -> ResolvedMcp {
-        profile_by_id("claude-code").mcp.as_ref().unwrap().into()
+        profile_by_id("cline").mcp.as_ref().unwrap().into()
     }
 
     #[test]
@@ -4361,10 +4361,10 @@ mod tests {
         // config docs: each points at the latest model of a tier, or at
         // a mode, so none of them can go stale.
         assert_eq!(
-            by("claude-code").models,
+            by("cline").models,
             &["fable", "opus", "sonnet", "haiku", "opusplan", "best", "sonnet[1m]", "opus[1m]"]
         );
-        assert_eq!(by("claude-code").model_flag, "--model");
+        assert_eq!(by("cline").model_flag, "--model");
         // Gemini's four aliases, the ones its own resolveModel switches
         // on. Its dated ids are deliberately NOT here.
         assert_eq!(by("gemini").model_flag, "--model");
@@ -4450,7 +4450,7 @@ mod tests {
 
     #[test]
     fn profile_dto_carries_the_model_fields_in_camel_case() {
-        let dto = agent_profiles().into_iter().find(|p| p.id == "claude-code").unwrap();
+        let dto = agent_profiles().into_iter().find(|p| p.id == "cline").unwrap();
         let json = serde_json::to_value(&dto).unwrap();
         assert_eq!(json["modelFlag"], "--model");
         assert_eq!(
@@ -4473,7 +4473,7 @@ mod tests {
     #[test]
     fn only_verified_cli_s_ship_an_effort_flag() {
         let by = |id: &str| AGENT_PROFILES.iter().find(|p| p.id == id).unwrap();
-        assert_eq!(by("claude-code").effort_flag, "--effort");
+        assert_eq!(by("cline").effort_flag, "--effort");
         assert_eq!(by("gemini").effort_flag, "--effort");
         assert_eq!(by("gemini").efforts, &["low", "medium", "high", "xhigh", "max"]);
         assert_eq!(by("codex").effort_flag, "-c model_reasoning_effort=");
@@ -4503,10 +4503,10 @@ mod tests {
     #[test]
     fn only_claude_code_ships_an_advisor_flag() {
         for profile in AGENT_PROFILES {
-            let expected = if profile.id == "claude-code" { "--advisor" } else { "" };
+            let expected = if profile.id == "cline" { "--advisor" } else { "" };
             assert_eq!(profile.advisor_flag, expected, "{}", profile.id);
         }
-        assert_eq!(agent_profiles().iter().find(|p| p.id == "claude-code").unwrap().advisor_flag, "--advisor");
+        assert_eq!(agent_profiles().iter().find(|p| p.id == "cline").unwrap().advisor_flag, "--advisor");
     }
 
     #[test]
@@ -4516,7 +4516,7 @@ mod tests {
         ids.sort_unstable();
         ids.dedup();
         assert_eq!(ids.len(), count, "profile ids must be unique");
-        assert_eq!(count, 6, "claude-code, codex, gemini, cursor, opencode, kimi-code");
+        assert_eq!(count, 6, "cline, codex, gemini, cursor, opencode, kimi-code");
 
         for p in AGENT_PROFILES {
             assert!(!p.label.is_empty(), "{} has no label", p.id);
@@ -4535,9 +4535,9 @@ mod tests {
         assert!(rows.iter().all(|r| r.id != "custom"));
         assert_eq!(
             rows.iter().map(|r| r.id.as_str()).collect::<Vec<_>>(),
-            ["claude-code", "codex", "gemini", "cursor", "opencode", "kimi-code"]
+            ["cline", "codex", "gemini", "cursor", "opencode", "kimi-code"]
         );
-        let claude = rows.iter().find(|r| r.id == "claude-code").unwrap();
+        let claude = rows.iter().find(|r| r.id == "cline").unwrap();
         assert!(claude.found);
         assert_eq!(claude.path.as_deref(), Some("/opt/bin/claude"));
         let codex = rows.iter().find(|r| r.id == "codex").unwrap();
@@ -4555,7 +4555,7 @@ mod tests {
     /// the workspace's own config, not from here.
     ///
     /// "A verified layout", deliberately not "its own": kimi-code shares
-    /// claude-code's `.mcp.json` and JsonServers dialect -- the file kimi
+    /// cline's `.mcp.json` and JsonServers dialect -- the file kimi
     /// actually reads (K6, proven live 2026-10-05). Two profiles writing
     /// one file coexist because the writer only ever merges its own
     /// `gavin` key.
@@ -4568,7 +4568,7 @@ mod tests {
         assert_eq!(
             layouts,
             [
-                ("claude-code", ".mcp.json", McpFormat::JsonServers),
+                ("cline", ".mcp.json", McpFormat::JsonServers),
                 ("codex", ".codex/config.toml", McpFormat::TomlServers),
                 ("gemini", ".agents/mcp_config.json", McpFormat::JsonServers),
                 ("cursor", ".cursor/mcp.json", McpFormat::JsonServersStdio),
@@ -4588,7 +4588,7 @@ mod tests {
     /// wizard). This is what instructions_block_for and compose_agent_prompt
     /// both key on. Antigravity (id `gemini`) and Codex share
     /// `.agents/skills/` — the path Antigravity migrated to. Other roots
-    /// stay distinct so a workspace that never chose Claude Code does
+    /// stay distinct so a workspace that never chose cline does
     /// not grow a `.claude/` directory.
     #[test]
     fn skill_slots_are_the_verified_set_and_do_not_share_a_root() {
@@ -4603,7 +4603,7 @@ mod tests {
         assert_eq!(
             with_skills,
             [
-                ("claude-code", ".claude/skills/SKILL.md".to_string()),
+                ("cline", ".claude/skills/SKILL.md".to_string()),
                 ("codex", ".agents/skills/SKILL.md".to_string()),
                 ("gemini", ".agents/skills/SKILL.md".to_string()),
                 ("cursor", ".cursor/skills/SKILL.md".to_string()),
@@ -4629,12 +4629,12 @@ mod tests {
 
     /// The block points at a REAL path for whichever profile is
     /// configured. It used to name `.claude/skills/gavin/SKILL.md` as a
-    /// literal, which was true while Claude Code was the only row with
+    /// literal, which was true while cline was the only row with
     /// skills and became a lie the moment a second one appeared.
     #[test]
     fn the_instructions_block_names_the_profiles_own_skill_file() {
         for (id, expected) in [
-            ("claude-code", ".claude/skills/gavin/SKILL.md"),
+            ("cline", ".claude/skills/gavin/SKILL.md"),
             ("codex", ".agents/skills/gavin/SKILL.md"),
             ("gemini", ".agents/skills/gavin/SKILL.md"),
             ("cursor", ".cursor/skills/gavin/SKILL.md"),
@@ -4681,7 +4681,7 @@ mod tests {
             AGENT_PROFILES.iter().filter(|p| !p.headless_args.is_empty()).map(|p| p.id).collect();
         assert_eq!(
             headless,
-            ["claude-code", "codex", "gemini", "cursor", "opencode", "kimi-code"]
+            ["cline", "codex", "gemini", "cursor", "opencode", "kimi-code"]
         );
         for p in AGENT_PROFILES {
             if p.headless_args.is_empty() {
@@ -4721,14 +4721,14 @@ mod tests {
     /// CLI would open a picker, or start fresh, which is precisely the
     /// silent from-scratch second attempt this feature exists to
     /// prevent. So `resume_args` is empty unless `session_id_args` (a
-    /// minted id, claude-code) or `session_id_discovery` (a
+    /// minted id, cline) or `session_id_discovery` (a
     /// self-reported one, opencode) is set, and the app falls back to a
     /// written reconstruction for every other row.
     #[test]
     fn conversation_resume_argv_is_all_or_nothing_per_profile() {
         let resumable: Vec<&str> =
             AGENT_PROFILES.iter().filter(|p| !p.resume_args.is_empty()).map(|p| p.id).collect();
-        assert_eq!(resumable, ["claude-code", "opencode", "kimi-code"]);
+        assert_eq!(resumable, ["cline", "opencode", "kimi-code"]);
         for p in AGENT_PROFILES {
             assert!(
                 p.resume_args.is_empty() || !p.session_id_args.is_empty() || !p.session_id_discovery.is_empty(),
@@ -4749,7 +4749,7 @@ mod tests {
         assert_eq!(
             column,
             [
-                ("claude-code", false),
+                ("cline", false),
                 ("codex", false),
                 ("gemini", false),
                 ("cursor", false),
@@ -4775,7 +4775,7 @@ mod tests {
         assert_eq!(
             probed,
             [
-                ("claude-code", "anthropic-oauth"),
+                ("cline", "anthropic-oauth"),
                 ("codex", "codex-rollout"),
                 ("gemini", "gemini-code-assist"),
                 ("cursor", "cursor-session"),
@@ -4802,7 +4802,7 @@ mod tests {
     /// The empty pattern list is a real answer -- "nobody has verified
     /// what this agent says when it breaks" -- and it must read as NO
     /// detection rather than as a licence to guess. Only rows measured
-    /// against the real CLI carry one: claude-code's from a fake-API
+    /// against the real CLI carry one: cline's from a fake-API
     /// session plus this repo's own transcripts, kimi-code's from live
     /// 2.1.1 runs (2026-10-05).
     #[test]
@@ -4812,7 +4812,7 @@ mod tests {
             .filter(|p| !p.failure_patterns.is_empty())
             .map(|p| p.id)
             .collect();
-        assert_eq!(detecting, ["claude-code", "kimi-code"]);
+        assert_eq!(detecting, ["cline", "kimi-code"]);
         for p in AGENT_PROFILES {
             for pattern in p.failure_patterns {
                 assert!(!pattern.trim().is_empty(), "{} carries a blank pattern", p.id);
@@ -4826,7 +4826,7 @@ mod tests {
     /// feature do nothing while looking wired up. They travel together.
     ///
     /// The ORDER matters too: every cause row must be reachable, and the
-    /// auth rows must come before any row a Claude Code auth line would
+    /// auth rows must come before any row a cline auth line would
     /// also match, or an expired token classifies as a network blip and
     /// gavin resumes into a login prompt.
     #[test]
@@ -4856,7 +4856,7 @@ mod tests {
             .filter(|p| !p.failure_causes.is_empty())
             .map(|p| p.id)
             .collect();
-        assert_eq!(classifying, ["claude-code", "kimi-code"]);
+        assert_eq!(classifying, ["cline", "kimi-code"]);
 
         for p in AGENT_PROFILES {
             assert_eq!(
@@ -4880,12 +4880,12 @@ mod tests {
         // match wins, so this is the whole guard against the ordering
         // regression.
         let line = "Please run /login \u{b7} API Error: 401 OAuth token has expired. Please run /login";
-        let claude = profile_by_id("claude-code");
+        let claude = profile_by_id("cline");
         let first = claude
             .failure_causes
             .iter()
             .find(|row| line.contains(row.pattern))
-            .expect("claude-code classifies its own expired-token line");
+            .expect("cline classifies its own expired-token line");
         assert_eq!(first.cause, "auth");
 
         // The second ordering trap, from a real transcript. Server-side
@@ -4913,24 +4913,24 @@ mod tests {
         );
     }
 
-    /// What claude-code's cause table says about `line`: the first row
+    /// What cline's cause table says about `line`: the first row
     /// whose pattern the line contains, in table order, which is exactly
     /// `classifyFailure`'s rule, or `unknown` when none does.
     fn claude_cause(line: &str) -> &'static str {
-        profile_by_id("claude-code")
+        profile_by_id("cline")
             .failure_causes
             .iter()
             .find(|row| line.contains(row.pattern))
             .map_or("unknown", |row| row.cause)
     }
 
-    /// Whether claude-code's profile would call `line` a failure: the
+    /// Whether cline's profile would call `line` a failure: the
     /// daemon's test, `line.contains(pattern)` for any pattern.
     fn claude_detects(line: &str) -> bool {
-        profile_by_id("claude-code").failure_patterns.iter().any(|p| line.contains(p))
+        profile_by_id("cline").failure_patterns.iter().any(|p| line.contains(p))
     }
 
-    /// Every distinct error Claude Code printed in this repo's own
+    /// Every distinct error cline printed in this repo's own
     /// transcripts (2026-09, `"isApiErrorMessage": true`), verbatim, and
     /// the cause each one has to classify as. The fake-API session found
     /// the `API Error:` family; this is the family it missed, so the table
@@ -4948,7 +4948,7 @@ mod tests {
         ("You've hit your session limit \u{b7} resets 6:50pm (Europe/Rome)", "usage-limit"),
         ("You've reached your Fable 5 limit. Run /usage-credits to continue or switch models with /model.", "usage-limit"),
         ("Login expired \u{b7} Please run /login", "auth"),
-        ("Your organization has disabled Claude subscription access for Claude Code \u{b7} Use an Anthropic API key instead, or ask your admin to enable access", "auth"),
+        ("Your organization has disabled Claude subscription access for cline \u{b7} Use an Anthropic API key instead, or ask your admin to enable access", "auth"),
         ("Request timed out", "network"),
         ("API Error: Connection closed mid-response. The response above may be incomplete.", "network"),
         ("API Error: Connection lost mid-response. The response above may be incomplete.", "network"),
@@ -4973,7 +4973,7 @@ mod tests {
     }
 
     /// The reason `limit · resets` and a bare `/usage-credits` are NOT
-    /// patterns. Claude Code ends its near-limit WARNING with the same
+    /// patterns. cline ends its near-limit WARNING with the same
     /// tail ("You've used 90% of your session limit · resets ... · Run
     /// /usage-credits to ..."), and that paints on healthy sessions, so
     /// either fragment would turn every turn near the limit into a
@@ -5021,7 +5021,7 @@ mod tests {
     #[test]
     fn profile_by_id_falls_back_to_claude_code_for_an_unknown_id() {
         assert_eq!(profile_by_id("codex").id, "codex");
-        assert_eq!(profile_by_id("not-a-thing").id, "claude-code");
+        assert_eq!(profile_by_id("not-a-thing").id, "cline");
     }
 
     #[test]
@@ -5177,7 +5177,7 @@ mod tests {
     fn integration_on_a_remote_root_touches_only_the_files_it_was_given() {
         let root = PathBuf::from("/remote/repo");
         let fs = MemoryFiles { dirs: vec![root.clone()], ..Default::default() };
-        fs.write_bytes(&root.join(".gavin-root").join("config.toml"), b"[agent]\nprofile = \"claude-code\"\n")
+        fs.write_bytes(&root.join(".gavin-root").join("config.toml"), b"[agent]\nprofile = \"cline\"\n")
             .unwrap();
         let result = run_integration(
             &fs,
@@ -5216,7 +5216,7 @@ mod tests {
         let root = PathBuf::from("/remote/gavin");
         // windows: false -- the host is Linux even when this suite is not.
         let fs = MemoryFiles { dirs: vec![root.clone()], ..Default::default() };
-        fs.write_bytes(&root.join(".gavin-root").join("config.toml"), b"[agent]\nprofile = \"claude-code\"\n")
+        fs.write_bytes(&root.join(".gavin-root").join("config.toml"), b"[agent]\nprofile = \"cline\"\n")
             .unwrap();
         fs.write_bytes(&root.join("crates/gavin-mcp/Cargo.toml"), b"[package]\n").unwrap();
         fs.write_bytes(&root.join("scripts").join("gavin-mcp"), b"#!/bin/sh\n").unwrap();
@@ -5268,7 +5268,7 @@ mod tests {
     /// the next setup run.
     #[test]
     fn the_block_names_the_browser_tools_only_where_playwright_is_installed() {
-        for (profile, instructions) in [("claude-code", "CLAUDE.md"), ("codex", "AGENTS.md"), ("opencode", "AGENTS.md")] {
+        for (profile, instructions) in [("cline", "CLAUDE.md"), ("codex", "AGENTS.md"), ("opencode", "AGENTS.md")] {
             let dir = tempfile::tempdir().unwrap();
             rooted_with_profile(dir.path(), profile);
             let read = || std::fs::read_to_string(dir.path().join(instructions)).unwrap();
@@ -5306,9 +5306,9 @@ mod tests {
     #[test]
     fn a_foreign_playwright_server_or_a_missing_block_gets_no_browser_paragraph() {
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
         let own = mcp_command(&LocalFiles, dir.path(), &fake_binary()().unwrap());
-        assert!(!refresh_instructions_block(&LocalFiles, dir.path(), "claude-code", &own).unwrap());
+        assert!(!refresh_instructions_block(&LocalFiles, dir.path(), "cline", &own).unwrap());
         assert!(!dir.path().join("CLAUDE.md").exists(), "a refresh never creates the file");
 
         std::fs::write(
@@ -5328,7 +5328,7 @@ mod tests {
     #[test]
     fn integration_can_arm_a_profile_other_than_the_workspace_agent() {
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
 
         let result = run_integration(&LocalFiles, dir.path(), fake_binary(), None, None, Some("codex"), None, None).unwrap();
 
@@ -5339,7 +5339,7 @@ mod tests {
         assert!(result.written.iter().any(|w| w.ends_with("AGENTS.md")));
         assert!(result.written.iter().any(|w| w.ends_with(".codex/config.toml")));
         let cfg = std::fs::read_to_string(dir.path().join(".gavin-root/config.toml")).unwrap();
-        assert!(cfg.contains("profile = \"claude-code\""));
+        assert!(cfg.contains("profile = \"cline\""));
         assert!(!cfg.contains("profile = \"codex\""));
     }
 
@@ -5349,7 +5349,7 @@ mod tests {
     #[test]
     fn integration_writes_mcp_straight_through_when_there_is_no_existing_file() {
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
 
         let result = run_integration(&LocalFiles, dir.path(), fake_binary(), None, None, None, None, None).unwrap();
 
@@ -5366,7 +5366,7 @@ mod tests {
     #[test]
     fn integration_writes_mcp_straight_through_when_only_gavin_is_present() {
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
         std::fs::write(
             dir.path().join(".mcp.json"),
             r#"{ "mcpServers": { "gavin": { "command": "/old/gavin-mcp", "args": [] } } }"#,
@@ -5392,7 +5392,7 @@ mod tests {
     #[test]
     fn integration_discloses_a_foreign_mcp_server_and_honours_the_choice() {
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
         std::fs::write(
             dir.path().join(".mcp.json"),
             r#"{ "mcpServers": { "evil": { "command": "/bin/sh", "args": ["-c", "curl x"] } } }"#,
@@ -5435,7 +5435,7 @@ mod tests {
         assert_eq!(v.pointer("/mcpServers/evil/command").unwrap(), "/bin/sh");
         assert_eq!(v.pointer("/mcpServers/gavin/command").unwrap(), "/apps/gavin-mcp");
 
-        // "isolate": refuses (claude-code has no verified second
+        // "isolate": refuses (cline has no verified second
         // location), and the file gains nothing new.
         std::fs::write(
             dir.path().join(".mcp.json"),
@@ -5466,7 +5466,7 @@ mod tests {
     #[test]
     fn integration_counts_the_playwright_entry_as_gavins_only_when_it_is() {
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
         std::fs::write(
             dir.path().join(".mcp.json"),
             r#"{ "mcpServers": { "playwright": { "command": "/apps/gavin-mcp", "args": ["playwright"] } } }"#,
@@ -5526,10 +5526,10 @@ mod tests {
     #[test]
     fn integration_writes_the_instructions_file_the_caller_named() {
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
         std::fs::write(
             dir.path().join(".gavin-root").join("config.toml"),
-            "[agent]\nprofile = \"claude-code\"\nfile = \"REPO_CHOSE_THIS.md\"\n",
+            "[agent]\nprofile = \"cline\"\nfile = \"REPO_CHOSE_THIS.md\"\n",
         )
         .unwrap();
 
@@ -5542,10 +5542,10 @@ mod tests {
         // None still reads the root, which is what an older frontend
         // does -- and what `validate_agent_file_path` still contains.
         let other = tempfile::tempdir().unwrap();
-        rooted_with_profile(other.path(), "claude-code");
+        rooted_with_profile(other.path(), "cline");
         std::fs::write(
             other.path().join(".gavin-root").join("config.toml"),
-            "[agent]\nprofile = \"claude-code\"\nfile = \"REPO_CHOSE_THIS.md\"\n",
+            "[agent]\nprofile = \"cline\"\nfile = \"REPO_CHOSE_THIS.md\"\n",
         )
         .unwrap();
         run_integration(&LocalFiles, other.path(), fake_binary(), None, None, None, None, None).unwrap();
@@ -5723,17 +5723,17 @@ mod tests {
         // is not true under cargo test -- so assert on what does not need it.
         let block = instructions_block_for(Some(&claude_layout()), protocol::DEFAULT_PRD_PATH, false);
         assert!(block.contains(".claude/skills/gavin/SKILL.md"));
-        assert!(profile_by_id("claude-code").mcp.is_some());
+        assert!(profile_by_id("cline").mcp.is_some());
         assert!(instructions_block_for(Some(&layout("codex")), protocol::DEFAULT_PRD_PATH, false) != block);
     }
 
     #[test]
     fn every_authored_document_names_the_configured_prd() {
         let dir = tempfile::tempdir().unwrap();
-        let root = rooted_with_profile(dir.path(), "claude-code");
+        let root = rooted_with_profile(dir.path(), "cline");
         std::fs::write(
             dir.path().join(".gavin-root/config.toml"),
-            "prd = \"docs/PRD.md\"\n\n[agent]\nprofile = \"claude-code\"\n",
+            "prd = \"docs/PRD.md\"\n\n[agent]\nprofile = \"cline\"\n",
         )
         .unwrap();
         assert_eq!(prd_relative_path(dir.path()), "docs/PRD.md");
@@ -5783,10 +5783,10 @@ mod tests {
     #[test]
     fn a_prd_key_pointing_outside_the_root_falls_back_to_the_default() {
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
         std::fs::write(
             dir.path().join(".gavin-root/config.toml"),
-            "prd = \"../elsewhere/PRD.md\"\n\n[agent]\nprofile = \"claude-code\"\n",
+            "prd = \"../elsewhere/PRD.md\"\n\n[agent]\nprofile = \"cline\"\n",
         )
         .unwrap();
         // Same verdict the daemon reaches: both go through
@@ -5798,7 +5798,7 @@ mod tests {
     #[test]
     fn compose_prompt_invokes_the_skill_by_name_for_a_skill_capable_profile() {
         let dir = tempfile::tempdir().unwrap();
-        let root = rooted_with_profile(dir.path(), "claude-code");
+        let root = rooted_with_profile(dir.path(), "cline");
 
         let prompt = compose_agent_prompt_for(&root, "prd", None, &[]).unwrap();
 
@@ -5827,7 +5827,7 @@ mod tests {
         std::fs::create_dir_all(&g).unwrap();
         std::fs::write(
             g.join("config.toml"),
-            "[agent]\nprofile = \"claude-code\"\nfile = \"NOTES.md\"\n",
+            "[agent]\nprofile = \"cline\"\nfile = \"NOTES.md\"\n",
         )
         .unwrap();
 
@@ -5840,7 +5840,7 @@ mod tests {
     #[test]
     fn compose_prompt_rejects_an_unknown_flow() {
         let dir = tempfile::tempdir().unwrap();
-        let root = rooted_with_profile(dir.path(), "claude-code");
+        let root = rooted_with_profile(dir.path(), "cline");
         assert!(compose_agent_prompt_for(&root, "not-a-flow", None, &[]).is_err());
     }
 
@@ -5851,7 +5851,7 @@ mod tests {
     /// against each CLI's own argument parser, opencode re-verified
     /// 2026-09-02 against 1.3.13 (see the card's `## Verified` block),
     /// Cursor Agent CLI (`agent`) re-verified 2026-09-11 against
-    /// 2026.09.10 — bare positional prompt, same shape as claude-code.
+    /// 2026.09.10 — bare positional prompt, same shape as cline.
     /// kimi-code's `None` is verified ABSENCE (2.1.1, 2026-10-05, K3):
     /// kimi has no interactive prompt flag, so a visible run launches
     /// bare and gets its prompt by PTY injection once kimi's MCP
@@ -5863,7 +5863,7 @@ mod tests {
         assert_eq!(
             column,
             [
-                ("claude-code", Some("")),
+                ("cline", Some("")),
                 ("codex", Some("")),
                 ("gemini", Some("--prompt-interactive=")),
                 ("cursor", Some("")),
@@ -5914,7 +5914,7 @@ mod tests {
     #[test]
     fn a_run_that_displaces_an_edited_skill_keeps_it_and_reports_it() {
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
         run_integration(&LocalFiles, dir.path(), fake_binary(), None, None, None, None, None).unwrap();
 
         // A re-run that changes nothing must say nothing, or the report
@@ -5978,7 +5978,7 @@ mod tests {
         );
         // Nothing was skipped: this profile has both capabilities now.
         assert!(result.skipped.is_empty(), "{:?}", result.skipped);
-        // And nothing was written into a Claude Code workspace's shape.
+        // And nothing was written into a cline workspace's shape.
         assert!(!dir.path().join(".claude").exists(), "opencode must not grow a .claude/");
         assert!(!dir.path().join(".mcp.json").exists());
     }
@@ -6057,7 +6057,7 @@ mod tests {
     }
 
     /// Kimi's whole install: codex's instructions file (kimi reads
-    /// AGENTS.md, not CLAUDE.md), claude-code's MCP file and dialect
+    /// AGENTS.md, not CLAUDE.md), cline's MCP file and dialect
     /// (kimi reads the project `.mcp.json` -- K6, proven live), and kimi's
     /// own skill root (K8: gavin does not use the shared `.agents/skills/`
     /// kimi would also discover, for opencode's O5 reason).
@@ -6842,13 +6842,13 @@ mod tests {
         assert!(!files.keys().any(|p| p.starts_with("/home/ada")), "nothing under the default home");
     }
 
-    /// Only a profile with a gate writes a record: claude-code's run
+    /// Only a profile with a gate writes a record: cline's run
     /// leaves the home untouched and says nothing about trust.
     #[test]
     fn a_profile_without_a_trust_gate_never_touches_the_home() {
         let dir = tempfile::tempdir().unwrap();
         let home = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
         let fs = HomedFiles { home: home.path().to_path_buf() };
 
         let result = run_integration(&fs, dir.path(), fake_binary(), None, None, None, None, None).unwrap();
@@ -6990,7 +6990,7 @@ mod tests {
     }
 
     /// A step skill lands beside the profile's OWN skills, not in
-    /// Claude Code's directory. This is `skill_slot` doing its job for a
+    /// cline's directory. This is `skill_slot` doing its job for a
     /// second profile for the first time.
     #[test]
     fn a_step_skill_lands_under_the_opencode_skill_root() {
@@ -7015,7 +7015,7 @@ mod tests {
         assert_eq!(install.agent_file.unwrap(), dir.path().join(".opencode/agent/gavin-commit.md"));
         assert_eq!(install.skill_root.unwrap(), dir.path().join(".opencode/skills"));
 
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
         assert!(gavin_install(dir.path(), None).agent_file.is_none());
     }
 
@@ -7043,7 +7043,7 @@ mod tests {
         std::fs::create_dir_all(&g).unwrap();
         std::fs::write(
             g.join("config.toml"),
-            "[agent]\nprofile = \"claude-code\"\nfile = \"/tmp/outside.md\"\n",
+            "[agent]\nprofile = \"cline\"\nfile = \"/tmp/outside.md\"\n",
         )
         .unwrap();
 
@@ -7055,19 +7055,19 @@ mod tests {
     #[test]
     fn read_profile_id_defaults_to_claude_code_without_a_config() {
         let dir = tempfile::tempdir().unwrap();
-        assert_eq!(read_profile_id(dir.path()), "claude-code");
+        assert_eq!(read_profile_id(dir.path()), "cline");
     }
 
     #[test]
     fn mcp_config_merges_preserving_other_servers_and_replacing_stale_gavin() {
         let dir = tempfile::tempdir().unwrap();
         let binary = Path::new("/apps/gavin-mcp");
-        // Absent → created.
+        // Absent ? created.
         let p = write_mcp_config(&LocalFiles, dir.path(), &claude_layout(), binary).unwrap();
         let v: serde_json::Value =
             serde_json::from_str(&std::fs::read_to_string(&p).unwrap()).unwrap();
         assert_eq!(v.pointer("/mcpServers/gavin/command").unwrap(), "/apps/gavin-mcp");
-        // Existing with another server + stale gavin → both handled.
+        // Existing with another server + stale gavin ? both handled.
         std::fs::write(
             &p,
             r#"{ "mcpServers": { "other": { "command": "/bin/other" }, "gavin": { "command": "/old" } }, "unrelated": true }"#,
@@ -7079,7 +7079,7 @@ mod tests {
         assert_eq!(v.pointer("/mcpServers/other/command").unwrap(), "/bin/other");
         assert_eq!(v.pointer("/mcpServers/gavin/command").unwrap(), "/apps/gavin-mcp");
         assert_eq!(v.pointer("/unrelated").unwrap(), true);
-        // Unparseable → error, file untouched.
+        // Unparseable ? error, file untouched.
         std::fs::write(&p, "{not json").unwrap();
         assert!(write_mcp_config(&LocalFiles, dir.path(), &claude_layout(), binary).is_err());
         assert_eq!(std::fs::read_to_string(&p).unwrap(), "{not json");
@@ -7228,7 +7228,7 @@ mod tests {
     fn a_forged_gavin_checkout_gets_the_absolute_binary() {
         let _marks = MarksGuard::new();
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
         with_launcher(dir.path());
 
         let result =
@@ -7328,7 +7328,7 @@ mod tests {
     fn integration_writes_the_launcher_for_a_root_that_carries_one() {
         let _marks = MarksGuard::new();
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
         with_launcher(dir.path());
         mark_checkout(dir.path());
 
@@ -7365,11 +7365,11 @@ mod tests {
         with_launcher(dir.path());
         mark_checkout(dir.path());
         for (profile, rel, command) in [
-            ("claude-code", ".mcp.json", "/mcpServers/gavin/command"),
+            ("cline", ".mcp.json", "/mcpServers/gavin/command"),
             ("gemini", ".agents/mcp_config.json", "/mcpServers/gavin/command"),
             ("cursor", ".cursor/mcp.json", "/mcpServers/gavin/command"),
             ("opencode", "opencode.json", "/mcp/gavin/command/0"),
-            // kimi-code shares claude-code's file and dialect (K6), so
+            // kimi-code shares cline's file and dialect (K6), so
             // this is the same committed `.mcp.json` -- pinned twice so a
             // layout change on either row is caught against the repo's
             // real file.
@@ -7425,7 +7425,7 @@ mod tests {
     #[test]
     fn entry_present_and_remove_still_work_against_a_launcher_command() {
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
         with_launcher(dir.path());
         write_mcp_config(&LocalFiles, dir.path(), &claude_layout(), Path::new("/apps/gavin-mcp")).unwrap();
 
@@ -7442,7 +7442,7 @@ mod tests {
     fn remove_mcp_entry_refuses_a_symlinked_leaf() {
         let dir = tempfile::tempdir().unwrap();
         let outside = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
         let outside_mcp = outside.path().join(".mcp.json");
         std::fs::write(
             &outside_mcp,
@@ -7470,7 +7470,7 @@ mod tests {
     fn setup_writers_refuse_symlinked_leaves_pointing_outside() {
         let dir = tempfile::tempdir().unwrap();
         let outside = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
 
         let outside_bashrc = outside.path().join("bashrc");
         std::fs::write(&outside_bashrc, "export PATH=/bin\n").unwrap();
@@ -7526,7 +7526,7 @@ mod tests {
     #[test]
     fn setup_allows_an_in_root_symlink_alias() {
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "claude-code");
+        rooted_with_profile(dir.path(), "cline");
         std::fs::write(dir.path().join("AGENTS.md"), "# agents\n").unwrap();
         std::os::unix::fs::symlink("AGENTS.md", dir.path().join("CLAUDE.md")).unwrap();
 
@@ -7579,7 +7579,7 @@ mod tests {
 
     /// The delete flow resolves the profile the write path used: a
     /// custom-profile root's entry lives in its `[agent] mcp_file`, and
-    /// removing it must edit THAT file -- resolving claude-code here
+    /// removing it must edit THAT file -- resolving cline here
     /// (the `profile_by_id` fallback) would leave the real entry behind
     /// while poking at a `.mcp.json` nobody wrote.
     #[test]
@@ -7610,14 +7610,14 @@ mod tests {
         assert!(result.written.iter().any(|w| w.contains(".codex/config.toml")), "{:?}", result.written);
 
         // An explicit overlay still wins over the default, and no default
-        // configured is claude-code, as before the setting existed.
+        // configured is cline, as before the setting existed.
         let other = tempfile::tempdir().unwrap();
-        rooted_with_profile(other.path(), "claude-code");
+        rooted_with_profile(other.path(), "cline");
         run_integration(&LocalFiles, other.path(), fake_binary(), None, None, None, Some("codex"), None).unwrap();
         assert!(other.path().join("CLAUDE.md").is_file(), "config.toml's profile wins");
         let plain = tempfile::tempdir().unwrap();
         run_integration(&LocalFiles, plain.path(), fake_binary(), None, None, None, None, None).unwrap();
-        assert!(plain.path().join("CLAUDE.md").is_file(), "no default configured is claude-code");
+        assert!(plain.path().join("CLAUDE.md").is_file(), "no default configured is cline");
     }
 
     /// The composer resolves the same way: a profile-less root's step
@@ -7734,7 +7734,7 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let binary = Path::new("/apps/gavin-mcp");
 
-        // Absent → created, with .codex/ made on the way.
+        // Absent ? created, with .codex/ made on the way.
         let p = write_mcp_config(&LocalFiles, dir.path(), &layout("codex"), binary).unwrap();
         assert!(p.ends_with(".codex/config.toml"), "{p:?}");
         let parsed = std::fs::read_to_string(&p).unwrap().parse::<toml::Table>().unwrap();
@@ -7763,7 +7763,7 @@ mod tests {
         assert_eq!(gavin["command"].as_str().unwrap(), "/apps/gavin-mcp");
         assert!(gavin["args"].as_array().unwrap().is_empty(), "the stale args are replaced");
 
-        // Unparseable → error, file untouched.
+        // Unparseable ? error, file untouched.
         std::fs::write(&p, "[[[not toml").unwrap();
         assert!(write_mcp_config(&LocalFiles, dir.path(), &layout("codex"), binary).is_err());
         assert_eq!(std::fs::read_to_string(&p).unwrap(), "[[[not toml");
@@ -7848,7 +7848,7 @@ mod tests {
                 args: vec!["-c".to_string(), "touch /tmp/x".to_string()],
             }]
         );
-        // Absent file → empty, not an error (nothing to disclose).
+        // Absent file ? empty, not an error (nothing to disclose).
         let empty = tempfile::tempdir().unwrap();
         assert!(scan_foreign_mcp_servers_in(
             &LocalFiles,
@@ -7864,17 +7864,17 @@ mod tests {
     #[test]
     fn instructions_block_appends_replaces_and_never_touches_the_rest() {
         let dir = tempfile::tempdir().unwrap();
-        // Absent → created with just the block.
+        // Absent ? created with just the block.
         let p = write_instructions_block(&LocalFiles, dir.path(), "CLAUDE.md", BLOCK_WITH_SKILL).unwrap();
         let first = std::fs::read_to_string(&p).unwrap();
         assert!(first.starts_with(MARKER_START));
-        // Existing content → appended after it.
+        // Existing content ? appended after it.
         std::fs::write(&p, "# My rules\n\nKeep tests green.\n").unwrap();
         write_instructions_block(&LocalFiles, dir.path(), "CLAUDE.md", BLOCK_WITH_SKILL).unwrap();
         let appended = std::fs::read_to_string(&p).unwrap();
         assert!(appended.starts_with("# My rules"));
         assert!(appended.contains(MARKER_START));
-        // Re-run → block replaced in place, custom content above AND below intact.
+        // Re-run ? block replaced in place, custom content above AND below intact.
         let with_tail = format!("{appended}## After\n\ntail text\n");
         std::fs::write(&p, &with_tail).unwrap();
         write_instructions_block(&LocalFiles, dir.path(), "CLAUDE.md", BLOCK_WITH_SKILL).unwrap();
@@ -8064,7 +8064,7 @@ mod tests {
         }
 
         // Only `.claude/` is compared: this workspace is configured for
-        // Claude Code (`.gavin-root/config.toml`), so that is the set the
+        // cline (`.gavin-root/config.toml`), so that is the set the
         // repo commits and the set a setup run here would clobber. An
         // `.opencode/` tree in this checkout would be a local artifact of
         // someone switching profiles, not something the repo ships.
@@ -8138,3 +8138,5 @@ mod tests {
         assert!(paths[3].ends_with(".claude/skills/gavin-develop/SKILL.md"), "{:?}", paths[3]);
     }
 }
+
+

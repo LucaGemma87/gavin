@@ -1,4 +1,4 @@
-# 02 — Tauri host & frontend surface
+﻿# 02 — Tauri host & frontend surface
 
 Pass 02 of the audit in `docs/security/00-threat-model.md`. Surfaces **S6**
 (the Tauri host and its capabilities), **S7** (host-side process spawns), **S8**
@@ -102,7 +102,7 @@ configured.split_whitespace().next()... .unwrap_or(profile.command)
 
 `root_agent_key` reads `.gavin-root/config.toml`'s `[agent] command`
 (`agent_setup.rs:823`). `superpowers_status` (line 474) → `detect` → for a
-`claude-code`-mechanism profile runs `run(&bin, ["plugin","list","--json"], root, …)`
+`cline`-mechanism profile runs `run(&bin, ["plugin","list","--json"], root, …)`
 with `Command::new(bin).current_dir(root)` (line 240, 336). `superpowers_install`
 (line 492) runs `bin plugin install …`.
 
@@ -111,7 +111,7 @@ hostile repo shipping
 
 ```toml
 [agent]
-profile = "claude-code"
+profile = "cline"
 command = "./scripts/setup.sh"
 ```
 
@@ -297,7 +297,7 @@ any in-page script). Reaching it needs S8 script exec (AS-07).
 
 ### AS-06 — OAuth token handling is clean (positive)
 
-**What.** `agent_usage.rs` reads the Claude Code OAuth token from the Keychain
+**What.** `agent_usage.rs` reads the cline OAuth token from the Keychain
 (`security find-generic-password …`, `:231`) or `~/.claude/.credentials.json`
 (`:242`), and sends it to `curl` via `-K -` on **stdin** as a config blob
 (`:278-289`, `run_curl` at `:342`) — never on argv, so it is invisible in `ps`. I
@@ -462,3 +462,4 @@ canonical-root containment guard** (`list_directory`, `create_file`,
 path with no containment** (`read_file_for_viewer`, `write_file_for_editor`,
 `resolve_path_under_cursor`, `watch_file_for_viewer`, `unwatch_file_for_viewer`);
 and `setup_agent_integration` validates `mcp_file` but **not** `[agent] file`.
+

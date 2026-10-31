@@ -1,4 +1,4 @@
-# Agent Orchestration Foundations Implementation Plan
+﻿# Agent Orchestration Foundations Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -269,7 +269,7 @@ const PRD_TEMPLATE: &str = "# {workspace} — Product Requirements\n\n\
 ## Current focus\n\n_The active goals, roughly ordered._\n\n\
 ## Out of scope\n\n_Explicit non-goals._\n";
 
-const ROOT_CONFIG_TEMPLATE: &str = "version = 1\n\n[agent]\nprofile = \"claude-code\"\n";
+const ROOT_CONFIG_TEMPLATE: &str = "version = 1\n\n[agent]\nprofile = \"cline\"\n";
 ```
 
 - [ ] **Step 2: Write the frontmatter parser** (line-oriented, spec §1 rules exactly):

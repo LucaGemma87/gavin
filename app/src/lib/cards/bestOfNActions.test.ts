@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 import { get, writable } from "svelte/store";
 import type { BestOfNRun, CandidatePlan } from "$lib/cards/bestOfN";
 import type { CardView } from "$lib/core/planBoard";
@@ -43,7 +43,7 @@ vi.mock("$lib/core/layoutState", () => ({
   promptExtrasFor: vi.fn((): string[] => []),
   candidateAgentFor: vi.fn((_ws: string, c: { profileId: string; model: string }) => ({
     profileId: c.profileId,
-    label: c.profileId === "custom" ? "Custom" : "Claude Code",
+    label: c.profileId === "custom" ? "Custom" : "cline",
     launchCommand: c.model ? `claude --model ${c.model}` : "claude",
     // custom is the stock profile that takes no prompt at all, which is
     // the one agent gate a run has to fail on.
@@ -146,13 +146,13 @@ const CARD: CardView = {
 function plan(profileId: string, model: string, branch: string): CandidatePlan {
   return {
     candidate: { profileId, model },
-    label: model ? `Claude Code · ${model}` : profileId,
+    label: model ? `cline · ${model}` : profileId,
     branch,
     worktreePath: `/repos/gavin-${branch}`,
   };
 }
 
-const PLANS = [plan("claude-code", "opus", "auth-opus"), plan("claude-code", "sonnet", "auth-sonnet")];
+const PLANS = [plan("cline", "opus", "auth-opus"), plan("cline", "sonnet", "auth-sonnet")];
 
 beforeEach(() => {
   trace.length = 0;
@@ -209,7 +209,7 @@ describe("starting a run", () => {
     expect(specs[1].command).toContain("--model sonnet");
     // Each candidate is told which one it is, or three tabs name
     // themselves the same thing.
-    expect(specs[0].command).toContain("Claude Code · opus");
+    expect(specs[0].command).toContain("cline · opus");
   });
 
   // What makes each session a candidate for compression, which the
@@ -221,12 +221,12 @@ describe("starting a run", () => {
     await startBestOfN(
       "ws-1",
       CARD,
-      [plan("claude-code", "opus", "auth-opus"), plan("codex", "gpt", "auth-codex")],
+      [plan("cline", "opus", "auth-opus"), plan("codex", "gpt", "auth-codex")],
       "main"
     );
 
     const specs = createTiledPage.mock.calls[0][2];
-    expect(specs.map((sp: { profileId?: string }) => sp.profileId)).toEqual(["claude-code", "codex"]);
+    expect(specs.map((sp: { profileId?: string }) => sp.profileId)).toEqual(["cline", "codex"]);
     // The line opens with the worktree's setup, not the agent's binary:
     // the profile is said because it could not have been read off it.
     expect(specs[0].command.startsWith("npm install && ")).toBe(true);
@@ -319,7 +319,7 @@ describe("starting a run", () => {
     const error = await startBestOfN("ws-1", CARD, PLANS, "main");
     // git's own words, not a pointer at a tab the human is not looking at.
     expect(error).toBe(
-      "Couldn't create the worktree for Claude Code · sonnet — New worktree failed: fatal: '/repos/x' already exists"
+      "Couldn't create the worktree for cline · sonnet — New worktree failed: fatal: '/repos/x' already exists"
     );
     expect(trace).toEqual(["status", "fork:/repos/gavin-auth-opus", "fork:FAILED", "discard:/repos/gavin-auth-opus:branches"]);
     expect(get(bestOfNRuns)["ws-1"] ?? []).toEqual([]);
@@ -339,8 +339,8 @@ describe("starting a run", () => {
   it("names the tabs after the candidates, not after the card they share", async () => {
     await startBestOfN("ws-1", CARD, PLANS, "main");
     expect(vi.mocked(layoutState.setSessionName).mock.calls.map((c) => c[1])).toEqual([
-      "Claude Code · opus",
-      "Claude Code · sonnet",
+      "cline · opus",
+      "cline · sonnet",
     ]);
   });
 });
@@ -352,8 +352,8 @@ function startedRun(): BestOfNRun {
     pageId: "page-1",
     startedAt: 1,
     candidates: [
-      { sessionId: "s1", label: "A", profileId: "claude-code", model: "opus", branch: "auth-opus", worktreePath: "/repos/gavin-auth-opus", command: "claude a", conversationId: "id-a" },
-      { sessionId: "s2", label: "B", profileId: "claude-code", model: "sonnet", branch: "auth-sonnet", worktreePath: "/repos/gavin-auth-sonnet", command: "claude b", conversationId: null },
+      { sessionId: "s1", label: "A", profileId: "cline", model: "opus", branch: "auth-opus", worktreePath: "/repos/gavin-auth-opus", command: "claude a", conversationId: "id-a" },
+      { sessionId: "s2", label: "B", profileId: "cline", model: "sonnet", branch: "auth-sonnet", worktreePath: "/repos/gavin-auth-sonnet", command: "claude b", conversationId: null },
       { sessionId: "s3", label: "C", profileId: "codex", model: "", branch: "auth-codex", worktreePath: "/repos/gavin-auth-codex", command: "codex c", conversationId: null },
     ],
   };
@@ -444,3 +444,4 @@ describe("abandoning a run", () => {
     expect(get(bestOfNRuns)["ws-1"]).toHaveLength(1);
   });
 });
+

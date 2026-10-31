@@ -392,7 +392,7 @@ async function pollAll(force = false): Promise<void> {
 ///
 /// Reads the workspace's own agent, because the limits that matter are
 /// the ones the agent it launches spends against -- a workspace on Gemini
-/// is not held by a Claude Code window being full.
+/// is not held by a cline window being full.
 export function pauseFor(workspaceId: string | null, nowMs: number): PauseVerdict {
   const cycle = effectiveCycle(workspaceId);
   if (!cycle) return { paused: false, reason: null, why: null, until: null };
@@ -693,3 +693,4 @@ export function stopUsagePoll(): void {
   if (pollTimer) clearInterval(pollTimer);
   pollTimer = null;
 }
+

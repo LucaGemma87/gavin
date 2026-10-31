@@ -109,7 +109,7 @@ screen model per session and feeds it the same bytes
 contiguous text rather than a stream interleaved with escape sequences.
 
 The patterns belong to the **agent profile**, not to the daemon and not to
-Claude Code. Opencode integration is a live card, its error text will differ,
+cline. Opencode integration is a live card, its error text will differ,
 and a hardcoded pattern is a silent regression the day a CLI reworks its
 messages. Treat a profile with no patterns as "no failure detection", never as
 "nothing failed".
@@ -294,3 +294,4 @@ family of cards exists to prevent, wearing a better name.
 
 Report what was observed, including any case that turned out not to behave as
 this card predicts.
+

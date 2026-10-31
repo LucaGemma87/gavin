@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   reviewersError,
   criticalReviewPageName,
@@ -24,16 +24,16 @@ const BASE = {
   rulesPath: "/repo/.gavin-root/REVIEW.md",
   contextFolder: "/repo",
   plansFolder: "/repo/.gavin-root/plans",
-  reviewerLabel: "Claude Code · opus",
+  reviewerLabel: "cline · opus",
   reviewerTotal: 2,
 };
 
 describe("reviewersError", () => {
   it("refuses a single reviewer — that is Review with agent", () => {
-    expect(reviewersError([{ profileId: "claude-code", model: "" }])).toMatch(
+    expect(reviewersError([{ profileId: "cline", model: "" }])).toMatch(
       /at least two reviewers/
     );
-    expect(reviewersError([{ profileId: "claude-code", model: "" }])).toMatch(
+    expect(reviewersError([{ profileId: "cline", model: "" }])).toMatch(
       /Review with agent/
     );
   });
@@ -41,8 +41,8 @@ describe("reviewersError", () => {
   it("refuses two identical profile+model rows", () => {
     expect(
       reviewersError([
-        { profileId: "claude-code", model: "sonnet" },
-        { profileId: "claude-code", model: "sonnet" },
+        { profileId: "cline", model: "sonnet" },
+        { profileId: "cline", model: "sonnet" },
       ])
     ).toMatch(/same agent and model/);
   });
@@ -50,8 +50,8 @@ describe("reviewersError", () => {
   it("clears for two distinct reviewers", () => {
     expect(
       reviewersError([
-        { profileId: "claude-code", model: "sonnet" },
-        { profileId: "claude-code", model: "opus" },
+        { profileId: "cline", model: "sonnet" },
+        { profileId: "cline", model: "opus" },
       ])
     ).toBeNull();
   });
@@ -61,13 +61,13 @@ describe("seedCandidates", () => {
   // Re-exported from bestOfN — the dialog seeds the same way.
   it("is the Best-of-N seeder", () => {
     const pair = seedCandidates(
-      [{ id: "claude-code", models: ["sonnet", "opus"], promptArgs: "" }],
-      "claude-code",
+      [{ id: "cline", models: ["sonnet", "opus"], promptArgs: "" }],
+      "cline",
       "sonnet"
     );
     expect(pair).toEqual([
-      { profileId: "claude-code", model: "sonnet" },
-      { profileId: "claude-code", model: "opus" },
+      { profileId: "cline", model: "sonnet" },
+      { profileId: "cline", model: "opus" },
     ]);
   });
 });
@@ -174,13 +174,13 @@ describe("composeCriticalReviewPrompt", () => {
     const prompt = composeCriticalReviewPrompt(BASE);
     expect(prompt).toContain("one of 2 reviewers");
     expect(prompt).toContain("same checkout");
-    expect(prompt).toContain("“Claude Code · opus”");
+    expect(prompt).toContain("“cline · opus”");
     expect(prompt).toContain("change no files");
   });
 
   it("asks the tab name to lead with the reviewer label", () => {
     expect(composeCriticalReviewPrompt(BASE)).toContain(
-      "Begin your tab name with “Claude Code · opus ”"
+      "Begin your tab name with “cline · opus ”"
     );
   });
 
@@ -226,8 +226,8 @@ describe("subject labels", () => {
 
 describe("rail-step params", () => {
   it("parses profile and profile:model lines", () => {
-    expect(parseReviewersParam("claude-code\ncodex:gpt-5\n\n")).toEqual([
-      { profileId: "claude-code", model: "" },
+    expect(parseReviewersParam("cline\ncodex:gpt-5\n\n")).toEqual([
+      { profileId: "cline", model: "" },
       { profileId: "codex", model: "gpt-5" },
     ]);
     expect(parseReviewersParam("  ")).toEqual([]);
@@ -281,3 +281,4 @@ describe("rail-step params", () => {
     ).toBe(false);
   });
 });
+

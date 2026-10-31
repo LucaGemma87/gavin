@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+﻿import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const layout = vi.hoisted(() => ({
   setAgentDefaults: vi.fn(async () => {}),
@@ -164,12 +164,12 @@ describe("what taking an own value starts from", () => {
 
 describe("primaryReportsUsage", () => {
   const profiles = [
-    { id: "claude-code", usageProbe: "claude" },
+    { id: "cline", usageProbe: "claude" },
     { id: "kimi-code", usageProbe: null },
     { id: "my-custom" },
   ];
   it("is true only for an agent whose profile carries a usage probe", () => {
-    expect(primaryReportsUsage(profiles, "claude-code")).toBe(true);
+    expect(primaryReportsUsage(profiles, "cline")).toBe(true);
     expect(primaryReportsUsage(profiles, "kimi-code")).toBe(false);
     expect(primaryReportsUsage(profiles, "my-custom")).toBe(false);
   });

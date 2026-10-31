@@ -1,4 +1,4 @@
-import { writable, derived, get, type Writable } from "svelte/store";
+﻿import { writable, derived, get, type Writable } from "svelte/store";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { askConfirm, showAlert } from "$lib/core/dialog";
 import type { LayoutNode } from "$lib/panes/layout";
@@ -1934,7 +1934,7 @@ export async function setWorkspaceSsh(
 }
 
 /// The Rust profile table, fetched once at bootstrap. Empty until then;
-/// resolveAgentConfig degrades to its own claude-code fallbacks in that
+/// resolveAgentConfig degrades to its own cline fallbacks in that
 /// window, so an early call is safe rather than wrong.
 export const agentProfilesStore = writable<AgentProfileInfo[]>([]);
 
@@ -2058,7 +2058,7 @@ export const playwrightPaneOpenDefault = writable<PaneOpenSetting | null>(null);
 
 /// The agent profile table: static Rust data, so one fetch is enough.
 /// Best-effort like the rest -- resolveAgentConfig falls back to
-/// claude-code's defaults if this never arrives.
+/// cline's defaults if this never arrives.
 ///
 /// Published TWICE on purpose. The table lands first because every
 /// panel needs a command and a flag immediately, and the catalogue
@@ -2698,7 +2698,7 @@ export function candidateAgentFor(workspaceId: string, candidate: Candidate) {
 /// component, which would keep whatever the table said at mount. The
 /// table is fetched asynchronously at bootstrap, so at mount it is
 /// usually still empty: a control derived from the one-shot helper shows
-/// claude-code's answer for the whole session, whatever the workspace
+/// cline's answer for the whole session, whatever the workspace
 /// actually chose.
 ///
 /// A store OF a function rather than one store per workspace, because
@@ -2740,7 +2740,7 @@ export const resolvedAgents = derived(
 /// -- it runs once, at the moment of the click -- and wrong for a
 /// component, which would keep whatever the profile table said at
 /// mount. The table is fetched asynchronously at bootstrap, so a card
-/// modal derived from the one-shot helper would show claude-code's
+/// modal derived from the one-shot helper would show cline's
 /// model flag for a card the human pointed at codex, and would go on
 /// showing it for the life of the modal.
 export const cardAgents = derived(
@@ -2973,7 +2973,7 @@ export async function setAgentField(
 /// then inherits its own app-wide defaults.
 ///
 /// Left behind, they are not a preference but a broken argv: Cursor's
-/// `model = "auto"` under `profile = "claude-code"` launched `claude
+/// `model = "auto"` under `profile = "cline"` launched `claude
 /// --model auto`, which refuses to start, on every route.
 ///
 /// Each beside the feature that taught the daemon its key. A daemon older

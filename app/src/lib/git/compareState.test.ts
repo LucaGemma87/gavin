@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 import { get } from "svelte/store";
 
 vi.mock("$lib/core/backend", () => ({
@@ -78,8 +78,8 @@ vi.mock("$lib/core/layoutState", async () => {
     createSessionForCard: vi.fn().mockResolvedValue("sess-1"),
     profileIdForLaunch: vi.fn((agent: { profileId: string }): string | undefined => agent.profileId),
     resolvedAgentFor: vi.fn(() => ({
-      profileId: "claude-code",
-      label: "Claude Code",
+      profileId: "cline",
+      label: "cline",
       file: "CLAUDE.md",
       command: "claude",
       launchCommand: "claude",
@@ -299,3 +299,4 @@ describe("refresh integration", () => {
     expect(s.compare.summary).toBeNull();
   });
 });
+

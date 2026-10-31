@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import type { AgentUsageReport } from "$lib/agents/agentUsage";
 import {
   agentLimitSpent,
@@ -29,7 +29,7 @@ const UNSUPPORTED: AgentUsageReport = { state: "unsupported" };
 
 function decide(over: Partial<LaunchDecisionInput> = {}) {
   return decideLaunch({
-    resolvedProfileId: "claude-code",
+    resolvedProfileId: "cline",
     chain: ["codex"],
     usageByProfile: {},
     armed: new Set(["codex"]),
@@ -51,20 +51,20 @@ describe("sanitizeChain", () => {
 });
 
 describe("effectiveFallbackChain", () => {
-  const app = { "claude-code": ["codex"], codex: ["gemini"] };
+  const app = { "cline": ["codex"], codex: ["gemini"] };
 
   it("inherits the app chain for the primary when the workspace has no key", () => {
-    expect(effectiveFallbackChain(undefined, app, "claude-code")).toEqual(["codex"]);
-    expect(effectiveFallbackChain({}, app, "claude-code")).toEqual(["codex"]);
-    expect(effectiveFallbackChain({ codex: ["gemini"] }, app, "claude-code")).toEqual(["codex"]);
+    expect(effectiveFallbackChain(undefined, app, "cline")).toEqual(["codex"]);
+    expect(effectiveFallbackChain({}, app, "cline")).toEqual(["codex"]);
+    expect(effectiveFallbackChain({ codex: ["gemini"] }, app, "cline")).toEqual(["codex"]);
   });
 
   it("treats a present workspace key as an override, including empty", () => {
-    expect(effectiveFallbackChain({ "claude-code": [] }, app, "claude-code")).toEqual([]);
+    expect(effectiveFallbackChain({ "cline": [] }, app, "cline")).toEqual([]);
   });
 
   it("uses the workspace chain for that primary when present", () => {
-    expect(effectiveFallbackChain({ "claude-code": ["gemini"] }, app, "claude-code")).toEqual([
+    expect(effectiveFallbackChain({ "cline": ["gemini"] }, app, "cline")).toEqual([
       "gemini",
     ]);
   });
@@ -107,24 +107,24 @@ describe("agentLimitSpent", () => {
       cached: false,
     };
     expect(agentLimitSpent(cursor, true, 90, "cursor")).toBe(false);
-    expect(agentLimitSpent(cursor, true, 90, "claude-code")).toBe(true);
+    expect(agentLimitSpent(cursor, true, 90, "cline")).toBe(true);
   });
 });
 
 describe("fallbackThresholdFor", () => {
   it("is 90 when the profile has no stored value", () => {
-    expect(fallbackThresholdFor("claude-code", undefined)).toBe(90);
-    expect(fallbackThresholdFor("claude-code", {})).toBe(90);
+    expect(fallbackThresholdFor("cline", undefined)).toBe(90);
+    expect(fallbackThresholdFor("cline", {})).toBe(90);
   });
 
   it("uses the stored percent for that profile", () => {
-    expect(fallbackThresholdFor("claude-code", { "claude-code": 80, codex: 95 })).toBe(80);
+    expect(fallbackThresholdFor("cline", { "cline": 80, codex: 95 })).toBe(80);
   });
 
   it("ignores non-finite and out-of-range values", () => {
-    expect(fallbackThresholdFor("claude-code", { "claude-code": 0 })).toBe(90);
-    expect(fallbackThresholdFor("claude-code", { "claude-code": 101 })).toBe(90);
-    expect(fallbackThresholdFor("claude-code", { "claude-code": Number.NaN })).toBe(90);
+    expect(fallbackThresholdFor("cline", { "cline": 0 })).toBe(90);
+    expect(fallbackThresholdFor("cline", { "cline": 101 })).toBe(90);
+    expect(fallbackThresholdFor("cline", { "cline": Number.NaN })).toBe(90);
   });
 });
 
@@ -140,11 +140,11 @@ describe("sanitizeFallbackThreshold", () => {
 describe("decideLaunch", () => {
   // A chain edited down to Cursor must never resolve to the agent that
   // was removed from it, whatever the removed agent's own usage says.
-  it("claude-code -> cursor: walks to cursor and never to a removed gemini", () => {
+  it("cline -> cursor: walks to cursor and never to a removed gemini", () => {
     expect(
       decide({
         chain: ["cursor"],
-        usageByProfile: { "claude-code": atLimit(99), gemini: atLimit(0) },
+        usageByProfile: { "cline": atLimit(99), gemini: atLimit(0) },
         armed: new Set(["cursor"]),
       })
     ).toEqual({ kind: "use", profileId: "cursor", viaFallback: true });
@@ -154,7 +154,7 @@ describe("decideLaunch", () => {
     expect(
       decide({
         cyclePaused: true,
-        usageByProfile: { "claude-code": atLimit(99) },
+        usageByProfile: { "cline": atLimit(99) },
       })
     ).toEqual({ kind: "pause", why: "cycle" });
   });
@@ -165,7 +165,7 @@ describe("decideLaunch", () => {
     expect(
       decide({
         chain: ["codex", "gemini"],
-        usageByProfile: { "claude-code": atLimit(99), codex: atLimit(10), gemini: atLimit(10) },
+        usageByProfile: { "cline": atLimit(99), codex: atLimit(10), gemini: atLimit(10) },
         armed: new Set(["codex", "gemini"]),
         cyclePausedFor: (id) => id === "codex",
       })
@@ -176,7 +176,7 @@ describe("decideLaunch", () => {
     expect(
       decide({
         chain: ["codex", "gemini"],
-        usageByProfile: { "claude-code": atLimit(99), codex: atLimit(10), gemini: atLimit(99) },
+        usageByProfile: { "cline": atLimit(99), codex: atLimit(10), gemini: atLimit(99) },
         armed: new Set(["codex", "gemini"]),
         cyclePausedFor: (id) => id === "codex",
       })
@@ -187,17 +187,17 @@ describe("decideLaunch", () => {
     expect(
       decide({
         chain: ["codex"],
-        usageByProfile: { "claude-code": atLimit(10) },
+        usageByProfile: { "cline": atLimit(10) },
         armed: new Set(["codex"]),
         cyclePausedFor: () => true,
       })
-    ).toEqual({ kind: "use", profileId: "claude-code", viaFallback: false });
+    ).toEqual({ kind: "use", profileId: "cline", viaFallback: false });
   });
 
   it("uses the resolved agent when it is not spent", () => {
-    expect(decide({ usageByProfile: { "claude-code": atLimit(10) } })).toEqual({
+    expect(decide({ usageByProfile: { "cline": atLimit(10) } })).toEqual({
       kind: "use",
-      profileId: "claude-code",
+      profileId: "cline",
       viaFallback: false,
     });
   });
@@ -206,7 +206,7 @@ describe("decideLaunch", () => {
     expect(
       decide({
         chain: ["codex", "gemini"],
-        usageByProfile: { "claude-code": atLimit(99), codex: atLimit(10) },
+        usageByProfile: { "cline": atLimit(99), codex: atLimit(10) },
         armed: new Set(["codex", "gemini"]),
       })
     ).toEqual({ kind: "use", profileId: "codex", viaFallback: true });
@@ -217,7 +217,7 @@ describe("decideLaunch", () => {
       decide({
         chain: ["codex", "gemini"],
         usageByProfile: {
-          "claude-code": atLimit(99),
+          "cline": atLimit(99),
           codex: atLimit(99),
           gemini: UNSUPPORTED,
         },
@@ -229,7 +229,7 @@ describe("decideLaunch", () => {
   it("asks to arm the next usable chain agent rather than skipping it", () => {
     expect(
       decide({
-        usageByProfile: { "claude-code": atLimit(99) },
+        usageByProfile: { "cline": atLimit(99) },
         armed: new Set(),
       })
     ).toEqual({ kind: "arm", profileId: "codex" });
@@ -239,14 +239,14 @@ describe("decideLaunch", () => {
     expect(
       decide({
         chain: ["codex", "gemini"],
-        usageByProfile: { "claude-code": atLimit(99) },
+        usageByProfile: { "cline": atLimit(99) },
         armed: new Set(["gemini"]),
         declined: new Set(["codex"]),
       })
     ).toEqual({ kind: "use", profileId: "gemini", viaFallback: true });
     expect(
       decide({
-        usageByProfile: { "claude-code": atLimit(99) },
+        usageByProfile: { "cline": atLimit(99) },
         armed: new Set(),
         declined: new Set(["codex"]),
       })
@@ -256,7 +256,7 @@ describe("decideLaunch", () => {
   it("still uses a declined agent that was armed after all", () => {
     expect(
       decide({
-        usageByProfile: { "claude-code": atLimit(99) },
+        usageByProfile: { "cline": atLimit(99) },
         armed: new Set(["codex"]),
         declined: new Set(["codex"]),
       })
@@ -267,7 +267,7 @@ describe("decideLaunch", () => {
     expect(
       decide({
         chain: [],
-        usageByProfile: { "claude-code": atLimit(99) },
+        usageByProfile: { "cline": atLimit(99) },
       })
     ).toEqual({ kind: "pause", why: "usage-limit" });
   });
@@ -277,7 +277,7 @@ describe("decideLaunch", () => {
       decide({
         chain: [],
         workspaceProfileId: "cursor",
-        usageByProfile: { "claude-code": atLimit(99), cursor: atLimit(45) },
+        usageByProfile: { "cline": atLimit(99), cursor: atLimit(45) },
       })
     ).toEqual({ kind: "use", profileId: "cursor", viaFallback: true });
   });
@@ -289,7 +289,7 @@ describe("decideLaunch", () => {
         workspaceProfileId: "cursor",
         armed: new Set(["gemini"]),
         usageByProfile: {
-          "claude-code": atLimit(99),
+          "cline": atLimit(99),
           cursor: atLimit(10),
           gemini: atLimit(10),
         },
@@ -301,8 +301,8 @@ describe("decideLaunch", () => {
     expect(
       decide({
         chain: [],
-        workspaceProfileId: "claude-code",
-        usageByProfile: { "claude-code": atLimit(99) },
+        workspaceProfileId: "cline",
+        usageByProfile: { "cline": atLimit(99) },
       })
     ).toEqual({ kind: "pause", why: "usage-limit" });
   });
@@ -311,7 +311,7 @@ describe("decideLaunch", () => {
     expect(
       decide({
         resume: true,
-        usageByProfile: { "claude-code": atLimit(99) },
+        usageByProfile: { "cline": atLimit(99) },
         armed: new Set(["codex"]),
       })
     ).toEqual({ kind: "pause", why: "usage-limit" });
@@ -321,8 +321,8 @@ describe("decideLaunch", () => {
     expect(
       decide({
         limitPercent: 95,
-        fallbackThresholds: { "claude-code": 80 },
-        usageByProfile: { "claude-code": atLimit(85) },
+        fallbackThresholds: { "cline": 80 },
+        usageByProfile: { "cline": atLimit(85) },
       })
     ).toEqual({ kind: "use", profileId: "codex", viaFallback: true });
   });
@@ -332,19 +332,19 @@ describe("decideLaunch", () => {
       decide({
         resume: true,
         limitPercent: 95,
-        fallbackThresholds: { "claude-code": 80 },
-        usageByProfile: { "claude-code": atLimit(85) },
+        fallbackThresholds: { "cline": 80 },
+        usageByProfile: { "cline": atLimit(85) },
       })
-    ).toEqual({ kind: "use", profileId: "claude-code", viaFallback: false });
+    ).toEqual({ kind: "use", profileId: "cline", viaFallback: false });
   });
 
   it("skips a chain entry over its own threshold", () => {
     expect(
       decide({
         chain: ["codex", "gemini"],
-        fallbackThresholds: { "claude-code": 90, codex: 80 },
+        fallbackThresholds: { "cline": 90, codex: 80 },
         usageByProfile: {
-          "claude-code": atLimit(95),
+          "cline": atLimit(95),
           codex: atLimit(85),
           gemini: UNSUPPORTED,
         },
@@ -356,7 +356,7 @@ describe("decideLaunch", () => {
   it("treats a no-probe agent as eligible in the chain", () => {
     expect(
       decide({
-        usageByProfile: { "claude-code": atLimit(99), codex: UNSUPPORTED },
+        usageByProfile: { "cline": atLimit(99), codex: UNSUPPORTED },
       })
     ).toEqual({ kind: "use", profileId: "codex", viaFallback: true });
   });
@@ -366,10 +366,10 @@ describe("agentsOwedArming", () => {
   it("skips the workspace's own profile and already-armed ids", () => {
     expect(
       agentsOwedArming({
-        chain: ["codex", "claude-code"],
+        chain: ["codex", "cline"],
         complexityProfiles: ["gemini", "codex"],
         armed: new Set(["codex"]),
-        workspaceProfileId: "claude-code",
+        workspaceProfileId: "cline",
       })
     ).toEqual(["gemini"]);
   });
@@ -381,7 +381,7 @@ describe("agentsOwedArming", () => {
         complexityProfiles: ["gemini"],
         armed: new Set(),
         declined: new Set(["codex"]),
-        workspaceProfileId: "claude-code",
+        workspaceProfileId: "cline",
       })
     ).toEqual(["gemini"]);
   });

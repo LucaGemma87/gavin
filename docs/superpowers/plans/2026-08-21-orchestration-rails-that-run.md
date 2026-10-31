@@ -1,4 +1,4 @@
-# Orchestration Tab — SP1 "Rails that run" Implementation Plan
+﻿# Orchestration Tab — SP1 "Rails that run" Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -2360,7 +2360,7 @@ const CARD = {
 
 vi.mock("./layoutState", () => ({
   layoutState: stubStore({ workspaces: [] }),
-  resolvedAgentFor: vi.fn(() => ({ command: "claude", file: "CLAUDE.md", profile: "claude-code" })),
+  resolvedAgentFor: vi.fn(() => ({ command: "claude", file: "CLAUDE.md", profile: "cline" })),
   createSessionOnPage: vi.fn(),
 }));
 vi.mock("./kanbanState", () => ({

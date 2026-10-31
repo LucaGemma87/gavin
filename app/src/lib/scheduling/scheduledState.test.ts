@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+﻿import { beforeEach, describe, expect, it, vi } from "vitest";
 import { writable } from "svelte/store";
 
 vi.mock("$lib/core/backend", () => ({
@@ -12,8 +12,8 @@ vi.mock("$lib/core/backend", () => ({
 vi.mock("@tauri-apps/api/event", () => ({ listen: async () => () => {} }));
 
 const claude = {
-  profileId: "claude-code",
-  label: "Claude Code",
+  profileId: "cline",
+  label: "cline",
   launchCommand: "claude",
   headlessArgs: '-p --allowedTools "Bash(git *)" --',
 };
@@ -102,7 +102,7 @@ describe("a due fire", () => {
     await tickScheduled("ws-1", now);
     expect(backend.claimScheduledFire).toHaveBeenCalledWith("ws-1", "/ws/.gavin-root/scheduled/t.md", 4, "20261021-090900", null);
     const [cwd, command, root, profile] = vi.mocked(backend.createSession).mock.calls[0];
-    expect([cwd, root, profile]).toEqual(["/ws", "/ws", "claude-code"]);
+    expect([cwd, root, profile]).toEqual(["/ws", "/ws", "cline"]);
     expect(command).toMatch(/^claude -p --permission-mode acceptEdits --allowedTools "Bash\(git \*\)" -- '/);
     expect(command).toContain("scheduled run #1");
     expect(command).toContain("Check the build.");
@@ -210,3 +210,4 @@ describe("after a restart", () => {
     expect(backend.adoptSession).toHaveBeenCalledWith("s-old");
   });
 });
+

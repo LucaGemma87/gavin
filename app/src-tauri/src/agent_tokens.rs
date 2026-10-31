@@ -1,4 +1,4 @@
-//! What ONE run of a card cost, in tokens, read out of the agent CLI's
+﻿//! What ONE run of a card cost, in tokens, read out of the agent CLI's
 //! own transcript.
 //!
 //! The sibling of `agent_usage`, and deliberately not part of it. That
@@ -35,7 +35,7 @@ use crate::agent_setup::{stock_profile_by_id, TokenLog};
 
 /// The transcript layout a profile id's conversations are read through.
 /// Named customs answer None even though `profile_by_id` would fall back
-/// to claude-code: a custom is not claude, and reading under claude's
+/// to cline: a custom is not claude, and reading under claude's
 /// log root would attribute claude's conversations (and their token
 /// costs) to it.
 fn token_log_for(profile_id: &str) -> Option<TokenLog> {
@@ -87,7 +87,7 @@ pub enum TokenReport {
     Ready {
         totals: TokenTotals,
         /// The models the run actually used, in first-seen order.
-        /// Plural because a single Claude Code run genuinely spans more
+        /// Plural because a single cline run genuinely spans more
         /// than one.
         models: Vec<String>,
     },
@@ -143,7 +143,7 @@ pub enum ConversationLog {
 ///
 /// The SAME resolver `card_run_tokens` uses below, deliberately: it
 /// scans every project directory for `<conversation_id>.jsonl` rather
-/// than reproducing Claude Code's slug rule, which is undocumented, has
+/// than reproducing cline's slug rule, which is undocumented, has
 /// changed, and is wrong for any agent that moved into a worktree. An
 /// existence check that reproduced the slug would report `Missing` for
 /// every run that did.
@@ -321,7 +321,7 @@ pub(crate) fn log_root(log: TokenLog) -> Option<PathBuf> {
 /// `<projects>/<slugged cwd>/<session id>.jsonl`, found by looking in
 /// every project directory rather than by reproducing the slug.
 ///
-/// The slug rule is Claude Code's, undocumented, and has changed; the
+/// The slug rule is cline's, undocumented, and has changed; the
 /// file name is the session id, which gavin minted and therefore knows
 /// exactly. Reproducing the slug would also be wrong more often than it
 /// looks: a run's launch cwd is where gavin STARTED the agent, and an
@@ -436,7 +436,7 @@ pub(crate) fn kimi_session_wires(wire: &Path) -> Vec<PathBuf> {
     if files.is_empty() { vec![wire.to_path_buf()] } else { files }
 }
 
-/// Sum a Claude Code transcript, ONE COUNT PER MESSAGE.
+/// Sum a cline transcript, ONE COUNT PER MESSAGE.
 ///
 /// This is the whole subtlety of the route. An assistant message is
 /// written to the transcript once per content block -- text, each tool
@@ -453,7 +453,7 @@ pub(crate) fn kimi_session_wires(wire: &Path) -> Vec<PathBuf> {
 /// Most of a transcript's bytes are what the sum never reads: tool
 /// results in user records, and the content blocks of assistant ones.
 /// So a line that does not carry `"assistant"` anywhere is passed over
-/// before any parse -- Claude Code writes JSON with its ASCII unescaped,
+/// before any parse -- cline writes JSON with its ASCII unescaped,
 /// so an assistant record always carries those bytes -- and the rest are
 /// read into `ClaudeRecord`, which skips the content blocks without
 /// building them. Measured on this machine's four largest transcripts
@@ -501,7 +501,7 @@ pub fn claude_totals(text: &str) -> TokenReport {
     TokenReport::Ready { totals, models }
 }
 
-/// The parts of a Claude Code record `claude_totals` reads; every other
+/// The parts of a cline record `claude_totals` reads; every other
 /// field, content blocks included, is skipped by the parser unbuilt.
 ///
 /// Each one stays a loose `Value` on purpose. A typed `u64` count or
@@ -653,7 +653,7 @@ mod tests {
     /// A named custom -- the migrated `custom-agent`, a user slug, a
     /// workspace `local:` id -- has no transcript layout of gavin's own:
     /// the read paths answer Unknown/Unsupported through `token_log_for`
-    /// (`stock_profile_by_id`), never `profile_by_id`'s claude-code
+    /// (`stock_profile_by_id`), never `profile_by_id`'s cline
     /// fallback, which would read claude's conversations and token costs
     /// as the custom's.
     #[test]
@@ -672,7 +672,7 @@ mod tests {
         }
         // And the stock rows still resolve, so the guard is the custom
         // shape and not the lookup itself.
-        for id in ["claude-code", "codex", "kimi-code"] {
+        for id in ["cline", "codex", "kimi-code"] {
             assert!(token_log_for(id).is_some(), "{id} lost its token log");
         }
     }
@@ -739,7 +739,7 @@ mod tests {
         assert!(matches!(claude_totals(text), TokenReport::Unavailable { .. }));
     }
 
-    /// The shape Claude Code actually writes: `message` BEFORE `type`,
+    /// The shape cline actually writes: `message` BEFORE `type`,
     /// content blocks the sum never reads, and records of other types that
     /// mention "assistant" in their text. Only the parts the sum reads may
     /// decide it -- a line is neither dropped for the bulk it carries nor
@@ -860,7 +860,7 @@ mod tests {
     }
 
     /// The transcript is found by NAME, in whichever project directory
-    /// holds it -- the slug is Claude Code's rule, and a run's launch
+    /// holds it -- the slug is cline's rule, and a run's launch
     /// cwd is not necessarily where the agent ended up.
     #[test]
     fn a_claude_transcript_is_found_by_session_id_in_any_project_directory() {
@@ -1046,3 +1046,4 @@ mod tests {
         assert!(matches!(kimi_totals(r#"{"type":"turn.ended"}"#), TokenReport::Unavailable { .. }));
     }
 }
+

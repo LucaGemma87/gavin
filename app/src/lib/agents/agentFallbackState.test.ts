@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+﻿import { beforeEach, describe, expect, it, vi } from "vitest";
 import { get } from "svelte/store";
 
 const layout = vi.hoisted(() => {
@@ -40,7 +40,7 @@ const layout = vi.hoisted(() => {
   return {
     layoutState,
     agentDefaultsStore,
-    resolvedAgentFor: vi.fn(() => ({ profileId: "claude-code" })),
+    resolvedAgentFor: vi.fn(() => ({ profileId: "cline" })),
     workspaceComplexityTable: vi.fn(() => ({})),
     markAgentArmed: vi.fn(async (workspaceId: string, profileId: string) => {
       layoutState.update((s) => ({
@@ -90,27 +90,27 @@ beforeEach(() => {
     complexityTables: {},
     fallbackChains: {},
   });
-  layout.resolvedAgentFor.mockReturnValue({ profileId: "claude-code" });
+  layout.resolvedAgentFor.mockReturnValue({ profileId: "cline" });
   layout.workspaceComplexityTable.mockReturnValue({});
 });
 
 describe("owedArming", () => {
   it("names unarmed chain and complexity profiles, not the workspace agent", () => {
     layout.layoutState.set({
-      workspaces: [{ id: "w1", fallbackChains: { "claude-code": ["codex"] }, armedAgents: [] }],
+      workspaces: [{ id: "w1", fallbackChains: { "cline": ["codex"] }, armedAgents: [] }],
       activeWorkspaceId: "w1",
     });
     layout.agentDefaultsStore.set({
       customCommand: "",
       customModelFlag: "",
-      complexityTables: { "claude-code": { intricate: { profile: "gemini", model: "" } } },
+      complexityTables: { "cline": { intricate: { profile: "gemini", model: "" } } },
       fallbackChains: {},
     });
     // The effective table of the agent this workspace runs: the one place
     // a card's attributed profile comes from.
     layout.workspaceComplexityTable.mockReturnValue({ intricate: { profile: "gemini", model: "" } });
     expect(owedArming("w1")).toEqual(["codex", "gemini"]);
-    expect(layout.workspaceComplexityTable).toHaveBeenCalledWith("w1", "claude-code");
+    expect(layout.workspaceComplexityTable).toHaveBeenCalledWith("w1", "cline");
   });
 
   it("asks for the table of whichever agent the workspace runs", () => {
@@ -123,7 +123,7 @@ describe("owedArming", () => {
 
   it("leaves out an agent the human said not to ask about again", () => {
     layout.layoutState.set({
-      workspaces: [{ id: "w1", fallbackChains: { "claude-code": ["codex", "gemini"] }, declinedAgents: ["codex"] }],
+      workspaces: [{ id: "w1", fallbackChains: { "cline": ["codex", "gemini"] }, declinedAgents: ["codex"] }],
       activeWorkspaceId: "w1",
     });
     expect(owedArming("w1")).toEqual(["gemini"]);
@@ -132,7 +132,7 @@ describe("owedArming", () => {
   it("unions every primary's effective chain, not only the workspace agent's", () => {
     layout.layoutState.set({
       workspaces: [
-        { id: "w1", fallbackChains: { "claude-code": ["codex"], gemini: ["opencode"] }, armedAgents: [] },
+        { id: "w1", fallbackChains: { "cline": ["codex"], gemini: ["opencode"] }, armedAgents: [] },
       ],
       activeWorkspaceId: "w1",
     });
@@ -141,14 +141,14 @@ describe("owedArming", () => {
 
   it("treats a workspace's empty chain for a primary as no fallback for it", () => {
     layout.layoutState.set({
-      workspaces: [{ id: "w1", fallbackChains: { "claude-code": [] }, armedAgents: [] }],
+      workspaces: [{ id: "w1", fallbackChains: { "cline": [] }, armedAgents: [] }],
       activeWorkspaceId: "w1",
     });
     layout.agentDefaultsStore.set({
       customCommand: "",
       customModelFlag: "",
       complexityTables: {},
-      fallbackChains: { "claude-code": ["codex"] },
+      fallbackChains: { "cline": ["codex"] },
     });
     expect(owedArming("w1")).toEqual([]);
   });
@@ -167,7 +167,7 @@ describe("armNewlyAdded", () => {
 
   it("asks again about an agent the human explicitly put back in the chain", async () => {
     layout.layoutState.set({
-      workspaces: [{ id: "w1", fallbackChains: { "claude-code": ["gemini"] }, declinedAgents: ["gemini"] }],
+      workspaces: [{ id: "w1", fallbackChains: { "cline": ["gemini"] }, declinedAgents: ["gemini"] }],
       activeWorkspaceId: "w1",
     });
     await armNewlyAdded("w1", [], ["gemini"]);
@@ -188,7 +188,7 @@ describe("requestArm", () => {
 describe("declineArmRequest", () => {
   it("records the choice so no later focus or launch reopens the wizard", async () => {
     layout.layoutState.set({
-      workspaces: [{ id: "w-decline", fallbackChains: { "claude-code": ["codex"] } }],
+      workspaces: [{ id: "w-decline", fallbackChains: { "cline": ["codex"] } }],
       activeWorkspaceId: null,
     });
     requestArm("w-decline", "codex");
@@ -204,7 +204,7 @@ describe("declineArmRequest", () => {
 describe("askAgainToArm", () => {
   it("drops the recorded choice and opens the wizard", async () => {
     layout.layoutState.set({
-      workspaces: [{ id: "w-again", fallbackChains: { "claude-code": ["codex"] } }],
+      workspaces: [{ id: "w-again", fallbackChains: { "cline": ["codex"] } }],
       activeWorkspaceId: null,
     });
     requestArm("w-again", "codex");
@@ -218,7 +218,7 @@ describe("askAgainToArm", () => {
 describe("completeArmRequest", () => {
   it("records the arm and queues the next owed profile", async () => {
     layout.layoutState.set({
-      workspaces: [{ id: "w1", fallbackChains: { "claude-code": ["codex", "gemini"] }, armedAgents: [] }],
+      workspaces: [{ id: "w1", fallbackChains: { "cline": ["codex", "gemini"] }, armedAgents: [] }],
       activeWorkspaceId: "w1",
     });
     requestArm("w1", "codex");
@@ -231,7 +231,7 @@ describe("completeArmRequest", () => {
 describe("startArmOnFocus", () => {
   it("queues the first owed agent when the active workspace changes", () => {
     layout.layoutState.set({
-      workspaces: [{ id: "w1", fallbackChains: { "claude-code": ["codex"] }, armedAgents: [] }],
+      workspaces: [{ id: "w1", fallbackChains: { "cline": ["codex"] }, armedAgents: [] }],
       activeWorkspaceId: null,
     });
     const stop = startArmOnFocus();

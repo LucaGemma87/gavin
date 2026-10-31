@@ -1,4 +1,4 @@
----
+﻿---
 kind: task
 title: [spike] Matt Pocock skills install + detection matrix
 parent: feat-replace-superpower.md
@@ -6,10 +6,10 @@ complexity: moderate
 ---
 For each of gavin's six known agent profiles, establish exactly how Matt Pocock's skills are installed and how gavin can tell whether they are — without guessing. This spike replaces the Superpowers matrix; its findings finalize the matrix in the parent plan before any implementation step runs.
 
-Prior research (2026-10-05, verified on this machine with Claude Code 2.1.289 and skills CLI 1.7.0) is the brief — confirm it, don't redo it from scratch:
+Prior research (2026-10-05, verified on this machine with cline 2.1.289 and skills CLI 1.7.0) is the brief — confirm it, don't redo it from scratch:
 
-- Claude Code plugin route: `claude plugin install mattpocock-skills --scope project -y`. The plugin is in the official pre-configured marketplace (`claude-plugins-official`), nothing to `marketplace add` first. Detection: `claude plugin list --json` run in the workspace root, entry id `mattpocock-skills@claude-plugins-official`, fields `scope` / `enabled` / `installPath` — the same shape gavin already parses for Superpowers. Verified at user scope; verify `--scope project` for this plugin specifically.
-- CLI route (vercel-labs/skills, `npx skills@latest add mattpocock/skills`): fully non-interactive — `--skill <names...>` (`'*'` = all), `--agent <agents...>`, `-y/--yes`, `--all`, `--copy`, `-g/--global`, `--json`. Agent ids: `claude-code`, `codex`, `cursor`, `gemini-cli`, `opencode`, `kimi-code-cli`. At project scope every agent except Claude Code reads `.agents/skills/` (Claude gets `.claude/skills/<name>` symlinks into it); the CLI writes `skills-lock.json` (format `version: 1`, per-skill `source: "mattpocock/skills"` + `computedHash`) at the project root.
+- cline plugin route: `claude plugin install mattpocock-skills --scope project -y`. The plugin is in the official pre-configured marketplace (`claude-plugins-official`), nothing to `marketplace add` first. Detection: `claude plugin list --json` run in the workspace root, entry id `mattpocock-skills@claude-plugins-official`, fields `scope` / `enabled` / `installPath` — the same shape gavin already parses for Superpowers. Verified at user scope; verify `--scope project` for this plugin specifically.
+- CLI route (vercel-labs/skills, `npx skills@latest add mattpocock/skills`): fully non-interactive — `--skill <names...>` (`'*'` = all), `--agent <agents...>`, `-y/--yes`, `--all`, `--copy`, `-g/--global`, `--json`. Agent ids: `cline`, `codex`, `cursor`, `gemini-cli`, `opencode`, `kimi-code-cli`. At project scope every agent except cline reads `.agents/skills/` (Claude gets `.claude/skills/<name>` symlinks into it); the CLI writes `skills-lock.json` (format `version: 1`, per-skill `source: "mattpocock/skills"` + `computedHash`) at the project root.
 
 For every profile in `AGENT_PROFILES` (`app/src-tauri/src/agent_setup.rs`) record:
 
@@ -28,3 +28,4 @@ Then settle the open caveats, each verified or marked UNVERIFIED with the step t
 Mark anything you could not run as UNVERIFIED. A guessed detector lights a green LED that is a lie, which is worse than a row that admits it does not know.
 
 Deliverable: `docs/superpowers/specs/2026-10-05-mattpocock-skills-install-matrix.md` — one table row per profile, then a short section each with the captured output, then the five caveats settled. Write no app code; this card ends at the document.
+

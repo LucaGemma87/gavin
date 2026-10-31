@@ -1,4 +1,4 @@
-// Running one card on N agents at once: what a candidate IS, what git
+﻿// Running one card on N agents at once: what a candidate IS, what git
 // objects it needs, and what the human is told before any of it happens.
 //
 // The thesis is the visible one. Cursor's /best-of-n keeps its attempts
@@ -135,7 +135,7 @@ export function candidateAgentConfig(
 /// `taken` is every branch name the repo already has. Names are deduped
 /// against it AND against each other as they are produced, so two
 /// candidates that slug identically (the same profile twice, no models)
-/// come out as `card-claude-code` and `card-claude-code-2` rather than
+/// come out as `card-cline` and `card-cline-2` rather than
 /// one name git would refuse the second time.
 ///
 /// Flat names, not `card/candidate`: a hierarchical ref would group the

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("$lib/core/backend", () => ({
   openPathExternally: vi.fn().mockResolvedValue(undefined),
@@ -150,7 +150,7 @@ describe("a best-of-N candidate's tab", () => {
     candidates: ["a", "b", "c"].map((id) => ({
       sessionId: id,
       label: id.toUpperCase(),
-      profileId: "claude-code",
+      profileId: "cline",
       model: "",
       branch: `auth-${id}`,
       worktreePath: `/repos/gavin-auth-${id}`,

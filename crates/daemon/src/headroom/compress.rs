@@ -1,4 +1,4 @@
-//! Whether a session about to be spawned is compressed, and what makes
+﻿//! Whether a session about to be spawned is compressed, and what makes
 //! it so.
 //!
 //! The decision is the daemon's, made at spawn (spec, "Compressed
@@ -36,7 +36,7 @@ const PROJECT_HEADER: &str = "X-Headroom-Project";
 /// id into a key that subagents share.
 const SESSION_HEADER: &str = "x-headroom-session-id";
 
-/// The variable Claude Code reads extra request headers from, one
+/// The variable cline reads extra request headers from, one
 /// `Name: Value` per line.
 pub const CLAUDE_HEADERS: &str = "ANTHROPIC_CUSTOM_HEADERS";
 
@@ -89,7 +89,7 @@ pub const OPENCODE_PLUGIN: [&str; 5] =
     ["headroom", "providers", "opencode", "_dist", "entry.opencode.js"];
 
 fn is_stock_profile_id(id: &str) -> bool {
-    matches!(id, "claude-code" | "codex" | "gemini" | "cursor" | "opencode" | "kimi-code")
+    matches!(id, "cline" | "codex" | "gemini" | "cursor" | "opencode" | "kimi-code")
 }
 
 /// What is about to be launched, as far as the daemon can tell.
@@ -188,7 +188,7 @@ impl Agent {
     /// (`agent_setup.rs`'s `AGENT_PROFILES`).
     pub fn from_profile(id: &str) -> Agent {
         match id {
-            "claude-code" => Agent::ClaudeCode,
+            "cline" => Agent::ClaudeCode,
             "codex" => Agent::Codex,
             "gemini" => Agent::Gemini,
             "cursor" => Agent::Cursor,
@@ -447,16 +447,16 @@ fn unroutable(agent: Agent) -> Option<Reason> {
 /// The recipe for an agent, on a Headroom answering on `port`, or
 /// `None` when this launch gives it nothing to apply to.
 ///
-/// Every agent but Claude Code is tagged with a `/p/<id>` prefix on the
+/// Every agent but cline is tagged with a `/p/<id>` prefix on the
 /// URL it is given, which Headroom strips and files the request under
 /// (`project_policy.split_project_path`); what opencode's plugin
 /// reroutes is tagged by the plugin, with the same id.
 ///
-/// **Claude Code.** `ENABLE_TOOL_SEARCH=true` is not decoration: behind
-/// a custom base URL Claude Code otherwise loads every tool schema into
+/// **cline.** `ENABLE_TOOL_SEARCH=true` is not decoration: behind
+/// a custom base URL cline otherwise loads every tool schema into
 /// context (Headroom #746), which spends more than compression saves.
 /// The session is tagged through a header rather than a `/p/` prefix
-/// because the header is what Claude Code can be given without changing
+/// because the header is what cline can be given without changing
 /// the URL its OAuth login is checked against.
 ///
 /// **Codex.** `OPENAI_BASE_URL` alone does not route current Codex: its
@@ -994,7 +994,7 @@ fn remove_headroom_plugins(config: &mut Map<String, Value>) {
     }
 }
 
-/// The headers a compressed Claude Code sends: the human's own, then
+/// The headers a compressed cline sends: the human's own, then
 /// the tag.
 ///
 /// Setting the variable replaces what the session would have inherited,
@@ -1052,7 +1052,7 @@ fn own_headers(inherited: Option<&str>) -> Vec<String> {
 /// is recognisable: its project tag is the session id, which the same
 /// environment carries as `GAVIN_SESSION_ID`. The two agreeing is a
 /// compressed gavin session's environment and nothing else. Each recipe
-/// carries the tag in its own place -- Claude Code's in a header, the
+/// carries the tag in its own place -- cline's in a header, the
 /// others' on a `/p/<id>` path, opencode's also as its plugin's
 /// `project` -- so each is looked for there.
 ///
@@ -1069,7 +1069,7 @@ pub fn inherited_routing(
     let launcher = launcher.trim();
     let mut removed = Vec::new();
 
-    // Claude Code's, tagged by its header.
+    // cline's, tagged by its header.
     let headers = inherited(CLAUDE_HEADERS);
     let tagged_as_the_launcher = headers.as_deref().unwrap_or_default().lines().any(|line| {
         let (name, value) = header(line);
@@ -1166,14 +1166,14 @@ mod tests {
     const SESSION: &str = "0b6c4a52-7f0e-4d0c-9a53-3f6f0c1f2a11";
     const PORT: u16 = 41873;
 
-    /// A Claude Code card run in a workspace with compression on, and a
+    /// A cline card run in a workspace with compression on, and a
     /// Headroom that is ready: the one case that is compressed. Every
     /// test below changes one fact of it.
     fn facts() -> Facts<'static> {
         Facts {
             workspace_on: true,
             ready_port: Some(PORT),
-            launch: Launch::Profile("claude-code"),
+            launch: Launch::Profile("cline"),
             session_id: SESSION,
             command: Some("claude --model opus 'Read the card'"),
             inherited_headers: None,
@@ -1311,7 +1311,7 @@ mod tests {
             let decision = decide(spawned(line));
 
             assert!(decision.compressed(), "{line}");
-            assert_eq!(decision.command(), None, "Claude Code is routed by environment alone");
+            assert_eq!(decision.command(), None, "cline is routed by environment alone");
         }
     }
 
@@ -1680,7 +1680,7 @@ oauth_host = "https://auth.kimi.ai"
     /// harness, which the command line alone could not have said.
     #[test]
     fn a_profile_is_believed_whatever_the_command_line_would_have_said() {
-        assert_eq!(Agent::from_profile("claude-code"), Agent::ClaudeCode);
+        assert_eq!(Agent::from_profile("cline"), Agent::ClaudeCode);
         assert_eq!(Agent::from_command("claude-wrapper --fast"), None);
     }
 
@@ -1698,7 +1698,7 @@ oauth_host = "https://auth.kimi.ai"
         );
     }
 
-    /// The base URL is the bare origin. Claude Code appends its own
+    /// The base URL is the bare origin. cline appends its own
     /// path, and a `/p/<id>` prefix is the other agents' tag, not this
     /// one's.
     #[test]
@@ -2168,7 +2168,7 @@ oauth_host = "https://auth.kimi.ai"
         assert_eq!(Launch::requested(Some("custom"), Some("anthropic")), Launch::Custom(ApiFamily::Anthropic));
         assert_eq!(Launch::requested(Some("custom-agent"), Some(" openai ")), Launch::Custom(ApiFamily::OpenAi));
         assert_eq!(Launch::requested(Some("my-bot"), Some("anthropic")), Launch::Custom(ApiFamily::Anthropic));
-        assert_eq!(Launch::requested(Some("claude-code"), Some("openai")), Launch::Profile("claude-code"));
+        assert_eq!(Launch::requested(Some("cline"), Some("openai")), Launch::Profile("cline"));
         assert_eq!(Launch::requested(Some("kimi-code"), Some("anthropic")), Launch::Profile("kimi-code"));
         assert_eq!(Launch::requested(None, Some("anthropic")), Launch::Shell);
     }
@@ -2228,3 +2228,4 @@ oauth_host = "https://auth.kimi.ai"
         }
     }
 }
+

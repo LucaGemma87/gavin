@@ -66,7 +66,7 @@ main thread.
 - No cache for the check's result. Off the main thread, a visit costs a
   background process and a moment of "Checking…", not a frozen window. A
   cached result would keep saying "not installed" after an install made
-  outside gavin, from a terminal or Claude Code's own `/plugin`.
+  outside gavin, from a terminal or cline's own `/plugin`.
 - The 20 ms sleep-poll in `run()` stays. The watchman fix (waiting on the
   pipe instead of polling) is only safe when the CLI starts no child that
   inherits its pipes, and nothing guarantees that for `claude`. Off the
@@ -81,3 +81,4 @@ main thread.
   `npm run build`, and clippy (nothing in `superpowers.rs`) all pass.
 
 - [ ] Human test: In an app built from perf/main-thread-commands, run `sample <Gavin pid> 10 1 -file /tmp/superpowers.txt`, then open a workspace's Settings tab and switch its profile once while the sample runs. The sample should show no `app_lib::superpowers` frames on the main thread, and the Superpowers row should show "Checking…" and then its usual state. Then press Install on a workspace without Superpowers, leave Settings and come back mid-install: the row should stay on "Checking…" until the install ends, then show its result (Verified when the install succeeds).
+

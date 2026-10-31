@@ -1,4 +1,4 @@
-//! Scheduled tasks on disk (v77, ADR 0010): the copies under
+﻿//! Scheduled tasks on disk (v77, ADR 0010): the copies under
 //! `.gavin-root/scheduled/` and their Run reports under `runs/`.
 //!
 //! A Scheduled task is a COPY of a task card, written as its own file
@@ -514,9 +514,9 @@ mod tests {
         assert!(!text.contains("parent:") && !text.contains("status:"), "{text}");
 
         // Scheduled twice, it is two copies.
-        let second = create_from_card(ws.path(), &src, None, Some("claude-code")).unwrap();
+        let second = create_from_card(ws.path(), &src, None, Some("cline")).unwrap();
         assert_eq!(second, scheduled_dir(ws.path()).join("bump-deps-2.md"));
-        assert_eq!(read_copy(&second).unwrap().agent.as_deref(), Some("claude-code"));
+        assert_eq!(read_copy(&second).unwrap().agent.as_deref(), Some("cline"));
         assert_eq!(read_copy(&second).unwrap().schedule, None);
     }
 

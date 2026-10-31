@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   advisorPresets,
   commandSpecifiesEffort,
@@ -207,7 +207,7 @@ describe("effortOptions", () => {
 
 describe("mergeDiscoveredModels", () => {
   const profiles = [
-    { id: "claude-code", models: ["opus", "sonnet"] },
+    { id: "cline", models: ["opus", "sonnet"] },
     { id: "opencode", models: [] as string[] },
   ];
 
@@ -215,14 +215,14 @@ describe("mergeDiscoveredModels", () => {
     // Aliases lead because they cannot go stale; the discovered names
     // follow in the order the agent itself listed them.
     expect(mergeDiscoveredModels(profiles, { opencode: ["a/one", "b/two"] })).toEqual([
-      { id: "claude-code", models: ["opus", "sonnet"] },
+      { id: "cline", models: ["opus", "sonnet"] },
       { id: "opencode", models: ["a/one", "b/two"] },
     ]);
   });
 
   it("never lists a name twice", () => {
     expect(
-      mergeDiscoveredModels(profiles, { "claude-code": ["sonnet", "claude-opus-5"] })[0].models
+      mergeDiscoveredModels(profiles, { "cline": ["sonnet", "claude-opus-5"] })[0].models
     ).toEqual(["opus", "sonnet", "claude-opus-5"]);
   });
 
@@ -306,7 +306,7 @@ describe("modelIsCustom", () => {
 
 describe("effortPresets", () => {
   const profiles = [
-    { id: "claude-code", efforts: ["low", "medium", "high", "xhigh", "max"] },
+    { id: "cline", efforts: ["low", "medium", "high", "xhigh", "max"] },
     { id: "codex", efforts: ["minimal", "low", "medium", "high", "xhigh"] },
     { id: "gemini", efforts: [] },
   ];
@@ -343,13 +343,13 @@ describe("composeAdvisor", () => {
 
 describe("advisorPresets", () => {
   const profiles = [
-    { id: "claude-code", models: ["fable", "opus", "sonnet"], advisorFlag: "--advisor" },
+    { id: "cline", models: ["fable", "opus", "sonnet"], advisorFlag: "--advisor" },
     { id: "codex", models: ["gpt-5.1"], advisorFlag: "" },
     { id: "gemini", models: ["pro"] },
   ];
 
   it("offers a named profile its own models only when it takes an advisor", () => {
-    expect(advisorPresets(profiles, "claude-code")).toEqual(["fable", "opus", "sonnet"]);
+    expect(advisorPresets(profiles, "cline")).toEqual(["fable", "opus", "sonnet"]);
     expect(advisorPresets(profiles, "codex")).toEqual([]);
     expect(advisorPresets(profiles, "gemini")).toEqual([]);
   });

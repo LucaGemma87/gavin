@@ -1,13 +1,13 @@
-// What a Scheduled task's run IS (ADR 0010): which argv carries it, and
+﻿// What a Scheduled task's run IS (ADR 0010): which argv carries it, and
 // what its agent is told. Pure; `scheduledState.ts` does the launching.
 //
 // A scheduled run is headless -- one prompt, no TUI, then exit -- because
 // nobody is watching it and a session that sits at its prompt would be a
 // run that never ends. It reuses each profile's verified headless argv
 // (`agent_setup.rs`'s `headless_args`), with one difference: that argv
-// was written for Commit via agent, and for Claude Code it grants git
+// was written for Commit via agent, and for cline it grants git
 // alone. A scheduled run has to edit files -- its Run report at the very
-// least -- so Claude Code's gains `--permission-mode acceptEdits`.
+// least -- so cline's gains `--permission-mode acceptEdits`.
 // opencode's runs the commit agent's own git-only definition, which
 // cannot write the report at all, so it is not offered.
 
@@ -23,7 +23,7 @@ const COMMIT_ONLY_HEADLESS = new Set(["opencode"]);
 export function scheduledRunArgs(profileId: string, headlessArgs: string): string | null {
   const args = headlessArgs.trim();
   if (!args || COMMIT_ONLY_HEADLESS.has(profileId)) return null;
-  if (profileId === "claude-code" && !args.includes("--permission-mode")) {
+  if (profileId === "cline" && !args.includes("--permission-mode")) {
     return args.startsWith("-p ")
       ? `-p --permission-mode acceptEdits ${args.slice(3)}`
       : `--permission-mode acceptEdits ${args}`;
@@ -67,3 +67,4 @@ export function composeScheduledPrompt(
     report_path: run.reportPath,
   }).trim();
 }
+

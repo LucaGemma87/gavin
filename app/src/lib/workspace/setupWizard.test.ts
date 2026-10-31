@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   setupProgress,
   applyPrdSections,
@@ -713,7 +713,7 @@ describe("agentFlowAvailable", () => {
 
   // The regression this guards: `promptArgs` is a PREFIX, and the bare
   // positional's prefix is the empty string. A truthiness check would
-  // hide "Ask the agent" from claude-code, codex and gemini alike --
+  // hide "Ask the agent" from cline, codex and gemini alike --
   // three profiles where the flow has always worked.
   it("treats the empty prefix as a prompt, not as an absent one", () => {
     expect(agentFlowAvailable({ promptArgs: "" })).toBe(true);

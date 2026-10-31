@@ -3,7 +3,7 @@
 //! The endpoint `gavin-mcp playwright` hands `--cdp-endpoint` is this, not
 //! Chromium's own port, for three reasons the spike measured:
 //!
-//! - **The lazy launch.** Claude Code starts every MCP server when the
+//! - **The lazy launch.** cline starts every MCP server when the
 //!   agent starts, so only a proxy can launch the browser on the first
 //!   `browser_*` call.
 //! - **Crash recovery.** A browser that crashed comes back on a new port,
@@ -288,3 +288,4 @@ mod tests {
         assert_eq!(secret_of("/json/version"), None);
     }
 }
+

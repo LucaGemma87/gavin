@@ -1,4 +1,4 @@
-// A card, acted on from the phone: every action's traffic, read at the
+﻿// A card, acted on from the phone: every action's traffic, read at the
 // wire against the Demo Workstation, and what the phone hears back.
 //
 // What each test pins is what a Workstation is ASKED -- the commands, in
@@ -392,7 +392,7 @@ describe("running a card", () => {
     ]);
     const sent = sentSince(demo, at);
     const created = sent.find((s) => s.cmd === "create_session")!.args;
-    expect(created).toMatchObject({ cwd: DEMO.atlasRoot, workspaceRoot: DEMO.atlasRoot, profileId: "claude-code" });
+    expect(created).toMatchObject({ cwd: DEMO.atlasRoot, workspaceRoot: DEMO.atlasRoot, profileId: "cline" });
     expect(String(created.command)).toContain(`${ATLAS_PLANS}/flaky-expiry-test.md`);
 
     const binding = get(kanbanState)[DEMO.atlas].cardSessions.find((cs) => cs.path === task.id)!;

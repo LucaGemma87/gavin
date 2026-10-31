@@ -56,7 +56,7 @@ gavin's own MCP entry names a repository-relative command only for a root the hu
 ## What the audit could not observe
 
 - The combined kimi-code case has no test: each half was observed separately (integration_writes_the_launcher_for_a_root_that_carries_one, a_kimi_run_trusts_its_folder_and_says_so), but not one run writing the relative command and the trust record together.
-- Whether the agent CLI then spawns the repo's `gavin` server with no consent prompt of its own is third-party behaviour that was not run. The code records that kimi 2.1.1's trust record lifts its trust screen. Claude Code may still show its own project-server prompt naming `gavin`, which a human would approve as gavin's.
+- Whether the agent CLI then spawns the repo's `gavin` server with no consent prompt of its own is third-party behaviour that was not run. The code records that kimi 2.1.1's trust record lifts its trust screen. cline may still show its own project-server prompt naming `gavin`, which a human would approve as gavin's.
 
 ## Fix
 
@@ -88,3 +88,4 @@ Regression tests, in agent_setup.rs's test module:
 - Once the fix is in, file this check with `gavin_request_human(<this card>, "test", …)` using exactly this text: "Under a throwaway HOME and KIMI_CODE_HOME, a fixture repo with a stub crates/gavin-mcp/Cargo.toml and a scripts/gavin-mcp that only touches /tmp/gavin-launcher-marker, run through Integration with the kimi-code profile and then a kimi session, leaves no marker file and names the absolute gavin-mcp in .mcp.json."
 
 - [ ] Human test: Under a throwaway HOME and KIMI_CODE_HOME, a fixture repo with a stub crates/gavin-mcp/Cargo.toml and a scripts/gavin-mcp that only touches /tmp/gavin-launcher-marker, run through Integration with the kimi-code profile and then a kimi session, leaves no marker file and names the absolute gavin-mcp in .mcp.json.
+

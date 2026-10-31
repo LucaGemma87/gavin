@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 import { get } from "svelte/store";
 
 vi.mock("$lib/core/backend", () => ({
@@ -63,7 +63,7 @@ describe("runHistoryState", () => {
   it("loads a card's runs and each run's cost", async () => {
     vi.mocked(backend.cardRuns).mockResolvedValue([run()]);
 
-    await openRunHistory(PATH, WS, "claude-code");
+    await openRunHistory(PATH, WS, "cline");
 
     const view = historyFor(PATH);
     expect(view?.runs).toHaveLength(1);
@@ -80,7 +80,7 @@ describe("runHistoryState", () => {
       run({ id: 1, sessionId: "s-1", conversationId: "conv-1" }),
     ]);
 
-    await openRunHistory(PATH, WS, "claude-code");
+    await openRunHistory(PATH, WS, "cline");
 
     expect(backend.cardRunTokens).toHaveBeenCalledTimes(1);
   });
@@ -88,7 +88,7 @@ describe("runHistoryState", () => {
   it("asks for nothing when a run carries no conversation id", async () => {
     vi.mocked(backend.cardRuns).mockResolvedValue([run({ conversationId: null })]);
 
-    await openRunHistory(PATH, WS, "claude-code");
+    await openRunHistory(PATH, WS, "cline");
 
     expect(backend.cardRunTokens).not.toHaveBeenCalled();
     expect(tokensForRun(historyFor(PATH), run({ conversationId: null }))).toBe(null);
@@ -102,11 +102,11 @@ describe("runHistoryState", () => {
       run({ id: 2, sessionId: "s-2", conversationId: "conv-live", endedAt: null, outcome: "running" }),
       run({ id: 1, sessionId: "s-1", conversationId: "conv-done" }),
     ]);
-    await openRunHistory(PATH, WS, "claude-code");
+    await openRunHistory(PATH, WS, "cline");
     expect(backend.cardRunTokens).toHaveBeenCalledTimes(2);
     vi.mocked(backend.cardRunTokens).mockClear();
 
-    await refreshRunHistory(PATH, WS, "claude-code");
+    await refreshRunHistory(PATH, WS, "cline");
 
     expect(backend.cardRunTokens).toHaveBeenCalledTimes(1);
     expect(vi.mocked(backend.cardRunTokens).mock.calls[0][1]).toBe("conv-live");
@@ -119,7 +119,7 @@ describe("runHistoryState", () => {
     vi.mocked(backend.cardRuns).mockResolvedValue([run()]);
     vi.mocked(backend.cardRunTokens).mockRejectedValue(new Error("no such file"));
 
-    await openRunHistory(PATH, WS, "claude-code");
+    await openRunHistory(PATH, WS, "cline");
 
     const view = historyFor(PATH);
     expect(view?.error).toBe(null);
@@ -130,7 +130,7 @@ describe("runHistoryState", () => {
   it("reports a failure to read the runs themselves as the panel's error", async () => {
     vi.mocked(backend.cardRuns).mockRejectedValue(new Error("daemon is v26"));
 
-    await openRunHistory(PATH, WS, "claude-code");
+    await openRunHistory(PATH, WS, "cline");
 
     expect(historyFor(PATH)?.error).toContain("daemon is v26");
     expect(historyFor(PATH)?.loading).toBe(false);
@@ -141,14 +141,14 @@ describe("runHistoryState", () => {
   /// suggest.
   it("keeps the rows it already had while a reopen is in flight", async () => {
     vi.mocked(backend.cardRuns).mockResolvedValue([run()]);
-    await openRunHistory(PATH, WS, "claude-code");
+    await openRunHistory(PATH, WS, "cline");
 
     let seen: CardRun[] | null = null;
     vi.mocked(backend.cardRuns).mockImplementation(async () => {
       seen = get(runHistoryStore)[PATH]?.runs ?? null;
       return [run()];
     });
-    await openRunHistory(PATH, WS, "claude-code");
+    await openRunHistory(PATH, WS, "cline");
 
     expect(seen).toHaveLength(1);
   });
@@ -161,10 +161,10 @@ describe("runHistoryState", () => {
       release = resolve;
     });
     vi.mocked(backend.cardRuns).mockImplementationOnce(() => slow);
-    const first = openRunHistory(PATH, WS, "claude-code");
+    const first = openRunHistory(PATH, WS, "cline");
 
     vi.mocked(backend.cardRuns).mockResolvedValue([run({ id: 9, sessionId: "s-9" })]);
-    await refreshRunHistory(PATH, WS, "claude-code");
+    await refreshRunHistory(PATH, WS, "cline");
     release([run({ id: 1, sessionId: "s-stale" })]);
     await first;
 
@@ -173,7 +173,7 @@ describe("runHistoryState", () => {
 
   it("forgets a card once its panel closes", async () => {
     vi.mocked(backend.cardRuns).mockResolvedValue([run()]);
-    await openRunHistory(PATH, WS, "claude-code");
+    await openRunHistory(PATH, WS, "cline");
 
     closeRunHistory(PATH);
 

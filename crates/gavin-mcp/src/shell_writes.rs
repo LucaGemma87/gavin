@@ -1,4 +1,4 @@
-//! `gavin-mcp shell-writes pre|post`: the hook a Claude Code or kimi
+//! `gavin-mcp shell-writes pre|post`: the hook a cline or kimi
 //! launch runs around every shell call (`protocol::shell_writes`).
 //!
 //! `pre` lists the checkout's dirty files -- `git status`, untracked files
@@ -52,9 +52,9 @@ const MAX_RECORD_BYTES: usize = 512 * 1024;
 /// is swept by the next `pre`.
 const SNAPSHOT_KEPT: Duration = Duration::from_secs(24 * 60 * 60);
 
-/// What a CLI hands its hook, as far as this reads it. Claude Code and
+/// What a CLI hands its hook, as far as this reads it. cline and
 /// kimi send the same facts under the same names, but for the call's id:
-/// Claude Code's `tool_use_id`, kimi's `tool_call_id`.
+/// cline's `tool_use_id`, kimi's `tool_call_id`.
 #[derive(Debug, PartialEq)]
 pub struct Call {
     pub conversation_id: String,
@@ -475,3 +475,4 @@ mod tests {
         assert_eq!(snapshot_name(&call("..", "t")), None);
     }
 }
+

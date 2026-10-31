@@ -1,4 +1,4 @@
----
+﻿---
 order: 10240
 kind: task
 title: [issue] launcher env leaks into sessions
@@ -13,7 +13,7 @@ these are the rest of the same leak, and they are not about colour.
 
 Observed on the app instance running on this machine, whose parent chain is
 
-    Claude Code powershell tool -> scripts/start-dev-win.ps1 -> npm
+    cline powershell tool -> scripts/start-dev-win.ps1 -> npm
       -> node (tauri) -> cmd -> cargo -> cargo -> Gavin.exe -> gavin-daemon.exe
 
 Every PTY that daemon spawns therefore carries:
@@ -46,14 +46,14 @@ answer questions about the terminal the app draws itself.
 ## Settled: not inert
 
 The open question above has an answer, and it is the bad one. The worst
-of them is `CLAUDE_CODE_CHILD_SESSION`, which Claude Code reads as "you
+of them is `CLAUDE_CODE_CHILD_SESSION`, which cline reads as "you
 are a nested child, not a top-level session" and answers by **turning
 transcript persistence off**: the session's JSONL is never written, so
 `--resume` and `--continue` cannot find it afterwards, and prompt history
 is dropped for the tab.
 
 It is not a deduction. This repo was already carrying the evidence:
-`crates/daemon/tests/fixtures/claude-code-tui.raw`, captured from an agent
+`crates/daemon/tests/fixtures/cline-tui.raw`, captured from an agent
 running in a real gavin tab, contains the banner
 
     Transcript saving is off - inherited CLAUDE_CODE_CHILD_SESSION marker
@@ -120,3 +120,4 @@ Not verified here, and the owner's to confirm in the running app: that a
 `claude` started in a tab of a rebuilt daemon reports a top-level session
 and keeps its transcript. The daemon on this machine is the shared
 long-lived one, and a rebuild and restart is the human's call.
+

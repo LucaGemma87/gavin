@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import {
   effectiveListForPrimary,
   listForPrimary,
@@ -27,7 +27,7 @@ describe("listForPrimary", () => {
 });
 
 describe("effectiveListForPrimary", () => {
-  const app = { codex: ["--app"], "claude-code": ["--app-claude"] };
+  const app = { codex: ["--app"], "cline": ["--app-claude"] };
 
   it("inherits the app-wide list when the workspace has no key for the agent", () => {
     expect(effectiveListForPrimary({}, app, "codex")).toEqual(["--app"]);

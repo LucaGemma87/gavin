@@ -1,4 +1,4 @@
----
+﻿---
 order: 15360
 labels: bug
 title: [bug] fallback limits ignored after restart
@@ -9,12 +9,12 @@ After app restart, workspaces (Gavin, Grimoria, treccy) keep spawning Claude eve
 
 ## Observed config (this machine)
 
-- App `defaultAgent`: `claude-code`
-- App `pauseCycles`: only `cursor` (limitEnabled true) — **no cycle for `claude-code`**
+- App `defaultAgent`: `cline`
+- App `pauseCycles`: only `cursor` (limitEnabled true) — **no cycle for `cline`**
 - App `fallbackChains` / `fallbackThresholds`: empty (not persisted)
-- Gavin workspace: has `fallbackChains` for claude-code → cursor, kimi-code; agent profile `claude-code`
+- Gavin workspace: has `fallbackChains` for cline → cursor, kimi-code; agent profile `cline`
 - Grimoria: no workspace fallbackChains; agent profile `cursor`
-- treccy: no workspace fallbackChains; agent profile `claude-code`
+- treccy: no workspace fallbackChains; agent profile `cline`
 
 ## Cause (working)
 
@@ -22,7 +22,7 @@ After app restart, workspaces (Gavin, Grimoria, treccy) keep spawning Claude eve
 
 ## Plan
 
-- [x] Fail: launch with spent Claude, chain configured, no pauseCycles key for claude-code still walks the fallback (or documents that limit gate needs a persisted cycle and UI stops lying)
+- [x] Fail: launch with spent Claude, chain configured, no pauseCycles key for cline still walks the fallback (or documents that limit gate needs a persisted cycle and UI stops lying)
 - [x] Confirm which fix: seed DEFAULT_CYCLE.limitEnabled for launches, or require an explicit cycle and fix the Settings display
 - [x] Fix + regression
 - [ ] Human test: restart app with Claude over threshold; Gavin/Grimoria/treccy must not spawn Claude when a fallback is under threshold

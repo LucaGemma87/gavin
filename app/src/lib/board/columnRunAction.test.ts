@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   columnRunAction,
   columnRunTargets,
@@ -217,7 +217,7 @@ describe("columnRunAllConfirm", () => {
       targets,
       launchEstimate({
         count: 2,
-        profileId: "claude-code",
+        profileId: "cline",
         means: {},
         storedMeans: {},
         measuredAgents: 0,

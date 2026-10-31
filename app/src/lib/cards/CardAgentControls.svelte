@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
   /// The controls that let ONE card name the agent, model and effort it
   /// runs on, overriding whatever its `complexity:` level and the workspace
   /// would otherwise launch.
@@ -75,9 +75,9 @@
   const inheritedEffort = $derived($cardAgents(workspaceId, { ...card, effort: "" }).effort);
 
   /// A card naming a profile that is not in the table still reads back as
-  /// what it says. `resolveAgentConfig` runs such a card on claude-code,
+  /// what it says. `resolveAgentConfig` runs such a card on cline,
   /// which is the documented fallback -- but a select that silently
-  /// showed claude-code would hide the typo that caused it, and there
+  /// showed cline would hide the typo that caused it, and there
   /// would be no way to tell the two apart on screen.
   const unknownProfile = $derived(
     ownProfile !== "" && !profiles.some((p) => p.id === ownProfile) ? ownProfile : null

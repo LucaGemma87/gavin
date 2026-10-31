@@ -4,7 +4,7 @@
 // agent's letter avatar and coloured by its own usage semaphore — not the
 // fleet-worst hourglass the row used to carry alone. The avatar is a
 // progressive prefix of the display name so two agents that share a first
-// letter (Claude Code, Codex) become Cl and Co rather than a pair of C's.
+// letter (cline, Codex) become Cl and Co rather than a pair of C's.
 //
 // Pure: StatusBadge and the Svelte row only render what this module decides.
 
@@ -33,7 +33,7 @@ export interface UsageRowBadge {
 }
 
 /// Letters and digits from a label, in order. Spaces and punctuation drop
-/// out so "Claude Code" abbreviates the same way as "ClaudeCode".
+/// out so "cline" abbreviates the same way as "ClaudeCode".
 function letterSource(label: string): string {
   let out = "";
   for (const ch of label) {
@@ -166,3 +166,4 @@ export function usageRowBadges(input: {
     };
   });
 }
+

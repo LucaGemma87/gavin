@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 import { writable } from "svelte/store";
 import type { HumanItem } from "$lib/core/gavin";
 import type { CleanEntry } from "$lib/decisions/cleanStale";
@@ -23,8 +23,8 @@ vi.mock("$lib/core/layoutState", () => ({
   }),
   profileIdForLaunch: vi.fn((agent: { profileId: string }) => agent.profileId),
   resolvedAgentFor: vi.fn(() => ({
-    profileId: "claude-code",
-    label: "Claude Code",
+    profileId: "cline",
+    label: "cline",
     launchCommand: "claude",
     promptArgs: "",
     failurePatterns: [],
@@ -236,3 +236,4 @@ describe("requestCleanStale first-run review", () => {
     expect(holdOrQueue).not.toHaveBeenCalled();
   });
 });
+

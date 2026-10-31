@@ -1,4 +1,4 @@
----
+﻿---
 order: 59392
 kind: task
 title: "[sec-hunt] Finish the blocked audit unit: whether cmd.exe re-parses a POSIX-quoted launch line on the Windows .cmd shim path"
@@ -80,7 +80,7 @@ No. Profile commands are in `AGENT_PROFILES` (`app/src-tauri/src/agent_setup.rs`
 
 | Profile | command | Stock Windows shape | Arm taken |
 |---|---|---|---|
-| claude-code | `claude` | native / winget `claude.exe` | `.exe` / exact match — never `.cmd` |
+| cline | `claude` | native / winget `claude.exe` | `.exe` / exact match — never `.cmd` |
 | codex / gemini / opencode | bare name | npm three-file (`name`, `name.cmd`, `name.ps1`) | extensionless preferred (shell.rs:348-363, 727-737); the 2026-09-22 fix closed the rewrite that forced `.cmd` |
 | cursor | `agent --trust` | `%LOCALAPPDATA%\cursor-agent`: `agent.cmd`/`.ps1` only, plus `versions/<ver>/node.exe`+`index.js` | node-pair rewrite (shell.rs:365-376); measured in the same Windows pass |
 | kimi-code | `kimi` | install.ps1 native executable, or npm three-file | `.exe` / extensionless — not bare `.cmd` |

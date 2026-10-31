@@ -1,4 +1,4 @@
----
+﻿---
 kind: task
 title: Companion 01: typing prototype
 status: Done
@@ -14,7 +14,7 @@ Part of `companion.md`. Read the spec (`docs/superpowers/specs/2026-09-27-compan
 
 A throwaway prototype that settles how the human types into a terminal on a phone, before the Companion's terminal surface is built.
 
-It is a single web page: xterm.js from a CDN, on the 6.1 line, since 6.0's touch scrolling is broken on iOS. Mobile Safari runs the same WebKit as the iOS webview, so it is a fair test. The page drives a scripted fake agent session that prints Claude-Code-style questions ("1/2/3", yes/no, a free-text prompt) and a shell prompt. It offers three modes to switch between:
+It is a single web page: xterm.js from a CDN, on the 6.1 line, since 6.0's touch scrolling is broken on iOS. Mobile Safari runs the same WebKit as the iOS webview, so it is a fair test. The page drives a scripted fake agent session that prints cline-style questions ("1/2/3", yes/no, a free-text prompt) and a shell prompt. It offers three modes to switch between:
 
 - **Raw:** a terminal with a special-key row (Esc, Ctrl, Tab, arrows) above the soft keyboard.
 - **Compose:** a field that sends a whole line, plus quick-reply buttons derived from what the agent is asking.

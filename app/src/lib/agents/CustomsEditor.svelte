@@ -58,7 +58,7 @@
     const ok = await askConfirm({
       title: `Delete “${selected.label}”?`,
       lines: [
-        "Workspaces still pointing at this custom will fall back to Claude Code until they pick another agent.",
+        "Workspaces still pointing at this custom will fall back to cline until they pick another agent.",
       ],
       confirmLabel: "Delete custom",
       danger: true,
@@ -330,3 +330,4 @@
     }
   }
 </style>
+

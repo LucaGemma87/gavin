@@ -1,4 +1,4 @@
-# Superpowers install + detection matrix
+﻿# Superpowers install + detection matrix
 
 Date: 2026-09-01 (probed 2026-09-02)
 Card: `.gavin-root/plans/feat-superpowers-install-matrix.md`
@@ -14,14 +14,14 @@ a lie; the `unverified` column exists so no such row gets written by accident.
 
 | profile | gavin can install? | command | scope | detection | verified here |
 |---|---|---|---|---|---|
-| `claude-code` | **yes** | `claude plugin install superpowers@claude-plugins-official --scope project -y` | `user` / `project` / `local` (default `user`) | `claude plugin list --json`, cwd = workspace root; entry with `id` starting `superpowers@` and `enabled: true` | **yes** — install, reinstall, failure, uninstall and detection all run end to end |
+| `cline` | **yes** | `claude plugin install superpowers@claude-plugins-official --scope project -y` | `user` / `project` / `local` (default `user`) | `claude plugin list --json`, cwd = workspace root; entry with `id` starting `superpowers@` and `enabled: true` | **yes** — install, reinstall, failure, uninstall and detection all run end to end |
 | `codex` | no | in-TUI `/plugins` → search `superpowers` → *Install Plugin* | n/a | none known | **no** — `codex` resolves to a broken shim on this machine |
 | `gemini` | no (see below) | `gemini extensions install https://github.com/obra/superpowers` | user-global only | `~/.gemini/extensions/superpowers/` exists | **yes** — installed, listed, uninstalled |
 | `cursor` | no | in-agent-chat `/add-plugin superpowers` | n/a | none known | **no** — `cursor` not on PATH |
 | `opencode` | no | add `"superpowers@git+https://github.com/obra/superpowers.git"` to the `plugin` array of `opencode.json`, then restart | global or project `opencode.json` | `plugin` array of `<root>/opencode.json` or `~/.config/opencode/opencode.json` contains an entry whose package name is `superpowers` | **partly** — file shape confirmed against the real config; the plugin was never loaded |
 | `custom` | no | unknown — gavin has never heard of this agent | n/a | none | n/a |
 
-Only `claude-code` gets an Install button. Everything else gets the
+Only `cline` gets an Install button. Everything else gets the
 paste-able instruction and the manual "I've installed it", per S1 and S8.
 
 **Gemini is the interesting "no".** It has a real CLI command, which is why S1's
@@ -30,7 +30,7 @@ reason is not a missing flag — see §3.
 
 ---
 
-## 1. Claude Code — verified baseline
+## 1. cline — verified baseline
 
 ### Install
 
@@ -150,7 +150,7 @@ is the correct answer — it *is* active in a session started there.
 
 `claude plugin list --json` needs no TTY and exits 0.
 
-Environment probed with: `claude --version` → `2.1.258 (Claude Code)`.
+Environment probed with: `claude --version` → `2.1.258 (cline)`.
 
 ---
 
@@ -213,7 +213,7 @@ With stdin closed (`< /dev/null`) it prompts anyway and installs nothing —
 
 So gavin *could* drive it, by piping `y` into a security prompt about
 third-party code that changes the agent's system prompt. It should not. That is
-the same line S3 drew for Claude Code — the marketplace was chosen precisely so
+the same line S3 drew for cline — the marketplace was chosen precisely so
 there was "no trust prompt for gavin to answer on the human's behalf" — and
 piping `y` is answering one, not avoiding one. **Gemini gets the copy-able
 command, not a button.**
@@ -359,7 +359,7 @@ a custom harness can still tell gavin that Superpowers is in it.
 
 ## Consequences for `superpowers.rs`
 
-1. Two detector kinds, not one: **a subprocess** (`claude-code`) and **a path or
+1. Two detector kinds, not one: **a subprocess** (`cline`) and **a path or
    file read** (`gemini`, `opencode`). Two profiles (`codex`, `cursor`) and
    `custom` have neither and go straight to `unavailable`.
 2. The Claude detector runs with **cwd = workspace root**. Running it from the
@@ -374,3 +374,4 @@ a custom harness can still tell gavin that Superpowers is in it.
 6. One install command, one profile. Nothing else gets a button, and the row
    that says so should say *why* — "Cursor installs from inside its own agent
    chat", not a greyed-out control with no explanation.
+

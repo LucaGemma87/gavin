@@ -1,4 +1,4 @@
-//! Out-of-process coverage for compressed sessions.
+﻿//! Out-of-process coverage for compressed sessions.
 //!
 //! The decision and the recipe are pure and unit-tested where they live
 //! (`headroom/compress.rs`). What is tested here is that they REACH the
@@ -26,9 +26,9 @@ use std::collections::BTreeMap;
 use std::io::BufReader;
 use std::path::PathBuf;
 
-const CLAUDE_CODE: &str = "claude-code";
+const CLAUDE_CODE: &str = "cline";
 
-/// The three variables the Claude Code recipe sets, and the only ones.
+/// The three variables the cline recipe sets, and the only ones.
 const ROUTING: [&str; 4] =
     ["ANTHROPIC_BASE_URL", "ENABLE_TOOL_SEARCH", "ANTHROPIC_CUSTOM_HEADERS", "GOOGLE_GEMINI_BASE_URL"];
 
@@ -752,7 +752,7 @@ fn a_custom_agent_is_compressed_only_when_its_api_family_is_named() {
     assert_eq!(none.env.get("OPENAI_BASE_URL"), None);
 }
 
-/// The same leak 02 stopped for Claude Code, one recipe later: a daemon
+/// The same leak 02 stopped for cline, one recipe later: a daemon
 /// started from inside a compressed Codex or opencode session.
 #[test]
 fn a_daemon_started_from_a_compressed_codex_or_opencode_session_does_not_pass_its_routing_on() {
@@ -1060,7 +1060,7 @@ fn a_relaunch_without_headroom_is_uncompressed_while_headroom_is_ready_and_says_
     assert!(next.summary.compressed);
 }
 
-/// Prints the line Claude Code prints when its connection is refused,
+/// Prints the line cline prints when its connection is refused,
 /// once its go file appears, and then sits quiet: a broken agent, as the
 /// daemon sees one.
 const BREAKS: &str = r#"while [ ! -e "$HOME/go-$GAVIN_SESSION_ID" ]; do sleep 0.05; done; printf 'API Error%s Connection error\n' :; sleep 600"#;
@@ -1221,3 +1221,4 @@ fn a_session_missing_from_a_full_map_or_from_a_restarted_headroom_is_not_called_
     assert_eq!(reach(&daemon, &id), "unknown");
     assert_eq!(summary(&daemon, &id).headroom_reach, None);
 }
+

@@ -10,7 +10,7 @@
 // Both arrive through xterm's `onData` without anyone touching a key:
 // a focus report whenever the textarea gains or loses focus (DEC 1004),
 // and a mouse report per cell the pointer crosses once the program asks
-// for any-motion tracking (DEC 1003) -- as Claude Code does since 2.1.x.
+// for any-motion tracking (DEC 1003) -- as cline does since 2.1.x.
 // Clicks and the wheel count as reports too; none of them is typing.
 //
 // SGR only (`ESC [ < Cb ; Cx ; Cy M|m`, which SGR-pixels shares): xterm
@@ -36,7 +36,7 @@ const WHOLE = /^\d+$/;
 /// the swipe's momentum. Those frames are synthesized gesture events with
 /// no pointer on them, so the report's column and row come out `NaN` --
 /// `ESC [ < 65 ; NaN ; NaN M` -- which no program parses as a report:
-/// Claude Code typed them into its prompt as `NaN;NaNM…`. Every touch
+/// cline typed them into its prompt as `NaN;NaNM…`. Every touch
 /// screen produces them, the Companion's and a touch-screen desk's alike.
 ///
 /// The momentum is the swipe still going, so its reports go where the
@@ -55,3 +55,4 @@ export function mendMouseReports(data: string, at: string | null): { data: strin
   });
   return { data: mended, at: last };
 }
+

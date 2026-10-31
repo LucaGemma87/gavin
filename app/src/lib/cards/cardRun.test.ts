@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   NAME_TAB_FIRST,
   nameTabFirst,
@@ -399,7 +399,7 @@ describe("noPromptReason", () => {
 
 describe("agentPromptBlocker", () => {
   it("is null while the profile can carry a prompt, and the reason when it cannot", () => {
-    expect(agentPromptBlocker("", "Claude Code")).toBeNull();
+    expect(agentPromptBlocker("", "cline")).toBeNull();
     expect(agentPromptBlocker("--prompt=", "opencode")).toBeNull();
     expect(agentPromptBlocker(null, "Cursor")).toBe(noPromptReason("Cursor"));
   });
@@ -446,7 +446,7 @@ describe("promptRouteNote", () => {
 
   it("says nothing for a built-in, whose row already decided", () => {
     expect(promptRouteNote({ label: "Kimi Code", profileId: "kimi-code", promptArgs: null, promptInjection: true })).toBeNull();
-    expect(promptRouteNote({ label: "Claude Code", profileId: "claude-code", promptArgs: "", promptInjection: false })).toBeNull();
+    expect(promptRouteNote({ label: "cline", profileId: "cline", promptArgs: "", promptInjection: false })).toBeNull();
   });
 });
 
@@ -686,7 +686,7 @@ describe("promptFromRunCommand / commandUsesLaunchAgent / rebindRunCommand", () 
 });
 
 describe("rebindRunCommand onto cursor", () => {
-  // claude-code -> cursor: the binding still holds the gemini line a
+  // cline -> cursor: the binding still holds the gemini line a
   // earlier limit-hit walk wrote.
   it("rebuilds a stored gemini line onto cursor's binary, with no gemini left", () => {
     const rebound = rebindRunCommand("gemini --yolo 'do the thing'", {
@@ -854,3 +854,4 @@ describe("buildToolCommand", () => {
     expect(epilogue).toContain("printf '\\n[gavin] %s exited with code %s\\n'");
   });
 });
+

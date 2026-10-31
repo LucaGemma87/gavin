@@ -300,7 +300,7 @@ fn prepare_worktrees_dir(cwd: &str, path: &str) -> Result<(), String> {
 /// directory strictly above `worktree`, up to and including
 /// `workspace_root`. Those are exactly the levels a worktree cut as a
 /// SIBLING of the checkout never climbed through -- nesting it inside
-/// `.gavin-worktrees` is what put them in Claude Code's memory walk
+/// `.gavin-worktrees` is what put them in cline's memory walk
 /// (code.claude.com/docs/en/memory.md, "How CLAUDE.md files load").
 fn claude_md_excludes(worktree: &Path, workspace_root: &Path) -> Vec<String> {
     let mut excludes = Vec::new();
@@ -318,7 +318,7 @@ fn claude_md_excludes(worktree: &Path, workspace_root: &Path) -> Vec<String> {
 }
 
 /// Writes `claudeMdExcludes` into the new worktree's own
-/// `.claude/settings.local.json`, so a Claude Code agent there loads
+/// `.claude/settings.local.json`, so a cline agent there loads
 /// exactly what it loaded back when worktrees were siblings of the
 /// checkout: its own `CLAUDE.md`, and nothing this nesting exposed.
 ///
@@ -1678,3 +1678,4 @@ mod ref_tests {
         worktree_remove(cwd(&dir), &wt_s, true).unwrap();
     }
 }
+

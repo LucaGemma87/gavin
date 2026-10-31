@@ -1,4 +1,4 @@
-# Workspace Init Wizard — Design
+﻿# Workspace Init Wizard — Design
 
 **Status:** approved 2026-08-21.
 
@@ -239,7 +239,7 @@ garbage in the agent's argv. So `AgentProfile` gains:
 pub prompt_arg: bool,
 ```
 
-`true` for `claude-code` only, at this stage. Where it is false, the
+`true` for `cline` only, at this stage. Where it is false, the
 agent-driven option is absent and the step says so — the same posture as
 W4. The multi-agent MCP sub-project fills these in per profile as it
 verifies each CLI.
@@ -290,7 +290,7 @@ modules.
   markers.
 - Block-variant selection: pointer form when a skill dir exists, inline form
   otherwise.
-- The profile table: `prompt_arg` true for exactly `claude-code` at this
+- The profile table: `prompt_arg` true for exactly `cline` at this
   stage.
 
 **Manual:** a new "Init wizard" checklist section covering the creation

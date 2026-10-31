@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
+﻿import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
 import { get } from "svelte/store";
 
 const backendMock = vi.hoisted(() => ({
@@ -8,7 +8,7 @@ const backendMock = vi.hoisted(() => ({
 vi.mock("$lib/core/backend", () => backendMock);
 
 const resolvedAgentForMock = vi.hoisted(() =>
-  vi.fn(() => ({ profileId: "claude-code" }))
+  vi.fn(() => ({ profileId: "cline" }))
 );
 
 vi.mock("$lib/core/layoutState", async () => {
@@ -99,7 +99,7 @@ function cycle(over: Partial<PauseCycle> = {}): PauseCycle {
 
 /// The app-wide cycle for one primary, written where it now lives: the
 /// agent defaults. `null` removes the primary's key (never held).
-function setAppCycle(value: PauseCycle | null, primary = "claude-code"): void {
+function setAppCycle(value: PauseCycle | null, primary = "cline"): void {
   agentDefaultsStore.update((d) => {
     const pauseCycles = { ...((d as { pauseCycles?: Record<string, PauseCycle> }).pauseCycles ?? {}) };
     if (value) pauseCycles[primary] = value;
@@ -112,14 +112,14 @@ beforeEach(() => {
   vi.clearAllMocks();
   eventMock.handlers.clear();
   appDuty.set({ holder: "main", windows: ["main"] });
-  resolvedAgentForMock.mockReturnValue({ profileId: "claude-code" });
+  resolvedAgentForMock.mockReturnValue({ profileId: "cline" });
   agentUsageStore.set({});
   usageRefreshingStore.set({});
   layoutState.set({ workspaces: [], activeWorkspaceId: null } as never);
   agentDefaultsStore.set({
     customCommand: "",
     customModelFlag: "",
-    defaultAgent: "claude-code",
+    defaultAgent: "cline",
     complexityTables: {},
     pauseCycles: {},
     fallbackChains: {},
@@ -147,7 +147,7 @@ describe("effectiveCycle", () => {
   it("treats an override with enabled:false as off, not as absent", () => {
     setAppCycle(cycle({ enabled: true }));
     layoutState.set({
-      workspaces: [{ id: "w1", pauseCycles: { "claude-code": cycle({ enabled: false }) } }],
+      workspaces: [{ id: "w1", pauseCycles: { "cline": cycle({ enabled: false }) } }],
       activeWorkspaceId: "w1",
     } as never);
     expect(effectiveCycle("w1")?.enabled).toBe(false);
@@ -157,7 +157,7 @@ describe("effectiveCycle", () => {
   it("prefers a workspace's own numbers over the app's", () => {
     setAppCycle(cycle({ pauseMinutes: 10 }));
     layoutState.set({
-      workspaces: [{ id: "w1", pauseCycles: { "claude-code": cycle({ pauseMinutes: 30 }) } }],
+      workspaces: [{ id: "w1", pauseCycles: { "cline": cycle({ pauseMinutes: 30 }) } }],
       activeWorkspaceId: "w1",
     } as never);
     expect(effectiveCycle("w1")?.pauseMinutes).toBe(30);
@@ -168,10 +168,10 @@ describe("effectiveCycle", () => {
   });
 
   /// Cycles are per primary agent: a workspace on codex is not held by
-  /// the cycle claude-code keeps, and an override for one primary says
+  /// the cycle cline keeps, and an override for one primary says
   /// nothing about another.
   it("reads the cycle of the agent the workspace runs, not another agent's", () => {
-    setAppCycle(cycle({ pauseMinutes: 10 }), "claude-code");
+    setAppCycle(cycle({ pauseMinutes: 10 }), "cline");
     setAppCycle(cycle({ pauseMinutes: 40 }), "codex");
     layoutState.set({ workspaces: [{ id: "w1" }], activeWorkspaceId: "w1" } as never);
 
@@ -188,7 +188,7 @@ describe("effectiveCycle", () => {
       activeWorkspaceId: "w1",
     } as never);
     expect(effectiveCycle("w1", "codex")?.pauseMinutes).toBe(55);
-    expect(effectiveCycle("w1", "claude-code")).toBeNull();
+    expect(effectiveCycle("w1", "cline")).toBeNull();
   });
 
   it("answers for the app default agent when asked outside any workspace", () => {
@@ -204,20 +204,20 @@ describe("saveAgentPauseFor", () => {
   /// somebody nudged a field, so a cycle under adjustment would never
   /// actually fire.
   it("stamps an anchor once and never rewrites it", async () => {
-    await saveAgentPauseFor("claude-code", { ...DEFAULT_CYCLE, enabled: true, anchorMs: 0 });
-    const stamped = get(agentPauseStore)["claude-code"];
+    await saveAgentPauseFor("cline", { ...DEFAULT_CYCLE, enabled: true, anchorMs: 0 });
+    const stamped = get(agentPauseStore)["cline"];
     expect(stamped?.anchorMs).toBeGreaterThan(0);
 
-    await saveAgentPauseFor("claude-code", { ...stamped!, pauseMinutes: 25 });
-    expect(get(agentPauseStore)["claude-code"]?.anchorMs).toBe(stamped!.anchorMs);
-    expect(get(agentPauseStore)["claude-code"]?.pauseMinutes).toBe(25);
+    await saveAgentPauseFor("cline", { ...stamped!, pauseMinutes: 25 });
+    expect(get(agentPauseStore)["cline"]?.anchorMs).toBe(stamped!.anchorMs);
+    expect(get(agentPauseStore)["cline"]?.pauseMinutes).toBe(25);
   });
 
   it("clears one agent to no cycle at all without touching the others", async () => {
-    setAppCycle(cycle(), "claude-code");
+    setAppCycle(cycle(), "cline");
     setAppCycle(cycle({ pauseMinutes: 33 }), "codex");
-    await saveAgentPauseFor("claude-code", null);
-    expect(get(agentPauseStore)["claude-code"]).toBeUndefined();
+    await saveAgentPauseFor("cline", null);
+    expect(get(agentPauseStore)["cline"]).toBeUndefined();
     expect(get(agentPauseStore).codex?.pauseMinutes).toBe(33);
   });
 
@@ -239,11 +239,11 @@ describe("agentPauseStore", () => {
 
 describe("a fallback hop answers to the candidate's own cycle", () => {
   it("does not hop a spent primary onto an agent that is inside its own pause window", () => {
-    setAppCycle(cycle({ enabled: false, limitPercent: 90, pauseMinutes: 10 }), "claude-code");
+    setAppCycle(cycle({ enabled: false, limitPercent: 90, pauseMinutes: 10 }), "cline");
     // codex keeps a schedule too, and the clock is inside ITS pause.
     setAppCycle(cycle({ pauseMinutes: 10 }), "codex");
     layoutState.set({
-      workspaces: [{ id: "w1", fallbackChains: { "claude-code": ["codex", "gemini"] }, armedAgents: ["codex", "gemini"] }],
+      workspaces: [{ id: "w1", fallbackChains: { "cline": ["codex", "gemini"] }, armedAgents: ["codex", "gemini"] }],
       activeWorkspaceId: "w1",
     } as never);
     const spent = {
@@ -253,15 +253,15 @@ describe("a fallback hop answers to the candidate's own cycle", () => {
       observedAt: 1,
       cached: false,
     };
-    agentUsageStore.set({ "claude-code": spent });
+    agentUsageStore.set({ "cline": spent });
     const inCodexPause = ANCHOR + 295 * MIN;
-    expect(launchDecision("w1", "claude-code", false, inCodexPause)).toEqual({
+    expect(launchDecision("w1", "cline", false, inCodexPause)).toEqual({
       kind: "use",
       profileId: "gemini",
       viaFallback: true,
     });
     // Outside codex's window it is the first hop again.
-    expect(launchDecision("w1", "claude-code", false, ANCHOR + 100 * MIN)).toEqual({
+    expect(launchDecision("w1", "cline", false, ANCHOR + 100 * MIN)).toEqual({
       kind: "use",
       profileId: "codex",
       viaFallback: true,
@@ -271,12 +271,12 @@ describe("a fallback hop answers to the candidate's own cycle", () => {
 
 describe("launchDecision keys the cycle by the launch's resolved primary", () => {
   it("holds a launch resolved to the agent whose cycle is paused, not one resolved elsewhere", () => {
-    setAppCycle(cycle({ pauseMinutes: 10 }), "claude-code");
+    setAppCycle(cycle({ pauseMinutes: 10 }), "cline");
     layoutState.set({ workspaces: [{ id: "w1" }], activeWorkspaceId: "w1" } as never);
     const inPause = ANCHOR + 295 * MIN;
-    expect(launchDecision("w1", "claude-code", false, inPause).kind).toBe("pause");
+    expect(launchDecision("w1", "cline", false, inPause).kind).toBe("pause");
     // codex keeps no cycle, so a card routed there launches during
-    // claude-code's pause.
+    // cline's pause.
     expect(launchDecision("w1", "codex", false, inPause)).toMatchObject({ kind: "use" });
   });
 });
@@ -292,35 +292,35 @@ describe("refreshUsage", () => {
 
   it("stores what the host reported", async () => {
     backendMock.agentUsage.mockResolvedValueOnce(readyReport);
-    await refreshUsage("claude-code");
-    expect(get(agentUsageStore)["claude-code"]).toEqual(readyReport);
+    await refreshUsage("cline");
+    expect(get(agentUsageStore)["cline"]).toEqual(readyReport);
   });
 
   it("marks the profile as refreshing for the life of the probe", async () => {
     let sawRefreshing = false;
     backendMock.agentUsage.mockImplementation(async () => {
-      sawRefreshing = get(usageRefreshingStore)["claude-code"] === true;
+      sawRefreshing = get(usageRefreshingStore)["cline"] === true;
       return readyReport;
     });
-    await refreshUsage("claude-code");
+    await refreshUsage("cline");
     expect(sawRefreshing).toBe(true);
-    expect(get(usageRefreshingStore)["claude-code"]).toBeUndefined();
+    expect(get(usageRefreshingStore)["cline"]).toBeUndefined();
   });
 
   /// Last known numbers stay on screen when the probe cannot answer.
   /// Replacing them with a gap would flash yesterday's bars away on
   /// every restart whose first call failed.
   it("keeps a still-open reading when the read fails", async () => {
-    agentUsageStore.set({ "claude-code": readyReport });
+    agentUsageStore.set({ "cline": readyReport });
     backendMock.agentUsage.mockRejectedValueOnce(new Error("ipc down"));
-    await refreshUsage("claude-code");
-    expect(get(agentUsageStore)["claude-code"]).toEqual(readyReport);
+    await refreshUsage("cline");
+    expect(get(agentUsageStore)["cline"]).toEqual(readyReport);
   });
 
   it("reports unavailability when there is nothing still-open to keep", async () => {
     backendMock.agentUsage.mockRejectedValueOnce(new Error("ipc down"));
-    await refreshUsage("claude-code");
-    expect(get(agentUsageStore)["claude-code"].state).toBe("unavailable");
+    await refreshUsage("cline");
+    expect(get(agentUsageStore)["cline"].state).toBe("unavailable");
   });
 
   describe("overlapping calls", () => {
@@ -349,14 +349,14 @@ describe("refreshUsage", () => {
     /// is the older one and must not replace the refresh on screen.
     it("drops an older call's answer once a newer one has landed", async () => {
       const poll = pendingPoll();
-      const polling = refreshUsage("claude-code");
+      const polling = refreshUsage("cline");
       backendMock.agentUsage.mockResolvedValueOnce(newer);
-      await refreshUsage("claude-code", true);
-      expect(get(agentUsageStore)["claude-code"]).toEqual(newer);
+      await refreshUsage("cline", true);
+      expect(get(agentUsageStore)["cline"]).toEqual(newer);
 
       poll.answer(older);
       await polling;
-      expect(get(agentUsageStore)["claude-code"]).toEqual(newer);
+      expect(get(agentUsageStore)["cline"]).toEqual(newer);
     });
 
     /// A failure replaces a reading with nothing still open in it. When
@@ -368,47 +368,47 @@ describe("refreshUsage", () => {
         windows: [{ id: "five_hour", label: "5-hour", usedPercent: 40, resetsAt: 1 }],
       };
       const poll = pendingPoll();
-      const polling = refreshUsage("claude-code");
+      const polling = refreshUsage("cline");
       backendMock.agentUsage.mockResolvedValueOnce(sinceReset);
-      await refreshUsage("claude-code", true);
+      await refreshUsage("cline", true);
 
       poll.fail();
       await polling;
-      expect(get(agentUsageStore)["claude-code"]).toEqual(sinceReset);
+      expect(get(agentUsageStore)["cline"]).toEqual(sinceReset);
     });
 
     /// A failure is not a reading, so it supersedes nothing: the poll
     /// that started first is still the newest answer there is.
     it("still takes an older call's answer when the newer call failed", async () => {
       const poll = pendingPoll();
-      const polling = refreshUsage("claude-code");
+      const polling = refreshUsage("cline");
       backendMock.agentUsage.mockRejectedValueOnce(new Error("ipc down"));
-      await refreshUsage("claude-code", true);
+      await refreshUsage("cline", true);
 
       poll.answer(older);
       await polling;
-      expect(get(agentUsageStore)["claude-code"]).toEqual(older);
+      expect(get(agentUsageStore)["cline"]).toEqual(older);
     });
 
     it("keeps the refreshing badge up until the newest call answers", async () => {
       backendMock.agentUsage.mockResolvedValueOnce(older);
       const refresh = pendingPoll();
-      const first = refreshUsage("claude-code");
-      const second = refreshUsage("claude-code", true);
+      const first = refreshUsage("cline");
+      const second = refreshUsage("cline", true);
       await first;
-      expect(get(usageRefreshingStore)["claude-code"]).toBe(true);
+      expect(get(usageRefreshingStore)["cline"]).toBe(true);
 
       refresh.answer(newer);
       await second;
-      expect(get(usageRefreshingStore)["claude-code"]).toBeUndefined();
-      expect(get(agentUsageStore)["claude-code"]).toEqual(newer);
+      expect(get(usageRefreshingStore)["cline"]).toBeUndefined();
+      expect(get(agentUsageStore)["cline"]).toEqual(newer);
     });
 
     it("keeps one profile's calls out of another's ordering", async () => {
       const poll = pendingPoll();
       const polling = refreshUsage("codex");
       backendMock.agentUsage.mockResolvedValueOnce(newer);
-      await refreshUsage("claude-code", true);
+      await refreshUsage("cline", true);
 
       poll.answer(older);
       await polling;
@@ -437,9 +437,9 @@ describe("hydrateUsageCache", () => {
       observedAt: 1_700_000_000,
       cached: false,
     };
-    saveUsageCache({ "claude-code": report }, storage, 1_700_000_000_000);
+    saveUsageCache({ "cline": report }, storage, 1_700_000_000_000);
     hydrateUsageCache(1_700_000_000_000, storage);
-    expect(get(agentUsageStore)["claude-code"]).toEqual({ ...report, cached: true });
+    expect(get(agentUsageStore)["cline"]).toEqual({ ...report, cached: true });
   });
 
   it("does not resurrect a window whose reset has already passed", () => {
@@ -449,7 +449,7 @@ describe("hydrateUsageCache", () => {
     storage.setItem(
       USAGE_CACHE_KEY,
       JSON.stringify({
-        "claude-code": {
+        "cline": {
           state: "ready",
           windows: [{ id: "five_hour", label: "5-hour", usedPercent: 96, resetsAt: nowS - 10 }],
           plan: null,
@@ -459,7 +459,7 @@ describe("hydrateUsageCache", () => {
       })
     );
     hydrateUsageCache(nowMs, storage);
-    expect(get(agentUsageStore)["claude-code"]).toBeUndefined();
+    expect(get(agentUsageStore)["cline"]).toBeUndefined();
     expect(storage.map.has(USAGE_CACHE_KEY)).toBe(false);
   });
 
@@ -471,7 +471,7 @@ describe("hydrateUsageCache", () => {
     const storage = fakeStorage();
     saveUsageCache(
       {
-        "claude-code": {
+        "cline": {
           state: "ready",
           windows: [
             { id: "five_hour", label: "5-hour", usedPercent: 80, resetsAt: nowS + 2 },
@@ -487,7 +487,7 @@ describe("hydrateUsageCache", () => {
     );
     hydrateUsageCache(nowMs, storage);
     vi.advanceTimersByTime(2_100);
-    const report = get(agentUsageStore)["claude-code"];
+    const report = get(agentUsageStore)["cline"];
     expect(report?.state).toBe("ready");
     if (report?.state === "ready") {
       expect(report.windows.map((w) => w.id)).toEqual(["seven_day"]);
@@ -502,25 +502,25 @@ describe("profilesInUse", () => {
       workspaces: [{ id: "w1" }, { id: "w2" }],
       activeWorkspaceId: "w1",
     } as never);
-    expect(profilesInUse()).toEqual(["claude-code"]);
+    expect(profilesInUse()).toEqual(["cline"]);
   });
 
   it("includes fallback-chain ids so their usage is polled", () => {
     layoutState.set({
-      workspaces: [{ id: "w1", fallbackChains: { "claude-code": ["codex"] } }],
+      workspaces: [{ id: "w1", fallbackChains: { "cline": ["codex"] } }],
       activeWorkspaceId: "w1",
     } as never);
-    expect(profilesInUse()).toEqual(["claude-code", "codex"]);
+    expect(profilesInUse()).toEqual(["cline", "codex"]);
   });
 
   it("unions every primary's chain, not only the workspace agent's", () => {
     layoutState.set({
       workspaces: [
-        { id: "w1", fallbackChains: { "claude-code": ["codex"], gemini: ["opencode"] } },
+        { id: "w1", fallbackChains: { "cline": ["codex"], gemini: ["opencode"] } },
       ],
       activeWorkspaceId: "w1",
     } as never);
-    expect(profilesInUse()).toEqual(["claude-code", "codex", "opencode"]);
+    expect(profilesInUse()).toEqual(["cline", "codex", "opencode"]);
   });
 
   /// A rated card can launch on whichever agent the workspace agent's
@@ -532,20 +532,20 @@ describe("profilesInUse", () => {
         ({
           ...d,
           complexityTables: {
-            "claude-code": { intricate: { profile: "codex", model: "" } },
+            "cline": { intricate: { profile: "codex", model: "" } },
             // Another primary's table is not this workspace's.
             gemini: { trivial: { profile: "opencode", model: "" } },
           },
         }) as never
     );
     layoutState.set({ workspaces: [{ id: "w1" }], activeWorkspaceId: "w1" } as never);
-    expect(profilesInUse()).toEqual(["claude-code", "codex"]);
+    expect(profilesInUse()).toEqual(["cline", "codex"]);
     // A workspace's own table replaces the app's for that agent.
     layoutState.set({
-      workspaces: [{ id: "w1", complexityTables: { "claude-code": { trivial: { profile: "gemini", model: "" } } } }],
+      workspaces: [{ id: "w1", complexityTables: { "cline": { trivial: { profile: "gemini", model: "" } } } }],
       activeWorkspaceId: "w1",
     } as never);
-    expect(profilesInUse()).toEqual(["claude-code", "gemini"]);
+    expect(profilesInUse()).toEqual(["cline", "gemini"]);
   });
 });
 
@@ -560,7 +560,7 @@ describe("the gate", () => {
     setAppCycle(cycle({ enabled: false, limitPercent: 90 }));
     layoutState.set({ workspaces: [{ id: "w1" }], activeWorkspaceId: "w1" } as never);
     agentUsageStore.set({
-      "claude-code": {
+      "cline": {
         state: "ready",
         windows: [{ id: "seven_day", label: "Weekly", usedPercent: 97, resetsAt: null }],
         plan: null,
@@ -585,11 +585,11 @@ describe("the gate", () => {
   it("walks an armed fallback instead of holding when the primary is spent", () => {
     setAppCycle(cycle({ enabled: false, limitPercent: 90 }));
     layoutState.set({
-      workspaces: [{ id: "w1", fallbackChains: { "claude-code": ["codex"] }, armedAgents: ["codex"] }],
+      workspaces: [{ id: "w1", fallbackChains: { "cline": ["codex"] }, armedAgents: ["codex"] }],
       activeWorkspaceId: "w1",
     } as never);
     agentUsageStore.set({
-      "claude-code": {
+      "cline": {
         state: "ready",
         windows: [{ id: "seven_day", label: "Weekly", usedPercent: 97, resetsAt: null }],
         plan: null,
@@ -597,7 +597,7 @@ describe("the gate", () => {
         cached: false,
       },
     });
-    expect(launchDecision("w1", "claude-code", false)).toEqual({
+    expect(launchDecision("w1", "cline", false)).toEqual({
       kind: "use",
       profileId: "codex",
       viaFallback: true,
@@ -611,20 +611,20 @@ describe("the gate", () => {
     agentDefaultsStore.set({
       customCommand: "",
       customModelFlag: "",
-      defaultAgent: "claude-code",
+      defaultAgent: "cline",
       complexityTables: {},
       pauseCycles: {},
       fallbackChains: {},
-      fallbackThresholds: { "claude-code": 80 },
+      fallbackThresholds: { "cline": 80 },
       actionPromptOverrides: {},
     } as never);
     setAppCycle(cycle({ enabled: false, limitPercent: 95 }));
     layoutState.set({
-      workspaces: [{ id: "w1", fallbackChains: { "claude-code": ["codex"] }, armedAgents: ["codex"] }],
+      workspaces: [{ id: "w1", fallbackChains: { "cline": ["codex"] }, armedAgents: ["codex"] }],
       activeWorkspaceId: "w1",
     } as never);
     agentUsageStore.set({
-      "claude-code": {
+      "cline": {
         state: "ready",
         windows: [{ id: "seven_day", label: "Weekly", usedPercent: 85, resetsAt: null }],
         plan: null,
@@ -632,21 +632,21 @@ describe("the gate", () => {
         cached: false,
       },
     });
-    expect(launchDecision("w1", "claude-code", false)).toEqual({
+    expect(launchDecision("w1", "cline", false)).toEqual({
       kind: "use",
       profileId: "codex",
       viaFallback: true,
     });
-    expect(launchDecision("w1", "claude-code", true)).toEqual({
+    expect(launchDecision("w1", "cline", true)).toEqual({
       kind: "use",
-      profileId: "claude-code",
+      profileId: "cline",
       viaFallback: false,
     });
   });
 
   // Real fleet shape after restart: fallback chain + threshold configured,
   // usage cache shows Claude spent, but nobody ever saved a pauseCycles
-  // row for claude-code (only cursor has one). Settings still draws the
+  // row for cline (only cursor has one). Settings still draws the
   // shipped DEFAULT_CYCLE with limitEnabled on, so the desk looks armed.
   // launchDecision must not treat "no cycle key" as "limits off" or the
   // chain never walks and Claude keeps spawning.
@@ -654,7 +654,7 @@ describe("the gate", () => {
     agentDefaultsStore.set({
       customCommand: "",
       customModelFlag: "",
-      defaultAgent: "claude-code",
+      defaultAgent: "cline",
       complexityTables: {},
       // Only cursor was ever edited under Pause — Claude has no key.
       pauseCycles: {
@@ -666,21 +666,21 @@ describe("the gate", () => {
         },
       },
       fallbackChains: {},
-      fallbackThresholds: { "claude-code": 80 },
+      fallbackThresholds: { "cline": 80 },
       actionPromptOverrides: {},
     } as never);
     layoutState.set({
       workspaces: [
         {
           id: "w1",
-          fallbackChains: { "claude-code": ["cursor", "kimi-code"] },
+          fallbackChains: { "cline": ["cursor", "kimi-code"] },
           armedAgents: ["cursor", "kimi-code"],
         },
       ],
       activeWorkspaceId: "w1",
     } as never);
     agentUsageStore.set({
-      "claude-code": {
+      "cline": {
         state: "ready",
         windows: [{ id: "seven_day", label: "Weekly", usedPercent: 97, resetsAt: null }],
         plan: null,
@@ -695,7 +695,7 @@ describe("the gate", () => {
         cached: true,
       },
     });
-    expect(launchDecision("w1", "claude-code", false)).toEqual({
+    expect(launchDecision("w1", "cline", false)).toEqual({
       kind: "use",
       profileId: "cursor",
       viaFallback: true,
@@ -705,11 +705,11 @@ describe("the gate", () => {
   it("blocks and names the unarmed next chain agent rather than skipping it", () => {
     setAppCycle(cycle({ enabled: false, limitPercent: 90 }));
     layoutState.set({
-      workspaces: [{ id: "w1", fallbackChains: { "claude-code": ["codex"] } }],
+      workspaces: [{ id: "w1", fallbackChains: { "cline": ["codex"] } }],
       activeWorkspaceId: "w1",
     } as never);
     agentUsageStore.set({
-      "claude-code": {
+      "cline": {
         state: "ready",
         windows: [{ id: "seven_day", label: "Weekly", usedPercent: 97, resetsAt: null }],
         plan: null,
@@ -717,7 +717,7 @@ describe("the gate", () => {
         cached: false,
       },
     });
-    expect(launchDecision("w1", "claude-code", false)).toEqual({
+    expect(launchDecision("w1", "cline", false)).toEqual({
       kind: "arm",
       profileId: "codex",
     });
@@ -734,7 +734,7 @@ describe("the gate", () => {
     setAppCycle(cycle({ enabled: false, limitPercent: 90 }));
     layoutState.set({ workspaces: [{ id: "w1" }], activeWorkspaceId: "w1" } as never);
     agentUsageStore.set({
-      "claude-code": {
+      "cline": {
         state: "ready",
         windows: [{ id: "seven_day", label: "Weekly", usedPercent: 97, resetsAt: null }],
         plan: null,
@@ -752,7 +752,7 @@ describe("the gate", () => {
         cached: false,
       },
     });
-    expect(launchDecision("w1", "claude-code", false)).toEqual({
+    expect(launchDecision("w1", "cline", false)).toEqual({
       kind: "use",
       profileId: "cursor",
       viaFallback: true,
@@ -773,14 +773,14 @@ describe("the gate", () => {
       workspaces: [
         {
           id: "w1",
-          fallbackChains: { "claude-code": ["codex"], cursor: ["gemini"] },
+          fallbackChains: { "cline": ["codex"], cursor: ["gemini"] },
           armedAgents: ["codex", "gemini"],
         },
       ],
       activeWorkspaceId: "w1",
     } as never);
     agentUsageStore.set({
-      "claude-code": {
+      "cline": {
         state: "ready",
         windows: [{ id: "seven_day", label: "Weekly", usedPercent: 97, resetsAt: null }],
         plan: null,
@@ -788,7 +788,7 @@ describe("the gate", () => {
         cached: false,
       },
       // The workspace agent is spent too, so the walk reaches the chain —
-      // and must find claude-code's codex, never cursor's gemini.
+      // and must find cline's codex, never cursor's gemini.
       cursor: {
         state: "ready",
         windows: [
@@ -800,7 +800,7 @@ describe("the gate", () => {
         cached: false,
       },
     });
-    expect(launchDecision("w1", "claude-code", false)).toEqual({
+    expect(launchDecision("w1", "cline", false)).toEqual({
       kind: "use",
       profileId: "codex",
       viaFallback: true,
@@ -822,14 +822,14 @@ describe("the gate", () => {
       workspaces: [
         {
           id: "w1",
-          fallbackChains: { "claude-code": ["codex"] },
+          fallbackChains: { "cline": ["codex"] },
           armedAgents: ["codex"],
         },
       ],
       activeWorkspaceId: "w1",
     } as never);
     agentUsageStore.set({
-      "claude-code": {
+      "cline": {
         state: "ready",
         windows: [{ id: "seven_day", label: "Weekly", usedPercent: 97, resetsAt: null }],
         plan: null,
@@ -847,7 +847,7 @@ describe("the gate", () => {
         cached: false,
       },
     });
-    expect(launchDecision("w1", "claude-code", false)).toEqual({
+    expect(launchDecision("w1", "cline", false)).toEqual({
       kind: "use",
       profileId: "cursor",
       viaFallback: true,
@@ -860,7 +860,7 @@ describe("the gate", () => {
       activeWorkspaceId: "w1",
     } as never);
     agentUsageStore.set({
-      "claude-code": {
+      "cline": {
         state: "ready",
         windows: [{ id: "seven_day", label: "Weekly", usedPercent: 97, resetsAt: null }],
         plan: null,
@@ -868,9 +868,9 @@ describe("the gate", () => {
         cached: false,
       },
     });
-    expect(launchDecision("w1", "claude-code", false)).toEqual({
+    expect(launchDecision("w1", "cline", false)).toEqual({
       kind: "use",
-      profileId: "claude-code",
+      profileId: "cline",
       viaFallback: false,
     });
     expect(mayStartWork("w1")).toBe(true);
@@ -878,11 +878,11 @@ describe("the gate", () => {
 
   it("walks a configured chain even though no cycle was ever saved for the primary", () => {
     layoutState.set({
-      workspaces: [{ id: "w1", fallbackChains: { "claude-code": ["codex"] }, armedAgents: ["codex"] }],
+      workspaces: [{ id: "w1", fallbackChains: { "cline": ["codex"] }, armedAgents: ["codex"] }],
       activeWorkspaceId: "w1",
     } as never);
     agentUsageStore.set({
-      "claude-code": {
+      "cline": {
         state: "ready",
         windows: [{ id: "seven_day", label: "Weekly", usedPercent: 97, resetsAt: null }],
         plan: null,
@@ -890,7 +890,7 @@ describe("the gate", () => {
         cached: false,
       },
     });
-    expect(launchDecision("w1", "claude-code", false)).toEqual({
+    expect(launchDecision("w1", "cline", false)).toEqual({
       kind: "use",
       profileId: "codex",
       viaFallback: true,
@@ -913,7 +913,7 @@ describe("pausedWorkspaces", () => {
     // The hub is about the whole fleet: a workspace can be at its limit
     // while the active one has room, and `activePause` cannot say so.
     setAppCycle(cycle({ enabled: false, limitPercent: 90 }));
-    agentUsageStore.set({ "claude-code": atLimit(97) });
+    agentUsageStore.set({ "cline": atLimit(97) });
     layoutState.set({
       workspaces: [
         { id: "w1", name: "One" },
@@ -929,7 +929,7 @@ describe("pausedWorkspaces", () => {
 
   it("is empty while nothing is held", () => {
     setAppCycle(cycle({ enabled: false, limitPercent: 90 }));
-    agentUsageStore.set({ "claude-code": atLimit(12) });
+    agentUsageStore.set({ "cline": atLimit(12) });
     layoutState.set({ workspaces: [{ id: "w1", name: "One" }], activeWorkspaceId: "w1" } as never);
     nowStore.set(ANCHOR);
     expect(get(pausedWorkspaces)).toEqual([]);
@@ -937,10 +937,10 @@ describe("pausedWorkspaces", () => {
 
   it("is empty when the primary is spent but an armed fallback can launch", () => {
     setAppCycle(cycle({ enabled: false, limitPercent: 90 }));
-    agentUsageStore.set({ "claude-code": atLimit(97) });
+    agentUsageStore.set({ "cline": atLimit(97) });
     layoutState.set({
       workspaces: [
-        { id: "w1", name: "One", fallbackChains: { "claude-code": ["codex"] }, armedAgents: ["codex"] },
+        { id: "w1", name: "One", fallbackChains: { "cline": ["codex"] }, armedAgents: ["codex"] },
       ],
       activeWorkspaceId: "w1",
     } as never);
@@ -964,7 +964,7 @@ describe("pausedWorkspaces", () => {
 
     it("emits once when a pause starts and once when it lifts", () => {
       setAppCycle(cycle({ enabled: false, limitPercent: 90 }));
-      agentUsageStore.set({ "claude-code": atLimit(12) });
+      agentUsageStore.set({ "cline": atLimit(12) });
       twoWorkspaces();
       nowStore.set(ANCHOR);
 
@@ -975,8 +975,8 @@ describe("pausedWorkspaces", () => {
       nowStore.set(ANCHOR + 60_000);
       expect(seen).toEqual([""]);
 
-      agentUsageStore.set({ "claude-code": atLimit(97) });
-      agentUsageStore.set({ "claude-code": atLimit(12) });
+      agentUsageStore.set({ "cline": atLimit(97) });
+      agentUsageStore.set({ "cline": atLimit(12) });
       stop();
       expect(seen).toEqual(["", "w1 w2", ""]);
     });
@@ -986,7 +986,7 @@ describe("pausedWorkspaces", () => {
     // that just became free never gets the tick that would launch it.
     it("emits when the SET moves, even though something is still held", () => {
       setAppCycle(cycle({ enabled: false, limitPercent: 90 }));
-      agentUsageStore.set({ "claude-code": atLimit(97) });
+      agentUsageStore.set({ "cline": atLimit(97) });
       twoWorkspaces();
       nowStore.set(ANCHOR);
 
@@ -998,7 +998,7 @@ describe("pausedWorkspaces", () => {
       // is the remaining way one workspace frees while another does not.
       layoutState.set({
         workspaces: [
-          { id: "w1", name: "One", fallbackChains: { "claude-code": ["codex"] }, armedAgents: ["codex"] },
+          { id: "w1", name: "One", fallbackChains: { "cline": ["codex"] }, armedAgents: ["codex"] },
           { id: "w2", name: "Two" },
         ],
         activeWorkspaceId: "w1",
@@ -1017,7 +1017,7 @@ describe("pausedWorkspaces", () => {
         (d) =>
           ({
             ...d,
-            complexityTables: { "claude-code": { intricate: { profile: "codex", model: "" } } },
+            complexityTables: { "cline": { intricate: { profile: "codex", model: "" } } },
           }) as never
       );
       setAppCycle(cycle({ pauseMinutes: 10 }), "codex");
@@ -1064,25 +1064,25 @@ describe("usage across windows", () => {
     backendMock.agentUsage.mockResolvedValue(readyReport);
     layoutState.set({ workspaces: [{ id: "w1" }], activeWorkspaceId: "w1" } as never);
     startUsagePoll();
-    expect(backendMock.agentUsage).toHaveBeenCalledWith("claude-code", false);
+    expect(backendMock.agentUsage).toHaveBeenCalledWith("cline", false);
   });
 
   it("tells the other windows every reading it lands", async () => {
     appDuty.set({ holder: "main", windows: ["main", "ws-2"] });
     backendMock.agentUsage.mockResolvedValueOnce(readyReport);
-    await refreshUsage("claude-code");
+    await refreshUsage("cline");
     expect(readingsSent()).toEqual([
-      { profileId: "claude-code", report: readyReport, sampled: true },
+      { profileId: "cline", report: readyReport, sampled: true },
     ]);
   });
 
   it("tells them when a failure leaves the profile unavailable", async () => {
     appDuty.set({ holder: "main", windows: ["main", "ws-2"] });
     backendMock.agentUsage.mockRejectedValueOnce(new Error("ipc down"));
-    await refreshUsage("claude-code");
+    await refreshUsage("cline");
     expect(readingsSent()).toEqual([
       {
-        profileId: "claude-code",
+        profileId: "cline",
         report: expect.objectContaining({ state: "unavailable" }),
         sampled: false,
       },
@@ -1092,9 +1092,9 @@ describe("usage across windows", () => {
   /// A kept reading changed nothing, so there is nothing to tell.
   it("tells them nothing when a failure kept the last reading", async () => {
     appDuty.set({ holder: "main", windows: ["main", "ws-2"] });
-    agentUsageStore.set({ "claude-code": readyReport });
+    agentUsageStore.set({ "cline": readyReport });
     backendMock.agentUsage.mockRejectedValueOnce(new Error("ipc down"));
-    await refreshUsage("claude-code");
+    await refreshUsage("cline");
     expect(readingsSent()).toEqual([]);
   });
 
@@ -1120,20 +1120,20 @@ describe("usage across windows", () => {
   it("answers a window that has just opened with every reading it holds", async () => {
     appDuty.set({ holder: "main", windows: ["main", "ws-2"] });
     const unsupported: AgentUsageReport = { state: "unsupported" };
-    agentUsageStore.set({ "claude-code": readyReport, opencode: unsupported });
+    agentUsageStore.set({ "cline": readyReport, opencode: unsupported });
     await initUsageSharing();
     expect(eventMock.emit).not.toHaveBeenCalled();
 
     eventMock.fire("agent-usage-wanted", { origin: "ws-2", payload: null });
     expect(readingsSent()).toEqual([
-      { profileId: "claude-code", report: readyReport, sampled: false },
+      { profileId: "cline", report: readyReport, sampled: false },
       { profileId: "opencode", report: unsupported, sampled: false },
     ]);
   });
 
   it("leaves answering to the poller", async () => {
     appDuty.set({ holder: "ws-3", windows: ["main", "ws-2", "ws-3"] });
-    agentUsageStore.set({ "claude-code": readyReport });
+    agentUsageStore.set({ "cline": readyReport });
     await initUsageSharing();
     eventMock.emit.mockClear();
     eventMock.fire("agent-usage-wanted", { origin: "ws-2", payload: null });

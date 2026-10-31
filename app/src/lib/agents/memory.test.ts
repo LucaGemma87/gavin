@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import {
   MIN_AGENT_RSS_BYTES,
   fleetMemory,
@@ -137,11 +137,11 @@ describe("rootsFromWatchList", () => {
 describe("meanRssByProfile", () => {
   it("averages each profile's measured trees", () => {
     const means = meanRssByProfile([
-      { sessionId: "a", profileId: "claude-code", rssBytes: 4 * GB, processCount: 9 },
-      { sessionId: "b", profileId: "claude-code", rssBytes: 2 * GB, processCount: 4 },
+      { sessionId: "a", profileId: "cline", rssBytes: 4 * GB, processCount: 9 },
+      { sessionId: "b", profileId: "cline", rssBytes: 2 * GB, processCount: 4 },
       { sessionId: "c", profileId: "codex", rssBytes: 3 * GB, processCount: 5 },
     ]);
-    expect(means["claude-code"]).toBe(3 * GB);
+    expect(means["cline"]).toBe(3 * GB);
     expect(means["codex"]).toBe(3 * GB);
   });
 
@@ -149,19 +149,19 @@ describe("meanRssByProfile", () => {
   // just-launched agents must not authorise eleven more.
   it("never reports a mean under the floor", () => {
     const means = meanRssByProfile([
-      { sessionId: "a", profileId: "claude-code", rssBytes: 200 * 1024 * 1024, processCount: 1 },
+      { sessionId: "a", profileId: "cline", rssBytes: 200 * 1024 * 1024, processCount: 1 },
     ]);
-    expect(means["claude-code"]).toBe(MIN_AGENT_RSS_BYTES);
+    expect(means["cline"]).toBe(MIN_AGENT_RSS_BYTES);
   });
 
   // Zero is what an UNMEASURED row carries, not a free agent. Averaging
   // it in would drag the estimate down with no measurement behind it.
   it("leaves unmeasured sessions out of the mean instead of counting them as free", () => {
     const means = meanRssByProfile([
-      { sessionId: "a", profileId: "claude-code", rssBytes: 6 * GB, processCount: 9 },
-      { sessionId: "b", profileId: "claude-code", rssBytes: 0, processCount: 0 },
+      { sessionId: "a", profileId: "cline", rssBytes: 6 * GB, processCount: 9 },
+      { sessionId: "b", profileId: "cline", rssBytes: 0, processCount: 0 },
     ]);
-    expect(means["claude-code"]).toBe(6 * GB);
+    expect(means["cline"]).toBe(6 * GB);
   });
 
   it("ignores sessions no profile claims", () => {
@@ -173,22 +173,22 @@ describe("meanRssByProfile", () => {
 
 describe("perAgentEstimate", () => {
   it("prefers what the running agents of that profile measure", () => {
-    expect(perAgentEstimate("claude-code", { "claude-code": 5 * GB }, { "claude-code": 2 * GB })).toBe(
+    expect(perAgentEstimate("cline", { "cline": 5 * GB }, { "cline": 2 * GB })).toBe(
       5 * GB
     );
   });
 
   it("falls back to the last stored mean, then to the floor", () => {
-    expect(perAgentEstimate("claude-code", {}, { "claude-code": 3 * GB })).toBe(3 * GB);
-    expect(perAgentEstimate("claude-code", {}, {})).toBe(MIN_AGENT_RSS_BYTES);
-    expect(perAgentEstimate(null, { "claude-code": 5 * GB })).toBe(MIN_AGENT_RSS_BYTES);
+    expect(perAgentEstimate("cline", {}, { "cline": 3 * GB })).toBe(3 * GB);
+    expect(perAgentEstimate("cline", {}, {})).toBe(MIN_AGENT_RSS_BYTES);
+    expect(perAgentEstimate(null, { "cline": 5 * GB })).toBe(MIN_AGENT_RSS_BYTES);
   });
 
   // A stored mean from a machine that once ran one quiet agent must not
   // authorise a burst, so the floor applies at every step and not only
   // to the default.
   it("floors a remembered mean as well as a fresh one", () => {
-    expect(perAgentEstimate("claude-code", {}, { "claude-code": 100 * 1024 * 1024 })).toBe(
+    expect(perAgentEstimate("cline", {}, { "cline": 100 * 1024 * 1024 })).toBe(
       MIN_AGENT_RSS_BYTES
     );
   });
@@ -197,12 +197,12 @@ describe("perAgentEstimate", () => {
 describe("fleetMemory", () => {
   it("sums every measured tree and counts the sessions", () => {
     const fleet = fleetMemory([
-      { sessionId: "a", profileId: "claude-code", rssBytes: 4 * GB, processCount: 9 },
-      { sessionId: "b", profileId: "claude-code", rssBytes: 2 * GB, processCount: 4 },
+      { sessionId: "a", profileId: "cline", rssBytes: 4 * GB, processCount: 9 },
+      { sessionId: "b", profileId: "cline", rssBytes: 2 * GB, processCount: 4 },
     ]);
     expect(fleet.rssBytes).toBe(6 * GB);
     expect(fleet.agents).toBe(2);
-    expect(fleet.meanByProfile["claude-code"]).toBe(3 * GB);
+    expect(fleet.meanByProfile["cline"]).toBe(3 * GB);
   });
 
   it("is empty for a fleet with no agents", () => {

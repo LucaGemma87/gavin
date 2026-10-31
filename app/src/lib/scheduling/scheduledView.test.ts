@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import {
   readableFires,
   resolveScheduledSelection,
@@ -115,18 +115,18 @@ describe("the Schedule dialog", () => {
 
   it("offers headless agents when the task's own has no headless mode, and refuses when none has", () => {
     const profiles = [
-      { id: "claude-code", label: "Claude Code", headlessArgs: "-p --" },
+      { id: "cline", label: "cline", headlessArgs: "-p --" },
       { id: "opencode", label: "opencode", headlessArgs: "run --agent gavin-commit --auto --" },
       { id: "custom", label: "Mine", headlessArgs: "" },
     ];
-    expect(headlessChoices(profiles)).toEqual([{ id: "claude-code", label: "Claude Code" }]);
-    expect(agentVerdict({ profileId: "claude-code", label: "Claude Code", headlessArgs: "-p --" }, profiles)).toEqual({
+    expect(headlessChoices(profiles)).toEqual([{ id: "cline", label: "cline" }]);
+    expect(agentVerdict({ profileId: "cline", label: "cline", headlessArgs: "-p --" }, profiles)).toEqual({
       kind: "ok",
-      label: "Claude Code",
+      label: "cline",
     });
     expect(agentVerdict({ profileId: "custom", label: "Mine", headlessArgs: "" }, profiles)).toEqual({
       kind: "pick",
-      choices: [{ id: "claude-code", label: "Claude Code" }],
+      choices: [{ id: "cline", label: "cline" }],
       why: "Mine has no headless mode a scheduled run can use",
     });
     expect(agentVerdict({ profileId: "custom", headlessArgs: "" }, profiles.slice(1)).kind).toBe("blocked");
@@ -138,3 +138,4 @@ describe("the Schedule dialog", () => {
     expect(scheduleCardBlocker("note")).toBe("only task cards can be scheduled");
   });
 });
+

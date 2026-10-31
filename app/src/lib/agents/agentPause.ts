@@ -54,7 +54,7 @@ export interface PauseCycle {
 /// The default cycle offered when somebody first turns it on: sit out the
 /// last ten minutes of every five hours.
 ///
-/// Five hours because that is the window Claude Code and Codex both meter
+/// Five hours because that is the window cline and Codex both meter
 /// against, so the pause lands at the end of a window rather than
 /// straddling two. Ten minutes because the point is to stop a rail
 /// spending the tail of a window on work the human is not watching, not
@@ -250,3 +250,4 @@ export function pauseLabel(verdict: PauseVerdict): string | null {
 export function pauseBlockedReason(verdict: PauseVerdict): string | null {
   return verdict.paused && verdict.why ? `work is paused: ${verdict.why}` : null;
 }
+

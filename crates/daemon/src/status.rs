@@ -37,7 +37,7 @@ pub enum StatusEvent {
     Idle { prompt: bool },
     Working,
     WaitingForInput,
-    /// Claude Code's `Claude is waiting for your input`: sent on a timer,
+    /// cline's `Claude is waiting for your input`: sent on a timer,
     /// 60 s after every turn nobody answered, whether that turn asked
     /// anything or not. It says only that the turn ENDED -- which the
     /// session's `idle` already says -- so it is reported apart from the
@@ -53,7 +53,7 @@ pub enum StatusEvent {
 /// (-> waiting_for_input).
 ///
 /// The notification sequences matter because a bare BEL is NOT the
-/// universal "needs attention" signal it looks like. Claude Code, for
+/// universal "needs attention" signal it looks like. cline, for
 /// one, picks its notification channel from `TERM_PROGRAM` and rings a
 /// bare BEL only under Apple_Terminal -- under iTerm2 it sends OSC 9,
 /// under ghostty OSC 777, under kitty OSC 99, and under an unrecognized
@@ -240,23 +240,23 @@ impl StatusScanner {
         }
     }
 
-    /// Whether a notification is Claude Code's idle reminder rather than
+    /// Whether a notification is cline's idle reminder rather than
     /// a request.
     ///
-    /// Claude Code sends `Claude is waiting for your input` 60 s
+    /// cline sends `Claude is waiting for your input` 60 s
     /// (`messageIdleNotifThresholdMs`) after every turn nobody has
     /// answered -- a turn that finished just as much as one that ended on
     /// a question. Read as a request it put every finished agent at
     /// `waiting_for_input` a minute after it stopped, which is where the
     /// app's "waiting for you" badges, its attention inbox and a rail's
     /// "needs you" all come from. It never stands for a dialog either:
-    /// Claude Code withholds it while one is on screen, and a permission
+    /// cline withholds it while one is on screen, and a permission
     /// prompt sends a notification of its own. Whether a quiet turn was
     /// a question is the turn verdict's to read, from the screen.
     ///
     /// Only the MESSAGE decides, never the title, and it is matched as a
     /// suffix because iTerm2's channel folds a title in front of it as
-    /// `<title>: <message>`. Read off Claude Code 2.1.284's notifier.
+    /// `<title>: <message>`. Read off cline 2.1.284's notifier.
     fn is_idle_reminder(number: &[u8], payload: &[u8]) -> bool {
         const IDLE_REMINDER: &[u8] = b"Claude is waiting for your input";
         let message = match number {
@@ -398,8 +398,8 @@ mod tests {
     // --- Desktop-notification OSC sequences -> waiting_for_input ---
     //
     // Every byte string in the tests below was captured from the real
-    // Claude Code CLI (2.1.220) running on a PTY, by varying only
-    // TERM_PROGRAM. Claude Code picks its notification channel from that
+    // cline CLI (2.1.220) running on a PTY, by varying only
+    // TERM_PROGRAM. cline picks its notification channel from that
     // variable, so the *same* prompt emits a different sequence per
     // terminal -- and emits a bare BEL only for Apple_Terminal. gavin's
     // daemon never sets TERM_PROGRAM, so it inherits whatever launched the
@@ -409,7 +409,7 @@ mod tests {
     fn osc777_notify_maps_to_waiting_for_input() {
         // Captured with TERM_PROGRAM=ghostty.
         let mut scanner = StatusScanner::new();
-        let mut bytes = b"\x1b]777;notify;Claude Code;Claude needs your permission".to_vec();
+        let mut bytes = b"\x1b]777;notify;cline;Claude needs your permission".to_vec();
         bytes.push(0x07);
         assert_eq!(scanner.feed(&bytes), vec![StatusEvent::WaitingForInput]);
     }
@@ -453,22 +453,22 @@ mod tests {
 
     #[test]
     fn kitty_osc99_notification_burst_fires_waiting_for_input_exactly_once() {
-        // Captured with TERM_PROGRAM=kitty. Claude Code sends ONE logical
+        // Captured with TERM_PROGRAM=kitty. cline sends ONE logical
         // notification as THREE ST-terminated OSC 99 chunks: a d=0 title
         // chunk, a body chunk, and a closing d=1:a=focus action chunk.
         // Emitting per-chunk would fire three status transitions -- and
         // therefore three OS notifications -- for a single prompt.
         let mut scanner = StatusScanner::new();
-        let bytes = b"\x1b]99;i=291:d=0:p=title;Claude Code\x1b\\\
+        let bytes = b"\x1b]99;i=291:d=0:p=title;cline\x1b\\\
 \x1b]99;i=291:p=body;Claude needs your permission\x1b\\\
 \x1b]99;i=291:d=1:a=focus;\x1b\\"
             .to_vec();
         assert_eq!(scanner.feed(&bytes), vec![StatusEvent::WaitingForInput]);
     }
 
-    // --- Claude Code's idle reminder -> IdleReminder, never a wait ---
+    // --- cline's idle reminder -> IdleReminder, never a wait ---
     //
-    // The same channels as above, carrying the one message Claude Code
+    // The same channels as above, carrying the one message cline
     // (2.1.284) sends on a timer rather than because it wants anything:
     // `idle_prompt`, 60 s after a turn nobody answered. Formats read off
     // its notifier: ghostty `777;notify;<title>;<message>`, iTerm2
@@ -477,7 +477,7 @@ mod tests {
     #[test]
     fn osc777_idle_reminder_is_not_a_wait() {
         let mut scanner = StatusScanner::new();
-        let mut bytes = b"\x1b]777;notify;Claude Code;Claude is waiting for your input".to_vec();
+        let mut bytes = b"\x1b]777;notify;cline;Claude is waiting for your input".to_vec();
         bytes.push(0x07);
         assert_eq!(scanner.feed(&bytes), vec![StatusEvent::IdleReminder]);
     }
@@ -494,7 +494,7 @@ mod tests {
     fn osc9_idle_reminder_with_a_title_prefix_is_not_a_wait() {
         // iTerm2's channel folds a title in as `<title>: <message>`.
         let mut scanner = StatusScanner::new();
-        let mut bytes = b"\x1b]9;Claude Code: Claude is waiting for your input".to_vec();
+        let mut bytes = b"\x1b]9;cline: Claude is waiting for your input".to_vec();
         bytes.push(0x07);
         assert_eq!(scanner.feed(&bytes), vec![StatusEvent::IdleReminder]);
     }
@@ -502,7 +502,7 @@ mod tests {
     #[test]
     fn kitty_osc99_idle_reminder_burst_is_one_reminder() {
         let mut scanner = StatusScanner::new();
-        let bytes = b"\x1b]99;i=17:d=0:p=title;Claude Code\x1b\\\
+        let bytes = b"\x1b]99;i=17:d=0:p=title;cline\x1b\\\
 \x1b]99;i=17:p=body;Claude is waiting for your input\x1b\\\
 \x1b]99;i=17:d=1:a=focus;\x1b\\"
             .to_vec();
@@ -512,7 +512,7 @@ mod tests {
     #[test]
     fn an_idle_reminder_split_across_feeds_is_still_recognised() {
         let full = {
-            let mut b = b"\x1b]777;notify;Claude Code;Claude is waiting for your input".to_vec();
+            let mut b = b"\x1b]777;notify;cline;Claude is waiting for your input".to_vec();
             b.push(0x07);
             b
         };
@@ -550,7 +550,7 @@ mod tests {
     #[test]
     fn a_notification_sequence_split_across_feeds_is_still_detected() {
         let full = {
-            let mut b = b"\x1b]777;notify;Claude Code;Claude needs your permission".to_vec();
+            let mut b = b"\x1b]777;notify;cline;Claude needs your permission".to_vec();
             b.push(0x07);
             b
         };
@@ -671,4 +671,5 @@ mod tests {
         assert_eq!(scanner.feed(&bytes), vec![StatusEvent::Idle { prompt: true }]);
     }
 }
+
 

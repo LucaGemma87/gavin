@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+﻿import { beforeEach, describe, expect, it, vi } from "vitest";
 import { get, writable } from "svelte/store";
 
 // The probe, replaced by three stores a test can drive. The real module
@@ -62,7 +62,7 @@ vi.mock("$lib/agents/memoryState", () => ({
 }));
 vi.mock("$lib/core/layoutState", () => ({
   layoutState: probe.layoutState,
-  resolvedAgentFor: () => ({ profileId: "claude-code" }),
+  resolvedAgentFor: () => ({ profileId: "cline" }),
   agentDefaultsStore: writable({
     customCommand: "",
     customModelFlag: "",

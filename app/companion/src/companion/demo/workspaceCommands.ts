@@ -1,4 +1,4 @@
-// What the Demo Workstation answers about its workspaces as Workstation
+﻿// What the Demo Workstation answers about its workspaces as Workstation
 // data (ADR 0006): each one's settings, adding one, and what adding one
 // from a phone needs -- a home folder to start from, whether gavin is in a
 // folder already, and setting it up there.
@@ -151,7 +151,7 @@ export const WORKSPACE_COMMANDS: Record<string, DemoCommand> = {
     const name = text(args, "workspaceName");
     if (!isFolder(demo, root)) throw new DemoFailure(`${root}: No such file or directory (os error 2)`);
     demo.state.files[`${gavinRoot(root)}/PRD.md`] = `# ${name}\n\nWhat this project is for.\n`;
-    demo.state.files[`${gavinRoot(root)}/config.toml`] = '[agent]\nprofile = "claude-code"\n';
+    demo.state.files[`${gavinRoot(root)}/config.toml`] = '[agent]\nprofile = "cline"\n';
     for (const ws of demo.state.workspaces.workspaces) {
       if (ws.rootPath === root) announceTree(demo, ws);
     }

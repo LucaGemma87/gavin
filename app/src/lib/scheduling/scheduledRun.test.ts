@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import { DEFAULT_RUN_SCHEDULED } from "$lib/agents/actionPromptDefaults";
 import { actionPromptById } from "$lib/agents/actionPrompts";
 import { placeholdersIn } from "$lib/orchestration/orchestrationTools";
@@ -10,8 +10,8 @@ import {
 } from "$lib/scheduling/scheduledRun";
 
 describe("the argv a scheduled run launches with", () => {
-  it("lets Claude Code edit files, beyond the commit agent's git-only grant", () => {
-    expect(scheduledRunArgs("claude-code", '-p --allowedTools "Bash(git *)" --')).toBe(
+  it("lets cline edit files, beyond the commit agent's git-only grant", () => {
+    expect(scheduledRunArgs("cline", '-p --allowedTools "Bash(git *)" --')).toBe(
       '-p --permission-mode acceptEdits --allowedTools "Bash(git *)" --'
     );
   });
@@ -59,3 +59,4 @@ describe("the scheduled run's prompt", () => {
     expect(placeholdersIn(DEFAULT_RUN_SCHEDULED).sort()).toEqual([...declared].sort());
   });
 });
+

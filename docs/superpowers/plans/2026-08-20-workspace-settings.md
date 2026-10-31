@@ -1,4 +1,4 @@
-# Workspace Settings Implementation Plan
+﻿# Workspace Settings Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -95,7 +95,7 @@ In `crates/protocol/src/lib.rs`'s test module:
             has_prd: false,
             config_warning: false,
             agent: Some(AgentConfig {
-                profile: Some("claude-code".to_string()),
+                profile: Some("cline".to_string()),
                 file: None,
                 command: Some("claude --model opus".to_string()),
             }),
@@ -104,7 +104,7 @@ In `crates/protocol/src/lib.rs`'s test module:
         assert_eq!(
             json["agent"],
             serde_json::json!({
-                "profile": "claude-code",
+                "profile": "cline",
                 "file": null,
                 "command": "claude --model opus"
             })
@@ -258,7 +258,7 @@ In `crates/daemon/src/gavin.rs`'s test module:
         std::fs::create_dir_all(&g).unwrap();
         std::fs::write(
             g.join("config.toml"),
-            "# hand-written, keep me\nversion = 1\nname = \"Mine\"\n\n[agent]\n# and me\nprofile = \"claude-code\"\n",
+            "# hand-written, keep me\nversion = 1\nname = \"Mine\"\n\n[agent]\n# and me\nprofile = \"cline\"\n",
         )
         .unwrap();
 
@@ -406,7 +406,7 @@ git add crates && git commit -m "feat(settings): agent config in config.toml, re
         ids.sort_unstable();
         ids.dedup();
         assert_eq!(ids.len(), count, "profile ids must be unique");
-        assert_eq!(count, 6, "claude-code, codex, gemini, cursor, opencode, custom");
+        assert_eq!(count, 6, "cline, codex, gemini, cursor, opencode, custom");
 
         for p in AGENT_PROFILES {
             assert!(!p.label.is_empty(), "{} has no label", p.id);
@@ -424,7 +424,7 @@ git add crates && git commit -m "feat(settings): agent config in config.toml, re
     fn only_claude_code_supports_mcp_in_this_sub_project() {
         let with_mcp: Vec<&str> =
             AGENT_PROFILES.iter().filter(|p| p.mcp.is_some()).map(|p| p.id).collect();
-        assert_eq!(with_mcp, ["claude-code"]);
+        assert_eq!(with_mcp, ["cline"]);
     }
 
     #[test]
@@ -491,8 +491,8 @@ pub struct AgentProfile {
 
 pub const AGENT_PROFILES: &[AgentProfile] = &[
     AgentProfile {
-        id: "claude-code",
-        label: "Claude Code",
+        id: "cline",
+        label: "cline",
         instructions_file: "CLAUDE.md",
         command: "claude",
         mcp: Some(McpLayout {
@@ -535,7 +535,7 @@ pub fn setup_agent_integration(root_path: String) -> Result<Vec<String>, String>
 with these two helpers:
 
 ```rust
-/// The profile id recorded in config.toml, defaulting to claude-code.
+/// The profile id recorded in config.toml, defaulting to cline.
 /// Read directly here rather than routed through the daemon: this is a
 /// one-shot read on a user-initiated action, and agent_setup already
 /// touches the root's files directly.
@@ -547,7 +547,7 @@ fn read_profile_id(root: &Path) -> String {
         .and_then(|t| {
             t.get("agent")?.as_table()?.get("profile")?.as_str().map(str::to_string)
         })
-        .unwrap_or_else(|| "claude-code".to_string())
+        .unwrap_or_else(|| "cline".to_string())
 }
 
 /// config.toml's explicit `file`, else the profile's default.
@@ -873,7 +873,7 @@ import {
 } from "./settings";
 
 const PROFILES: AgentProfileInfo[] = [
-  { id: "claude-code", label: "Claude Code", instructionsFile: "CLAUDE.md", command: "claude", mcpSupported: true },
+  { id: "cline", label: "cline", instructionsFile: "CLAUDE.md", command: "claude", mcpSupported: true },
   { id: "codex", label: "Codex CLI", instructionsFile: "AGENTS.md", command: "codex", mcpSupported: false },
   { id: "custom", label: "Custom…", instructionsFile: "", command: "", mcpSupported: false },
 ];
@@ -948,12 +948,12 @@ describe("resolveAgentConfig", () => {
     expect(r.command).toBe("codex");
   });
 
-  it("falls back to claude-code for a missing or unknown profile", () => {
+  it("falls back to cline for a missing or unknown profile", () => {
     expect(resolveAgentConfig(null, PROFILES)).toEqual({
-      profileId: "claude-code", file: "CLAUDE.md", command: "claude", mcpSupported: true,
+      profileId: "cline", file: "CLAUDE.md", command: "claude", mcpSupported: true,
     });
     expect(resolveAgentConfig({ profile: "not-a-thing", file: null, command: null }, PROFILES).profileId).toBe(
-      "claude-code"
+      "cline"
     );
   });
 
@@ -1048,13 +1048,13 @@ export interface ResolvedAgent {
   mcpSupported: boolean;
 }
 
-const FALLBACK_PROFILE = "claude-code";
+const FALLBACK_PROFILE = "cline";
 
 function nonEmpty(value: string | null | undefined): string | null {
   return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
-/// Explicit config beats the profile default beats claude-code's default
+/// Explicit config beats the profile default beats cline's default
 /// (spec §4.2). Expressed once so the panel, the hub label, the home tile
 /// and the agent-file view can never disagree.
 export function resolveAgentConfig(
@@ -1322,7 +1322,7 @@ Add a small store beside the others, hydrated once at bootstrap:
 
 ```typescript
 /// The Rust profile table, fetched once. Empty until bootstrap fills it;
-/// resolveAgentConfig degrades to its own claude-code fallbacks in that
+/// resolveAgentConfig degrades to its own cline fallbacks in that
 /// window, so an early call is safe rather than wrong.
 export const agentProfilesStore = writable<AgentProfileInfo[]>([]);
 ```
@@ -1881,7 +1881,7 @@ with
   const agent = $derived(
     resolveAgentConfig(tree?.contexts.find((c) => c.kind === "root")?.agent ?? null, $agentProfilesStore)
   );
-  // Only claude-code has an McpLayout in this sub-project, so naming its
+  // Only cline has an McpLayout in this sub-project, so naming its
   // file directly is honest rather than speculative; sub-project B makes
   // this follow the profile.
   const mcpFiles = ".mcp.json";
@@ -2014,3 +2014,4 @@ git add app/src && git commit -m "feat(settings): workspace colour on tab indica
 ## Out of scope
 
 MCP writers for Codex/Gemini/Cursor/opencode (sub-project B, which also decides what replaces `.claude/skills/gavin/SKILL.md` for agents with no native skill mechanism, and adds a custom MCP config path). Global cross-workspace settings. Theming beyond the accent colour.
+

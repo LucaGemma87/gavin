@@ -94,7 +94,7 @@ export function missingFromAppFallback(
   return out;
 }
 
-/// One line for the wizard: "Found: Claude Code, Cursor Agent" or a
+/// One line for the wizard: "Found: cline, Cursor Agent" or a
 /// sentence when nothing resolves.
 export function foundAgentsSummary(detected: readonly DetectedAgent[]): string {
   const labels = detected.filter((d) => d.found).map((d) => d.label);
@@ -114,3 +114,4 @@ export function detectWarnings(detected: readonly DetectedAgent[]): string[] {
   }
   return out;
 }
+

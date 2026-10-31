@@ -1,4 +1,4 @@
-// The Agents settings hub: one top-level Settings section with a General
+﻿// The Agents settings hub: one top-level Settings section with a General
 // tab plus one tab per agent (built-ins, then app-wide customs, then
 // workspace locals marked). Shared by the app-wide page, the workspace
 // Settings tab, and Companion.
@@ -72,7 +72,7 @@ export const AGENTS_SECTION_KEYWORDS: readonly string[] = [
   "effort",
   "reasoning",
   "thinking",
-  "Claude Code",
+  "cline",
   "Codex",
   "difficulty",
   "Fallback agent",
@@ -106,7 +106,7 @@ export const AGENTS_SECTION: SettingsSection = {
   keywords: [...AGENTS_SECTION_KEYWORDS],
 };
 
-const STOCK_IDS = new Set(["claude-code", "codex", "gemini", "cursor", "opencode", "kimi-code"]);
+const STOCK_IDS = new Set(["cline", "codex", "gemini", "cursor", "opencode", "kimi-code"]);
 
 export function isStockProfileId(id: string): boolean {
   return STOCK_IDS.has(id);
@@ -381,7 +381,7 @@ export function workspacePatchWithoutProfile(
 /// it removed: its fallback chain (and any chain naming it), its walk-at
 /// threshold, its complexity table (and every row routing to it), pause
 /// cycle, prompt lines and CLI args, and a default agent that pointed at
-/// it — which goes back to claude-code, the fallback an absent setting
+/// it — which goes back to cline, the fallback an absent setting
 /// already means.
 export function agentDefaultsWithoutCustom(defaults: AgentDefaults, id: string): AgentDefaults {
   const fallbackThresholds = { ...(defaults.fallbackThresholds ?? {}) };
@@ -395,7 +395,7 @@ export function agentDefaultsWithoutCustom(defaults: AgentDefaults, id: string):
     pauseCycles: mapWithoutKey(defaults.pauseCycles, id),
     promptExtras: mapWithoutKey(defaults.promptExtras, id),
     extraCliArgs: mapWithoutKey(defaults.extraCliArgs, id),
-    defaultAgent: (defaults.defaultAgent ?? "").trim() === id ? "claude-code" : defaults.defaultAgent,
+    defaultAgent: (defaults.defaultAgent ?? "").trim() === id ? "cline" : defaults.defaultAgent,
   };
 }
 
@@ -408,3 +408,4 @@ export function profilesForDefaults(profiles: AgentProfileInfo[]): AgentProfileI
 export function effortCapableProfiles(profiles: AgentProfileInfo[]): AgentProfileInfo[] {
   return profiles.filter((p) => Boolean(p.effortFlag?.trim()) || !isStockProfileId(p.id));
 }
+

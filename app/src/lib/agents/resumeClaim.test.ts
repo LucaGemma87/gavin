@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import { CLAIM_TTL_MS, ResumeClaims, claimKey } from "$lib/agents/resumeClaim";
 
 function at(now: { t: number }) {
@@ -9,7 +9,7 @@ describe("ResumeClaims", () => {
   it("gives the claim to exactly one caller", () => {
     const now = { t: 1000 };
     const claims = at(now);
-    const key = claimKey("claude-code", "sess-1");
+    const key = claimKey("cline", "sess-1");
     expect(claims.tryClaim(key)).toBe(true);
     expect(claims.tryClaim(key)).toBe(false);
   });
@@ -20,7 +20,7 @@ describe("ResumeClaims", () => {
   it("keeps the automatic resume and the manual press from both firing", () => {
     const now = { t: 1000 };
     const claims = at(now);
-    const key = claimKey("claude-code", "sess-1");
+    const key = claimKey("cline", "sess-1");
     const automatic = claims.tryClaim(key);
     const manual = claims.tryClaim(key);
     expect([automatic, manual]).toEqual([true, false]);
@@ -29,8 +29,8 @@ describe("ResumeClaims", () => {
   it("guards each session separately", () => {
     const now = { t: 1000 };
     const claims = at(now);
-    expect(claims.tryClaim(claimKey("claude-code", "sess-1"))).toBe(true);
-    expect(claims.tryClaim(claimKey("claude-code", "sess-2"))).toBe(true);
+    expect(claims.tryClaim(claimKey("cline", "sess-1"))).toBe(true);
+    expect(claims.tryClaim(claimKey("cline", "sess-2"))).toBe(true);
     // ...and the agent kind is part of the key, not decoration.
     expect(claims.tryClaim(claimKey("opencode", "sess-1"))).toBe(true);
   });
@@ -41,7 +41,7 @@ describe("ResumeClaims", () => {
   it("expires rather than persisting", () => {
     const now = { t: 1000 };
     const claims = at(now);
-    const key = claimKey("claude-code", "sess-1");
+    const key = claimKey("cline", "sess-1");
     expect(claims.tryClaim(key)).toBe(true);
 
     now.t += CLAIM_TTL_MS - 1;
@@ -58,7 +58,7 @@ describe("ResumeClaims", () => {
   it("can be given back early by a caller that failed to launch", () => {
     const now = { t: 1000 };
     const claims = at(now);
-    const key = claimKey("claude-code", "sess-1");
+    const key = claimKey("cline", "sess-1");
     claims.tryClaim(key);
     claims.release(key);
     expect(claims.tryClaim(key)).toBe(true);
@@ -67,7 +67,7 @@ describe("ResumeClaims", () => {
   it("reports whether a claim stands, for a surface that only wants to explain", () => {
     const now = { t: 1000 };
     const claims = at(now);
-    const key = claimKey("claude-code", "sess-1");
+    const key = claimKey("cline", "sess-1");
     expect(claims.isHeld(key)).toBe(false);
     claims.tryClaim(key);
     expect(claims.isHeld(key)).toBe(true);

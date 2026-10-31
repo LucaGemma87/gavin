@@ -1,7 +1,7 @@
 ---
 order: 7232
 kind: task
-title: Headroom 02: compressed launches and Claude Code
+title: Headroom 02: compressed launches and cline
 status: Done
 labels: ready-for-agent
 parent: headroom.md
@@ -9,7 +9,7 @@ complexity: intricate
 ---
 Blocked by: headroom-01-daemon-runs-headroom.md
 
-Part of `headroom.md`. Read the spec (sections "The switch", "Compressed sessions" and "The recipes", the Claude Code row) and ADR 0007 first.
+Part of `headroom.md`. Read the spec (sections "The switch", "Compressed sessions" and "The recipes", the cline row) and ADR 0007 first.
 
 ## What to build
 
@@ -17,18 +17,18 @@ Part of `headroom.md`. Read the spec (sections "The switch", "Compressed session
 - **The daemon's copy.** The app pushes each workspace's effective setting to the daemon whenever it changes. The daemon persists its copy and starts or stops Headroom (01) when any workspace is on or none is.
 - **Widen `CreateSession` with the launching profile's id.** Every launch surface sends it: card run, develop, resume and relaunch (`cardRunActions.ts`), rail steps and the orchestration agent (`orchestrationState.ts`), Best-of-N, tools, reviews, and the hidden commit run (`gitState.ts`). This widens an existing request, so add a `FEATURE_MIN_VERSION` entry in `daemonCompat.ts` **and** a `featureBlockedReason` consumer on every one of those surfaces.
 - **The decision at spawn, in the daemon.** A pure function of (workspace effective setting, Headroom ready, profile id, or for `SpawnAgentSession` the command's first token against the known agent binaries). Plain shell tabs never qualify. Record `compressed` on the session, and the reason when a session in a compressed workspace is not compressed: not ready, no recipe, or an unsupported agent.
-- **The Claude Code recipe:** `ANTHROPIC_BASE_URL=http://127.0.0.1:<port>`, `ENABLE_TOOL_SEARCH=true`, `ANTHROPIC_CUSTOM_HEADERS=X-Headroom-Project: <session id>`. Never send `x-headroom-session-id`.
+- **The cline recipe:** `ANTHROPIC_BASE_URL=http://127.0.0.1:<port>`, `ENABLE_TOOL_SEARCH=true`, `ANTHROPIC_CUSTOM_HEADERS=X-Headroom-Project: <session id>`. Never send `x-headroom-session-id`.
 - **Relaunches decide again.** Resume, relaunch, the fallback chain and auto-resume all spawn fresh. None of them carries the old decision over.
 
 ## Acceptance criteria
 
 - [x] The setting survives a restart, and both key-list parity tests pass
 - [x] The decision function is tested for each row: off, not ready, no recipe, Cursor, a plain shell tab, an MCP spawn of `claude`
-- [x] The Claude Code recipe is tested, including that no `x-headroom-session-id` is ever set
+- [x] The cline recipe is tested, including that no `x-headroom-session-id` is ever set
 - [x] An older daemon is never sent a widened `CreateSession`; every launch surface shows its `featureBlockedReason` (tested)
 - [x] A resumed session re-decides against Headroom's state at that moment (tested)
 - [x] `cargo test --workspace`, `npm test` and `npm run check` green
-- [ ] Human test: in a workspace with compression on, run a card with Claude Code on a Claude Max login; the agent works normally and Headroom's `/stats` shows requests under that session's id
+- [ ] Human test: in a workspace with compression on, run a card with cline on a Claude Max login; the agent works normally and Headroom's `/stats` shows requests under that session's id
 - [ ] Decision: When a workspace has compression on but the running daemon is older than v47, agents launch uncompressed and the launch itself says nothing (the daemon banner and, once 04 lands, the greyed switch are the only signs). Should the launch also say so?
   Options: A) No: the daemon banner and 04's greyed switch are enough B) Yes: leave it to 06's exception mark, with 'daemon too old' as a fourth reason C) Yes: a notice at launch, on every surface that starts an agent
 
@@ -55,7 +55,7 @@ There is no switch on screen yet: 04 builds it. Until then:
 2. Install Headroom where the daemon looks first: `uv tool install --python 3.13 "headroom-ai[all]==0.39.1"`.
 3. Quit the app. In `~/Library/Application Support/com.gavin.app/config.json`, add `"headroom": true` inside the workspace's object. (A top-level `"headroom": true` is the app-wide default instead.)
 4. Start the app. The daemon starts Headroom as soon as it is told a workspace is on; its port is in `~/Library/Application Support/gavin/headroom-run.json` (`headroom-run-dev.json` for a dev build).
-5. Run a card with Claude Code, then `curl http://127.0.0.1:<port>/stats` and look under `per_project` for the session's id. Any command the agent runs sees `ANTHROPIC_BASE_URL` pointing at that port.
+5. Run a card with cline, then `curl http://127.0.0.1:<port>/stats` and look under `per_project` for the session's id. Any command the agent runs sees `ANTHROPIC_BASE_URL` pointing at that port.
 
 ### What "every launch surface shows its `featureBlockedReason`" became
 
@@ -83,7 +83,7 @@ The spec's list of surfaces was short by six, and they are all covered: the main
 
 ### Not verified
 
-- **A real Claude Code through a real Headroom.** Everything here runs against the fake. That is the human test.
+- **A real cline through a real Headroom.** Everything here runs against the fake. That is the human test.
 - **Windows.** Not compiled for it, for the reason 01 gives.
 
 ### Known limits
@@ -95,3 +95,4 @@ The spec's list of surfaces was short by six, and they are all covered: the main
 <!-- gavin:auto-commit -->
 When the implementation is done, commit it. Commit only the files you touched — never `git add -A`. Do not push.
 <!-- /gavin:auto-commit -->
+

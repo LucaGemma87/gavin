@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+﻿import { describe, it, expect, beforeEach } from "vitest";
 import { get } from "svelte/store";
 import {
   boardSelection,
@@ -128,8 +128,8 @@ describe("selectionRunConfirm", () => {
       targets,
       launchEstimate({
         count: 2,
-        profileId: "claude-code",
-        means: { "claude-code": 2 * 1024 ** 3 },
+        profileId: "cline",
+        means: { "cline": 2 * 1024 ** 3 },
         storedMeans: {},
         measuredAgents: 1,
         sample: {

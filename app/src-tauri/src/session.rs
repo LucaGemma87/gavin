@@ -1,4 +1,4 @@
-use crate::command_lane::{CommandLane, DaemonLanes, Redial};
+﻿use crate::command_lane::{CommandLane, DaemonLanes, Redial};
 use crate::config::Workspace;
 use crate::layout::LayoutNode;
 use crate::stream_writer::StreamWriter;
@@ -533,7 +533,7 @@ mod workspaces_data_tests {
         let dir = tempfile::tempdir().unwrap();
         let data = WorkspacesData { workspaces: vec![], active_workspace_id: None, removed_workspaces: vec![] };
         let mut models = HashMap::new();
-        models.insert("claude-code".to_string(), "opus".to_string());
+        models.insert("cline".to_string(), "opus".to_string());
         persist_workspaces(
             dir.path(),
             &data,
@@ -864,7 +864,7 @@ mod workspaces_data_tests {
         complexity.insert(
             "intricate".to_string(),
             crate::config::ComplexityAgent {
-                profile: "claude-code".to_string(),
+                profile: "cline".to_string(),
                 model: "opus".to_string(),
                 effort: "max".to_string(),
                 advisor: "opus".to_string(),
@@ -883,19 +883,19 @@ mod workspaces_data_tests {
             custom_command: String::new(),
             custom_model_flag: String::new(),
             custom_effort_flag: String::new(),
-            agent_efforts: HashMap::from([("claude-code".to_string(), "high".to_string())]),
+            agent_efforts: HashMap::from([("cline".to_string(), "high".to_string())]),
             custom_api_family: String::new(),
             complexity: HashMap::new(),
-            complexity_tables: HashMap::from([("claude-code".to_string(), complexity)]),
+            complexity_tables: HashMap::from([("cline".to_string(), complexity)]),
             pause_cycles: HashMap::new(),
             prompt_extras: HashMap::new(),
             extra_cli_args: HashMap::new(),
             default_agent: Some("codex".to_string()),
             agent_fallback: Vec::new(),
-            fallback_chains: HashMap::from([("claude-code".to_string(), vec!["codex".to_string()])]),
+            fallback_chains: HashMap::from([("cline".to_string(), vec!["codex".to_string()])]),
             fallback_thresholds: {
                 let mut m = HashMap::new();
-                m.insert("claude-code".to_string(), 80);
+                m.insert("cline".to_string(), 80);
                 m
             },
             action_prompt_overrides: HashMap::new(),
@@ -1203,7 +1203,7 @@ mod workspaces_data_tests {
             action_prompt_overrides: HashMap::new(),
         };
         ws.complexity_tables.insert(
-            "claude-code".to_string(),
+            "cline".to_string(),
             HashMap::from([(
                 "trivial".to_string(),
                 crate::config::ComplexityAgent {
@@ -1371,7 +1371,7 @@ mod workspaces_data_tests {
             limit_enabled: true,
         };
         let defaults = crate::config::AgentDefaultsConfig {
-            pause_cycles: HashMap::from([("claude-code".to_string(), cycle.clone())]),
+            pause_cycles: HashMap::from([("cline".to_string(), cycle.clone())]),
             ..Default::default()
         };
         persist_workspaces(
@@ -1396,7 +1396,7 @@ mod workspaces_data_tests {
         )
         .unwrap();
         assert_eq!(
-            crate::config::load(dir.path()).unwrap().agent_defaults.pause_cycles.get("claude-code"),
+            crate::config::load(dir.path()).unwrap().agent_defaults.pause_cycles.get("cline"),
             Some(&cycle)
         );
     }
@@ -5262,13 +5262,13 @@ mod resolve_workspaces_tests {
             Some("/Users/alice/project-rail"),
             Some("/Users/alice/project"),
             Some("claude 'Read the card'"),
-            Some("claude-code"),
+            Some("cline"),
             None,
             "/Users/alice",
         ))
         .unwrap();
 
-        assert_eq!(the_profile_sent(&captured, 0).as_deref(), Some("claude-code"));
+        assert_eq!(the_profile_sent(&captured, 0).as_deref(), Some("cline"));
     }
 
     /// The widening is invisible to `min_version_for`, so the lane's own
@@ -5286,7 +5286,7 @@ mod resolve_workspaces_tests {
             Some("/tmp"),
             Some("/tmp"),
             Some("claude 'Read the card'"),
-            Some("claude-code"),
+            Some("cline"),
             None,
             "/home/t",
         ))
@@ -5303,8 +5303,8 @@ mod resolve_workspaces_tests {
     #[test]
     fn the_profile_is_sent_from_the_version_that_reads_it() {
         let at = protocol::COMPRESSED_LAUNCH_MIN_VERSION;
-        assert_eq!(profile_for_daemon(at - 1, Some("claude-code")), None);
-        assert_eq!(profile_for_daemon(at, Some("claude-code")).as_deref(), Some("claude-code"));
+        assert_eq!(profile_for_daemon(at - 1, Some("cline")), None);
+        assert_eq!(profile_for_daemon(at, Some("cline")).as_deref(), Some("cline"));
         assert_eq!(profile_for_daemon(at + 1, Some("codex")).as_deref(), Some("codex"));
         // Nothing to name is nothing to send, at any version.
         assert_eq!(profile_for_daemon(at, None), None);
@@ -5327,13 +5327,13 @@ mod resolve_workspaces_tests {
             Some("/definitely/does/not/exist/anywhere"),
             Some("/Users/alice/project"),
             Some("claude 'Read the card'"),
-            Some("claude-code"),
+            Some("cline"),
             None,
             "/home/t",
         ))
         .unwrap();
 
-        assert_eq!(the_profile_sent(&captured, 0).as_deref(), Some("claude-code"));
+        assert_eq!(the_profile_sent(&captured, 0).as_deref(), Some("cline"));
         assert_eq!(the_profile_sent(&captured, 1), None);
     }
 
@@ -5400,7 +5400,7 @@ mod resolve_workspaces_tests {
         // A v47 daemon would drop it; it reads profile_id and nothing more.
         assert_eq!(api_family_for_daemon(at - 1, Some("custom"), Some("openai")), None);
         // Stock built-ins are binaries the daemon knows the API of.
-        assert_eq!(api_family_for_daemon(at, Some("claude-code"), Some("openai")), None);
+        assert_eq!(api_family_for_daemon(at, Some("cline"), Some("openai")), None);
         assert_eq!(api_family_for_daemon(at, Some("codex"), Some("anthropic")), None);
         // A shell names no profile, and so no family.
         assert_eq!(api_family_for_daemon(at, None, Some("openai")), None);
@@ -5458,7 +5458,7 @@ mod resolve_workspaces_tests {
             Some("/tmp"),
             Some("/tmp"),
             Some("claude --resume abc"),
-            Some("claude-code"),
+            Some("cline"),
             None,
             true,
             "/home/t",
@@ -5501,7 +5501,7 @@ mod resolve_workspaces_tests {
             Some("/tmp"),
             Some("/tmp"),
             Some("claude --resume abc"),
-            Some("claude-code"),
+            Some("cline"),
             None,
             true,
             "/home/t",
@@ -5526,7 +5526,7 @@ mod resolve_workspaces_tests {
             Some("/definitely/does/not/exist/anywhere"),
             Some("/Users/alice/project"),
             Some("claude --resume abc"),
-            Some("claude-code"),
+            Some("cline"),
             None,
             true,
             "/home/t",

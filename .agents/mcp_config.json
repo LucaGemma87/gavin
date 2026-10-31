@@ -2,7 +2,7 @@
   "mcpServers": {
     "gavin": {
       "args": [],
-      "command": "scripts/gavin-mcp"
+      "command": "C:\\Users\\lucag\\AppData\\Local\\Programs\\Gavin\\gavin-mcp.exe"
     }
   }
 }

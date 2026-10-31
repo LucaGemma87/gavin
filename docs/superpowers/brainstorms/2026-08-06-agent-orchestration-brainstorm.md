@@ -100,7 +100,7 @@ below-3→5, below-4→6, below-7 folded into 3.)
 | Q1 | The cut-off sentence: agents are "injected with the concept of creating a" — creating what? | **answered → D1** |
 | Q2 | Source of truth for plan status: md frontmatter (files are truth, boards are a view), SQLite (boards are truth), or bidirectional sync? Note agents can only touch files. | **answered → D2** |
 | Q3 | Injection mechanism: skill files written into the repo, a gavin MCP server, launch-command flags/prompt — or a combination? | **answered → D3** |
-| Q4 | Agent scope: Claude Code only for v1 (with an adapter seam for "picked agent equivalent"), or pluggable from day one? | **answered → D4** |
+| Q4 | Agent scope: cline only for v1 (with an adapter seam for "picked agent equivalent"), or pluggable from day one? | **answered → D4** |
 | Q5 | Workspace ⇄ root binding: chosen at workspace creation? Inferred from sessions? Migration for existing workspaces; Unfiled exempt? Exactly one root per workspace? | **answered → D5** |
 | Q6 | Editor tech: plain textarea vs CodeMirror; edit/preview toggle vs side-by-side for md? Save model: explicit vs autosave? | **answered → D8** |
 | Q7 | PRD convention: one `PRD.md` (exact name?) in `.gavin-root/`? Config file format? | **answered → D9** |
@@ -252,10 +252,10 @@ below-3→5, below-4→6, below-7 folded into 3.)
   status, PRD read, `.gavin` folder creation/listing, board access, **session
   spawning** (agents can orchestrate). The injected skill (D1) is still built alongside
   it — MCP provides the levers, the skill teaches the discipline; both ship day one.
-- **D4 (Q4, 2026-08-06):** **Claude Code first, behind an agent-profile seam.** The
+- **D4 (Q4, 2026-08-06):** **cline first, behind an agent-profile seam.** The
   workspace config stores a chosen agent profile — instructions filename (CLAUDE.md),
   skill mechanism, MCP registration format, launch command — and every feature reads
-  the profile. V1 ships only the Claude Code profile; more agents are additive later.
+  the profile. V1 ships only the cline profile; more agents are additive later.
 - **D5 (Q5, 2026-08-06):** **Root binding is optional + explicit.** Folder picker at
   workspace creation and a "Set workspace root" affordance on the home for existing
   workspaces. No root → workspace behaves exactly as today; orchestration features
@@ -443,3 +443,4 @@ point of the sub-6 invariant).
 
 **Phase 2 is complete**: all six sub-projects (Foundations → Plans⇄kanban →
 MCP → Markdown editing → Plan explorer → Orchestration home) are shipped.
+

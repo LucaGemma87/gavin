@@ -1,4 +1,4 @@
----
+﻿---
 order: 7296
 kind: task
 title: Headroom 04: the setup surfaces
@@ -7,7 +7,7 @@ labels: ready-for-agent
 parent: headroom.md
 complexity: complex
 ---
-Blocked by: headroom-01-daemon-runs-headroom.md, headroom-02-compressed-launches-claude-code.md
+Blocked by: headroom-01-daemon-runs-headroom.md, headroom-02-compressed-launches-cline.md
 
 Part of `headroom.md`. Read the spec (sections "Detection and install", "The switch" and "Platforms") first.
 

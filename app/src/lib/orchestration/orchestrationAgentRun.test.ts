@@ -1,4 +1,4 @@
-// The EFFECT half of the Orchestration tab's agent requests: Organize and
+﻿// The EFFECT half of the Orchestration tab's agent requests: Organize and
 // a rail's Reorganize each spawn a dedicated session, record it in the
 // workspace's one slot, and release that slot when the run is over. The
 // decisions themselves are orchestrationAgent.test.ts's.
@@ -66,7 +66,7 @@ vi.mock("$lib/core/layoutState", () => ({
     command: "claude",
     launchCommand: "claude",
     file: "CLAUDE.md",
-    profileId: "claude-code",
+    profileId: "cline",
   })),
   agentDefaultsStore: writable({
     customCommand: "",
@@ -237,7 +237,7 @@ describe("requestOrganize", () => {
     expect(await requestOrganize("ws-1", [], [])).toBeNull();
 
     const launch = vi.mocked(backend.createSession).mock.calls[0];
-    expect(launch).toEqual(["/ws", expect.stringContaining("claude "), "/ws", "claude-code"]);
+    expect(launch).toEqual(["/ws", expect.stringContaining("claude "), "/ws", "cline"]);
   });
 
   it("launches with no profile against a daemon too old to read one", async () => {

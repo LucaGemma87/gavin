@@ -210,7 +210,7 @@ store.
 points at `app/src-tauri/entitlements.plist`. That file grants **nothing**:
 every key in it is `false`, and its comment enumerates what gavin does
 (spawns the sidecars and agent CLIs, opens PTYs, shells out to `security`
-for the Claude Code OAuth token, renders in WKWebView) and why none of it
+for the cline OAuth token, renders in WKWebView) and why none of it
 needs a hardened-runtime exception. Library validation stays on, which is
 what stops `DYLD_INSERT_LIBRARIES` and an unsigned dylib dropped beside the
 app.
@@ -447,3 +447,4 @@ assessment, the whole Linux and Windows jobs, and every line of the
 updater path beyond a local build — has never executed. Expect the first
 tagged release to need fixes, and read a red job on it as information
 rather than as a regression.
+

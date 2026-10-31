@@ -11,7 +11,7 @@ import {
 import { setOnWriteInputHook, writeInput } from "$lib/core/backend";
 
 // The hook is what dismisses the ↻ restored badge, and it used to fire
-// on every write. Claude Code tracks the mouse, so hovering its terminal
+// on every write. cline tracks the mouse, so hovering its terminal
 // is a stream of writes nobody typed -- and a focus report is one too.
 describe("writeInput's hook", () => {
   const hook = vi.fn();
@@ -59,3 +59,4 @@ describe("writeInput and a reopened conversation", () => {
     expect(isAwaitingFirstSubmit("s1")).toBe(false);
   });
 });
+

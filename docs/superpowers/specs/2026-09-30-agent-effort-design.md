@@ -1,4 +1,4 @@
-# Agent Effort — Design
+﻿# Agent Effort — Design
 
 **Status:** implemented 2026-09-30 (card `[feat] effort handling`).
 
@@ -53,7 +53,7 @@ Continuing the log from `2026-08-25-agent-default-model-design.md`
 
   | profile | `effort_flag` | `efforts` | source |
   |---|---|---|---|
-  | `claude-code` | `--effort` | low, medium, high, xhigh, max | `claude --help`, 2.1.285 |
+  | `cline` | `--effort` | low, medium, high, xhigh, max | `claude --help`, 2.1.285 |
   | `codex` | `-c model_reasoning_effort=` | minimal, low, medium, high, xhigh | Codex config reference (no local binary) |
   | `gemini` | — | — | no flag; thinking budget lives in `settings.json` |
   | `cursor` | — | — | effort is a bracket parameter of the model id (`model[effort=high]`), so the model's Custom… box is the route |
@@ -81,7 +81,7 @@ Continuing the log from `2026-08-25-agent-default-model-design.md`
 ```toml
 # .gavin-root/config.toml
 [agent]
-profile = "claude-code"
+profile = "cline"
 model   = "opus"
 effort  = "high"          # new; absent = the app-wide default for the profile
 effort_flag = "--think"   # new; for `custom` only
@@ -91,7 +91,7 @@ effort_flag = "--think"   # new; for `custom` only
 // config.json, agent_defaults
 {
   "customEffortFlag": "--think",
-  "agentEfforts": { "claude-code": "high", "codex": "medium" },
+  "agentEfforts": { "cline": "high", "codex": "medium" },
   "complexity": { "intricate": { "profile": "", "model": "opus", "effort": "max" } }
 }
 ```

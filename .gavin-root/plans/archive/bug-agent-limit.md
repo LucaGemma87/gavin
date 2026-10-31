@@ -1,4 +1,4 @@
----
+﻿---
 order: 11264
 kind: plan
 title: [bug] agent limit
@@ -9,7 +9,7 @@ In Grimoria workspace I cant start an agent from a card: I get an usage limit fo
 
 ## Cause
 
-Grimoria's workspace agent is Cursor. The app-wide complexity table still attributes every level to `claude-code`. A card with `complexity:` therefore launches Claude, not Cursor. Claude is at its limit; the fallback chain is empty; the hold sentence claims the fallback chain is spent anyway.
+Grimoria's workspace agent is Cursor. The app-wide complexity table still attributes every level to `cline`. A card with `complexity:` therefore launches Claude, not Cursor. Claude is at its limit; the fallback chain is empty; the hold sentence claims the fallback chain is spent anyway.
 
 Cursor's Other-Models / API pool is a separate quota from Auto. `usageBlock` treats any window as a hold, so a full API bar can also refuse an `agent` launch whose Auto window is at 45%.
 

@@ -1,4 +1,4 @@
-import type { AgentSkillsMark, AgentSkillsStatus } from "$lib/agents/agentSkills";
+﻿import type { AgentSkillsMark, AgentSkillsStatus } from "$lib/agents/agentSkills";
 import { agentSkillsDone } from "$lib/agents/agentSkills";
 import {
   headroomStepDone,
@@ -302,7 +302,7 @@ export function agentFlowAvailable(
   // `promptArgs` is a PREFIX, and "" is the bare positional -- a working
   // profile, not an absent one. Only null means the agent takes no
   // prompt ARGV, so this compares rather than coerces: `Boolean("")`
-  // would hide the flow from claude-code, codex and gemini alike.
+  // would hide the flow from cline, codex and gemini alike.
   return agent !== undefined && (agent.promptArgs !== null || usesPromptInjection(agent));
 }
 

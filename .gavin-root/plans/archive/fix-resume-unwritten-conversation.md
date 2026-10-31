@@ -51,7 +51,7 @@ Gavin already knows how to find the log, for token accounting:
 `claude_transcript` and `codex_rollout` in `app/src-tauri/src/agent_tokens.rs`,
 reached through the profile's `TokenLog`. `claude_transcript` deliberately
 scans every project directory for `<conversation_id>.jsonl` rather than
-reproducing Claude Code's slug rule — which is undocumented, has changed, and
+reproducing cline's slug rule — which is undocumented, has changed, and
 would be wrong for any agent that moved into a worktree. That resolver is
 exactly the existence check Resume needs, per profile, already written and
 already correct about the hard case.
@@ -156,3 +156,4 @@ the load-bearing assumption of
 [the windows port card](./feat-windows-port-on-a-windows-machine.md) and has
 never been proven on a Windows machine. This card is about the guard, which is
 worth having however that turns out — an agent can die at launch on any OS.
+

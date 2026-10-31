@@ -1024,4 +1024,5 @@ No new source files — a scripted proof that the built shim + built daemon spea
 
 ## Out of scope (Part 2)
 
-App bootstrap version probe + `BootstrapError` wiring, the `AgentSessionSpawned` relay arm + Attach + Agents-page landing, the setup button and its merge-aware writes, `SKILL.md` content, manual smoke with a real Claude Code session.
+App bootstrap version probe + `BootstrapError` wiring, the `AgentSessionSpawned` relay arm + Attach + Agents-page landing, the setup button and its merge-aware writes, `SKILL.md` content, manual smoke with a real cline session.
+

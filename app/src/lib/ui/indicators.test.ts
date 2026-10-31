@@ -384,8 +384,8 @@ describe("usageProjectionIndicator", () => {
   // prefix, exactly as agentFailedIndicator's reason does -- a surface
   // gets to be precise without starting a second vocabulary.
   it("takes a specific sentence without losing the axis", () => {
-    const badge = usageProjectionIndicator("over", "Claude Code · Weekly runs out first") as Indicator;
-    expect(badge.tip).toBe("Usage · Claude Code · Weekly runs out first");
+    const badge = usageProjectionIndicator("over", "cline · Weekly runs out first") as Indicator;
+    expect(badge.tip).toBe("Usage · cline · Weekly runs out first");
     expect(badge.label).toBe(badge.tip);
     expect(badge.tone).toBe("danger");
   });
@@ -454,3 +454,4 @@ describe("tabAgentIndicator", () => {
     expect(tabAgentIndicator("failed", "API Error: 529")?.tip).toContain("API Error: 529");
   });
 });
+

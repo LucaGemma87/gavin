@@ -1,4 +1,4 @@
----
+﻿---
 title: Multi-agent MCP support
 kind: plan
 status: Done
@@ -8,7 +8,7 @@ labels: agents
 # Multi-agent MCP support
 
 Make the five non-Claude profiles actually work. Settings already lets you
-pick Codex, Gemini, Cursor, opencode or custom — but only `claude-code`
+pick Codex, Gemini, Cursor, opencode or custom — but only `cline`
 has an `McpLayout`, so for the rest gavin writes the agent file and then
 tells you what it cannot do. This closes that gap.
 
@@ -36,7 +36,7 @@ are folded in below.
 
 | Profile | MCP config | Shape | Positional prompt |
 | --- | --- | --- | --- |
-| Claude Code | `.mcp.json` | `mcpServers.<key>` — `command` + `args` | yes |
+| cline | `.mcp.json` | `mcpServers.<key>` — `command` + `args` | yes |
 | Gemini CLI | `.gemini/settings.json` | `mcpServers.<key>` — same shape, different path | yes — `gemini [query..]` starts interactive on it |
 | Cursor | `.cursor/mcp.json` | `mcpServers.<key>` **plus `type: "stdio"`**, which its docs now require | no — `cursor` is the IDE launcher and takes paths; the agent CLI is a separate binary |
 | Codex CLI | `.codex/config.toml` | TOML `[mcp_servers.<key>]` — `command` + `args` | yes — a positional `PROMPT` starts the session |
@@ -67,6 +67,7 @@ the guidance in the marker block itself. Inherit that; do not redecide it.
 
 ## Why it matters
 
-Every profile beyond Claude Code is currently selectable but inert. Until
+Every profile beyond cline is currently selectable but inert. Until
 this lands, "gavin supports five agents" is true of the settings panel and
 false of the product.
+

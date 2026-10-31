@@ -1,4 +1,4 @@
-// A workspace's tools, run from the phone: what the Tools surface lists,
+﻿// A workspace's tools, run from the phone: what the Tools surface lists,
 // and every launch's traffic, read at the wire against the Demo
 // Workstation.
 //
@@ -169,7 +169,7 @@ describe("running an agent tool", () => {
 
     const create = sentSince(demo, from).find((s) => s.cmd === "create_session");
     expect(String(create?.args.command)).toContain("Read the commits since v2.0.0");
-    expect(create?.args.profileId).toBe("claude-code");
+    expect(create?.args.profileId).toBe("cline");
     const sessionId = String(demo.state.toolRuns.at(-1)?.sessionId);
     expect(get(view)).toMatchObject({ workspaceId: DEMO.atlas, sessionId });
   });

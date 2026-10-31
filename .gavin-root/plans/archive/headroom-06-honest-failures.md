@@ -1,4 +1,4 @@
----
+﻿---
 order: 7360
 kind: task
 title: Headroom 06: honest failures
@@ -7,7 +7,7 @@ labels: ready-for-agent
 parent: headroom.md
 complexity: complex
 ---
-Blocked by: headroom-02-compressed-launches-claude-code.md, headroom-05-savings.md
+Blocked by: headroom-02-compressed-launches-cline.md, headroom-05-savings.md
 
 Part of `headroom.md`. Read the spec (section "Failures") first.
 
@@ -25,7 +25,7 @@ Part of `headroom.md`. Read the spec (section "Failures") first.
 - [x] A compressed session with zero Headroom requests after a finished turn gets "not reaching Headroom" (tested)
 - [x] The mark is decided in a pure module and appears only in the three exception cases (tested)
 - [x] `cargo test --workspace`, `npm test` and `npm run check` green
-- [ ] Human test: After rebuilding the app and restarting the daemon (v50), and before Headroom is installed on this machine: turn compression on for a workspace and run a card with Claude Code. Its tab shows the Headroom mark (a grey shrink glyph) whose tooltip says Headroom was not ready. Once Headroom is installed and running, a new card run's tab shows no Headroom mark.
+- [ ] Human test: After rebuilding the app and restarting the daemon (v50), and before Headroom is installed on this machine: turn compression on for a workspace and run a card with cline. Its tab shows the Headroom mark (a grey shrink glyph) whose tooltip says Headroom was not ready. Once Headroom is installed and running, a new card run's tab shows no Headroom mark.
 
 ## Result (2026-09-29)
 
@@ -62,3 +62,4 @@ v50 is provisional. Five places move together: `PROTOCOL_VERSION`, `HEADROOM_FAI
 <!-- gavin:auto-commit -->
 When the implementation is done, commit it. Commit only the files you touched — never `git add -A`. Do not push.
 <!-- /gavin:auto-commit -->
+

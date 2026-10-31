@@ -21,7 +21,7 @@ In the settings the button should be shown only if superpower is not installed. 
   **Superpowers** → PRD → Launch. It is agent tooling, so it belongs beside
   Integration; PRD and Launch stay last.
 - **S3 — Source is `superpowers@claude-plugins-official`.** That marketplace
-  is configured on every Claude Code install, so there is no
+  is configured on every cline install, so there is no
   `marketplace add` and no trust prompt for gavin to answer on the human's
   behalf.
 - **S4 — Install at project scope** (`--scope project`), so the record
@@ -81,7 +81,7 @@ prompt, and it has no `--yes`. Verified both ways on this machine — with stdin
 closed it prompts and installs nothing; with `y` piped in it installs. Driving
 it would mean gavin answering a security prompt on the human's behalf, which is
 exactly what S3 chose the pre-configured marketplace to avoid. So **only
-Claude Code gets an Install button**, and Gemini gets the copy block.
+cline gets an Install button**, and Gemini gets the copy block.
 
 Two findings that shaped the detectors:
 
@@ -90,7 +90,7 @@ Two findings that shaped the detectors:
   project. Running it in the workspace root turns "installed somewhere" into
   S5's "active for a session started here", with no scope arithmetic and no
   `projectPath` comparison.
-- Claude Code puts its failure reason on **stderr** and only its progress line
+- cline puts its failure reason on **stderr** and only its progress line
   on stdout, so the drawer interleaves both. A stdout-only drawer reports a
   failed install as a truncated success.
 
@@ -103,3 +103,4 @@ Green: `cargo test --workspace` (672 incl. 25 new, 1 ignored live check),
 items appended — seven under Init wizard, four under Workspace settings.
 
 No protocol bump, per S9.
+

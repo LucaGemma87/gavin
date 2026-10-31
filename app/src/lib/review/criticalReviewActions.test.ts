@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 import { get, writable } from "svelte/store";
 import type { CardView } from "$lib/core/planBoard";
 
@@ -42,7 +42,7 @@ vi.mock("$lib/core/layoutState", () => ({
   agentDefaultsStore: writable({ actionPromptOverrides: {} }),
   setAgentDefaults: vi.fn().mockResolvedValue(undefined),
   agentProfilesStore: writable([
-    { id: "claude-code", label: "Claude Code", models: ["sonnet", "opus"], promptArgs: "" },
+    { id: "cline", label: "cline", models: ["sonnet", "opus"], promptArgs: "" },
     { id: "codex", label: "Codex", models: ["gpt"], promptArgs: "" },
   ]),
   // The launching profile, as the real one names it against a daemon
@@ -50,8 +50,8 @@ vi.mock("$lib/core/layoutState", () => ({
   profileIdForLaunch: vi.fn((agent: { profileId: string }): string | undefined => agent.profileId),
   promptExtrasFor: vi.fn((): string[] => []),
   resolvedAgentFor: vi.fn(() => ({
-    profileId: "claude-code",
-    label: "Claude Code",
+    profileId: "cline",
+    label: "cline",
     launchCommand: "claude",
     promptArgs: "",
     sessionIdArgs: "",
@@ -188,7 +188,7 @@ describe("requestCardCriticalReview", () => {
       await confirmCriticalReview({
         base: "main",
         reviewers: [
-          { profileId: "claude-code", model: "sonnet" },
+          { profileId: "cline", model: "sonnet" },
           { profileId: "codex", model: "gpt" },
         ],
       })
@@ -244,7 +244,7 @@ describe("confirmCriticalReview", () => {
     const err = await confirmCriticalReview({
       base: "main",
       reviewers: [
-        { profileId: "claude-code", model: "sonnet" },
+        { profileId: "cline", model: "sonnet" },
         { profileId: "codex", model: "gpt" },
       ],
       alsoBuildFindingsRail: false,
@@ -284,14 +284,14 @@ describe("confirmCriticalReview", () => {
     await confirmCriticalReview({
       base: "main",
       reviewers: [
-        { profileId: "claude-code", model: "sonnet" },
+        { profileId: "cline", model: "sonnet" },
         { profileId: "codex", model: "gpt" },
       ],
       alsoBuildFindingsRail: false,
     });
 
     const specs = createTiledPage.mock.calls[0][2];
-    expect(specs.map((s: { profileId?: string }) => s.profileId)).toEqual(["claude-code", "codex"]);
+    expect(specs.map((s: { profileId?: string }) => s.profileId)).toEqual(["cline", "codex"]);
   });
 
   it("launches every reviewer with no profile when there is none to name", async () => {
@@ -301,7 +301,7 @@ describe("confirmCriticalReview", () => {
     const err = await confirmCriticalReview({
       base: "main",
       reviewers: [
-        { profileId: "claude-code", model: "sonnet" },
+        { profileId: "cline", model: "sonnet" },
         { profileId: "codex", model: "gpt" },
       ],
       alsoBuildFindingsRail: false,
@@ -318,8 +318,8 @@ describe("confirmCriticalReview", () => {
     await confirmCriticalReview({
       base: "main",
       reviewers: [
-        { profileId: "claude-code", model: "sonnet" },
-        { profileId: "claude-code", model: "opus" },
+        { profileId: "cline", model: "sonnet" },
+        { profileId: "cline", model: "opus" },
       ],
       alsoBuildFindingsRail: true,
     });
@@ -332,7 +332,7 @@ describe("confirmCriticalReview", () => {
     expect(
       await confirmCriticalReview({
         base: "main",
-        reviewers: [{ profileId: "claude-code", model: "" }],
+        reviewers: [{ profileId: "cline", model: "" }],
       })
     ).toMatch(/at least two/);
     expect(createTiledPage).not.toHaveBeenCalled();
@@ -345,7 +345,7 @@ describe("confirmCriticalReview", () => {
       await confirmCriticalReview({
         base: "main",
         reviewers: [
-          { profileId: "claude-code", model: "sonnet" },
+          { profileId: "cline", model: "sonnet" },
           { profileId: "custom", model: "" },
         ],
       })
@@ -353,3 +353,4 @@ describe("confirmCriticalReview", () => {
     expect(createTiledPage).not.toHaveBeenCalled();
   });
 });
+

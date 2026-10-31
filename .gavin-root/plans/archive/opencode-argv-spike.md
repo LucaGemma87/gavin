@@ -38,7 +38,7 @@ checkout is shared with other agent sessions.
 7. Conversation resume, which gavin now needs from every profile
    (`.gavin-root/plans/bug-agent-connection-failure.md`, Root 3). Three things,
    in order — each is useless without the one before it:
-   a. **Fixing the id at launch.** Claude Code takes `--session-id <uuid>`, so
+   a. **Fixing the id at launch.** cline takes `--session-id <uuid>`, so
       gavin mints the id and always knows it. Ask the binary whether opencode
       has an equivalent. If it does not, the fallback question is whether the id
       can be learned deterministically right after launch — printed, or written
@@ -49,7 +49,7 @@ checkout is shared with other agent sessions.
       sessions, not `run` invocations, so a session flag that exists only on the
       headless subcommand does not close this out. Check both and say which.
    c. **Whether resuming extends the original conversation or forks a new one**,
-      and whether that is selectable (Claude Code has `--fork-session`).
+      and whether that is selectable (cline has `--fork-session`).
    Any cwd-keyed "continue the last conversation here" flag is unusable
    regardless of what it is called: this checkout is shared, several agent
    sessions run in one worktree, and gavin would resume the wrong one.
@@ -63,3 +63,4 @@ checkout is shared with other agent sessions.
 Where something cannot be verified, say so explicitly rather than guessing. An
 unverified convention stays out of the profile table — that is the table's whole
 rule.
+

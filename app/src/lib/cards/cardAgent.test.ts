@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   cardAgentEntry,
   cardAgentOverride,
@@ -14,7 +14,7 @@ const app: ComplexityTable = {
   trivial: { profile: "", model: "haiku" },
   intricate: { profile: "codex", model: "gpt-5.1" },
 };
-const label = (id: string) => (id === "codex" ? "Codex" : id === "claude-code" ? "Claude Code" : id);
+const label = (id: string) => (id === "codex" ? "Codex" : id === "cline" ? "cline" : id);
 
 describe("cardAgentOverride", () => {
   it("reads either half on its own, since either is a whole answer", () => {
@@ -130,11 +130,11 @@ describe("cardAgentSummary", () => {
   it("says what the override BEAT when the level would have picked something", () => {
     // Both controls sit next to each other showing different answers, so
     // the line has to name the winner -- otherwise "intricate" beside
-    // "Claude Code" is two claims with no way to tell which one runs.
+    // "cline" is two claims with no way to tell which one runs.
     expect(
-      cardAgentSummary({ complexity: "intricate", agent: "claude-code" }, app, label)
+      cardAgentSummary({ complexity: "intricate", agent: "cline" }, app, label)
     ).toBe(
-      "This card runs Claude Code — overriding what its intricate level would run (Codex on gpt-5.1)."
+      "This card runs cline — overriding what its intricate level would run (Codex on gpt-5.1)."
     );
   });
 
@@ -214,13 +214,13 @@ describe("changeCardAgent", () => {
   }
 
   it("clears the card's own model and effort when the agent it lands on changes", async () => {
-    // `model: auto` was chosen for Cursor; on Claude Code it is
+    // `model: auto` was chosen for Cursor; on cline it is
     // `claude --model auto`, which does not start.
     const { writes, write } = recorder();
     const card = { agent: "cursor", model: "auto", effort: "high" };
-    expect(await changeCardAgent(write, card, "claude-code", "cursor", "claude-code")).toBe(true);
+    expect(await changeCardAgent(write, card, "cline", "cursor", "cline")).toBe(true);
     expect(writes).toEqual([
-      ["agent", "claude-code"],
+      ["agent", "cline"],
       ["model", ""],
       ["effort", ""],
     ]);
@@ -230,13 +230,13 @@ describe("changeCardAgent", () => {
     // Pinning the workspace's own agent explicitly is not a switch.
     const { writes, write } = recorder();
     const card = { agent: "", model: "sonnet", effort: "max" };
-    await changeCardAgent(write, card, "claude-code", "claude-code", "claude-code");
-    expect(writes).toEqual([["agent", "claude-code"]]);
+    await changeCardAgent(write, card, "cline", "cline", "cline");
+    expect(writes).toEqual([["agent", "cline"]]);
   });
 
   it("writes only the lines the card actually carries", async () => {
     const { writes, write } = recorder();
-    await changeCardAgent(write, { agent: "codex", model: "gpt-5.1" }, "", "codex", "claude-code");
+    await changeCardAgent(write, { agent: "codex", model: "gpt-5.1" }, "", "codex", "cline");
     expect(writes).toEqual([
       ["agent", ""],
       ["model", ""],
@@ -246,7 +246,8 @@ describe("changeCardAgent", () => {
   it("stops at a refused write rather than clearing lines for a switch that never landed", async () => {
     const { writes, write } = recorder("agent");
     const card = { agent: "cursor", model: "auto" };
-    expect(await changeCardAgent(write, card, "claude-code", "cursor", "claude-code")).toBe(false);
-    expect(writes).toEqual([["agent", "claude-code"]]);
+    expect(await changeCardAgent(write, card, "cline", "cursor", "cline")).toBe(false);
+    expect(writes).toEqual([["agent", "cline"]]);
   });
 });
+

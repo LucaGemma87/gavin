@@ -83,13 +83,13 @@ trashing it.
 
 ## Known consequences
 
-- **Claude Code reads the workspace's `CLAUDE.md` in a worktree agent too**
+- **cline reads the workspace's `CLAUDE.md` in a worktree agent too**
   (card `fix-worktree-agents-load-the-workspace-claude-md`).
   Its memory walk goes from the cwd up to `/`, so an agent in
   `<root>/.gavin-worktrees/x` loads its branch's `CLAUDE.md` and the main
   checkout's. A sibling worktree never saw the second one. Codex, Gemini and
   opencode stop at the git root, which for a linked worktree is the worktree
-  itself. Claude Code's own `--worktree` nests at `.claude/worktrees/` and has
+  itself. cline's own `--worktree` nests at `.claude/worktrees/` and has
   the same double load. The documented escape is `claudeMdExcludes` in the
   worktree's `.claude/settings.local.json`. That is a Claude-specific file in
   every worktree, and it only stays out of `git status` where the machine's
@@ -106,4 +106,5 @@ trashing it.
 - **`git clean -fdx` in the main checkout** skips each worktree ("Would skip
   repository") but deletes `.gavin-worktrees/.gitignore`, so the worktrees
   show as untracked until the next fork writes it back. `git clean -ffdx`
-  deletes the worktrees too, the same as for Claude Code's nested ones.
+  deletes the worktrees too, the same as for cline's nested ones.
+

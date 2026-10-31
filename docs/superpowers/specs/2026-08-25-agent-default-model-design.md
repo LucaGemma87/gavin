@@ -1,4 +1,4 @@
-# Agent Default Model — Design
+﻿# Agent Default Model — Design
 
 **Status:** approved 2026-08-25.
 
@@ -72,7 +72,7 @@ Continuing the log from `2026-08-20-workspace-settings-design.md` (D35–D57).
 
 ```toml
 [agent]
-profile = "claude-code"
+profile = "cline"
 command = "claude"
 model   = "opus"          # new; absent = inherit the global default
 ```
@@ -98,7 +98,7 @@ if key == "model" && value.trim().is_empty() {
 ```jsonc
 {
   "theme": "dark",
-  "agentModels": { "claude-code": "opus", "gemini": "gemini-flash-latest" }
+  "agentModels": { "cline": "opus", "gemini": "gemini-flash-latest" }
 }
 ```
 
@@ -123,7 +123,7 @@ the entry.
 
 | profile | `model_flag` | `models` | why |
 |---|---|---|---|
-| `claude-code` | `--model` | `fable`, `opus`, `sonnet` | aliases named by its own `--help` |
+| `cline` | `--model` | `fable`, `opus`, `sonnet` | aliases named by its own `--help` |
 | `codex` | `--model` | — | dated ids only |
 | `gemini` | `--model` | — | dated ids only; `-m/--model` verified from `--help` |
 | `cursor` | — | — | the command is the IDE launcher; its positionals are paths |

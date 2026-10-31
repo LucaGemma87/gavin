@@ -48,7 +48,7 @@ What is confirmed here, on a mac, and what the Windows pass owes:
   before any workspace is open, since the resolution happens at PTY spawn.
 - **CONFIRMED on Windows 11, 2026-09-11, and the decision stands.** ConPTY
   gives `sh.exe` a tty at both ends; `git --exec-path` answers before any
-  workspace is open and resolves `<git>/usr/bin/sh.exe`; Claude Code's
+  workspace is open and resolves `<git>/usr/bin/sh.exe`; cline's
   full-screen TUI draws in a session and sits waiting for a keystroke; the
   POSIX epilogue re-raises its exit code through a real PTY and an `&&`
   chain short-circuits. All of it is `shell::tests` and `pty::tests` now
@@ -211,3 +211,4 @@ per thing that goes green.
 <!-- gavin:auto-commit -->
 When the implementation is done, commit it. Commit only the files you touched — never `git add -A`. Do not push.
 <!-- /gavin:auto-commit -->
+

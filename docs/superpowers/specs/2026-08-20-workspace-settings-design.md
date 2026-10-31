@@ -1,4 +1,4 @@
-# Workspace Settings — Design (sub-project A)
+﻿# Workspace Settings — Design (sub-project A)
 
 **Status:** approved 2026-08-20. Sub-project A of two; sub-project B
 (multi-agent MCP writers) is specified separately and depends on this one.
@@ -39,7 +39,7 @@ Continuing the log in
   contains it.
 - **D36 — Agent = profile plus overridable filename.** A profile sets
   instructions file, launch command and (later) MCP layout coherently, but
-  the filename is separately overridable, so `AGENTS.md` with `claude-code`
+  the filename is separately overridable, so `AGENTS.md` with `cline`
   is expressible. A `custom` profile takes a filename and command only.
 - **D37 — Settings is a hub tab**, `requiresRoot: false`, placed last in
   `HUB_VIEWS`. It must work unrooted because binding the root is one of
@@ -48,7 +48,7 @@ Continuing the log in
   finished), both defaulting to on so existing workspaces are unchanged.
   Focus suppression stays a fixed rule, not a setting.
 - **D39 — Six profiles ship**, conventions verified against current
-  upstream documentation (§4). Only `claude-code` supports MCP setup in
+  upstream documentation (§4). Only `cline` supports MCP setup in
   this sub-project.
 - **D40 — Decomposed into A then B.** A delivers every setting the user
   asked for and is shippable alone.
@@ -96,7 +96,7 @@ Continuing the log in
 version = 1
 name = "my-repo"            # existing context-name key, untouched
 [agent]
-profile = "claude-code"
+profile = "cline"
 file    = "CLAUDE.md"       # absent = the profile's default
 command = "claude --model opus"
 ```
@@ -179,7 +179,7 @@ An unrooted workspace has nowhere to carry the value to; its
 
 | Condition | Behaviour |
 | --- | --- |
-| `config.toml` absent | Defaults apply (`claude-code`, `CLAUDE.md`, `claude`); panel fully usable. The scanner already treats absent as normal (`config_warning: false`) |
+| `config.toml` absent | Defaults apply (`cline`, `CLAUDE.md`, `claude`); panel fully usable. The scanner already treats absent as normal (`config_warning: false`) |
 | `config.toml` unparseable | Existing `configWarning` surfaces; agent fields render read-only. Never overwrite a file we cannot parse |
 | Daemon write fails | Existing `setError` path — the same banner every other write uses |
 | Root missing on disk | Existing "Root not found" behaviour, unchanged |
@@ -204,7 +204,7 @@ pub struct AgentProfile {
 
 | id | label | instructions file | command | MCP in A |
 | --- | --- | --- | --- | --- |
-| `claude-code` | Claude Code | `CLAUDE.md` | `claude` | yes |
+| `cline` | cline | `CLAUDE.md` | `claude` | yes |
 | `codex` | Codex CLI | `AGENTS.md` | `codex` | no |
 | `gemini` | Gemini CLI | `GEMINI.md` | `gemini` | no |
 | `cursor` | Cursor | `AGENTS.md` | `cursor` | no |
@@ -228,7 +228,7 @@ where `mcp_supported` is true.
 ### 4.2 Resolution order
 
 For any workspace: `config.toml`'s explicit value, else the profile's
-default, else the `claude-code` default. Expressed once as a pure
+default, else the `cline` default. Expressed once as a pure
 function so the panel, the hub label, the home tile and the agent-file
 view cannot disagree.
 
@@ -274,7 +274,7 @@ Notifications
       Never shown while gavin is focused.
 
 Agent                          (needs a root folder)
-  Profile  [ Claude Code            ▾ ]
+  Profile  [ cline            ▾ ]
   Command  [ claude --model opus      ]
   File     [ CLAUDE.md                ]
   ✓ MCP integration — set up / update
@@ -308,7 +308,7 @@ document.
 ## 6. The agent-file rename flow
 
 One flow covers both routes: editing the File field, and switching profile
-when the filename has not been overridden (`claude-code` → `codex` implies
+when the filename has not been overridden (`cline` → `codex` implies
 `CLAUDE.md` → `AGENTS.md`).
 
 | Situation | Behaviour |
@@ -381,7 +381,7 @@ collection. Everything decidable therefore lives in pure modules.
 - `hubLabel` — returns the agent file's name for the agent-file view and
   the static label for every other.
 - `resolveAgentConfig` — explicit value beats profile default beats
-  `claude-code` default; unknown profile id falls back rather than throwing.
+  `cline` default; unknown profile id falls back rather than throwing.
 
 **Rust:**
 
@@ -413,3 +413,4 @@ panel while a focused field keeps its text.
   skill mechanism — inline guidance in the instructions file, or a
   profile-neutral guide file the marker block points to.
 - Custom MCP config path and shape for the `custom` profile.
+

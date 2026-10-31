@@ -11,4 +11,5 @@ Connecting to a session via Companion app, on phone, make the session on the hos
 When the implementation is done, commit it. Commit only the files you touched — never `git add -A`. Do not push.
 <!-- /gavin:auto-commit -->
 
-- [ ] Human test: After rebuilding + restarting the daemon (v74) and installing the app: open a Claude Code session on the phone. The desk's terminal shows the "Open on <phone>" bar with Fit here. Swiping and tapping on the phone's terminal type no `NaN;NaNM` into the prompt. Closing the terminal on the phone, or pressing Fit here, puts the desk's terminal back to full width.
+- [ ] Human test: After rebuilding + restarting the daemon (v74) and installing the app: open a cline session on the phone. The desk's terminal shows the "Open on <phone>" bar with Fit here. Swiping and tapping on the phone's terminal type no `NaN;NaNM` into the prompt. Closing the terminal on the phone, or pressing Fit here, puts the desk's terminal back to full width.
+

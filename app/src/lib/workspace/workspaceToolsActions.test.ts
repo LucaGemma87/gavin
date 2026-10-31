@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 import { get, writable } from "svelte/store";
 
 vi.mock("$lib/core/backend", () => ({
@@ -63,8 +63,8 @@ import {
 import type { Tool } from "$lib/orchestration/orchestrationTools";
 
 const AGENT = {
-  profileId: "claude-code",
-  label: "Claude Code",
+  profileId: "cline",
+  label: "cline",
   file: "CLAUDE.md",
   command: "claude",
   launchCommand: "claude",
@@ -475,3 +475,4 @@ describe("runToolWith", () => {
     expect(backend.createSession).not.toHaveBeenCalled();
   });
 });
+

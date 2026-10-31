@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import type { Workspace } from "$lib/core/workspace";
 import {
   WORKSPACE_LAYOUT_KEYS,
@@ -47,7 +47,7 @@ function everyKey(id: string, flavour: string): Workspace {
     gitView: { navWidth: flavour === "a" ? 100 : 200 },
     lastActiveAt: flavour === "a" ? 1 : 2,
     pauseCycles: {
-      "claude-code": {
+      "cline": {
         enabled: true,
         periodMinutes: 300,
         pauseMinutes: 10,
@@ -57,11 +57,11 @@ function everyKey(id: string, flavour: string): Workspace {
       },
     },
     complexityTables: {
-      "claude-code": { complex: { profile: `p-${flavour}`, model: `m-${flavour}` } },
+      "cline": { complex: { profile: `p-${flavour}`, model: `m-${flavour}` } },
     },
-    promptExtras: { "claude-code": [`line-${flavour}`] },
-    extraCliArgs: { "claude-code": [`--flag-${flavour}`] },
-    fallbackChains: { "claude-code": [`fb-${flavour}`] },
+    promptExtras: { "cline": [`line-${flavour}`] },
+    extraCliArgs: { "cline": [`--flag-${flavour}`] },
+    fallbackChains: { "cline": [`fb-${flavour}`] },
     armedAgents: [`armed-${flavour}`],
     declinedAgents: [`declined-${flavour}`],
     pinnedAt: flavour === "a" ? 10 : 20,

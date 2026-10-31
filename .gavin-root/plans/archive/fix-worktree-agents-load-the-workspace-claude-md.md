@@ -1,19 +1,19 @@
----
+﻿---
 order: 36864
 kind: task
-title: [fix] A Claude Code agent in .gavin-worktrees also loads the workspace's CLAUDE.md
+title: [fix] A cline agent in .gavin-worktrees also loads the workspace's CLAUDE.md
 status: Done
 priority: medium
 complexity: moderate
 ---
 Since `feat-gavin-worktrees`, worktrees live at `<workspace>/.gavin-worktrees/<branch>`.
-Claude Code loads `CLAUDE.md` / `CLAUDE.local.md` from the cwd and EVERY directory
+cline loads `CLAUDE.md` / `CLAUDE.local.md` from the cwd and EVERY directory
 above it, up to `/` (docs: code.claude.com/docs/en/memory.md, "How CLAUDE.md files
 load"). So an agent in a worktree reads its branch's `CLAUDE.md` AND the main
 checkout's. That doubles the instructions, and they can disagree when the branch edits
 the file. It also picks up the human's `CLAUDE.local.md`, which a sibling worktree
 never saw. Codex, Gemini and opencode stop at the git root, which for a linked
-worktree is the worktree itself. Claude Code's own `--worktree` (`.claude/worktrees/`)
+worktree is the worktree itself. cline's own `--worktree` (`.claude/worktrees/`)
 has the same double load.
 
 Documented escape: `claudeMdExcludes`, an array of globs over ABSOLUTE paths, settable
@@ -23,8 +23,8 @@ siblings.
 
 ## Proposed fix (decide before building)
 
-- [ ] Decision: How should a Claude Code agent in `.gavin-worktrees` stop loading the main checkout's CLAUDE.md?
-  Options: A) Guarded claudeMdExcludes in each new worktree's .claude/settings.local.json (below) B) --settings claudeMdExcludes on the claude-code launch line C) Accept the double load and close this card
+- [ ] Decision: How should a cline agent in `.gavin-worktrees` stop loading the main checkout's CLAUDE.md?
+  Options: A) Guarded claudeMdExcludes in each new worktree's .claude/settings.local.json (below) B) --settings claudeMdExcludes on the cline launch line C) Accept the double load and close this card
 
 When `worktree_add` (app/src-tauri/src/git/commands.rs, `prepare_worktrees_dir`) cuts
 into `.gavin-worktrees`, write `claudeMdExcludes` into the new worktree's
@@ -42,7 +42,7 @@ Guards:
   as untracked.
 
 Worktrees cut by hand through the orchestrate skill would need the same step, or a
-note. The alternative is `--settings '{"claudeMdExcludes":[…]}'` on the claude-code
+note. The alternative is `--settings '{"claudeMdExcludes":[…]}'` on the cline
 launch line for a cwd under `.gavin-worktrees`. It writes no file, but it touches
 every launch path and needs shell quoting on three OSes.
 
@@ -50,10 +50,10 @@ every launch path and needs shell quoting on three OSes.
 
 A commands.rs test: after `worktree_add` into `.gavin-worktrees`, the worktree's
 `.claude/settings.local.json` lists the parent's `CLAUDE.md` path, and the worktree's
-`git status` stays clean. Then, in the running app, start a Claude Code agent in a
+`git status` stays clean. Then, in the running app, start a cline agent in a
 fresh worktree and check `/memory`: only the worktree's `CLAUDE.md` is listed.
 
-- [ ] Human test: Start a Claude Code agent in a fresh .gavin-worktrees worktree and
+- [ ] Human test: Start a cline agent in a fresh .gavin-worktrees worktree and
   run /memory: only the worktree's own CLAUDE.md should be listed, not the
   workspace root's.
 
@@ -61,3 +61,4 @@ fresh worktree and check `/memory`: only the worktree's `CLAUDE.md` is listed.
 but the running daemon is v41" — this checkout's gavin-mcp is ahead of the running
 daemon. Restarting the daemon is the human's call, so this line stands in for the
 tool call; a real Restart will let a future session file it the normal way instead.)
+

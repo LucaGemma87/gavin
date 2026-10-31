@@ -1,4 +1,4 @@
-# Workspace Init Wizard Implementation Plan
+﻿# Workspace Init Wizard Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -41,7 +41,7 @@ Checked against the code before writing this plan — do not re-derive:
 - Its current body takes `let Some(layout) = profile.mcp.as_ref() else { return Err(...) }` — the early return that writes *nothing* for four of six profiles.
 - `write_instructions_block(root: &Path, instructions_file: &str)` already takes the filename as a `&str` (not a profile), so only the **block content** needs to become a parameter.
 - `write_mcp_config(root, layout: &McpLayout, binary)` and `write_skill(root, layout: &McpLayout)` already take a layout — their signatures do **not** change.
-- Existing tests calling the writers use a `claude_layout()` helper that reaches through `profile_by_id("claude-code").mcp`. Only the ones touching `write_instructions_block` and `setup_agent_integration` need updating.
+- Existing tests calling the writers use a `claude_layout()` helper that reaches through `profile_by_id("cline").mcp`. Only the ones touching `write_instructions_block` and `setup_agent_integration` need updating.
 - `Modal.svelte`'s props are `{ onClose, children }` — **there is no `title` prop**. Put the heading in the children.
 - The spawn precedent is `backend.createSession(cwd, command)` then `handleAgentSessionSpawned(...)`, with `command = buildRunCommand(agentCommand, prompt)` = `` `${agentCommand} ${shellQuote(prompt)}` ``. But the wizard's agent must be the **main** agent (spec §7.3 says the conversation continues in the Home tab's panel), so Task 4 adds a `startMainAgent`-shaped action rather than reusing `runCard`'s Agents-page landing.
 - `PRD_TEMPLATE`'s three placeholder lines, verbatim: `_What are we building, for whom, and why?_`, `_The active goals, roughly ordered._`, `_Explicit non-goals._`.
@@ -119,20 +119,20 @@ Checked against the code before writing this plan — do not re-derive:
         let dir = tempfile::tempdir().unwrap();
         let g = dir.path().join(".gavin-root");
         std::fs::create_dir_all(&g).unwrap();
-        std::fs::write(g.join("config.toml"), "[agent]\nprofile = \"claude-code\"\n").unwrap();
+        std::fs::write(g.join("config.toml"), "[agent]\nprofile = \"cline\"\n").unwrap();
 
         // resolve_mcp_binary_path needs the binary beside current_exe, which
         // is not true under cargo test -- so assert on what does not need it.
-        let block = instructions_block_for(profile_by_id("claude-code"));
+        let block = instructions_block_for(profile_by_id("cline"));
         assert!(block.contains(".claude/skills/gavin/SKILL.md"));
-        assert!(profile_by_id("claude-code").mcp.is_some());
+        assert!(profile_by_id("cline").mcp.is_some());
     }
 
     #[test]
     fn prompt_arg_is_set_only_where_the_convention_is_verified() {
         let with_prompt: Vec<&str> =
             AGENT_PROFILES.iter().filter(|p| p.prompt_arg).map(|p| p.id).collect();
-        assert_eq!(with_prompt, ["claude-code"]);
+        assert_eq!(with_prompt, ["cline"]);
     }
 ```
 
@@ -168,13 +168,13 @@ Add the field to `AgentProfile`:
     pub prompt_arg: bool,
 ```
 
-Then run `cargo build -p app` and add `prompt_arg: <value>` to each of the **six** rows the compiler names — `true` for `claude-code`, `false` for `codex`, `gemini`, `cursor`, `opencode`, `custom`. Let E0063 find them; do not regex.
+Then run `cargo build -p app` and add `prompt_arg: <value>` to each of the **six** rows the compiler names — `true` for `cline`, `false` for `codex`, `gemini`, `cursor`, `opencode`, `custom`. Let E0063 find them; do not regex.
 
 Add `pub prompt_arg: bool` to `AgentProfileDto` and `prompt_arg: p.prompt_arg` to the mapping in `agent_profiles()`.
 
 - [x] **Step 5: Two block variants from one source.**
 
-Replace the single `CLAUDE_MD_BLOCK` const with a selector. Keep the existing constant's text as the pointer variant so claude-code's output is byte-identical to today:
+Replace the single `CLAUDE_MD_BLOCK` const with a selector. Keep the existing constant's text as the pointer variant so cline's output is byte-identical to today:
 
 ```rust
 /// Pointer variant: for profiles with a skill mechanism, the block stays
@@ -400,7 +400,7 @@ that are load-bearing, and the traps.
         let dir = tempfile::tempdir().unwrap();
         let g = dir.path().join(".gavin-root");
         std::fs::create_dir_all(&g).unwrap();
-        std::fs::write(g.join("config.toml"), "[agent]\nprofile = \"claude-code\"\n").unwrap();
+        std::fs::write(g.join("config.toml"), "[agent]\nprofile = \"cline\"\n").unwrap();
 
         let prompt =
             compose_agent_prompt(dir.path().to_string_lossy().to_string(), "prd".to_string())
@@ -434,7 +434,7 @@ that are load-bearing, and the traps.
         std::fs::create_dir_all(&g).unwrap();
         std::fs::write(
             g.join("config.toml"),
-            "[agent]\nprofile = \"claude-code\"\nfile = \"NOTES.md\"\n",
+            "[agent]\nprofile = \"cline\"\nfile = \"NOTES.md\"\n",
         )
         .unwrap();
 
@@ -672,7 +672,7 @@ describe("applyPrdSections", () => {
 
 describe("agentFlowAvailable", () => {
   it("is true only for a profile with a verified prompt argument", () => {
-    expect(agentFlowAvailable({ id: "claude-code", promptArg: true })).toBe(true);
+    expect(agentFlowAvailable({ id: "cline", promptArg: true })).toBe(true);
     expect(agentFlowAvailable({ id: "codex", promptArg: false })).toBe(false);
     expect(agentFlowAvailable(undefined)).toBe(false);
   });
@@ -814,7 +814,7 @@ Add `promptArg: false` to the `PROFILES` fixtures in `settings.test.ts` so they 
 ```typescript
   it("startMainAgentWithPrompt spawns with the composed prompt and records the session", async () => {
     setState([{ ...ws("ws-1", []), rootPath: "/tmp/ws" }], "ws-1", null);
-    seedAgentConfig("ws-1", { profile: "claude-code", file: null, command: "claude" });
+    seedAgentConfig("ws-1", { profile: "cline", file: null, command: "claude" });
     vi.mocked(backend.createSession).mockResolvedValue("agent-1");
 
     await startMainAgentWithPrompt("ws-1", "Use the gavin-write-prd skill.");
@@ -1685,7 +1685,7 @@ git add app/src && git commit -m "feat(wizard): home resume card and init wizard
 
 ## Testing summary
 
-- **Rust:** 4 `IntegrationResult` tests (block written for a layout-less profile; the two omissions named with reasons; inline vs pointer block; `prompt_arg` set only for claude-code), 1 rewritten refusal test, 4 `compose_agent_prompt` tests (skill invoked by name and installed; document inlined when no skill mechanism; the configured file name used; unknown flow rejected).
+- **Rust:** 4 `IntegrationResult` tests (block written for a layout-less profile; the two omissions named with reasons; inline vs pointer block; `prompt_arg` set only for cline), 1 rewritten refusal test, 4 `compose_agent_prompt` tests (skill invoked by name and installed; document inlined when no skill mechanism; the configured file name used; unknown flow rejected).
 - **TypeScript:** ~12 `setupProgress` cases covering each derivation in both directions plus `next`/`complete`, 4 `applyPrdSections` cases including idempotence, 3 `agentFlowAvailable` cases, 2 `startMainAgentWithPrompt` cases.
 - **Components — manual only.** `WorkspaceCreateModal`, `SetupWizard` and its four steps, and the Home resume card are covered by the 11-item "Init wizard" checklist section. vitest here cannot preprocess `.svelte`, so there is no automated alternative.
 

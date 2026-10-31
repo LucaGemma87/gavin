@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   recentWorkspaces,
   relativeTime,
@@ -684,7 +684,7 @@ function ready(...windows: Array<[string, number, number | null]>): AgentUsageRe
 }
 
 describe("usageRecap", () => {
-  const profiles = [profile("claude-code"), profile("codex"), profile("gemini")];
+  const profiles = [profile("cline"), profile("codex"), profile("gemini")];
 
   it("lists only the agents some workspace actually runs", () => {
     const rows = usageRecap({
@@ -702,10 +702,10 @@ describe("usageRecap", () => {
     // itself as the numbers moved.
     const rows = usageRecap({
       profiles,
-      profileByWorkspace: { a: "codex", b: "claude-code" },
-      reports: { codex: ready(["weekly", 91, null]), "claude-code": ready(["5-hour", 4, null]) },
+      profileByWorkspace: { a: "codex", b: "cline" },
+      reports: { codex: ready(["weekly", 91, null]), "cline": ready(["5-hour", 4, null]) },
     });
-    expect(rows.map((r) => r.profileId)).toEqual(["claude-code", "codex"]);
+    expect(rows.map((r) => r.profileId)).toEqual(["cline", "codex"]);
   });
 
   it("reports the window nearest its ceiling, not the first one", () => {
@@ -724,7 +724,7 @@ describe("usageRecap", () => {
       profileByWorkspace: { a: "codex", b: "gemini" },
       reports: { gemini: { state: "unsupported" } },
     });
-    const [codex, gemini] = rows.filter((r) => r.profileId !== "claude-code");
+    const [codex, gemini] = rows.filter((r) => r.profileId !== "cline");
     expect(codex.report).toBeNull();
     expect(codex.severity).toBeNull();
     expect(usageRowNote(codex, 0)).toBe("Checking…");
@@ -752,14 +752,14 @@ describe("usageRecap", () => {
 });
 
 describe("worstUsageRow", () => {
-  const profiles = [profile("claude-code"), profile("codex")];
+  const profiles = [profile("cline"), profile("codex")];
 
   it("picks the agent nearest its ceiling across the fleet", () => {
     const rows = usageRecap({
       profiles,
-      profileByWorkspace: { a: "claude-code", b: "codex" },
+      profileByWorkspace: { a: "cline", b: "codex" },
       reports: {
-        "claude-code": ready(["5-hour", 20, null]),
+        "cline": ready(["5-hour", 20, null]),
         codex: ready(["weekly", 88, null]),
       },
     });
@@ -771,8 +771,8 @@ describe("worstUsageRow", () => {
     // colour of "plenty left".
     const rows = usageRecap({
       profiles,
-      profileByWorkspace: { a: "claude-code", b: "codex" },
-      reports: { "claude-code": { state: "unsupported" } },
+      profileByWorkspace: { a: "cline", b: "codex" },
+      reports: { "cline": { state: "unsupported" } },
     });
     expect(worstUsageRow(rows)).toBeNull();
   });

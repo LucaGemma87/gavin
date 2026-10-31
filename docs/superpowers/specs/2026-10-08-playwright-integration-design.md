@@ -1,4 +1,4 @@
-# Playwright integration — design
+﻿# Playwright integration — design
 
 Date: 2026-10-08
 Card: `.gavin-root/plans/playwright-spike.md` (nested in
@@ -235,7 +235,7 @@ Yes. Driven over stdio by a Node MCP client, with a second CDP client watching
     **no** browser.
   - The first `browser_navigate` connected and the daemon launched one, 0.36 s
     from connect to ready.
-  - Claude Code starts every MCP server when the agent starts, so only a
+  - cline starts every MCP server when the agent starts, so only a
     proxy can honour "launched on the agent's first Playwright call".
 - **Snapshots write files into the cwd.** In 0.0.83, the page snapshot that
   every *action* tool returns is written to a file. Only an explicit
@@ -615,7 +615,7 @@ app re-offering events (`forwarding::emit` → `OfferDesktopEvent` →
    - **Unit tests** for the follow rule, the ack pacing and the newest-wins
      slot, all over fakes.
 5. **Done** also requires `gavin-mcp playwright` driving a page from a real
-   Claude Code session against an isolated daemon.
+   cline session against an isolated daemon.
 
 ## Notes for the other cards
 
@@ -627,7 +627,7 @@ app re-offering events (`forwarding::emit` → `OfferDesktopEvent` →
     `GAVIN_SESSION_SOCKET`.
   - The stock profiles with an MCP layout, read from `agent_setup.rs` on
     2026-10-08:
-    - claude-code — `.mcp.json`
+    - cline — `.mcp.json`
     - codex — `.codex/config.toml`
     - gemini — `.gemini/settings.json`
     - cursor — `.cursor/mcp.json`
@@ -654,3 +654,4 @@ app re-offering events (`forwarding::emit` → `OfferDesktopEvent` →
 - **companion-view:** the `browser-frame` desktop event, carrying
   `WatchBrowser { size: phone, max_fps: 2 }`, reached through a
   `REMOTE_COMMAND_TABLE` row. Held streams must keep being read.
+

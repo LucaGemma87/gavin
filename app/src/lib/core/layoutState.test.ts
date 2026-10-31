@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { sessionCompressionById } from "$lib/agents/headroomMarkState";
 import { FEATURE_MIN_VERSION } from "$lib/core/daemonCompat";
 import { get } from "svelte/store";
@@ -2615,7 +2615,7 @@ describe("createPage", () => {
   // the default: nothing that already calls createPage passes this.
   it("starts every pane on the workspace's agent when asked for one", async () => {
     setState([ws("ws-1", [], null, "/repos/gavin")], "ws-1", null);
-    seedAgentConfig("ws-1", { profile: "claude-code", file: null, command: "claude --model opus" });
+    seedAgentConfig("ws-1", { profile: "cline", file: null, command: "claude --model opus" });
     vi.mocked(backend.createSession).mockResolvedValueOnce("a").mockResolvedValueOnce("b");
 
     await createPage("ws-1", ([x, y]) => ({ type: "split", direction: "row", children: [leaf([x]), leaf([y])], sizes: [0.5, 0.5] }), 2, "Page 1", { withAgent: true });
@@ -2623,8 +2623,8 @@ describe("createPage", () => {
     // Under the profile launching them: each is an agent's session, and
     // a candidate for compression like any other.
     expect(vi.mocked(backend.createSession).mock.calls).toEqual([
-      ["/repos/gavin", "claude --model opus", "/repos/gavin", "claude-code"],
-      ["/repos/gavin", "claude --model opus", "/repos/gavin", "claude-code"],
+      ["/repos/gavin", "claude --model opus", "/repos/gavin", "cline"],
+      ["/repos/gavin", "claude --model opus", "/repos/gavin", "cline"],
     ]);
   });
 
@@ -2632,8 +2632,8 @@ describe("createPage", () => {
   // finished -- the same pairing every other launcher makes.
   it("arms failure detection on each of those sessions", async () => {
     setState([ws("ws-1", [], null, "/repos/gavin")], "ws-1", null);
-    seedAgentConfig("ws-1", { profile: "claude-code", file: null, command: null });
-    agentProfilesStore.set([agentProfile("claude-code", ["API Error:"])]);
+    seedAgentConfig("ws-1", { profile: "cline", file: null, command: null });
+    agentProfilesStore.set([agentProfile("cline", ["API Error:"])]);
     vi.mocked(backend.createSession).mockResolvedValueOnce("a").mockResolvedValueOnce("b");
 
     await createPage("ws-1", ([x, y]) => ({ type: "split", direction: "row", children: [leaf([x]), leaf([y])], sizes: [0.5, 0.5] }), 2, "Page 1", { withAgent: true });
@@ -2646,8 +2646,8 @@ describe("createPage", () => {
 
   it("leaves the panes as bare shells when no agent was asked for", async () => {
     setState([ws("ws-1", [], null, "/repos/gavin")], "ws-1", null);
-    seedAgentConfig("ws-1", { profile: "claude-code", file: null, command: "claude" });
-    agentProfilesStore.set([agentProfile("claude-code", ["API Error:"])]);
+    seedAgentConfig("ws-1", { profile: "cline", file: null, command: "claude" });
+    agentProfilesStore.set([agentProfile("cline", ["API Error:"])]);
     vi.mocked(backend.createSession).mockResolvedValue("a");
 
     await createPage("ws-1", ([x]) => leaf([x]), 1, "Page 1", { withAgent: false });
@@ -2727,11 +2727,11 @@ describe("createSessionOnNewPage", () => {
 /// on sending it, and the rest of these are the ways it gets there.
 describe("the launching profile", () => {
   const NEEDED = FEATURE_MIN_VERSION.compressedLaunch;
-  const claude = { profileId: "claude-code" };
+  const claude = { profileId: "cline" };
 
   it("is named against a daemon new enough to read it", () => {
     daemonCompat.set({ daemonVersion: NEEDED, appVersion: NEEDED, degraded: false });
-    expect(profileIdForLaunch(claude)).toBe("claude-code");
+    expect(profileIdForLaunch(claude)).toBe("cline");
 
     daemonCompat.set({ daemonVersion: NEEDED + 1, appVersion: NEEDED + 1, degraded: false });
     expect(profileIdForLaunch({ profileId: "codex" })).toBe("codex");
@@ -2750,7 +2750,7 @@ describe("the launching profile", () => {
   it("is named before the daemon's version is known", () => {
     daemonCompat.set(null);
 
-    expect(profileIdForLaunch(claude)).toBe("claude-code");
+    expect(profileIdForLaunch(claude)).toBe("cline");
   });
 
   it("is none for an agent that has no profile to name", () => {
@@ -2765,13 +2765,13 @@ describe("the launching profile", () => {
       .mockResolvedValueOnce("c");
 
     await createTiledPage("ws-1", "review", [
-      { cwd: "/repos/wt-a", command: "claude 'x'", profileId: "claude-code" },
+      { cwd: "/repos/wt-a", command: "claude 'x'", profileId: "cline" },
       { cwd: "/repos/wt-b", command: "codex 'x'", profileId: "codex" },
       { cwd: "/repos/wt-c", command: "npm test" },
     ]);
 
     expect(vi.mocked(backend.createSession).mock.calls).toEqual([
-      ["/repos/wt-a", "claude 'x'", "/repos/gavin", "claude-code"],
+      ["/repos/wt-a", "claude 'x'", "/repos/gavin", "cline"],
       ["/repos/wt-b", "codex 'x'", "/repos/gavin", "codex"],
       // A command names none, and its launch is the call it always was.
       ["/repos/wt-c", "npm test", "/repos/gavin"],
@@ -2784,10 +2784,10 @@ describe("the launching profile", () => {
 
     await createSessionOnNewPage("ws-1", "backend", "/repos/wt", "claude", {
       activate: false,
-      profileId: "claude-code",
+      profileId: "cline",
     });
 
-    expect(backend.createSession).toHaveBeenCalledWith("/repos/wt", "claude", "/repos/gavin", "claude-code");
+    expect(backend.createSession).toHaveBeenCalledWith("/repos/wt", "claude", "/repos/gavin", "cline");
     // The posture still holds: the option beside it is not lost.
     expect(get(layoutState).workspaces[0].activePageId).toBe("p1");
   });
@@ -2796,15 +2796,15 @@ describe("the launching profile", () => {
     setState([ws("ws-1", [page("p1", leaf(["s1"]))], "p1", "/repos/gavin")], "ws-1", "s1");
     vi.mocked(backend.createSession).mockResolvedValue("agent");
 
-    await createSessionOnPage("ws-1", "p1", "/repos/wt", "claude", "claude-code");
-    await createSessionForCard("ws-1", "/repos/wt", "claude", "claude-code");
+    await createSessionOnPage("ws-1", "p1", "/repos/wt", "claude", "cline");
+    await createSessionForCard("ws-1", "/repos/wt", "claude", "cline");
     // A page that is gone falls back to the active one, profile and all.
-    await createSessionOnPage("ws-1", "closed", "/repos/wt", "claude", "claude-code");
+    await createSessionOnPage("ws-1", "closed", "/repos/wt", "claude", "cline");
 
     expect(vi.mocked(backend.createSession).mock.calls).toEqual([
-      ["/repos/wt", "claude", "/repos/gavin", "claude-code"],
-      ["/repos/wt", "claude", "/repos/gavin", "claude-code"],
-      ["/repos/wt", "claude", "/repos/gavin", "claude-code"],
+      ["/repos/wt", "claude", "/repos/gavin", "cline"],
+      ["/repos/wt", "claude", "/repos/gavin", "cline"],
+      ["/repos/wt", "claude", "/repos/gavin", "cline"],
     ]);
   });
 
@@ -2827,7 +2827,7 @@ describe("the launching profile", () => {
   it("is withheld from the launches this module makes itself", async () => {
     daemonCompat.set({ daemonVersion: NEEDED - 1, appVersion: NEEDED, degraded: true });
     setState([{ ...ws("ws-1", []), rootPath: "/tmp/ws" }], "ws-1", null);
-    seedAgentConfig("ws-1", { profile: "claude-code", file: null, command: "claude" });
+    seedAgentConfig("ws-1", { profile: "cline", file: null, command: "claude" });
     vi.mocked(backend.createSession).mockResolvedValue("agent-1");
 
     await startMainAgent("ws-1");
@@ -3758,12 +3758,12 @@ describe("adopting another writer's workspace settings", () => {
   it("reads the app-wide settings again when another writer changed one", async () => {
     const handlers = await bootstrapWith([ws("ws-1", [])]);
     await vi.waitFor(() => expect(backend.getAgentModelDefaults).toHaveBeenCalled());
-    vi.mocked(backend.getAgentModelDefaults).mockResolvedValue({ "claude-code": "opus" });
+    vi.mocked(backend.getAgentModelDefaults).mockResolvedValue({ "cline": "opus" });
     vi.mocked(backend.getAutoCommit).mockResolvedValue(true);
 
     handlers.get("app-settings-synced")!({ payload: { origin: "companion" } });
 
-    await vi.waitFor(() => expect(get(agentModelDefaultsStore)).toEqual({ "claude-code": "opus" }));
+    await vi.waitFor(() => expect(get(agentModelDefaultsStore)).toEqual({ "cline": "opus" }));
     await vi.waitFor(() => expect(get(autoCommitDefault)).toBe(true));
   });
 
@@ -4235,20 +4235,20 @@ describe("per-agent settings in a workspace", () => {
   });
 
   beforeEach(() => {
-    agentProfilesStore.set([profile("claude-code", "claude"), profile("codex", "codex")]);
+    agentProfilesStore.set([profile("cline", "claude"), profile("codex", "codex")]);
     // Module-level, and an earlier test may have left a model default.
     agentModelDefaultsStore.set({});
     agentDefaultsStore.set({
       ...EMPTY_AGENT_DEFAULTS,
       complexityTables: {
-        "claude-code": { intricate: { profile: "codex", model: "gpt-5" } },
+        "cline": { intricate: { profile: "codex", model: "gpt-5" } },
         codex: { intricate: { profile: "", model: "codex-big" } },
       },
-      extraCliArgs: { "claude-code": ["--verbose"], codex: ["--app-codex"] },
-      promptExtras: { "claude-code": ["App line."] },
+      extraCliArgs: { "cline": ["--verbose"], codex: ["--app-codex"] },
+      promptExtras: { "cline": ["App line."] },
     });
     setState([ws("w1", [])], "w1", null);
-    seedAgentConfig("w1", { profile: "claude-code", file: null, command: null });
+    seedAgentConfig("w1", { profile: "cline", file: null, command: null });
   });
 
   // Module-level store: what these tests put in it must not still be
@@ -4258,7 +4258,7 @@ describe("per-agent settings in a workspace", () => {
   });
 
   it("reads the complexity table of the agent the workspace runs", () => {
-    expect(workspaceComplexityTable("w1", "claude-code")).toEqual({
+    expect(workspaceComplexityTable("w1", "cline")).toEqual({
       intricate: { profile: "codex", model: "gpt-5" },
     });
     expect(workspaceComplexityTable("w1", "codex")).toEqual({ intricate: { profile: "", model: "codex-big" } });
@@ -4273,10 +4273,10 @@ describe("per-agent settings in a workspace", () => {
     layoutState.update((st) => ({
       ...st,
       workspaces: st.workspaces.map((w) =>
-        w.id === "w1" ? { ...w, complexityTables: { "claude-code": {} } } : w
+        w.id === "w1" ? { ...w, complexityTables: { "cline": {} } } : w
       ),
     }));
-    expect(agentForCard("w1", { complexity: "intricate" }).profileId).toBe("claude-code");
+    expect(agentForCard("w1", { complexity: "intricate" }).profileId).toBe("cline");
   });
 
   it("appends the agent's extra CLI arguments to its launch command", () => {
@@ -4285,14 +4285,14 @@ describe("per-agent settings in a workspace", () => {
     layoutState.update((st) => ({
       ...st,
       workspaces: st.workspaces.map((w) =>
-        w.id === "w1" ? { ...w, extraCliArgs: { "claude-code": ["--quiet"] } } : w
+        w.id === "w1" ? { ...w, extraCliArgs: { "cline": ["--quiet"] } } : w
       ),
     }));
     expect(resolvedAgentFor("w1").launchCommand).toBe("claude --quiet");
     // An own empty list is an explicit "nothing extra".
     layoutState.update((st) => ({
       ...st,
-      workspaces: st.workspaces.map((w) => (w.id === "w1" ? { ...w, extraCliArgs: { "claude-code": [] } } : w)),
+      workspaces: st.workspaces.map((w) => (w.id === "w1" ? { ...w, extraCliArgs: { "cline": [] } } : w)),
     }));
     expect(resolvedAgentFor("w1").launchCommand).toBe("claude");
   });
@@ -4307,14 +4307,14 @@ describe("per-agent settings in a workspace", () => {
   // agent on the chain — the launching profile's table has to win.
   it("applies the fallback agent's complexity table when resolving that profile", () => {
     agentProfilesStore.set([
-      profile("claude-code", "claude"),
+      profile("cline", "claude"),
       profile("codex", "codex"),
       { ...profile("cursor", "agent --trust"), modelFlag: "--model", models: [] },
     ]);
     agentDefaultsStore.set({
       ...EMPTY_AGENT_DEFAULTS,
       complexityTables: {
-        "claude-code": { moderate: { profile: "", model: "sonnet" } },
+        "cline": { moderate: { profile: "", model: "sonnet" } },
         cursor: { moderate: { profile: "cursor", model: "auto" } },
         codex: { moderate: { profile: "", model: "gpt-5", effort: "high" } },
       },
@@ -4331,13 +4331,13 @@ describe("per-agent settings in a workspace", () => {
   });
 
   it("answers prompt lines per agent, inheriting the app's until the workspace sets its own", () => {
-    expect(promptExtrasFor("w1", "claude-code")).toEqual(["App line."]);
+    expect(promptExtrasFor("w1", "cline")).toEqual(["App line."]);
     expect(promptExtrasFor("w1", "codex")).toEqual([]);
     layoutState.update((st) => ({
       ...st,
-      workspaces: st.workspaces.map((w) => (w.id === "w1" ? { ...w, promptExtras: { "claude-code": [] } } : w)),
+      workspaces: st.workspaces.map((w) => (w.id === "w1" ? { ...w, promptExtras: { "cline": [] } } : w)),
     }));
-    expect(promptExtrasFor("w1", "claude-code")).toEqual([]);
+    expect(promptExtrasFor("w1", "cline")).toEqual([]);
   });
 
   it("clears every per-agent key of a deleted local custom in one settings write", async () => {
@@ -4347,7 +4347,7 @@ describe("per-agent settings in a workspace", () => {
         w.id === "w1"
           ? {
               ...w,
-              fallbackChains: { "local:bot": ["codex"], "claude-code": ["local:bot"] },
+              fallbackChains: { "local:bot": ["codex"], "cline": ["local:bot"] },
               pauseCycles: { "local:bot": { enabled: true, periodMinutes: 300, pauseMinutes: 10, anchorMs: 1, limitPercent: 95, limitEnabled: true } },
               promptExtras: { "local:bot": ["x"] },
             }
@@ -4360,7 +4360,7 @@ describe("per-agent settings in a workspace", () => {
 
     expect(backend.setWorkspaceSettings).toHaveBeenCalledTimes(1);
     expect(backend.setWorkspaceSettings).toHaveBeenCalledWith("w1", {
-      fallbackChains: { "claude-code": [] },
+      fallbackChains: { "cline": [] },
       pauseCycles: null,
       promptExtras: null,
     });
@@ -4381,7 +4381,7 @@ describe("per-agent settings in a workspace", () => {
         w.id === "w1"
           ? { ...w, pauseCycles: { "my-bot": cycle } }
           : w.id === "w2"
-            ? { ...w, complexityTables: { "claude-code": { intricate: { profile: "my-bot", model: "" } } } }
+            ? { ...w, complexityTables: { "cline": { intricate: { profile: "my-bot", model: "" } } } }
             : w
       ),
     }));
@@ -4392,7 +4392,7 @@ describe("per-agent settings in a workspace", () => {
     const calls = vi.mocked(backend.setWorkspaceSettings).mock.calls;
     expect(calls).toEqual([
       ["w1", { pauseCycles: null }],
-      ["w2", { complexityTables: { "claude-code": {} } }],
+      ["w2", { complexityTables: { "cline": {} } }],
     ]);
   });
 });
@@ -4583,20 +4583,20 @@ describe("workspace settings", () => {
     expect(get(layoutState).workspaces[0].trustedConfigHash).toBeUndefined();
   });
 
-  // Grimoria: `profile = "claude-code"` beside Cursor's `model = "auto"`,
+  // Grimoria: `profile = "cline"` beside Cursor's `model = "auto"`,
   // left by a switch that rewrote profile/command/file and nothing else,
   // launched `claude --model auto` and failed on start every time.
   it("switchWorkspaceAgentProfile clears the old agent's model, effort and flags", async () => {
     setState([{ ...ws("ws-1", []), rootPath: "/tmp/ws" }], "ws-1", null);
     vi.mocked(backend.setRootConfigField).mockClear();
 
-    await switchWorkspaceAgentProfile("ws-1", "claude-code", { command: "claude", file: "CLAUDE.md" });
+    await switchWorkspaceAgentProfile("ws-1", "cline", { command: "claude", file: "CLAUDE.md" });
 
     const calls = vi.mocked(backend.setRootConfigField).mock.calls;
     for (const key of ["model", "effort", "model_flag", "effort_flag"]) {
       expect(calls).toContainEqual(["/tmp/ws", key, ""]);
     }
-    expect(calls).toContainEqual(["/tmp/ws", "profile", "claude-code"]);
+    expect(calls).toContainEqual(["/tmp/ws", "profile", "cline"]);
     // Cleared BEFORE the profile lands: a refused profile write must leave
     // the old agent at its defaults, never the new one on the old model.
     const profileAt = calls.findIndex(([, key]) => key === "profile");
@@ -4623,7 +4623,7 @@ describe("workspace settings", () => {
     daemonCompat.set({ daemonVersion: 40, appVersion: 79, degraded: true });
     vi.mocked(backend.setRootConfigField).mockClear();
 
-    await switchWorkspaceAgentProfile("ws-1", "claude-code", { command: "claude", file: "CLAUDE.md" });
+    await switchWorkspaceAgentProfile("ws-1", "cline", { command: "claude", file: "CLAUDE.md" });
 
     const keys = vi.mocked(backend.setRootConfigField).mock.calls.map(([, key]) => key);
     expect(keys).toContain("model");
@@ -4811,10 +4811,10 @@ describe("workspace settings go through their own command", () => {
     ["setWorkspaceFlag", () => setWorkspaceFlag("ws-1", "notifyFinished", false), { notifyFinished: false }],
     [
       "setWorkspacePause",
-      () => setWorkspacePause("ws-1", "claude-code", pause),
-      { pauseCycles: { "claude-code": pause } },
+      () => setWorkspacePause("ws-1", "cline", pause),
+      { pauseCycles: { "cline": pause } },
     ],
-    ["setWorkspacePause(null)", () => setWorkspacePause("ws-1", "claude-code", null), { pauseCycles: null }],
+    ["setWorkspacePause(null)", () => setWorkspacePause("ws-1", "cline", null), { pauseCycles: null }],
     [
       "setWorkspacePromptParams",
       () => setWorkspacePromptParams("ws-1", "codex", "promptExtras", ["Be brief."]),
@@ -4830,8 +4830,8 @@ describe("workspace settings go through their own command", () => {
       () => setWorkspacePromptParams("ws-1", "codex", "promptExtras", null),
       { promptExtras: null },
     ],
-    ["setWorkspaceFallback", () => setWorkspaceFallback("ws-1", "claude-code", ["codex"]), { fallbackChains: { "claude-code": ["codex"] } }],
-    ["setWorkspaceFallback(null)", () => setWorkspaceFallback("ws-1", "claude-code", null), { fallbackChains: null }],
+    ["setWorkspaceFallback", () => setWorkspaceFallback("ws-1", "cline", ["codex"]), { fallbackChains: { "cline": ["codex"] } }],
+    ["setWorkspaceFallback(null)", () => setWorkspaceFallback("ws-1", "cline", null), { fallbackChains: null }],
     [
       "markAgentArmed",
       () => markAgentArmed("ws-1", "codex"),
@@ -4863,19 +4863,19 @@ describe("workspace settings go through their own command", () => {
     ],
     [
       "setWorkspaceComplexityTable",
-      () => setWorkspaceComplexityTable("ws-1", "claude-code", { complex: { profile: "", model: "opus" } }),
-      { complexityTables: { "claude-code": { complex: { profile: "", model: "opus" } } } },
+      () => setWorkspaceComplexityTable("ws-1", "cline", { complex: { profile: "", model: "opus" } }),
+      { complexityTables: { "cline": { complex: { profile: "", model: "opus" } } } },
     ],
     // An own-but-empty table is a real answer ("no routing for this agent
     // here"), so it is kept; only null hands the primary back to the app.
     [
       "setWorkspaceComplexityTable({})",
-      () => setWorkspaceComplexityTable("ws-1", "claude-code", {}),
-      { complexityTables: { "claude-code": {} } },
+      () => setWorkspaceComplexityTable("ws-1", "cline", {}),
+      { complexityTables: { "cline": {} } },
     ],
     [
       "setWorkspaceComplexityTable(null)",
-      () => setWorkspaceComplexityTable("ws-1", "claude-code", null),
+      () => setWorkspaceComplexityTable("ws-1", "cline", null),
       { complexityTables: null },
     ],
     [
@@ -4947,7 +4947,7 @@ describe("main agent session", () => {
   // seeds the tree instead.
   it("startMainAgent spawns at the root with the configured command and persists", async () => {
     setState([{ ...ws("ws-1", []), rootPath: "/tmp/ws" }], "ws-1", null);
-    seedAgentConfig("ws-1", { profile: "claude-code", file: null, command: "claude --model opus" });
+    seedAgentConfig("ws-1", { profile: "cline", file: null, command: "claude --model opus" });
     vi.mocked(backend.createSession).mockResolvedValue("agent-1");
 
     await startMainAgent("ws-1");
@@ -4956,7 +4956,7 @@ describe("main agent session", () => {
       "/tmp/ws",
       "claude --model opus",
       "/tmp/ws",
-      "claude-code"
+      "cline"
     );
     expect(get(layoutState).workspaces[0].mainSessionId).toBe("agent-1");
     expect(backend.setWorkspacesState).toHaveBeenCalled();
@@ -4966,7 +4966,7 @@ describe("main agent session", () => {
     setState([{ ...ws("ws-1", []), rootPath: "/tmp/ws" }], "ws-1", null);
     vi.mocked(backend.createSession).mockResolvedValue("agent-1");
     await startMainAgent("ws-1");
-    expect(backend.createSession).toHaveBeenCalledWith("/tmp/ws", "claude", "/tmp/ws", "claude-code");
+    expect(backend.createSession).toHaveBeenCalledWith("/tmp/ws", "claude", "/tmp/ws", "cline");
 
     // Already running: no second spawn.
     await startMainAgent("ws-1");
@@ -4990,7 +4990,7 @@ describe("main agent session", () => {
 
   it("startMainAgentWithPrompt spawns with the composed prompt and records the session", async () => {
     setState([{ ...ws("ws-1", []), rootPath: "/tmp/ws" }], "ws-1", null);
-    seedAgentConfig("ws-1", { profile: "claude-code", file: null, command: "claude" });
+    seedAgentConfig("ws-1", { profile: "cline", file: null, command: "claude" });
     vi.mocked(backend.createSession).mockResolvedValue("agent-1");
 
     await startMainAgentWithPrompt("ws-1", "Use the gavin-write-prd skill.");
@@ -4999,7 +4999,7 @@ describe("main agent session", () => {
       "/tmp/ws",
       "claude 'Use the gavin-write-prd skill.'",
       "/tmp/ws",
-      "claude-code"
+      "cline"
     );
 
     expect(get(layoutState).workspaces[0].mainSessionId).toBe("agent-1");

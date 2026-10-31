@@ -1,4 +1,4 @@
-# Agent Orchestration Foundations — Design Spec
+﻿# Agent Orchestration Foundations — Design Spec
 
 Sub-project **1 of 6** of the agent-orchestration phase. Phase context, all decisions
 (D1–D13), and the approved build order live in
@@ -47,7 +47,7 @@ Root (`.gavin-root/config.toml`):
 version = 1
 
 [agent]
-profile = "claude-code"
+profile = "cline"
 ```
 
 Context (`.gavin/config.toml`):
@@ -57,7 +57,7 @@ name = "auth"     # display name; omitted/unparseable → folder name
 ```
 
 `version` is for future migrations; `[agent].profile` is the D4 agent-profile seam
-(only `"claude-code"` exists in v1). No other fields — YAGNI. Parsing uses the
+(only `"cline"` exists in v1). No other fields — YAGNI. Parsing uses the
 standard `toml` crate — a **new daemon dependency** (small, std in the Rust
 ecosystem; the line-oriented economy applied to frontmatter is not needed here
 because config.toml is never surgically rewritten).

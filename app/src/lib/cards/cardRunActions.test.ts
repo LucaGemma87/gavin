@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 import { isAwaitingFirstSubmit } from "$lib/agents/headroomMarkState";
 import { get, writable } from "svelte/store";
 import type { DaemonCompat } from "$lib/core/daemonCompat";
@@ -33,8 +33,8 @@ vi.mock("$lib/core/backend", () => ({
 /// `agentForCard` can be the same function object.
 const agentMock = vi.hoisted(() =>
   vi.fn(() => ({
-    profileId: "claude-code",
-    label: "Claude Code",
+    profileId: "cline",
+    label: "cline",
     file: "CLAUDE.md",
     command: "claude --model opus",
     launchCommand: "claude --model opus",
@@ -219,10 +219,10 @@ function remembered(record: CardSessionRecord): void {
 
 /// The default profile: verified failure patterns, and NO conversation
 /// resume -- which is what codex, gemini and opencode look like, and
-/// what claude-code looks like against a daemon too old to persist the
+/// what cline looks like against a daemon too old to persist the
 /// id. The tests that want resume opt in.
 const NO_RESUME_AGENT = {
-  profileId: "claude-code",
+  profileId: "cline",
   file: "CLAUDE.md",
   command: "claude --model opus",
   launchCommand: "claude --model opus",
@@ -1348,7 +1348,7 @@ describe("relaunchCard", () => {
       "/p",
       `${STORED_COMMAND}${shellQuote(relaunchNote("/p/t.md"))}`,
       "/ws",
-      "claude-code"
+      "cline"
     );
     expect(handleAgentSessionSpawned).toHaveBeenCalledWith("ws-1", "s-new");
     expect(get(kanbanState)["ws-1"].cardSessions[0].sessionId).toBe("s-new");
@@ -1382,7 +1382,7 @@ describe("relaunchCard", () => {
   // Resume, which is a different entry with different words on it.
   it("mints a new conversation id rather than replaying the one baked into the command", async () => {
     vi.mocked(resolvedAgentFor).mockReturnValue({
-      profileId: "claude-code",
+      profileId: "cline",
       file: "CLAUDE.md",
       command: "claude",
       launchCommand: "claude",
@@ -1480,7 +1480,7 @@ describe("relaunchCard", () => {
     expect(command).not.toContain("gemini");
     expect(command).toContain("do the thing");
     expect(command).toContain(relaunchNote("/p/t.md").trim());
-    expect(profileId).toBe("claude-code");
+    expect(profileId).toBe("cline");
   });
 
   // sec-fix-relaunch-review-gate: the replayed plan prompt only names the
@@ -1738,7 +1738,7 @@ describe("a failed binding", () => {
   }
 
   const claudeAgent = {
-    profileId: "claude-code",
+    profileId: "cline",
     file: "CLAUDE.md",
     command: "claude",
     launchCommand: "claude",
@@ -1790,7 +1790,7 @@ describe("a failed binding", () => {
       "/ws/worktree",
       `claude --resume ${shellQuote("u-1")}`,
       "/ws",
-      "claude-code"
+      "cline"
     );
 
     // Nothing composed and nothing read: the transcript already holds
@@ -1835,7 +1835,7 @@ describe("a failed binding", () => {
       "/ws/worktree",
       `claude --resume ${shellQuote("u-1")}`,
       "/ws",
-      { profileId: "claude-code", withoutHeadroom: true }
+      { profileId: "cline", withoutHeadroom: true }
     );
     // Its first quiet is the history being painted, not a turn.
     expect(isAwaitingFirstSubmit("s-new")).toBe(true);
@@ -1866,7 +1866,7 @@ describe("a failed binding", () => {
   /// the resume-by-id test above -- the one difference is what the
   /// backend says about the transcript.
   function bindingWithConversation(): void {
-    vi.mocked(resolvedAgentFor).mockReturnValue({ ...claudeAgent, profileId: "claude-code" } as never);
+    vi.mocked(resolvedAgentFor).mockReturnValue({ ...claudeAgent, profileId: "cline" } as never);
     kanbanState.set({
       "ws-1": board([
         {
@@ -1898,7 +1898,7 @@ describe("a failed binding", () => {
     expect(err).toMatch(/before it wrote a line/);
     // The way forward is named, and it is the button beside Resume.
     expect(err).toContain("Re-launch");
-    expect(backend.conversationLog).toHaveBeenCalledWith("claude-code", "u-1");
+    expect(backend.conversationLog).toHaveBeenCalledWith("cline", "u-1");
     expect(backend.createSession).not.toHaveBeenCalled();
     // Refused BEFORE anything is written or shown: no status, no review
     // sheet, no file read -- and no re-link, so the daemon still holds the
@@ -1964,7 +1964,7 @@ describe("a failed binding", () => {
         "/ws",
         `claude --resume ${shellQuote("u-1")}`,
         "/ws",
-        "claude-code"
+        "cline"
       );
     }
     vi.clearAllMocks();
@@ -1975,7 +1975,7 @@ describe("a failed binding", () => {
       "/ws",
       `claude --resume ${shellQuote("u-1")}`,
       "/ws",
-      "claude-code"
+      "cline"
     );
   });
 });
@@ -1986,7 +1986,7 @@ describe("a failed binding", () => {
 /// about Headroom itself, and none is ever refused over it.
 describe("the launching profile", () => {
   const conversing = {
-    profileId: "claude-code",
+    profileId: "cline",
     file: "CLAUDE.md",
     command: "claude",
     launchCommand: "claude",
@@ -2066,7 +2066,7 @@ describe("the launching profile", () => {
       expect(await launch()).toBeNull();
 
       expect(backend.createSession).toHaveBeenCalledTimes(1);
-      expect(vi.mocked(backend.createSession).mock.calls[0][3]).toBe("claude-code");
+      expect(vi.mocked(backend.createSession).mock.calls[0][3]).toBe("cline");
     });
 
     // A daemon too old to read the profile is never sent one, and the
@@ -2094,7 +2094,7 @@ describe("the launching profile", () => {
       "/ws",
       `claude --resume ${shellQuote("u-1")}`,
       "/ws",
-      "claude-code",
+      "cline",
     ]);
   });
 });
@@ -2372,3 +2372,4 @@ describe("attachments gate the run", () => {
     expect(backend.createSession).not.toHaveBeenCalled();
   });
 });
+

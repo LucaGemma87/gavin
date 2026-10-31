@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import {
   agentConfigWithAttribution,
   COMPLEXITY_LABELS,
@@ -74,11 +74,21 @@ describe("isAttributed", () => {
 describe("complexityEntryFor", () => {
   const table: ComplexityTable = {
     trivial: { profile: "", model: "haiku" },
-    intricate: { profile: "claude-code", model: "opus" },
+    intricate: { profile: "cline", model: "opus" },
+const table: ComplexityTable = {
+    trivial: { profile: \"\", model: \"haiku\" },
+    intricate: { profile: \"cline\", model: \"opus\" },
+    moderate: { profile: \"cline\", model: \"nemotron-3.5\" },
+  };
   };
 
+it(\"reads the level's row from the one table it is given\", () => {
+    expect(complexityEntryFor(\"intricate\", table)).toEqual({ profile: \"cline\", model: \"opus\" });
+    expect(complexityEntryFor(\"trivial\", table)).toEqual({ profile: \"\", model: \"haiku\" });
+    expect(complexityEntryFor(\"moderate\", table)).toEqual({ profile: \"cline\", model: \"nemotron-3.5\" });
+  });
   it("reads the level's row from the one table it is given", () => {
-    expect(complexityEntryFor("intricate", table)).toEqual({ profile: "claude-code", model: "opus" });
+    expect(complexityEntryFor("intricate", table)).toEqual({ profile: "cline", model: "opus" });
     expect(complexityEntryFor("trivial", table)).toEqual({ profile: "", model: "haiku" });
   });
 
@@ -140,10 +150,10 @@ describe("complexityAttributionForProfile", () => {
 describe("per-primary complexity tables", () => {
   const claude: ComplexityTable = { intricate: { profile: "codex", model: "gpt-5.1" } };
   const codex: ComplexityTable = { trivial: { profile: "", model: "mini" } };
-  const app = { "claude-code": claude, codex };
+  const app = { "cline": claude, codex };
 
   it("reads one primary's app-wide table, empty when it has none", () => {
-    expect(complexityTableForPrimary(app, "claude-code")).toBe(claude);
+    expect(complexityTableForPrimary(app, "cline")).toBe(claude);
     expect(complexityTableForPrimary(app, "gemini")).toEqual({});
     expect(complexityTableForPrimary(app, "  ")).toEqual({});
     expect(complexityTableForPrimary(null, "codex")).toEqual({});
@@ -154,15 +164,15 @@ describe("per-primary complexity tables", () => {
   /// through to the app's row for that level.
   it("lets a workspace's own table replace the app's whole, per primary", () => {
     const own: ComplexityTable = { trivial: { profile: "", model: "nano" } };
-    const ws = { "claude-code": own };
-    expect(effectiveComplexityTable(ws, app, "claude-code")).toBe(own);
-    expect(effectiveComplexityTable(ws, app, "claude-code").intricate).toBeUndefined();
+    const ws = { "cline": own };
+    expect(effectiveComplexityTable(ws, app, "cline")).toBe(own);
+    expect(effectiveComplexityTable(ws, app, "cline").intricate).toBeUndefined();
     // Another primary has no key in the workspace map: it inherits.
     expect(effectiveComplexityTable(ws, app, "codex")).toBe(codex);
   });
 
   it("reads an own-but-empty workspace table as 'no routing', not as inherit", () => {
-    expect(effectiveComplexityTable({ "claude-code": {} }, app, "claude-code")).toEqual({});
+    expect(effectiveComplexityTable({ "cline": {} }, app, "cline")).toEqual({});
   });
 
   it("inherits when the workspace has no map at all", () => {
@@ -173,7 +183,7 @@ describe("per-primary complexity tables", () => {
 
   it("sets and removes one primary's table without touching the others", () => {
     const next = withComplexityTableForPrimary(app, "codex", { moderate: { profile: "", model: "m" } });
-    expect(next["claude-code"]).toBe(claude);
+    expect(next["cline"]).toBe(claude);
     expect(next.codex).toEqual({ moderate: { profile: "", model: "m" } });
     expect(withComplexityTableForPrimary(app, "codex", null).codex).toBeUndefined();
     // The caller's map is never mutated.
@@ -206,7 +216,7 @@ describe("per-primary complexity tables", () => {
 
 describe("agentConfigWithAttribution", () => {
   const base = {
-    profile: "claude-code",
+    profile: "cline",
     file: "CLAUDE.md",
     command: "claude-wrapper",
     mcpFile: ".mcp.json",
@@ -251,7 +261,7 @@ describe("agentConfigWithAttribution", () => {
   });
 
   it("keeps them when the level names the profile the workspace already runs", () => {
-    const r = agentConfigWithAttribution(base, { profile: "claude-code", model: "opus" });
+    const r = agentConfigWithAttribution(base, { profile: "cline", model: "opus" });
     expect(r).toEqual({ ...base, model: "opus", effort: null });
   });
 
@@ -321,10 +331,10 @@ describe("complexitySummary", () => {
 
 describe("withAgentEffort", () => {
   it("sets one profile's default and clears it on a blank", () => {
-    const set = withAgentEffort(EMPTY_AGENT_DEFAULTS, "claude-code", " high ");
-    expect(set.agentEfforts).toEqual({ "claude-code": "high" });
+    const set = withAgentEffort(EMPTY_AGENT_DEFAULTS, "cline", " high ");
+    expect(set.agentEfforts).toEqual({ "cline": "high" });
     expect(EMPTY_AGENT_DEFAULTS.agentEfforts).toBeUndefined();
-    const cleared = withAgentEffort(set, "claude-code", "");
+    const cleared = withAgentEffort(set, "cline", "");
     expect(cleared.agentEfforts).toEqual({});
     // Everything else rides through untouched: this is a wholesale save.
     expect({ ...cleared, agentEfforts: undefined }).toEqual({ ...EMPTY_AGENT_DEFAULTS, agentEfforts: undefined });
@@ -333,17 +343,49 @@ describe("withAgentEffort", () => {
 
 describe("realignComplexityTable", () => {
   const table: ComplexityTable = {
-    trivial: { profile: "claude-code", model: "haiku" },
+    trivial: { profile: "cline", model: "haiku" },
     simple: { profile: "", model: "sonnet" },
     intricate: { profile: "codex", model: "gpt-5.1" },
   };
 
+it(\"remap retargets rows that named the old profile and leaves the rest\", () => {
+    expect(realignComplexityTable(table, \"remap\", \"cline\", \"cursor\")).toEqual({
+      trivial: { profile: \"cursor\", model: \"\" },
+      simple: { profile: \"\", model: \"sonnet\" },
+      intricate: { profile: \"codex\", model: \"gpt-5.1\" },
+    });
+  });
+
+  it(\"remap with cline profile\", () => {
+    const clineTable: ComplexityTable = {
+      trivial: { profile: \"\", model: \"haiku\" },
+      intricate: { profile: \"cline\", model: \"opus\" },
+      moderate: { profile: \"cline\", model: \"nemotron-3.5\" },
+    };
+    expect(realignComplexityTable(clineTable, \"remap\", \"cline\", \"cline\")).toEqual({
+      trivial: { profile: \"\", model: \"haiku\" },
+      intricate: { profile: \"cline\", model: \"\" },
+      moderate: { profile: \"cline\", model: \"nemotron-3.5\" },
+    });
+  });
   it("keep leaves every row alone", () => {
-    expect(realignComplexityTable(table, "keep", "claude-code", "cursor")).toEqual(table);
+it(\"clear drops every workspace override\", () => {
+    expect(realignComplexityTable(table, \"clear\", \"cline\", \"cursor\")).toEqual({});
+  });
+
+  it(\"clear with cline profile\", () => {
+    const clineTable: ComplexityTable = {
+      trivial: { profile: \"\", model: \"haiku\" },
+      intricate: { profile: \"cline\", model: \"opus\" },
+      moderate: { profile: \"cline\", model: \"nemotron-3.5\" },
+    };
+    expect(realignComplexityTable(clineTable, \"clear\", \"cline\", \"cline\")).toEqual({});
+  });
+    expect(realignComplexityTable(table, "keep", "cline", "cursor")).toEqual(table);
   });
 
   it("remap retargets rows that named the old profile and leaves the rest", () => {
-    expect(realignComplexityTable(table, "remap", "claude-code", "cursor")).toEqual({
+    expect(realignComplexityTable(table, "remap", "cline", "cursor")).toEqual({
       trivial: { profile: "cursor", model: "" },
       simple: { profile: "", model: "sonnet" },
       intricate: { profile: "codex", model: "gpt-5.1" },
@@ -353,27 +395,45 @@ describe("realignComplexityTable", () => {
   it("remap never carries one agent's model, effort or advisor onto another", () => {
     // `{cursor, auto}` retargeted whole became `claude --model auto`.
     const pinned: ComplexityTable = {
+it(\"recommends keeping, whatever the table says\", () => {
+    expect(recommendedComplexityAction({}, \"cline\")).toBe(\"keep\");
+    expect(
+      recommendedComplexityAction({ trivial: { profile: \"cline\", model: \"\" } }, \"cline\")
+    ).toBe(\"keep\");
+    expect(
+      recommendedComplexityAction(
+        { simple: { profile: \"\", model: \"sonnet\" }, intricate: { profile: \"codex\", model: \"\" } },\n        \"cline\"\n      )
+    ).toBe(\"keep\");
+  });
+
+  it(\"recommendedComplexityAction with cline\", () => {
+    expect(recommendedComplexityAction({}, \"cline\")).toBe(\"keep\");
+    expect(
+      recommendedComplexityAction(
+        { moderate: { profile: \"cline\", model: \"nemotron-3.5\" } },\n        \"cline\"\n      )
+    ).toBe(\"keep\");
+  });
       complex: { profile: "cursor", model: "auto" },
-      intricate: { profile: "claude-code", model: "opus", effort: "max", advisor: "fable" },
+      intricate: { profile: "cline", model: "opus", effort: "max", advisor: "fable" },
     };
-    expect(realignComplexityTable(pinned, "remap", "cursor", "claude-code").complex).toEqual({
-      profile: "claude-code",
+    expect(realignComplexityTable(pinned, "remap", "cursor", "cline").complex).toEqual({
+      profile: "cline",
       model: "",
     });
-    expect(realignComplexityTable(pinned, "remap", "claude-code", "codex").intricate).toEqual({
+    expect(realignComplexityTable(pinned, "remap", "cline", "codex").intricate).toEqual({
       profile: "codex",
       model: "",
     });
   });
 
   it("clear drops every workspace override", () => {
-    expect(realignComplexityTable(table, "clear", "claude-code", "cursor")).toEqual({});
+    expect(realignComplexityTable(table, "clear", "cline", "cursor")).toEqual({});
   });
 
   it("does not mutate the table it was handed", () => {
     const copy = structuredClone(table);
-    realignComplexityTable(table, "remap", "claude-code", "cursor");
-    realignComplexityTable(table, "clear", "claude-code", "cursor");
+    realignComplexityTable(table, "remap", "cline", "cursor");
+    realignComplexityTable(table, "clear", "cline", "cursor");
     expect(table).toEqual(copy);
   });
 });
@@ -384,14 +444,14 @@ describe("recommendedComplexityAction", () => {
   /// deliberate cross-agent route. Rewriting or dropping is the human's
   /// choice, never the default.
   it("recommends keeping, whatever the table says", () => {
-    expect(recommendedComplexityAction({}, "claude-code")).toBe("keep");
+    expect(recommendedComplexityAction({}, "cline")).toBe("keep");
     expect(
-      recommendedComplexityAction({ trivial: { profile: "claude-code", model: "" } }, "claude-code")
+      recommendedComplexityAction({ trivial: { profile: "cline", model: "" } }, "cline")
     ).toBe("keep");
     expect(
       recommendedComplexityAction(
         { simple: { profile: "", model: "sonnet" }, intricate: { profile: "codex", model: "" } },
-        "claude-code"
+        "cline"
       )
     ).toBe("keep");
   });

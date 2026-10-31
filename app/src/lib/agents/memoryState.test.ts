@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { get } from "svelte/store";
 
 const backendMock = vi.hoisted(() => ({
@@ -13,7 +13,7 @@ vi.mock("$lib/core/layoutState", async () => {
   const { writable } = await import("svelte/store");
   return {
     layoutState: writable({ workspaces: [], activeWorkspaceId: null }),
-    resolvedAgentFor: () => ({ profileId: "claude-code" }),
+    resolvedAgentFor: () => ({ profileId: "cline" }),
   };
 });
 
@@ -120,7 +120,7 @@ describe("memory across windows", () => {
   it("takes another window's reading without asking the host", async () => {
     await initMemorySharing();
     const agents = {
-      s1: { sessionId: "s1", profileId: "claude-code", rssBytes: 8, processCount: 3, command: "claude" },
+      s1: { sessionId: "s1", profileId: "cline", rssBytes: 8, processCount: 3, command: "claude" },
     };
     eventMock.fire("memory-reading", {
       origin: "ws-2",

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   HEADROOM_REASON_PREFIX,
   SLEPT_REASON_PREFIX,
@@ -20,7 +20,7 @@ import {
   type FailureCausePattern,
 } from "$lib/agents/autoResume";
 
-// claude-code's table, in the order agent_setup.rs lists it. Copied
+// cline's table, in the order agent_setup.rs lists it. Copied
 // rather than imported because the point of several tests below is that
 // the ORDER the profile chose is what decides the answer.
 const CLAUDE: FailureCausePattern[] = [
@@ -47,8 +47,8 @@ const CLAUDE: FailureCausePattern[] = [
 
 describe("classifyFailure", () => {
   // Every string here is a line the failure-detection spec RECORDED off
-  // a real Claude Code screen, not one invented to make a test pass.
-  it("names each measured Claude Code failure line", () => {
+  // a real cline screen, not one invented to make a test pass.
+  it("names each measured cline failure line", () => {
     expect(classifyFailure("API Error: Connection dropped (ECONNRESET)", CLAUDE)).toBe("network");
     expect(
       classifyFailure(
@@ -73,7 +73,7 @@ describe("classifyFailure", () => {
   // The lines real transcripts held that the fake-API session never saw.
   // The sleep line stays unknown: the daemon's own slept-mid-turn verdict
   // owns suspend, so the profile has no row for it.
-  it("names the failures Claude Code really printed without the fake API's help", () => {
+  it("names the failures cline really printed without the fake API's help", () => {
     const cases: Array<[string, string]> = [
       ["You've hit your session limit · resets 6:50pm (Europe/Rome)", "usage-limit"],
       [
@@ -82,7 +82,7 @@ describe("classifyFailure", () => {
       ],
       ["Login expired · Please run /login", "auth"],
       [
-        "Your organization has disabled Claude subscription access for Claude Code · Use an Anthropic API key instead, or ask your admin to enable access",
+        "Your organization has disabled Claude subscription access for cline · Use an Anthropic API key instead, or ask your admin to enable access",
         "auth",
       ],
       ["Request timed out", "network"],
@@ -310,7 +310,7 @@ describe("autoResumeDecision", () => {
 
   // The turn verdict's cause, which exists for the profiles whose table
   // is EMPTY -- codex, gemini, cursor, opencode, custom -- and for the
-  // Claude Code lines the table has never seen.
+  // cline lines the table has never seen.
   it("takes the verdict's cause where the table says unknown", () => {
     const d = autoResumeDecision(
       input({ reason: "stream disconnected", causes: [], verdictCause: "network" })
@@ -443,3 +443,4 @@ describe("the audit trail", () => {
     );
   });
 });
+

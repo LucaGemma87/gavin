@@ -1,15 +1,15 @@
----
+﻿---
 order: 11264
 title: TypeSafe turn verdict: tell a finished turn from a question, a blocker or a failure
 status: Done
 priority: medium
 complexity: complex
 ---
-When an agent session goes quiet, gavin decides "the turn ended" from silence plus one substring (`API Error:`, claude-code only). Measured in `/Users/coalpila/CloudStation/Coding/gavin/.gavin-root/plans/done/typesafe-experiments.md`:
+When an agent session goes quiet, gavin decides "the turn ended" from silence plus one substring (`API Error:`, cline only). Measured in `/Users/coalpila/CloudStation/Coding/gavin/.gavin-root/plans/done/typesafe-experiments.md`:
 
 - a question asked in PROSE ("Which do you want?", "Say go and I'll write it") has no bell, so it reads as a finished turn. A rail's `agent` tool step completes on it (`orchestration.ts` `agentTurnEnded`) and the follow-up queue delivers into it. On 70 real turn endings from this repo, today's rule caught 0 of 16 questions/approval gates.
 - codex, gemini, cursor, opencode and custom have NO failure patterns, so every broken turn of theirs reads as finished.
-- a failure's cause comes from a substring table; on 16 real Claude Code errors it named 5.
+- a failure's cause comes from a substring table; on 16 real cline errors it named 5.
 
 A TypeSafe (`jev-1.13.0`) second opinion on the screen tail, one ~0.7s request per quiet transition, measured: real questions caught 15/16 with 3 false flags out of 44 finished turns; synthetic screens across five CLIs 52/53; real failures recognised 16/16 and right cause 15/16. About $0.00007 per verdict.
 
@@ -54,3 +54,4 @@ Resume notes (2026-09-22), for whoever reads the tree against this card:
 - Needs the owner: rebuild + restart the daemon (v39), then switch it on in Settings > Turn verdicts and paste a key; the rendered pass; the commit.
 - Not in scope, still reading the daemon's raw status: the tab badge, the sidebar dot, the board card dot, and the OS "<label> finished" notification (fired at the quiet transition, before any verdict).
 >>>>>>>> origin/main:.gavin-root/plans/done/typesafe-turn-verdict.md
+

@@ -1,4 +1,4 @@
-//! Reading an agent's SUBSCRIPTION limits -- the windows the account is
+﻿//! Reading an agent's SUBSCRIPTION limits -- the windows the account is
 //! spending against, not the tokens one conversation burned.
 //!
 //! Which agents can be asked at all, and by what route, is the profile
@@ -11,8 +11,8 @@
 //! Two constraints shape everything below.
 //!
 //! **The Anthropic endpoint rate-limits its own callers, hard.** Without
-//! a `claude-code/<version>` user-agent it lands in a bucket that answers
-//! 429 for hours (anthropics/claude-code#30930, #31021, #31637). So the
+//! a `cline/<version>` user-agent it lands in a bucket that answers
+//! 429 for hours (anthropics/cline#30930, #31021, #31637). So the
 //! probe sends one, caches every answer, refuses to call more often than
 //! `MIN_INTERVAL`, and backs off on its own when told to. A usage panel
 //! that polls per render is exactly how you lose the endpoint.
@@ -40,7 +40,7 @@ use tauri::Manager;
 
 use crate::agent_setup::{stock_profile_by_id, UsageProbe};
 
-/// Anthropic's own usage endpoint, which every Claude Code client reads.
+/// Anthropic's own usage endpoint, which every cline client reads.
 const ANTHROPIC_USAGE_URL: &str = "https://api.anthropic.com/api/oauth/usage";
 
 /// The beta gate the endpoint requires; without it the request is
@@ -274,7 +274,7 @@ pub async fn agent_usage(
 }
 
 /// The probe a profile id may be asked through. Named customs answer
-/// None here even though `profile_by_id` would fall back to claude-code:
+/// None here even though `profile_by_id` would fall back to cline:
 /// a custom is not claude, and the Anthropic probe's answer cached under
 /// the custom's id would read it as spent whenever claude is.
 fn usage_probe_for(profile_id: &str) -> Option<UsageProbe> {
@@ -307,7 +307,7 @@ impl UsageReport {
     }
 }
 
-// ---- Claude Code ------------------------------------------------------------
+// ---- cline ------------------------------------------------------------
 
 /// The CLI's own version, for the user-agent the endpoint wants. Best
 /// effort: a plausible fallback beats no header at all, since it is the
@@ -342,7 +342,7 @@ fn claude_version() -> &'static str {
 }
 
 /// The OAuth token, from the Keychain first and the file second -- the
-/// order Claude Code itself resolves them in on macOS, so gavin reads
+/// order cline itself resolves them in on macOS, so gavin reads
 /// whichever one is actually current.
 ///
 /// Returns the secret; every caller must keep it out of argv, logs and
@@ -367,7 +367,7 @@ fn credentials_blob(keychain: Option<String>, file: &Path) -> Option<String> {
 /// The Keychain copy, on the one OS that has a Keychain.
 ///
 /// `security(1)` is a macOS binary and there is no Linux equivalent to
-/// fall back to: Claude Code stores the blob in `~/.claude/.credentials.json`
+/// fall back to: cline stores the blob in `~/.claude/.credentials.json`
 /// there, plainly, which is why `credentials_blob`'s file arm is the
 /// whole story off macOS. Shelling out anyway would spend a process
 /// launch per probe on a command that cannot exist -- and on a machine
@@ -376,7 +376,7 @@ fn credentials_blob(keychain: Option<String>, file: &Path) -> Option<String> {
 #[cfg(target_os = "macos")]
 fn keychain_credentials() -> Option<String> {
     crate::program::command("security")
-        .args(["find-generic-password", "-s", "Claude Code-credentials", "-w"])
+        .args(["find-generic-password", "-s", "cline-credentials", "-w"])
         .output()
         .ok()
         .filter(|o| o.status.success())
@@ -406,7 +406,7 @@ fn anthropic_usage(now: i64) -> (UsageReport, Option<i64>) {
         None => {
             return (
                 UsageReport::Unavailable {
-                    reason: "gavin could not find Claude Code's login — run `claude` and sign in"
+                    reason: "gavin could not find cline's login — run `claude` and sign in"
                         .to_string(),
                     retry_after: None,
                 },
@@ -422,7 +422,7 @@ fn anthropic_usage(now: i64) -> (UsageReport, Option<i64>) {
         "url = \"{ANTHROPIC_USAGE_URL}\"\n\
          header = \"Authorization: Bearer {token}\"\n\
          header = \"anthropic-beta: {OAUTH_BETA}\"\n\
-         header = \"User-Agent: claude-code/{version}\"\n\
+         header = \"User-Agent: cline/{version}\"\n\
          header = \"Accept: application/json\"\n\
          silent\n\
          show-error\n\
@@ -456,7 +456,7 @@ fn anthropic_usage(now: i64) -> (UsageReport, Option<i64>) {
         },
         401 | 403 => (
             UsageReport::Unavailable {
-                reason: "Claude Code's login is not valid any more — run `claude` and sign in"
+                reason: "cline's login is not valid any more — run `claude` and sign in"
                     .to_string(),
                 retry_after: None,
             },
@@ -528,7 +528,7 @@ pub(crate) fn split_status(output: &str) -> (&str, u16) {
 /// `{utilization, resets_at}`, plus `spend_limit` behind a gateway.
 ///
 /// A window whose `resets_at` has already passed is DROPPED rather than
-/// shown at its last value -- that is what Claude Code's own statusline
+/// shown at its last value -- that is what cline's own statusline
 /// does, and a bar reading 96% for a window that reset an hour ago is
 /// the single most misleading thing this panel could show.
 fn parse_anthropic(body: &str, now: i64) -> Option<UsageReport> {
@@ -1903,7 +1903,7 @@ mod tests {
         let poll = {
             let (cache, calls) = (cache.clone(), calls.clone());
             std::thread::spawn(move || {
-                cache.read("claude-code", false, |now| {
+                cache.read("cline", false, |now| {
                     calls.fetch_add(1, SeqCst);
                     entered_tx.send(()).unwrap();
                     release_rx.recv().unwrap();
@@ -1912,11 +1912,11 @@ mod tests {
             })
         };
         entered_rx.recv().unwrap();
-        let asked_at = cache.generation("claude-code");
+        let asked_at = cache.generation("cline");
         let refresh = {
             let (cache, calls) = (cache.clone(), calls.clone());
             std::thread::spawn(move || {
-                cache.read_since("claude-code", true, asked_at, |now| {
+                cache.read_since("cline", true, asked_at, |now| {
                     calls.fetch_add(1, SeqCst);
                     ready_at(now)
                 })
@@ -1951,7 +1951,7 @@ mod tests {
     fn a_429_park_holds_a_forced_refresh() {
         let cache = UsageCache::new();
         let calls = std::cell::Cell::new(0);
-        cache.read("claude-code", false, |now| {
+        cache.read("cline", false, |now| {
             calls.set(calls.get() + 1);
             let until = now + BACKOFF_SECS;
             let report = UsageReport::Unavailable {
@@ -1960,7 +1960,7 @@ mod tests {
             };
             (report, Some(until))
         });
-        let again = cache.read("claude-code", true, |now| {
+        let again = cache.read("cline", true, |now| {
             calls.set(calls.get() + 1);
             ready_at(now)
         });
@@ -2205,12 +2205,12 @@ mod tests {
     /// the migrated `custom-agent`, a user slug, a workspace `local:` id
     /// -- carries no probe at all: the command answers Unsupported
     /// through `usage_probe_for` (`stock_profile_by_id`), never
-    /// `profile_by_id`'s claude-code fallback, which would cache
+    /// `profile_by_id`'s cline fallback, which would cache
     /// claude's usage under the custom's id and read it as spent
     /// whenever claude is.
     #[test]
     fn profiles_without_a_route_are_unsupported() {
-        for id in ["claude-code", "codex", "gemini", "cursor", "opencode", "kimi-code"] {
+        for id in ["cline", "codex", "gemini", "cursor", "opencode", "kimi-code"] {
             assert!(usage_probe_for(id).is_some(), "{id} has no probe");
         }
         for id in ["custom", "custom-agent", "my-bot", "local:desk"] {
@@ -2537,3 +2537,4 @@ mod tests {
         format!("eyJhbGciOiJub25l.{}.sig", super::b64url_encode(payload.as_bytes()))
     }
 }
+

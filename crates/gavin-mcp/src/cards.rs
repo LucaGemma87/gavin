@@ -787,7 +787,7 @@ mod tests {
     }
 
     /// The point of the card: a board an agent's MCP client shows rather
-    /// than spills to a file. Claude Code's default cap is 25,000 tokens,
+    /// than spills to a file. cline's default cap is 25,000 tokens,
     /// taken here as 100,000 characters; 300 live cards under a real-length
     /// root, carrying what an ordinary card carries, still fit -- and an
     /// archive of any size costs nothing.
@@ -981,3 +981,4 @@ mod tests {
         assert_eq!(out.lines().filter(|l| l.contains("\"path\"")).count(), 5, "{out}");
     }
 }
+

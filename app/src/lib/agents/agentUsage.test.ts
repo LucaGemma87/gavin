@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import {
   type AgentUsageReport,
   type UsageWindow,
@@ -156,13 +156,13 @@ describe("unavailableReason", () => {
       reason: "the usage endpoint rate-limited gavin",
       retryAfter: NOW_S + 15 * 60,
     };
-    expect(unavailableReason(report, "Claude Code", NOW_MS)).toBe(
+    expect(unavailableReason(report, "cline", NOW_MS)).toBe(
       "the usage endpoint rate-limited gavin — trying again in 15m."
     );
   });
 
   it("stays out of the way of a ready report", () => {
-    expect(unavailableReason(ready([window()]), "Claude Code", NOW_MS)).toBeNull();
+    expect(unavailableReason(ready([window()]), "cline", NOW_MS)).toBeNull();
   });
 });
 
@@ -219,7 +219,7 @@ describe("usageBlock", () => {
     ]);
     expect(usageBlock(report, 90).blocked).toBe(true);
     expect(usageBlock(usageForLaunchGate("cursor", report), 90).blocked).toBe(false);
-    expect(usageBlock(usageForLaunchGate("claude-code", report), 90).blocked).toBe(true);
+    expect(usageBlock(usageForLaunchGate("cline", report), 90).blocked).toBe(true);
     const enterprise = ready([
       window({ id: "total", label: "Total", usedPercent: 45, resetsAt: null }),
       window({ id: "api", label: "API", usedPercent: 100, resetsAt: null }),
@@ -292,14 +292,14 @@ describe("the persisted usage cache", () => {
   it("omits expired profiles and keeps the object when nothing changed", () => {
     const live = ready([window()]);
     const all = {
-      "claude-code": live,
+      "cline": live,
       codex: ready([window({ resetsAt: NOW_S - 1 })]),
     };
     const pruned = pruneUsageCache(all, NOW_MS);
     expect(pruned).not.toBe(all);
-    expect(pruned["claude-code"]).toBe(live);
+    expect(pruned["cline"]).toBe(live);
     expect(pruned.codex).toBeUndefined();
-    const one = { "claude-code": live };
+    const one = { "cline": live };
     expect(pruneUsageCache(one, NOW_MS)).toBe(one);
   });
 
@@ -309,15 +309,15 @@ describe("the persisted usage cache", () => {
       [window({ usedPercent: 23.5, resetsAt: NOW_S + 3600 })],
       { plan: "max", observedAt: NOW_S - 120 }
     );
-    saveUsageCache({ "claude-code": report }, storage, NOW_MS);
+    saveUsageCache({ "cline": report }, storage, NOW_MS);
     const loaded = loadUsageCache(NOW_MS, storage);
-    expect(loaded["claude-code"]).toEqual({ ...report, cached: true });
+    expect(loaded["cline"]).toEqual({ ...report, cached: true });
   });
 
   it("does not persist a reading that has already reset", () => {
     const storage = fakeStorage();
     saveUsageCache(
-      { "claude-code": ready([window({ resetsAt: NOW_S - 1 })]) },
+      { "cline": ready([window({ resetsAt: NOW_S - 1 })]) },
       storage,
       NOW_MS
     );
@@ -355,13 +355,13 @@ describe("the persisted usage cache", () => {
     expect(parseUsageCache(null, NOW_MS)).toEqual({});
     expect(parseUsageCache("not json", NOW_MS)).toEqual({});
     expect(parseUsageCache("[]", NOW_MS)).toEqual({});
-    expect(parseUsageCache(JSON.stringify({ "claude-code": { state: "ready" } }), NOW_MS)).toEqual(
+    expect(parseUsageCache(JSON.stringify({ "cline": { state: "ready" } }), NOW_MS)).toEqual(
       {}
     );
     expect(
       parseUsageCache(
         JSON.stringify({
-          "claude-code": {
+          "cline": {
             state: "ready",
             windows: [{ id: "five_hour", label: "5-hour", usedPercent: "full", resetsAt: null }],
             observedAt: NOW_S,
@@ -373,3 +373,4 @@ describe("the persisted usage cache", () => {
     ).toEqual({});
   });
 });
+

@@ -1,11 +1,11 @@
-# Matt Pocock's skills — install + detection matrix
+﻿# Matt Pocock's skills — install + detection matrix
 
 Date: 2026-10-05 (probed 2026-10-06)
 Card: `.gavin-root/plans/spike-mattpocock-skills-install-matrix.md` (nested in
 `feat-replace-superpower.md`)
 Upstream: <https://github.com/mattpocock/skills> — README and
 `.claude-plugin/plugin.json`, read 2026-10-06.
-Machine: macOS, Claude Code `2.1.291`, skills CLI `1.7.0` (`npx skills@latest`),
+Machine: macOS, cline `2.1.291`, skills CLI `1.7.0` (`npx skills@latest`),
 Node 22.22.3, gemini-cli `0.35.3`, opencode `1.18.25`, cursor-agent
 `2026.10.01`. No `codex` binary on this machine.
 
@@ -16,13 +16,13 @@ marked **UNVERIFIED**.
 
 ## The matrix
 
-gavin's profiles are the six in `AGENT_PROFILES`: `claude-code`, `codex`,
+gavin's profiles are the six in `AGENT_PROFILES`: `cline`, `codex`,
 `gemini`, `cursor`, `opencode`, `custom`. The brief's Kimi Code has **no gavin
 profile**, so it has no row; a Kimi user runs it as `custom`.
 
 | profile | route | gavin installs? | command gavin runs (cwd = workspace root) | detection | verified here |
 |---|---|---|---|---|---|
-| `claude-code` | plugin | **yes** | `claude plugin install mattpocock-skills --scope project -y` | `claude plugin list --json` in the root: an entry whose package name is `mattpocock-skills` with `enabled: true` | **yes** — install, reinstall, failure, fresh-machine failure, detection |
+| `cline` | plugin | **yes** | `claude plugin install mattpocock-skills --scope project -y` | `claude plugin list --json` in the root: an entry whose package name is `mattpocock-skills` with `enabled: true` | **yes** — install, reinstall, failure, fresh-machine failure, detection |
 | `codex` | skills CLI | **yes** | `npx -y skills@latest add mattpocock/skills --skill '*' -a codex -y` | `skills-lock.json` lists a `source: "mattpocock/skills"` skill whose `.agents/skills/<name>/SKILL.md` exists | install + detection **yes**; Codex reading `.agents/skills/` is **docs-only** (no `codex` binary here) |
 | `gemini` | skills CLI | **yes** | `… -a gemini-cli -y` | same, `.agents/skills/` | **yes** — `gemini skills list` lists them from the project's `.agents/skills/` |
 | `cursor` | skills CLI | **yes** | `… -a cursor -y` | same, `.agents/skills/` | install + detection **yes**; Cursor reading `.agents/skills/` per cursor.com/docs/context/skills (read 2026-10-06), not run in Cursor |
@@ -35,7 +35,7 @@ entries all have `skillsDir: ".agents/skills"` (read from the CLI's agent
 table, `dist/cli.mjs`). One install serves all five, which is also why
 detection does not need the profile beyond "is this a CLI-route profile".
 
-## 1. Claude Code — plugin route
+## 1. cline — plugin route
 
 ### Install
 
@@ -69,7 +69,7 @@ stderr: ✘ Failed to install plugin "mattpocock-nosuch": Plugin "mattpocock-nos
 ```
 
 **New finding — the marketplace is not always there.** Under a fresh `$HOME`
-(a Claude Code that has never run interactively), `claude plugin list --json`
+(a cline that has never run interactively), `claude plugin list --json`
 is `[]` and the real install fails exactly like the bad name above:
 
 ```
@@ -208,7 +208,7 @@ runs and surfaces "npx was not found on PATH" verbatim; it does not try to
 find Node itself.
 
 **`AI_AGENT` changes the output, not the result.** Run from inside a Claude
-Code session the CLI prints `●  claude-code_2-1-291_agent  Agent detected —
+Code session the CLI prints `●  cline_2-1-291_agent  Agent detected —
 installing non-interactively`; with the variable stripped it prints `Tip: use
 the --yes (-y) and --global (-g) flags…`. Same files, same exit code. gavin's
 own process may carry `AI_AGENT` when launched from a terminal agent session,
@@ -220,7 +220,7 @@ and it does not matter.
 engineering + productivity skills plus `in-progress/` (`chief-of-staff`,
 `claude-handoff`, `loop-me`, `setup-ts-deep-modules`, `writing-beats`,
 `writing-fragments`, `writing-shape`, …) and `misc/`
-(`git-guardrails-claude-code`, `migrate-to-shoehorn`, `scaffold-exercises`,
+(`git-guardrails-cline`, `migrate-to-shoehorn`, `scaffold-exercises`,
 `setup-pre-commit`). The plugin bundle is the 27 listed in
 `.claude-plugin/plugin.json` (upstream `1.3.1`; the marketplace's pinned
 `1.2.3` lists 25). So `'*'` is a **superset** of the plugin route, not parity
@@ -314,13 +314,13 @@ marker and reads back as *asserted*.
 5. **Coexistence with gavin's own skills** — **verified**. A root pre-seeded
    with `.agents/skills/gavin/SKILL.md` and `.claude/skills/gavin/SKILL.md`
    kept both files byte-for-byte through a full install (codex and
-   claude-code), and `skills-lock.json` listed only the 38 upstream skills — no
+   cline), and `skills-lock.json` listed only the 38 upstream skills — no
    `gavin` entry. The lock tracks the CLI's installs only, which is why the
    detector keys on `source`, not on directory contents.
 
 ## Consequences for `agent_skills.rs`
 
-1. Two detectors: a subprocess for `claude-code` (unchanged mechanism), and two
+1. Two detectors: a subprocess for `cline` (unchanged mechanism), and two
    file reads for the four CLI-route profiles. `custom` is the marker only.
 2. Five Install buttons, not one. The CLI route is non-interactive with `-y`
    and asks no trust question on the human's behalf.
@@ -332,3 +332,4 @@ marker and reads back as *asserted*.
 6. When Claude's stderr says *not found in any configured marketplace*, name
    `claude plugin marketplace add anthropics/claude-plugins-official` in the
    detail rather than leave the human to decode it.
+

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import {
   railDeleteConfirm,
   railClearDoneConfirm,
@@ -279,8 +279,8 @@ describe("runAllConfirm", () => {
       o,
       launchEstimate({
         count: 2,
-        profileId: "claude-code",
-        means: { "claude-code": 2 * 1024 ** 3 },
+        profileId: "cline",
+        means: { "cline": 2 * 1024 ** 3 },
         storedMeans: {},
         measuredAgents: 3,
         sample: {

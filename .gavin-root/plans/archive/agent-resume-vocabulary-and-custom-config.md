@@ -1,4 +1,4 @@
----
+﻿---
 kind: task
 title: Resume vocabulary per agent profile, plus a configurable custom resume flag
 parent: feat-agent-session-name-mcp.md
@@ -6,7 +6,7 @@ complexity: complex
 ---
 Read `.gavin-root/plans/feat-agent-session-name-mcp.md` (the parent plan) and
 `app/src-tauri/src/agent_setup.rs`'s `AgentProfile` struct and the
-`AGENT_PROFILES` table (claude-code / codex / gemini / cursor / opencode /
+`AGENT_PROFILES` table (cline / codex / gemini / cursor / opencode /
 custom) before touching anything — especially the doc comments on
 `session_id_args` and `resume_args`, and the
 `conversation_resume_argv_is_all_or_nothing_per_profile` test.

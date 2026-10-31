@@ -30,7 +30,7 @@ export interface AgentSkillsStatus {
   /// asks which agent to install for -- gavin does not know its name.
   command: string;
   /// Whether gavin may run `command` itself: every known profile, through
-  /// Claude Code's plugin or the skills CLI.
+  /// cline's plugin or the skills CLI.
   installable: boolean;
   /// The detector's or installer's raw output, for the drawer.
   output: string;
@@ -147,3 +147,4 @@ export function agentSkillsLabel(state: AgentSkillsState): string {
 /// because the install is the human's own.
 export const FAREWELL_NOTE =
   "gavin now recommends Matt Pocock's skills instead of Superpowers. Superpowers is yours to keep or remove — gavin no longer checks for it or installs it.";
+

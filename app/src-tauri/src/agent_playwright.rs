@@ -1,4 +1,4 @@
-//! Playwright for gavin's agents -- the real browser an agent drives
+﻿//! Playwright for gavin's agents -- the real browser an agent drives
 //! through Microsoft's `@playwright/mcp` -- installed per workspace, for
 //! every stock agent profile.
 //!
@@ -583,7 +583,7 @@ fn status_for(machine: &dyn Machine, root: &Path, profile_id: &str) -> Status {
 
 /// Every stock profile that has an MCP layout, so Install does not leave
 /// Cursor (or any other row) without `browser_*` when the workspace's
-/// own agent was the one the wizard named. claude-code and kimi-code
+/// own agent was the one the wizard named. cline and kimi-code
 /// share `.mcp.json`; writing twice is the same merge.
 fn stock_mcp_layouts<'a>(
     fs: &'a dyn WorkspaceFiles,
@@ -609,7 +609,7 @@ fn stock_mcp_layouts<'a>(
 ///
 /// The entry is written for **every** stock profile with an MCP layout,
 /// not only `profile_id`: complexity routing and a manual Cursor tab
-/// read `.cursor/mcp.json` while the workspace agent may be claude-code.
+/// read `.cursor/mcp.json` while the workspace agent may be cline.
 /// Status is still reported for the profile that was asked about.
 ///
 /// A non-zero exit is not an `Err`, for `agent_skills::install`'s reason:
@@ -711,7 +711,7 @@ fn machine_for(app: &tauri::AppHandle, root_path: &str) -> Result<Box<dyn Machin
 }
 
 /// The profile named, else the one the root's launches resolve to --
-/// `[agent] profile`, then the app's default agent, then claude-code,
+/// `[agent] profile`, then the app's default agent, then cline,
 /// as `setup_agent_integration` resolves it.
 fn profile_id_for(app: &tauri::AppHandle, fs: &dyn WorkspaceFiles, root: &Path, named: Option<&str>) -> String {
     if let Some(named) = named.map(str::trim).filter(|s| !s.is_empty()) {
@@ -869,7 +869,7 @@ mod tests {
 
     fn assert_playwright_entry(p: &Path, profile: &str) {
         match profile {
-            "claude-code" | "kimi-code" | "gemini" => {
+            "cline" | "kimi-code" | "gemini" => {
                 let file = if profile == "gemini" {
                     let mcp = crate::agent_setup::profile_by_id("gemini")
                         .mcp
@@ -918,7 +918,7 @@ mod tests {
     fn the_entry_merges_beside_servers_already_there() {
         let root = tempfile::tempdir().unwrap();
         let cache = tempfile::tempdir().unwrap();
-        rooted(root.path(), "claude-code");
+        rooted(root.path(), "cline");
         std::fs::write(
             root.path().join(".mcp.json"),
             r#"{ "mcpServers": { "gavin": { "command": "/apps/gavin-mcp", "args": [] },
@@ -927,7 +927,7 @@ mod tests {
         )
         .unwrap();
         let machine = Fake::new(&LocalFiles, cache.path());
-        install(&machine, root.path(), "claude-code", false).unwrap();
+        install(&machine, root.path(), "cline", false).unwrap();
         let v = json(&root.path().join(".mcp.json"));
         assert_eq!(v["mcpServers"]["linty"]["args"], serde_json::json!(["--fix"]));
         assert_eq!(v["mcpServers"]["gavin"]["command"], BINARY);
@@ -956,12 +956,12 @@ mod tests {
     fn a_foreign_playwright_server_is_replaced_only_when_asked() {
         let root = tempfile::tempdir().unwrap();
         let cache = tempfile::tempdir().unwrap();
-        rooted(root.path(), "claude-code");
+        rooted(root.path(), "cline");
         let theirs = r#"{"mcpServers":{"playwright":{"command":"npx","args":["@playwright/mcp@latest"]}}}"#;
         std::fs::write(root.path().join(".mcp.json"), theirs).unwrap();
         let machine = Fake::new(&LocalFiles, cache.path());
 
-        let status = status_for(&machine, root.path(), "claude-code");
+        let status = status_for(&machine, root.path(), "cline");
         assert_eq!(status.state, "absent");
         assert!(status.installable);
         assert_eq!(
@@ -974,11 +974,11 @@ mod tests {
         );
         assert!(status.detail.contains("Replace"), "{}", status.detail);
 
-        let kept = install(&machine, root.path(), "claude-code", false).unwrap();
+        let kept = install(&machine, root.path(), "cline", false).unwrap();
         assert_eq!(std::fs::read_to_string(root.path().join(".mcp.json")).unwrap(), theirs);
         assert!(kept.conflict.is_some());
 
-        let replaced = install(&machine, root.path(), "claude-code", true).unwrap();
+        let replaced = install(&machine, root.path(), "cline", true).unwrap();
         assert_eq!(replaced.state, "verified", "{}", replaced.detail);
         assert_eq!(json(&root.path().join(".mcp.json"))["mcpServers"]["playwright"]["command"], BINARY);
     }
@@ -989,12 +989,12 @@ mod tests {
     fn gavins_entry_with_the_humans_own_flags_counts_and_is_kept() {
         let root = tempfile::tempdir().unwrap();
         let cache = tempfile::tempdir().unwrap();
-        rooted(root.path(), "claude-code");
+        rooted(root.path(), "cline");
         let body = r#"{"mcpServers":{"playwright":{"command":"/apps/gavin-mcp","args":["playwright","--viewport-size","1600,900"]}}}"#;
         std::fs::write(root.path().join(".mcp.json"), body).unwrap();
         let machine = Fake::new(&LocalFiles, cache.path()).with_browser();
-        assert_eq!(status_for(&machine, root.path(), "claude-code").state, "verified");
-        install(&machine, root.path(), "claude-code", false).unwrap();
+        assert_eq!(status_for(&machine, root.path(), "cline").state, "verified");
+        install(&machine, root.path(), "cline", false).unwrap();
         assert_eq!(std::fs::read_to_string(root.path().join(".mcp.json")).unwrap(), body);
     }
 
@@ -1002,10 +1002,10 @@ mod tests {
     fn without_npx_nothing_runs_and_the_row_says_why() {
         let root = tempfile::tempdir().unwrap();
         let cache = tempfile::tempdir().unwrap();
-        rooted(root.path(), "claude-code");
+        rooted(root.path(), "cline");
         let mut machine = Fake::new(&LocalFiles, cache.path());
         machine.npx = Ok(false);
-        let status = install(&machine, root.path(), "claude-code", false).unwrap();
+        let status = install(&machine, root.path(), "cline", false).unwrap();
         assert_eq!(status.state, "absent");
         assert!(!status.installable);
         assert!(status.detail.contains("Node.js"), "{}", status.detail);
@@ -1020,17 +1020,17 @@ mod tests {
     fn the_checks_not_the_exit_code_say_what_an_install_did() {
         let root = tempfile::tempdir().unwrap();
         let cache = tempfile::tempdir().unwrap();
-        rooted(root.path(), "claude-code");
+        rooted(root.path(), "cline");
         let mut machine = Fake::new(&LocalFiles, cache.path());
         machine.install = Some((false, 1));
-        let failed = install(&machine, root.path(), "claude-code", false).unwrap();
+        let failed = install(&machine, root.path(), "cline", false).unwrap();
         assert_eq!(failed.state, "absent");
         assert!(failed.detail.contains("status 1"), "{}", failed.detail);
         assert!(failed.output.contains("Downloading"), "the install's log, not the checks': {}", failed.output);
         assert!(!root.path().join(".mcp.json").exists(), "no entry without the browser behind it");
 
         machine.install = Some((true, 1));
-        let finished = install(&machine, root.path(), "claude-code", false).unwrap();
+        let finished = install(&machine, root.path(), "cline", false).unwrap();
         assert_eq!(finished.state, "verified", "{}", finished.detail);
     }
 
@@ -1068,10 +1068,10 @@ mod tests {
     fn an_unreadable_config_is_unavailable_and_untouched() {
         let root = tempfile::tempdir().unwrap();
         let cache = tempfile::tempdir().unwrap();
-        rooted(root.path(), "claude-code");
+        rooted(root.path(), "cline");
         std::fs::write(root.path().join(".mcp.json"), "{ not json").unwrap();
         let machine = Fake::new(&LocalFiles, cache.path());
-        let status = install(&machine, root.path(), "claude-code", false).unwrap();
+        let status = install(&machine, root.path(), "cline", false).unwrap();
         assert_eq!(status.state, "unavailable");
         assert_eq!(std::fs::read_to_string(root.path().join(".mcp.json")).unwrap(), "{ not json");
     }
@@ -1082,10 +1082,10 @@ mod tests {
     fn no_gavin_mcp_means_no_entry() {
         let root = tempfile::tempdir().unwrap();
         let cache = tempfile::tempdir().unwrap();
-        rooted(root.path(), "claude-code");
+        rooted(root.path(), "cline");
         let mut machine = Fake::new(&LocalFiles, cache.path()).with_browser();
         machine.binary = Err("gavin-mcp binary not found beside the app".to_string());
-        let status = install(&machine, root.path(), "claude-code", false).unwrap();
+        let status = install(&machine, root.path(), "cline", false).unwrap();
         assert_eq!(status.state, "unavailable");
         assert!(status.detail.contains("gavin-mcp"), "{}", status.detail);
         assert!(!root.path().join(".mcp.json").exists());
@@ -1126,7 +1126,7 @@ mod tests {
     fn an_ssh_workspace_is_set_up_on_the_host() {
         let root = PathBuf::from("/remote/repo");
         let files = HostFiles { dirs: vec![root.clone()], ..Default::default() };
-        files.write_bytes(&root.join(".gavin-root/config.toml"), b"[agent]\nprofile = \"claude-code\"\n").unwrap();
+        files.write_bytes(&root.join(".gavin-root/config.toml"), b"[agent]\nprofile = \"cline\"\n").unwrap();
         let cache = tempfile::tempdir().unwrap();
         let mut machine = Fake::new(&files, cache.path());
         machine.npx = Err("Node.js (npx) not checked — gavin cannot look up programs on box from here".to_string());
@@ -1134,7 +1134,7 @@ mod tests {
         machine.host = Some("box".to_string());
         machine.binary = Ok(PathBuf::from("/opt/gavin/gavin-mcp"));
 
-        let status = install(&machine, &root, "claude-code", false).unwrap();
+        let status = install(&machine, &root, "cline", false).unwrap();
         assert_eq!(status.state, "absent");
         assert!(!status.installable, "nothing to do here until the browser is on the host");
         assert!(status.detail.contains("on box") && status.detail.contains(&install_command()), "{}", status.detail);
@@ -1143,8 +1143,8 @@ mod tests {
 
         std::fs::create_dir_all(machine.marker.parent().unwrap()).unwrap();
         std::fs::write(&machine.marker, "").unwrap();
-        assert!(status_for(&machine, &root, "claude-code").installable);
-        let status = install(&machine, &root, "claude-code", false).unwrap();
+        assert!(status_for(&machine, &root, "cline").installable);
+        let status = install(&machine, &root, "cline", false).unwrap();
         assert_eq!(status.state, "verified", "{}", status.detail);
         let mcp = String::from_utf8(files.read_bytes(&root.join(".mcp.json")).unwrap().unwrap()).unwrap();
         let v: serde_json::Value = serde_json::from_str(&mcp).unwrap();
@@ -1187,7 +1187,7 @@ mod tests {
     fn a_fallback_browser_revision_lets_install_write_the_entry() {
         let root = tempfile::tempdir().unwrap();
         let cache = tempfile::tempdir().unwrap();
-        rooted(root.path(), "claude-code");
+        rooted(root.path(), "cline");
         let fallback = cache
             .path()
             .join("chromium_headless_shell-1243")
@@ -1200,7 +1200,7 @@ mod tests {
         let mut machine = Fake::new(&LocalFiles, cache.path());
         machine.marker = fallback;
         assert_eq!(machine.installs.load(Ordering::SeqCst), 0);
-        let status = install(&machine, root.path(), "claude-code", false).unwrap();
+        let status = install(&machine, root.path(), "cline", false).unwrap();
         assert_eq!(status.state, "verified", "{}", status.detail);
         assert_eq!(machine.installs.load(Ordering::SeqCst), 0, "no download when any complete shell is there");
         assert!(root.path().join(".mcp.json").exists());
@@ -1215,8 +1215,8 @@ mod tests {
     #[ignore = "reads this machine's PATH and Playwright cache"]
     fn live_checks_on_this_machine() {
         let root = tempfile::tempdir().unwrap();
-        rooted(root.path(), "claude-code");
-        let status = status_for(&ThisMachine, root.path(), "claude-code");
+        rooted(root.path(), "cline");
+        let status = status_for(&ThisMachine, root.path(), "cline");
         for check in &status.checks {
             eprintln!("{}: {:?} — {}", check.id, check.ok, check.line);
         }

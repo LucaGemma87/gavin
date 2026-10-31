@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+﻿import { describe, it, expect, beforeEach } from "vitest";
 import { get } from "svelte/store";
 import type { BestOfNRun, RunCandidate } from "$lib/cards/bestOfN";
 import {
@@ -29,11 +29,11 @@ function memoryStorage(seed: Record<string, string> = {}) {
 function candidate(over: Partial<RunCandidate> = {}): RunCandidate {
   return {
     sessionId: "s1",
-    label: "Claude Code",
-    profileId: "claude-code",
+    label: "cline",
+    profileId: "cline",
     model: "",
-    branch: "auth-claude-code",
-    worktreePath: "/repos/gavin-auth-claude-code",
+    branch: "auth-cline",
+    worktreePath: "/repos/gavin-auth-cline",
     command: "claude 'do it'",
     conversationId: null,
     ...over,
@@ -170,3 +170,4 @@ describe("liveness", () => {
     expect(runSummary(run(), new Set())).toBe("2 stopped");
   });
 });
+

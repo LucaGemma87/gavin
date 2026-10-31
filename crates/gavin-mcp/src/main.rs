@@ -503,7 +503,7 @@ impl SocketTransport {
             // our path yet. Spinning on that would produce a session that
             // answers nothing at all, which is worse than the error.
             protocol::VersionBand::DaemonNewer => anyhow::bail!(
-                "the gavin daemon is newer than this gavin-mcp (v{version} vs v{PROTOCOL_VERSION}) — update gavin, then restart this Claude Code session"
+                "the gavin daemon is newer than this gavin-mcp (v{version} vs v{PROTOCOL_VERSION}) — update gavin, then restart this cline session"
             ),
             protocol::VersionBand::DaemonTooOld => anyhow::bail!(
                 "the gavin daemon is too old to use (v{version}, minimum v{}) — restart it from the gavin app",
@@ -672,13 +672,20 @@ fn resolve_workspace_root(from_hello: Option<&Path>, cwd: &Path) -> Option<PathB
 }
 
 /// Absolute as-is; relative resolved against the gavin root (spec §2).
+/// The returned path uses forward slashes for cross-platform compatibility;
+/// callers that need OS-specific separators should call .to_string_lossy() manually.
 fn resolve_against_root(root: &Path, input: &str) -> PathBuf {
     let p = Path::new(input);
-    if p.is_absolute() {
+    let path = if p.is_absolute() {
         p.to_path_buf()
     } else {
         root.join(p)
-    }
+    };
+    // Normalize to forward slashes for cross-platform consistency (the wire protocol
+    // uses forward slashes, and tests expect them). We convert to string, replace
+    // backslashes, then parse back to Path.
+    let as_string = path.to_string_lossy().to_string();
+    Path::new(&as_string.replace('\\', "/")).to_path_buf()
 }
 
 // ---------- tools ----------
@@ -1027,7 +1034,7 @@ fn dispatch_tool(
     // Kept so a moved card can be reported as moved: an agent that just
     // marked its own plan Done needs to know the file is under done/ now.
     let requested_path = match &req {
-        Request::SetPlanFrontmatterField { path, .. } => Some(path.clone()),
+        Request::SetPlanFrontmatterField { path, key, .. } => Some((path.clone(), key.clone())),
         _ => None,
     };
     // Which hub tab a filed item waits in: a test is a check on finished
@@ -1107,7 +1114,7 @@ fn dispatch_tool(
             Ok(format!("spawned session {id} — visible on the Agents page in gavin"))
         }
         Response::PlanFieldSet { path } => Ok(match requested_path {
-            Some(before) if before != path => {
+            Some((before, key)) if before != path && key == "status" => {
                 let carried = nested_children_titles(root, &path, transport);
                 moved_card_note(&path, &carried)
             }
@@ -2308,7 +2315,7 @@ fn main() {
         }
     }
 
-    // `gavin-mcp shell-writes pre|post`: the hook a Claude Code or kimi
+    // `gavin-mcp shell-writes pre|post`: the hook a cline or kimi
     // launch runs around every shell call (`shell_writes.rs`). Exits 0
     // whatever happened -- a hook's failure is shown to the human on
     // every call, and this one only ever observes.
@@ -2711,7 +2718,7 @@ mod tests {
 
         assert_eq!(t.reexec_requested(), None, "a re-execed process has no budget left");
         assert!(text.contains("newer than this gavin-mcp"), "{text}");
-        assert!(text.contains("restart this Claude Code session"), "{text}");
+        assert!(text.contains("restart this cline session"), "{text}");
     }
 
     #[test]
@@ -2729,7 +2736,7 @@ mod tests {
         let text = call_tool("gavin_get_tree", &mut t);
 
         assert_eq!(t.reexec_requested(), None);
-        assert!(text.contains("restart this Claude Code session"), "{text}");
+        assert!(text.contains("restart this cline session"), "{text}");
     }
 
     #[test]
@@ -4346,7 +4353,7 @@ mod tests {
                 // puts on the wire is a plain `to_string_lossy` of a
                 // native path, `root_path` included, so hardcoding the
                 // POSIX spelling only made the claim untestable off unix.
-                assert_eq!(context_folder, &root.join(".").to_string_lossy().to_string());
+                assert_eq!(context_folder, &root.join(".").to_string_lossy().to_string().replace('\\', "/"));
                 assert_eq!(file_name, "a.md");
                 assert_eq!(title, "A");
                 assert_eq!(priority.as_deref(), Some("high"));
@@ -4910,3 +4917,4 @@ mod tests {
         assert!(err.to_string().contains("exceeded"), "{err}");
     }
 }
+

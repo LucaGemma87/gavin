@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import {
   ADD_TAB,
   ADD_TAB_HINT,
@@ -46,7 +46,7 @@ function profile(
 }
 
 const PROFILES: AgentProfileInfo[] = [
-  profile({ id: "claude-code", label: "Claude Code", usageProbe: "anthropic-oauth" }),
+  profile({ id: "cline", label: "cline", usageProbe: "anthropic-oauth" }),
   profile({ id: "codex", label: "Codex", usageProbe: "codex-rollout" }),
   profile({ id: "work-agent", label: "Work", modelFlag: "--model" }),
   profile({ id: "local:desk", label: "Desk", local: true }),
@@ -56,7 +56,7 @@ describe("agents hub tabs", () => {
   it("is General plus one tab per agent, locals marked", () => {
     expect(agentsHubTabs(PROFILES).map((t) => t.label)).toEqual([
       "General",
-      "Claude Code",
+      "cline",
       "Codex",
       "Work",
       "Desk (local)",
@@ -92,7 +92,7 @@ describe("agentsTabForQuery", () => {
   });
 
   it("opens a named agent for quota / custom / command", () => {
-    expect(agentsTabForQuery("app", "quota", PROFILES)).toBe("claude-code");
+    expect(agentsTabForQuery("app", "quota", PROFILES)).toBe("cline");
     expect(agentsTabForQuery("app", "API family", PROFILES)).toBe("work-agent");
     expect(agentsTabForQuery("workspace", "Codex", PROFILES)).toBe("codex");
   });
@@ -100,7 +100,7 @@ describe("agentsTabForQuery", () => {
   it("treats custom ids as customs", () => {
     expect(isCustomProfileId("work-agent")).toBe(true);
     expect(isCustomProfileId("local:desk")).toBe(true);
-    expect(isCustomProfileId("claude-code")).toBe(false);
+    expect(isCustomProfileId("cline")).toBe(false);
     expect(isCustomProfileId("general")).toBe(false);
   });
 });
@@ -108,7 +108,7 @@ describe("agentsTabForQuery", () => {
 describe("customProfiles CRUD helpers", () => {
   it("slugifies and avoids stock ids", () => {
     expect(slugifyCustomId("My Agent!", [])).toBe("my-agent");
-    expect(slugifyCustomId("Claude Code", [])).toBe("claude-code-agent");
+    expect(slugifyCustomId("cline", [])).toBe("cline-agent");
     expect(slugifyCustomId("custom", ["custom-agent"])).toBe("custom-agent-2");
   });
 
@@ -145,7 +145,7 @@ describe("deleting a custom cleans its references", () => {
         defaultAgent: "my-bot",
         complexityTables: {
           "my-bot": { trivial: { profile: "", model: "mini" } },
-          "claude-code": {
+          "cline": {
             trivial: { profile: "", model: "haiku" },
             intricate: { profile: "my-bot", model: "x" },
           },
@@ -153,25 +153,25 @@ describe("deleting a custom cleans its references", () => {
         pauseCycles: { "my-bot": { enabled: true, periodMinutes: 300, pauseMinutes: 10, anchorMs: 1, limitPercent: 95, limitEnabled: true } },
         promptExtras: { "my-bot": ["a"], codex: ["b"] },
         extraCliArgs: { "my-bot": ["--x"] },
-        fallbackChains: { "my-bot": ["codex"], "claude-code": ["my-bot", "codex"] },
+        fallbackChains: { "my-bot": ["codex"], "cline": ["my-bot", "codex"] },
         fallbackThresholds: { "my-bot": 80, codex: 95 },
         actionPromptOverrides: {},
       },
       "my-bot"
     );
     expect(defaults.customProfiles).toEqual([]);
-    expect(defaults.fallbackChains).toEqual({ "claude-code": ["codex"] });
+    expect(defaults.fallbackChains).toEqual({ "cline": ["codex"] });
     expect(defaults.fallbackThresholds).toEqual({ codex: 95 });
     // Everything else keyed by it goes too, and a row routing a level to
     // it is cleared rather than left pointing at an agent that is gone.
     expect(defaults.complexityTables).toEqual({
-      "claude-code": { trivial: { profile: "", model: "haiku" } },
+      "cline": { trivial: { profile: "", model: "haiku" } },
     });
     expect(defaults.pauseCycles).toEqual({});
     expect(defaults.promptExtras).toEqual({ codex: ["b"] });
     expect(defaults.extraCliArgs).toEqual({});
     // Back to the fallback an absent setting already means.
-    expect(defaults.defaultAgent).toBe("claude-code");
+    expect(defaults.defaultAgent).toBe("cline");
   });
 
   it("keeps the default agent when it names another profile", () => {
@@ -195,20 +195,20 @@ describe("deleting a custom cleans its references", () => {
   it("strips a profile from a workspace chains map the same way", () => {
     expect(
       fallbackChainsWithoutProfile(
-        { "local:bot": ["codex"], "claude-code": ["local:bot", "gemini"] },
+        { "local:bot": ["codex"], "cline": ["local:bot", "gemini"] },
         "local:bot"
       )
-    ).toEqual({ "claude-code": ["gemini"] });
+    ).toEqual({ "cline": ["gemini"] });
   });
 });
 
 describe("the trailing + tab", () => {
-  const profiles = [profile({ id: "claude-code", label: "Claude Code" }), profile({ id: "codex", label: "Codex" })];
+  const profiles = [profile({ id: "cline", label: "cline" }), profile({ id: "codex", label: "Codex" })];
 
   it("is added only when a hint is given, after every agent", () => {
-    expect(agentsHubTabs(profiles).map((t) => t.id)).toEqual([GENERAL_TAB, "claude-code", "codex"]);
+    expect(agentsHubTabs(profiles).map((t) => t.id)).toEqual([GENERAL_TAB, "cline", "codex"]);
     const tabs = agentsHubTabs(profiles, ADD_TAB_HINT.app);
-    expect(tabs.map((t) => t.id)).toEqual([GENERAL_TAB, "claude-code", "codex", ADD_TAB]);
+    expect(tabs.map((t) => t.id)).toEqual([GENERAL_TAB, "cline", "codex", ADD_TAB]);
     expect(tabs.at(-1)).toMatchObject({ label: "+", hint: ADD_TAB_HINT.app });
     // No other tab carries a hint: the tooltip is the "+" tab's alone.
     expect(tabs.slice(0, -1).every((t) => t.hint === undefined)).toBe(true);
@@ -246,10 +246,10 @@ describe("cleaning a deleted local custom out of a workspace's own maps", () => 
   it("clears every per-agent key it appears in, and rows routing to it", () => {
     const patch = workspacePatchWithoutProfile(
       {
-        fallbackChains: { "local:bot": ["codex"], "claude-code": ["local:bot", "gemini"] },
+        fallbackChains: { "local:bot": ["codex"], "cline": ["local:bot", "gemini"] },
         complexityTables: {
           "local:bot": { trivial: { profile: "", model: "mini" } },
-          "claude-code": { intricate: { profile: "local:bot", model: "x" }, trivial: { profile: "", model: "haiku" } },
+          "cline": { intricate: { profile: "local:bot", model: "x" }, trivial: { profile: "", model: "haiku" } },
         },
         pauseCycles: { "local:bot": cycle, codex: cycle },
         promptExtras: { "local:bot": ["a"] },
@@ -257,8 +257,8 @@ describe("cleaning a deleted local custom out of a workspace's own maps", () => 
       },
       "local:bot"
     );
-    expect(patch.fallbackChains).toEqual({ "claude-code": ["gemini"] });
-    expect(patch.complexityTables).toEqual({ "claude-code": { trivial: { profile: "", model: "haiku" } } });
+    expect(patch.fallbackChains).toEqual({ "cline": ["gemini"] });
+    expect(patch.complexityTables).toEqual({ "cline": { trivial: { profile: "", model: "haiku" } } });
     expect(patch.pauseCycles).toEqual({ codex: cycle });
     // Emptied maps are stored as absent (inherit) rather than as {}.
     expect(patch.promptExtras).toBeNull();
@@ -281,15 +281,16 @@ describe("cleaning a deleted local custom out of a workspace's own maps", () => 
   /// "inherit the app-wide table".
   it("keeps a workspace complexity table that the cleanup emptied", () => {
     const patch = workspacePatchWithoutProfile(
-      { complexityTables: { "claude-code": { intricate: { profile: "local:bot", model: "" } } } },
+      { complexityTables: { "cline": { intricate: { profile: "local:bot", model: "" } } } },
       "local:bot"
     );
-    expect(patch.complexityTables).toEqual({ "claude-code": {} });
+    expect(patch.complexityTables).toEqual({ "cline": {} });
   });
 
   it("drops an emptied table app-wide", () => {
     expect(
-      complexityTablesWithoutProfile({ "claude-code": { intricate: { profile: "bot", model: "" } } }, "bot")
+      complexityTablesWithoutProfile({ "cline": { intricate: { profile: "bot", model: "" } } }, "bot")
     ).toEqual({});
   });
 });
+

@@ -1,4 +1,4 @@
-import { composeAdvisor, composeEffort, composeLaunchCommand } from "$lib/agents/agentModel";
+﻿import { composeAdvisor, composeEffort, composeLaunchCommand } from "$lib/agents/agentModel";
 import type { FailureCausePattern } from "$lib/agents/autoResume";
 import type { CustomProfile } from "$lib/cards/complexity";
 import type { ForeignMcpServer } from "$lib/core/backend";
@@ -66,7 +66,7 @@ export interface AgentProfileInfo {
   /// The effort levels the CLI documents, lowest first.
   efforts?: string[];
   /// The flag that names a model this agent consults as its advisor
-  /// (`--advisor`, claude-code only). Empty or absent hides the advisor
+  /// (`--advisor`, cline only). Empty or absent hides the advisor
   /// control a complexity row offers. Optional because a host built
   /// before the advisor does not send it.
   advisorFlag?: string;
@@ -396,7 +396,7 @@ export interface ResolvedAgent {
   headlessArgs: string;
   /// The launched-session prompt argv, or null where this agent takes no
   /// prompt. Same no-fallback-chain rule as headlessArgs below: this
-  /// describes the BINARY, and claude-code's argv on somebody else's
+  /// describes the BINARY, and cline's argv on somebody else's
   /// agent would be garbage.
   promptArgs: string | null;
   /// `promptArgs: null` without the refusal: this agent takes no prompt
@@ -492,9 +492,9 @@ export interface CursorMcpForeignInput {
 
 /// Whether a workspace's explicit `[agent] command` is another built-in
 /// agent's binary, verbatim, left behind by a profile switch that wrote
-/// only `profile`. `profile = "claude-code"` beside `command = "agent"`
-/// launched Cursor under a Claude Code label -- on every route, and on a
-/// card whose own `agent:` named Claude Code too, since a same-profile
+/// only `profile`. `profile = "cline"` beside `command = "agent"`
+/// launched Cursor under a cline label -- on every route, and on a
+/// card whose own `agent:` named cline too, since a same-profile
 /// override keeps the workspace's command (`agentConfigWithAttribution`).
 /// Re-running the agent wizard on the same profile left it alone, so
 /// nothing the human could pick in the app undid it.
@@ -518,10 +518,10 @@ export function isLeftoverCommand(
 /// The last-resort agent: the profile a workspace resolves to when it has
 /// no configured profile AND the app-wide default agent (`AgentDefaults.
 /// defaultAgent`) is empty or names nothing installed.
-export const FALLBACK_PROFILE = "claude-code";
+export const FALLBACK_PROFILE = "cline";
 
 /// Explicit config beats the profile default beats the app-wide default
-/// agent (empty → claude-code; spec §4.2). Expressed once so the panel,
+/// agent (empty → cline; spec §4.2). Expressed once so the panel,
 /// the hub label, the home tile and the agent-file view can never disagree.
 ///
 /// Callers should pass `mergeAgentProfiles(builtIns, appCustoms,
@@ -549,7 +549,7 @@ export function resolveAgentConfig(
   /// launched with before it existed.
   globalEfforts: Record<string, string> = {},
   /// App-wide default agent when the workspace has no profile. Empty /
-  /// omitted means `claude-code`.
+  /// omitted means `cline`.
   appDefaultProfile: string = "",
   /// Cursor's foreign-server scan for the project root that launch will
   /// use as cwd (AG-07). When omitted on a cursor profile the resolve
@@ -572,8 +572,8 @@ export function resolveAgentConfig(
     nonEmpty(fallback?.command) ??
     "claude";
   // Keyed by the RESOLVED profile, not the requested one: a config
-  // naming a profile that no longer exists runs claude-code, so it must
-  // inherit claude-code's default rather than a dead row's.
+  // naming a profile that no longer exists runs cline, so it must
+  // inherit cline's default rather than a dead row's.
   const model = nonEmpty(config?.model) ?? nonEmpty(globalModels[profileId]) ?? "";
   // Workspace flag, then the (possibly custom) profile entry's flag.
   // A workspace flag wins even on a stock profile -- it is the more
@@ -621,7 +621,7 @@ export function resolveAgentConfig(
     mcpSupported: Boolean(effective?.mcpSupported || customMcpFile),
     mcpConfigFile: nonEmpty(effective?.mcpConfigFile) ?? customMcpFile ?? "",
     // No fallback chain, unlike file/command: this argv describes the
-    // BINARY, and claude-code's flags on someone else's agent would be
+    // BINARY, and cline's flags on someone else's agent would be
     // garbage in its argv. Empty means "no headless run offered", the
     // same posture mcpSupported takes.
     headlessArgs: effective?.headlessArgs ?? "",
@@ -632,7 +632,7 @@ export function resolveAgentConfig(
     // Resume lives ON the (merged) profile entry for named customs.
     resumeArgs: effective?.resumeArgs ?? "",
     // Same no-fallback-BETWEEN-rows rule: a row that takes no prompt
-    // gets null, and cursor's null never becomes claude-code's "".
+    // gets null, and cursor's null never becomes cline's "".
     //
     // But an ABSENT table is a different case, and it has to answer the
     // way `command` two fields up already answered it: the table is
@@ -807,3 +807,4 @@ export function accentVar(
   const normalized = normalizeColor(color);
   return theme === "light" ? darkenForLightSurface(normalized) : normalized;
 }
+

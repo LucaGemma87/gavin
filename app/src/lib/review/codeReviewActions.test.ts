@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 import { get, writable } from "svelte/store";
 
 vi.mock("$lib/core/backend", () => ({
@@ -78,8 +78,8 @@ import { REVIEW_CONFIRM_LABEL } from "$lib/cards/cardReview";
 import type { CardView } from "$lib/core/planBoard";
 
 const AGENT = {
-  profileId: "claude-code",
-  label: "Claude Code",
+  profileId: "cline",
+  label: "cline",
   file: "CLAUDE.md",
   command: "claude",
   launchCommand: "claude",
@@ -361,3 +361,4 @@ describe("confirmReview", () => {
     expect(backend.createSession).not.toHaveBeenCalled();
   });
 });
+

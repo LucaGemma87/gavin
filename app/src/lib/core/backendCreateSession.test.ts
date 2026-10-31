@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+﻿import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn(() => Promise.resolve("s1")) }));
 
@@ -15,22 +15,22 @@ beforeEach(() => {
 // relaunch of a run that broke on Headroom.
 describe("createSession", () => {
   it("sends the bare profile, and no override, for every ordinary launch", async () => {
-    await createSession("/ws/tree", "claude 'go'", "/ws", "claude-code");
+    await createSession("/ws/tree", "claude 'go'", "/ws", "cline");
     expect(invoke).toHaveBeenCalledWith("create_session", {
       cwd: "/ws/tree",
       command: "claude 'go'",
       workspaceRoot: "/ws",
-      profileId: "claude-code",
+      profileId: "cline",
     });
   });
 
   it("sends the override beside the profile for a relaunch without Headroom", async () => {
-    await createSession("/ws/tree", "claude --resume u-1", "/ws", withoutHeadroom("claude-code"));
+    await createSession("/ws/tree", "claude --resume u-1", "/ws", withoutHeadroom("cline"));
     expect(invoke).toHaveBeenCalledWith("create_session", {
       cwd: "/ws/tree",
       command: "claude --resume u-1",
       workspaceRoot: "/ws",
-      profileId: "claude-code",
+      profileId: "cline",
       withoutHeadroom: true,
     });
   });
@@ -55,9 +55,9 @@ describe("createSession from a Companion", () => {
   it("names the workspace beside the launch, and only when asked", async () => {
     await createSession(undefined, undefined, undefined, undefined, false, "w-scratch");
     expect(vi.mocked(invoke).mock.calls[0]).toEqual(["create_session", { workspaceId: "w-scratch" }]);
-    await createSession("/ws", "claude", "/ws", "claude-code", true, "w1");
+    await createSession("/ws", "claude", "/ws", "cline", true, "w1");
     expect(vi.mocked(invoke).mock.calls[1][1]).toMatchObject({ workspaceAgent: true, workspaceId: "w1" });
-    await createSession("/ws", "claude", "/ws", "claude-code");
+    await createSession("/ws", "claude", "/ws", "cline");
     expect(vi.mocked(invoke).mock.calls[2][1]).not.toHaveProperty("workspaceId");
   });
 });

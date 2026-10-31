@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+﻿use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::io::{BufRead, Read, Write};
@@ -238,7 +238,7 @@ pub const RUN_GIT_CAPPED_MIN_VERSION: u32 = 58;
 ///
 /// v72 records what each shell call of an agent wrote
 /// (`feat-touched-files-shell-hook.md`): `RecordShellWrites`, sent by the
-/// `gavin-mcp shell-writes` hook a Claude Code or kimi launch runs around
+/// `gavin-mcp shell-writes` hook a cline or kimi launch runs around
 /// every shell call, and `ShellWrites`, which the Review tab reads so a
 /// command the hook watched is judged by what it changed rather than by
 /// the paths its text names. Two new TYPES, so `min_version_for` is the
@@ -246,7 +246,7 @@ pub const RUN_GIT_CAPPED_MIN_VERSION: u32 = 58;
 /// its record and the tab keeps today's reading.
 /// `FEATURE_MIN_VERSION.shellWrites` is the app's copy, read by the
 /// Review tab before it asks. The same version is also the daemon adding
-/// the hook to a Claude Code launch line, which no request carries.
+/// the hook to a cline launch line, which no request carries.
 ///
 /// v71 ranks a workspace's cards by meaning (`opts-gavin-get-tree-archived-
 /// cards.md`): `SearchCards`, gavin-mcp's `gavin_find_cards`, embeds every
@@ -730,7 +730,7 @@ pub const RUN_GIT_CAPPED_MIN_VERSION: u32 = 58;
 ///
 /// v38 widens `NameSession` with `agent_conversation_id`: an agent whose
 /// CLI mints its OWN conversation id (codex, gemini, opencode -- unlike
-/// Claude Code, which gavin mints one for at launch) self-reports it once
+/// cline, which gavin mints one for at launch) self-reports it once
 /// it exists, and the daemon stores it in the reporting session's
 /// `card_sessions.conversation_id`, exactly where a minted id already
 /// lives, so resume treats the two sources alike. `serde(default)` on an
@@ -1223,7 +1223,7 @@ pub enum Request {
         workspace_path: String,
         cwd: String,
         command: Option<String>,
-        /// The agent profile doing the launching (`claude-code`,
+        /// The agent profile doing the launching (`cline`,
         /// `codex`, …), or `None` for anything that is not an agent
         /// launch: a shell tab, a command tool, a setup script (v47).
         ///
@@ -2246,7 +2246,7 @@ pub enum Request {
         /// The agent CLI's OWN native session/conversation id (v38),
         /// self-reported once the agent knows it -- codex, gemini and
         /// opencode each mint their own and cannot be handed one at
-        /// launch the way Claude Code is (`session_id_args`). NEVER the
+        /// launch the way cline is (`session_id_args`). NEVER the
         /// same thing as `session_id` above, which is *gavin's* tab/PTY
         /// session from `GAVIN_SESSION_ID`; keep the two spelled
         /// differently everywhere (MCP param, this field, code comments)
@@ -2735,7 +2735,7 @@ pub enum Request {
 ///
 /// `None` is a first-class variant, not an absent field: a connection may
 /// legitimately introduce itself as nobody in particular (a hand-started
-/// Claude Code in a terminal) and still get the `local` role, and making
+/// cline in a terminal) and still get the `local` role, and making
 /// that explicit keeps the daemon's `authorize` from having to treat "no
 /// auth" and "unparseable auth" alike.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -7646,15 +7646,15 @@ mod tests {
             workspace_path: "/ws".into(),
             cwd: "/ws/tree".into(),
             command: Some("claude 'do it'".into()),
-            profile_id: Some("claude-code".into()),
+            profile_id: Some("cline".into()),
             api_family: None,
             without_headroom: false,
         };
         let written = serde_json::to_string(&launch).unwrap();
-        assert!(written.contains(r#""profile_id":"claude-code""#), "{written}");
+        assert!(written.contains(r#""profile_id":"cline""#), "{written}");
         match serde_json::from_str::<Request>(&written).unwrap() {
             Request::CreateSession { profile_id, .. } => {
-                assert_eq!(profile_id.as_deref(), Some("claude-code"));
+                assert_eq!(profile_id.as_deref(), Some("cline"));
             }
             other => panic!("wrong variant: {other:?}"),
         }
@@ -7694,7 +7694,7 @@ mod tests {
             workspace_path: "/ws".into(),
             cwd: "/ws".into(),
             command: Some("claude".into()),
-            profile_id: Some("claude-code".into()),
+            profile_id: Some("cline".into()),
             api_family: None,
             without_headroom: false,
         };
@@ -7725,7 +7725,7 @@ mod tests {
             workspace_path: "/ws".into(),
             cwd: "/ws".into(),
             command: Some("claude".into()),
-            profile_id: Some("claude-code".into()),
+            profile_id: Some("cline".into()),
             api_family: None,
             without_headroom: false,
         };
@@ -7858,7 +7858,7 @@ mod tests {
             workspace_path: "/ws".into(),
             cwd: "/ws".into(),
             command: Some("claude --resume abc".into()),
-            profile_id: Some("claude-code".into()),
+            profile_id: Some("cline".into()),
             api_family: None,
             without_headroom: true,
         };
@@ -7878,14 +7878,14 @@ mod tests {
             workspace_path: "/ws".into(),
             cwd: "/ws".into(),
             command: Some("claude --resume abc".into()),
-            profile_id: Some("claude-code".into()),
+            profile_id: Some("cline".into()),
             api_family: None,
             without_headroom: false,
         };
         assert!(!serde_json::to_string(&launch).unwrap().contains("without_headroom"));
 
         // What a v49 client sends.
-        let older = r#"{"type":"CreateSession","workspace_path":"/ws","cwd":"/ws","command":null,"profile_id":"claude-code"}"#;
+        let older = r#"{"type":"CreateSession","workspace_path":"/ws","cwd":"/ws","command":null,"profile_id":"cline"}"#;
         match serde_json::from_str::<Request>(older).unwrap() {
             Request::CreateSession { without_headroom, .. } => assert!(!without_headroom),
             other => panic!("wrong variant: {other:?}"),
@@ -8507,7 +8507,7 @@ mod tests {
             has_prd: false,
             config_warning: false,
             agent: Some(AgentConfig {
-                profile: Some("claude-code".to_string()),
+                profile: Some("cline".to_string()),
                 file: None,
                 command: Some("claude --model opus".to_string()),
                 mcp_file: None,
@@ -8527,7 +8527,7 @@ mod tests {
         assert_eq!(
             json["agent"],
             serde_json::json!({
-                "profile": "claude-code",
+                "profile": "cline",
                 "file": null,
                 "command": "claude --model opus",
                 "mcpFile": null,
@@ -10821,3 +10821,4 @@ mod tests {
         assert!(err.contains("XDG_DATA_HOME"), "{err}");
     }
 }
+

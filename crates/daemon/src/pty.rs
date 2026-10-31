@@ -1,4 +1,4 @@
-use crate::input::InputQueue;
+﻿use crate::input::InputQueue;
 use portable_pty::{native_pty_system, Child, CommandBuilder, MasterPty, PtySize};
 use std::io::Read;
 use std::sync::{Arc, Mutex};
@@ -191,7 +191,7 @@ impl PtySession {
 
         // Pin the terminal identity instead of letting it leak in from
         // whatever launched the GUI. Tools choose how to signal "I need
-        // you" from TERM_PROGRAM: Claude Code, for instance, rings a bare
+        // you" from TERM_PROGRAM: cline, for instance, rings a bare
         // BEL only under Apple_Terminal, sends OSC 9 under iTerm2, OSC 777
         // under ghostty, OSC 99 under kitty -- and sends NOTHING AT ALL
         // when TERM_PROGRAM is unset or unrecognized, which is exactly the
@@ -292,12 +292,12 @@ impl PtySession {
         // (npm -> node -> cargo -> Gavin.exe -> gavin-daemon) carries it
         // down into every PTY this function opens.
         //
-        // Not inert. Claude Code reads CLAUDE_CODE_CHILD_SESSION as "you
+        // Not inert. cline reads CLAUDE_CODE_CHILD_SESSION as "you
         // are a nested child, not a top-level session" and responds by
         // turning transcript persistence off, so `--resume` and
         // `--continue` cannot find the session afterwards, and prompt
         // history is dropped. It says so on screen, and this repo already
-        // holds the receipt: tests/fixtures/claude-code-tui.raw, captured
+        // holds the receipt: tests/fixtures/cline-tui.raw, captured
         // from an agent running in a gavin tab, contains the banner
         // "Transcript saving is off - inherited CLAUDE_CODE_CHILD_SESSION
         // marker". An app whose purpose is hosting agent sessions in tabs
@@ -323,14 +323,14 @@ impl PtySession {
         // daemon serving it and the gavin-mcp beside that daemon, and are
         // the entire point of setting them.
         for key in [
-            // "you are running under Claude Code", and by which entrypoint.
+            // "you are running under cline", and by which entrypoint.
             "CLAUDECODE",
             "CLAUDE_CODE_ENTRYPOINT",
             // The nested-child marker, and the session ids it refers to.
             "CLAUDE_CODE_CHILD_SESSION",
             "CLAUDE_CODE_SESSION_ID",
             "CLAUDE_CODE_BRIDGE_SESSION_ID",
-            // The launcher's process id. Claude Code builds a `pkill`
+            // The launcher's process id. cline builds a `pkill`
             // guard around it; inherited, that guard is aimed at a
             // process in a different tree entirely.
             "CLAUDE_PID",
@@ -754,7 +754,7 @@ mod tests {
         // GUI, so without this pin a session's TERM_PROGRAM is "iTerm.app"
         // when started from iTerm, absent when started from Finder, and so
         // on. Tools pick their notification mechanism from this variable --
-        // Claude Code emits OSC 777 under ghostty, OSC 9 under iTerm2, and
+        // cline emits OSC 777 under ghostty, OSC 9 under iTerm2, and
         // NOTHING AT ALL when it is unset -- so leaving it inherited makes
         // waiting-for-input detection silently depend on how the app was
         // launched. See status.rs for the detection side.
@@ -880,7 +880,7 @@ mod tests {
         //
         // Not cosmetic: an inherited CLAUDE_CODE_CHILD_SESSION turns
         // transcript persistence off, so the session cannot be resumed
-        // afterwards. tests/fixtures/claude-code-tui.raw is a capture of
+        // afterwards. tests/fixtures/cline-tui.raw is a capture of
         // that happening in a real gavin tab.
         let _guard = lock_env();
         let leaked = [
@@ -892,7 +892,7 @@ mod tests {
             ("CLAUDE_PID", "4242"),
             ("CLAUDE_CODE_MESSAGING_SOCKET", r"\\.\pipe\LOCAL\cc-msg-x"),
             ("CLAUDE_CODE_MESSAGING_TOKEN", "launcher-secret"),
-            ("AI_AGENT", "claude-code_0-0-0_agent"),
+            ("AI_AGENT", "cline_0-0-0_agent"),
             ("CLAUDE_EFFORT", "xhigh"),
         ];
         for (key, value) in leaked {
@@ -1624,3 +1624,4 @@ mod tests {
         session.kill().unwrap();
     }
 }
+

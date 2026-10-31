@@ -1,4 +1,4 @@
-//! Removing gavin from a workspace root.
+﻿//! Removing gavin from a workspace root.
 //!
 //! Two commands, deliberately split: [`scan_gavin_footprint`] reports
 //! what is actually there and changes nothing, and
@@ -634,7 +634,7 @@ mod tests {
             protocol::wire_path(&dir.path().join("opencode.json"))
         );
         assert!(f.instructions.as_ref().unwrap().ends_with("AGENTS.md"));
-        // Nothing of Claude Code's was invented, and nothing of the
+        // Nothing of cline's was invented, and nothing of the
         // user's was claimed.
         assert!(!f.skills.iter().any(|s| s.contains(".claude")));
         assert!(!f.skills.iter().any(|s| s.ends_with("my-own")));
@@ -644,7 +644,7 @@ mod tests {
         );
     }
 
-    /// The kimi-code profile: kimi's own skill root, claude-code's
+    /// The kimi-code profile: kimi's own skill root, cline's
     /// `.mcp.json` (K6 -- two profiles share the one file), and no agent
     /// file (the headless grant rides kimi's default `auto` policy).
     fn kimi_workspace(dir: &Path) {
@@ -671,7 +671,7 @@ mod tests {
 
     /// Same pin as the opencode one, for the profile that shares TWO of
     /// its neighbours' conventions: kimi's skills live under
-    /// `.kimi-code/skills/` while its MCP file is claude-code's
+    /// `.kimi-code/skills/` while its MCP file is cline's
     /// `.mcp.json`. A sweep that followed either half alone would miss
     /// the other.
     #[test]
@@ -1119,3 +1119,4 @@ mod tests {
         assert!(scan(Path::new("/definitely/not/there")).is_err());
     }
 }
+

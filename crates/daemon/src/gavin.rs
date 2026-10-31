@@ -1,4 +1,4 @@
-use protocol::{
+﻿use protocol::{
     AgentConfig, CardKind, ChecklistLink, ChildrenMode, Complexity, GavinContext, GavinContextKind, GavinTree, HumanItem,
     HumanItemKind, HumanItemOutcome, HumanItemState, MdFileInfo, PlanFileInfo, Priority, Response,
 };
@@ -39,7 +39,7 @@ const PRD_TEMPLATE: &str = "# {workspace} — Product Requirements\n\n\
 /// leaves the feature undiscoverable to anyone who hasn't read the source.
 /// Left commented rather than seeded with `setup = []` so that "no setup
 /// declared" stays the absence of a declaration and not an empty one.
-const ROOT_CONFIG_TEMPLATE: &str = "version = 1\n\n[agent]\nprofile = \"claude-code\"\n\n\
+const ROOT_CONFIG_TEMPLATE: &str = "version = 1\n\n[agent]\nprofile = \"cline\"\n\n\
 # What a worktree gavin creates has to run before anyone can work in it.\n\
 # The commands run chained with `&&` in one visible session in the new\n\
 # worktree, and an agent started there waits for them to finish.\n\
@@ -4413,8 +4413,8 @@ mod tests {
         assert_eq!(card.agent.as_deref(), Some("codex"));
         assert_eq!(card.model.as_deref(), Some("gpt-5.1"));
         // Padding is the human's; the value is not.
-        let padded = plan("---\nagent:   claude-code  \nmodel:  opus \n---\n");
-        assert_eq!(padded.agent.as_deref(), Some("claude-code"));
+        let padded = plan("---\nagent:   cline  \nmodel:  opus \n---\n");
+        assert_eq!(padded.agent.as_deref(), Some("cline"));
         assert_eq!(padded.model.as_deref(), Some("opus"));
         // Either half alone is meaningful: a model with no agent runs the
         // workspace's own binary at that model, which is the commonest
@@ -4462,7 +4462,7 @@ mod tests {
 
         // Unvalidated per value, single-line by shape: a second line
         // would corrupt the frontmatter rather than express anything.
-        assert!(set_plan_field(&path, "agent", "codex\nclaude-code").is_err());
+        assert!(set_plan_field(&path, "agent", "codex\ncline").is_err());
         assert!(set_plan_field(&path, "model", "opus\nsonnet").is_err());
     }
 
@@ -6274,12 +6274,12 @@ mod tests {
     }
 
     #[test]
-    fn a_freshly_scaffolded_root_already_declares_the_claude_code_profile() {
+    fn a_freshly_scaffolded_root_already_declares_the_cline_profile() {
         let dir = tempfile::tempdir().unwrap();
         init_gavin_root(dir.path(), "WS").unwrap();
         let tree = scan_root(dir.path());
         let agent = tree.contexts[0].agent.as_ref().unwrap();
-        assert_eq!(agent.profile.as_deref(), Some("claude-code"));
+        assert_eq!(agent.profile.as_deref(), Some("cline"));
         assert_eq!(agent.file, None, "the file name follows the profile until overridden");
         assert_eq!(agent.command, None);
         assert_eq!(agent.mcp_file, None, "and so does the MCP layout");
@@ -6464,7 +6464,7 @@ mod tests {
     fn parse_context_config_reads_the_model_off_the_agent_block() {
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("config.toml");
-        std::fs::write(&path, "[agent]\nprofile = \"claude-code\"\nmodel = \"opus\"\n").unwrap();
+        std::fs::write(&path, "[agent]\nprofile = \"cline\"\nmodel = \"opus\"\n").unwrap();
         let (_, agent, warn) = parse_context_config(&path);
         assert!(!warn);
         assert_eq!(agent.unwrap().model.as_deref(), Some("opus"));
@@ -6477,7 +6477,7 @@ mod tests {
         std::fs::create_dir_all(&g).unwrap();
         std::fs::write(
             g.join("config.toml"),
-            "# hand-written, keep me\nversion = 1\nname = \"Mine\"\n\n[agent]\n# and me\nprofile = \"claude-code\"\n",
+            "# hand-written, keep me\nversion = 1\nname = \"Mine\"\n\n[agent]\n# and me\nprofile = \"cline\"\n",
         )
         .unwrap();
 
@@ -6532,7 +6532,7 @@ mod tests {
             return;
         }
 
-        let err = set_root_config_field(root.path(), "profile", "claude-code")
+        let err = set_root_config_field(root.path(), "profile", "cline")
             .unwrap_err()
             .to_string();
         assert!(

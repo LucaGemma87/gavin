@@ -167,13 +167,13 @@ describe("composeReviewPrompt", () => {
 describe("reviewBlocker", () => {
   it("clears when there is a context and a prompt-taking agent", () => {
     expect(
-      reviewBlocker({ promptArgs: "", agentLabel: "Claude Code", contextFolder: "/repo" })
+      reviewBlocker({ promptArgs: "", agentLabel: "cline", contextFolder: "/repo" })
     ).toBeNull();
   });
 
   it("refuses a workspace with nowhere to file findings", () => {
     expect(
-      reviewBlocker({ promptArgs: "", agentLabel: "Claude Code", contextFolder: null })
+      reviewBlocker({ promptArgs: "", agentLabel: "cline", contextFolder: null })
     ).toContain("nowhere to file");
   });
 
@@ -191,3 +191,4 @@ describe("reviewBlocker", () => {
     ).toContain("nowhere to file");
   });
 });
+
