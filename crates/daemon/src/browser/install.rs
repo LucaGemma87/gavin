@@ -189,6 +189,7 @@ fn run_install() -> PlaywrightInstallRun {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::path::Path;
 
     #[test]
     fn npx_is_the_first_one_on_the_path() {

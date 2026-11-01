@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   agentTabChoices,
   newAgentTabEntries,
@@ -50,11 +50,15 @@ describe("agentTabChoices", () => {
 
 describe("newAgentTabEntries", () => {
   it("leads with the title and ticks the default", () => {
-    const entries = newAgentTabEntries([profile("cline"), profile("codex")], "codex", () => {});
+    const entries = newAgentTabEntries(
+      [{ ...profile("cline"), label: "Cline CLI" }, profile("codex")],
+      "codex",
+      () => {}
+    );
     expect(isHeading(entries[0]) && entries[0].heading).toBe(NEW_AGENT_TAB_TITLE);
     const items = entries.filter(isMenuItem);
     expect(items.map((i) => [i.label, !!i.active, i.detail])).toEqual([
-      ["cline", false, undefined],
+      ["Cline CLI", false, undefined],
       ["CODEX", true, DEFAULT_AGENT_DETAIL],
     ]);
   });

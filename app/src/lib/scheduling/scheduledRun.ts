@@ -1,4 +1,4 @@
-﻿// What a Scheduled task's run IS (ADR 0010): which argv carries it, and
+// What a Scheduled task's run IS (ADR 0010): which argv carries it, and
 // what its agent is told. Pure; `scheduledState.ts` does the launching.
 //
 // A scheduled run is headless -- one prompt, no TUI, then exit -- because

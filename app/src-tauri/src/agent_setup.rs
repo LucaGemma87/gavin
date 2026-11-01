@@ -18,16 +18,16 @@ pub struct ManagedFile {
 /// in where the file sits. Verified against upstream docs 2026-08-23.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum McpFormat {
-    /// JSON `mcpServers.<key>` = `{ command, args }` — Copilot CLI
-    /// (`.github/mcp.json`), Claude Code / Kimi Code (`.mcp.json`),
-    /// legacy Gemini CLI (`.gemini/settings.json`), and Antigravity CLI
+    /// JSON `mcpServers.<key>` = `{ command, args }` — Claude Code /
+    /// Kimi Code (`.mcp.json`), legacy Gemini CLI (`.gemini/settings.json`),
+    /// and Antigravity CLI
     /// (`.agents/mcp_config.json`).
     JsonServers,
-    /// The same, plus the `type: "stdio"` Cursor's docs list as required
-    /// for a local server. Cursor's Agent CLI strips almost every
-    /// inherited variable when it spawns an MCP server (PATH/cwd only),
-    /// so session identity reaches gavin-mcp through a PPID passthrough
-    /// file the daemon writes (`protocol::mcp_env`) — NOT through an
+    /// The same, plus `type: "stdio"`: Copilot accepts it as a local
+    /// transport, and Cursor's docs require it. Cursor's Agent CLI passes
+    /// only PATH and cwd to MCP servers, so session identity reaches
+    /// gavin-mcp through a PPID passthrough file the daemon writes
+    /// (`protocol::mcp_env`) — NOT through an
     /// `env` block here. Putting `${env:GAVIN_SESSION_*}` in mcp.json
     /// used to work for the tools, but Cursor hashes the *resolved* env
     /// into its MCP approval fingerprint, so every new tab forced a
@@ -1118,7 +1118,7 @@ pub const AGENT_PROFILES: &[AgentProfile] = &[
         mcp: Some(McpLayout {
             config_file: ".github/mcp.json",
             server_key: "gavin",
-            format: McpFormat::JsonServers,
+            format: McpFormat::JsonServersStdio,
             skills: &[],
         }),
     },
@@ -4677,7 +4677,7 @@ mod tests {
         assert_eq!(
             layouts,
             [
-                ("copilot", ".github/mcp.json", McpFormat::JsonServers),
+                ("copilot", ".github/mcp.json", McpFormat::JsonServersStdio),
                 ("claude-code", ".mcp.json", McpFormat::JsonServers),
                 ("codex", ".codex/config.toml", McpFormat::TomlServers),
                 ("gemini", ".agents/mcp_config.json", McpFormat::JsonServers),
@@ -7853,6 +7853,12 @@ mod tests {
                 .pointer("/mcpServers/gavin/command")
                 .and_then(serde_json::Value::as_str),
             Some("/apps/gavin-mcp")
+        );
+        assert_eq!(
+            config
+                .pointer("/mcpServers/gavin/type")
+                .and_then(serde_json::Value::as_str),
+            Some("stdio")
         );
     }
 

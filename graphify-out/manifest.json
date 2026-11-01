@@ -2850,9 +2850,9 @@
     "semantic_hash": ""
   },
   "app/src-tauri/src/agent_setup.rs": {
-    "mtime": 1793562077.2672234,
-    "seen": 1793562241.210177,
-    "ast_hash": "96343d2a855960e74b4e86a3fd3efffd",
+    "mtime": 1793572869.8018575,
+    "seen": 1793573604.6610904,
+    "ast_hash": "4ba912fb2d8bc9ac2a3509f27be46e42",
     "semantic_hash": ""
   },
   "app/src-tauri/src/agent_skills.rs": {
@@ -6852,9 +6852,9 @@
     "semantic_hash": ""
   },
   "app/src/lib/panes/newAgentTab.test.ts": {
-    "mtime": 1793431784.3518348,
-    "seen": 1793557639.4499376,
-    "ast_hash": "f558a3172513d6c5396b09b4f3e451e3",
+    "mtime": 1793572819.481168,
+    "seen": 1793573604.6642911,
+    "ast_hash": "31bf6fa0fc715a0671c673e01bc9a9ff",
     "semantic_hash": ""
   },
   "app/src/lib/panes/newAgentTab.ts": {
@@ -7182,15 +7182,15 @@
     "semantic_hash": ""
   },
   "app/src/lib/scheduling/scheduledRun.ts": {
-    "mtime": 1793528291.682005,
-    "seen": 1793557639.450281,
-    "ast_hash": "4d30f4d856c881b52f01bb2bbba65353",
+    "mtime": 1793572819.7906363,
+    "seen": 1793573604.664584,
+    "ast_hash": "b214a1a6f4873ac05441ca8aa90cfc85",
     "semantic_hash": ""
   },
   "app/src/lib/scheduling/scheduledState.test.ts": {
-    "mtime": 1793431784.4565332,
-    "seen": 1793557639.450286,
-    "ast_hash": "5e7fe02253f989eaed0ced8a66be9b1a",
+    "mtime": 1793572819.625751,
+    "seen": 1793573604.6645885,
+    "ast_hash": "48e5f0172d8ad0294d7daf93d87389d7",
     "semantic_hash": ""
   },
   "app/src/lib/scheduling/scheduledState.ts": {
@@ -8454,9 +8454,9 @@
     "semantic_hash": ""
   },
   "crates/daemon/src/browser/install.rs": {
-    "mtime": 1793544776.6377902,
-    "seen": 1793557639.451463,
-    "ast_hash": "3bbb899b175a41f4ba7994223f293d46",
+    "mtime": 1793571517.3524153,
+    "seen": 1793573604.6657164,
+    "ast_hash": "f03b13cea63b750a3e0d80d878019650",
     "semantic_hash": ""
   },
   "crates/daemon/src/browser/launch.rs": {
@@ -8706,9 +8706,9 @@
     "semantic_hash": ""
   },
   "crates/daemon/src/pty.rs": {
-    "mtime": 1793431785.250497,
-    "seen": 1793557639.4516726,
-    "ast_hash": "91353fe20e52650b6c7026f94a11decf",
+    "mtime": 1793572819.392568,
+    "seen": 1793573604.6659098,
+    "ast_hash": "ca4f5307d4ecb007d6c55e384d1aa494",
     "semantic_hash": ""
   },
   "crates/daemon/src/pty_borrow.rs": {
@@ -8742,9 +8742,9 @@
     "semantic_hash": ""
   },
   "crates/daemon/src/screen.rs": {
-    "mtime": 1793431785.269825,
-    "seen": 1793557639.4517398,
-    "ast_hash": "65f9b43a63bbecdea78f09c6f1bfab0c",
+    "mtime": 1793572819.086758,
+    "seen": 1793573604.6659355,
+    "ast_hash": "8c55d63a287e44aeee7ad06f4e4d6497",
     "semantic_hash": ""
   },
   "crates/daemon/src/server.rs": {
@@ -14832,9 +14832,9 @@
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-20-workspace-settings-design.md": {
-    "mtime": 1793545398.7820976,
-    "seen": 1793557639.4570806,
-    "ast_hash": "64d6ede6a99edc5bda5d58ba99e24e0d",
+    "mtime": 1793572780.3297424,
+    "seen": 1793573604.6732047,
+    "ast_hash": "d8f6bd27438ce6f4b166a73dcd10ad21",
     "semantic_hash": ""
   },
   "docs/superpowers/specs/2026-08-21-git-tab-conflicts-design.md": {
@@ -15651,6 +15651,12 @@
     "mtime": 1793560304.0054896,
     "seen": 1793561706.8138947,
     "ast_hash": "0aa9fa3550b2c196d22c06fca9079c9d",
+    "semantic_hash": ""
+  },
+  "docs/research/2026-11-01-free-agents-and-models.md": {
+    "mtime": 1793564536.033344,
+    "seen": 1793573604.6726518,
+    "ast_hash": "8593cb33ca5a4429a29b3ace14626eb0",
     "semantic_hash": ""
   },
   "app/companion-shell/package-lock.json": {

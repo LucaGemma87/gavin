@@ -1,4 +1,4 @@
-﻿//! The daemon's model of what a session's screen *is*, as opposed to a log
+//! The daemon's model of what a session's screen *is*, as opposed to a log
 //! of the bytes that got it there.
 //!
 //! A coding agent's TUI repaints in the normal screen buffer using relative
@@ -262,13 +262,13 @@ mod tests {
         );
     }
 
-    /// A real cline session captured off a 120x40 PTY with
+    /// A real Claude Code session captured off a 120x40 PTY with
     /// TERM=xterm-256color: the agent starting, drawing its banner and input
     /// box, and repainting the box as a line is typed. It is the actual bug
     /// report in a file -- wide glyphs, OSC 8 hyperlinks, synchronised-output
     /// and kitty-keyboard sequences included, none of which a hand-written
     /// stream would have thought to contain.
-    const REAL_AGENT_TUI: &[u8] = include_bytes!("../tests/fixtures/cline-tui.raw");
+    const REAL_AGENT_TUI: &[u8] = include_bytes!("../tests/fixtures/claude-code-tui.raw");
 
     #[test]
     fn a_real_agent_session_is_restored_exactly() {
@@ -448,4 +448,3 @@ mod tests {
         assert_eq!(first, second, "snapshots must be repeatable");
     }
 }
-

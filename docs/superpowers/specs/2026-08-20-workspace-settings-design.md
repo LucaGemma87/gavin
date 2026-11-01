@@ -215,13 +215,15 @@ pub struct AgentProfile {
 | `custom` | Custom… | (user-supplied) | (user-supplied) | no |
 
 Conventions verified against upstream documentation. Workspace MCP layouts:
-Copilot CLI `.github/mcp.json` (`mcpServers.<key>`), Claude Code
-`.mcp.json` (`mcpServers.<key>`), Gemini `.agents/mcp_config.json`
+Copilot CLI `.github/mcp.json` (`mcpServers.<key>`, `type: "stdio"`),
+Claude Code and Kimi Code `.mcp.json` (`mcpServers.<key>`), Gemini
+`.agents/mcp_config.json`
 (`mcpServers.<key>`), Cursor `.cursor/mcp.json` (`mcpServers.<key>`),
 Codex `.codex/config.toml` (`[mcp_servers.<key>]`, TOML), opencode
 `opencode.json` (`mcp.<key>` with `type: "local"` and `command` as an
-array), and Kimi Code `.mcp.json` (`mcpServers.<key>`). Copilot Free's
-documented model choice is `auto`; GitHub does not guarantee named
+array). Copilot loads project MCP configuration only after the user
+confirms folder trust; its launch must not bypass that prompt. Copilot
+Free's documented model choice is `auto`; GitHub does not guarantee named
 underlying models for the Free plan.
 
 `ClaudeCodeProfile` in `agent_setup.rs` is represented by the explicit
