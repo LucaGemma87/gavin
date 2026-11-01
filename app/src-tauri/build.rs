@@ -1,6 +1,17 @@
 use std::path::PathBuf;
 
 fn main() {
+    let target_is_windows = std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("windows");
+    if target_is_windows {
+        let manifest = PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"))
+            .join("windows.manifest");
+        // The Rust unit-test harness has no Tauri manifest. Without Common
+        // Controls 6, Windows loads the v5 system DLL and cannot resolve
+        // TaskDialogIndirect.
+        println!("cargo:rerun-if-changed={}", manifest.display());
+        println!("cargo:rustc-link-arg=/MANIFEST:EMBED");
+        println!("cargo:rustc-link-arg=/MANIFESTINPUT:{}", manifest.display());
+    }
     // tauri-build only watches tauri.conf.json, not the icon files, so a
     // regenerated icon never re-embeds into the dev binary (the macOS dev
     // Dock icon is baked in at compile time via generate_context!).
@@ -9,7 +20,14 @@ fn main() {
     // new number has to rebuild the crate even when no source changed.
     println!("cargo:rerun-if-env-changed=GAVIN_BUILD_NUMBER");
     embed_companion_bundle();
-    tauri_build::build()
+    if target_is_windows {
+        tauri_build::try_build(tauri_build::Attributes::new().windows_attributes(
+            tauri_build::WindowsAttributes::new_without_app_manifest(),
+        ))
+        .expect("failed to run tauri build script");
+    } else {
+        tauri_build::build();
+    }
 }
 
 /// The Companion UI bundle this build carries, if `stage-companion.mjs`

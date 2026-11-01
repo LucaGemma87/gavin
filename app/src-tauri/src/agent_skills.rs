@@ -16,10 +16,9 @@
 //!    zero into a state gavin does not read. The row is whatever the check
 //!    that follows the install finds.
 //!
-//! Two routes. cline takes the plugin from its official marketplace,
-//! a managed bundle that updates itself; the other known agents take the
-//! skills CLI's copy into the repo's `.agents/skills/`, which all four read.
-//! A custom agent gets neither: gavin does not know its skills CLI id.
+//! Claude Code takes the plugin from its official marketplace, a managed
+//! bundle that updates itself; other known agents, including Cline, take
+//! the skills CLI's copy into the repo's `.agents/skills/`.
 //!
 //! Subprocesses follow `git/run.rs`'s shape: an argv array (never a shell
 //! string), an explicit timeout, and both pipes drained on threads so a
@@ -50,8 +49,7 @@ const SKILLS_SOURCE: &str = "mattpocock/skills";
 /// their `skillsDir` in the CLI's own table.
 const SKILLS_DIR: &str = ".agents/skills";
 
-/// What cline says when the official marketplace was never added --
-/// a cline that has not run interactively on this machine.
+/// What Claude Code says when the official marketplace was never added.
 const NO_MARKETPLACE: &str = "not found in any configured marketplace";
 const ADD_MARKETPLACE: &str = "claude plugin marketplace add anthropics/claude-plugins-official";
 
@@ -124,7 +122,7 @@ pub struct Status {
     pub installable: bool,
     /// Raw evidence, verbatim, for the "Show output" drawer: the
     /// detector's own output, or -- after an install -- that run's stdout
-    /// and stderr interleaved. cline puts its failure reason on
+    /// and stderr interleaved. Claude Code puts its failure reason on
     /// stderr and only its progress line on stdout, and the skills CLI
     /// writes its whole report to stderr, so a drawer showing one stream
     /// misreports both.
@@ -146,7 +144,8 @@ enum Route {
 
 fn route(profile_id: &str) -> Route {
     match profile_id {
-        "cline" => Route::Plugin,
+        "cline" => Route::SkillsCli("cline"),
+        "claude-code" => Route::Plugin,
         "codex" => Route::SkillsCli("codex"),
         // Prefer antigravity-cli whenever Antigravity is on PATH (or
         // neither Google CLI is — point installs at the successor).
@@ -518,7 +517,7 @@ fn detect(
 /// travels with a clone whose `.agents/skills/` may be gitignored -- that
 /// is absent, and `npx skills experimental_install` restores it. And a
 /// `.agents/skills/` with no lock entry is someone else's skills: gavin
-/// installs its own there for Codex.
+/// installs its own there for agents using this skills-CLI route.
 fn detect_skills_cli(root: &Path) -> Detected {
     let lock = root.join("skills-lock.json");
     let Ok(body) = std::fs::read_to_string(&lock) else {
@@ -632,7 +631,7 @@ fn said_installed(marks: &crate::session::AgentSkillsMarks, root_path: &str) -> 
 /// a parameter rather than a read because this command runs on a tab
 /// render: see `binary_for`.
 ///
-/// `async` + `spawn_blocking`: the cline detector is `claude plugin
+/// `async` + `spawn_blocking`: the Claude Code detector is `claude plugin
 /// list`, a Node start measured at 0.48-0.90 s, and this runs on every
 /// Settings visit, every workspace or profile change there, and every
 /// Home visit to a workspace with no recorded answer. As a plain `fn` each
@@ -730,7 +729,7 @@ fn install(
     if out.code != 0 && status.state != State::Verified.id() {
         status.detail = if out.stderr.contains(NO_MARKETPLACE) {
             format!(
-                "cline has no official marketplace configured on this machine. Add it \
+                "Claude Code has no official marketplace configured on this machine. Add it \
                  with `{ADD_MARKETPLACE}`, then install again."
             )
         } else {
@@ -915,7 +914,8 @@ mod tests {
 
     #[test]
     fn every_known_profile_has_an_install_route_and_custom_has_none() {
-        assert_eq!(route("cline"), Route::Plugin);
+        assert_eq!(route("cline"), Route::SkillsCli("cline"));
+        assert_eq!(route("claude-code"), Route::Plugin);
         assert_eq!(route("codex"), Route::SkillsCli("codex"));
         // PATH-dependent: Antigravity when agy/antigravity is present (or
         // neither Google CLI is); gemini-cli only on a gemini-only box.
@@ -933,6 +933,15 @@ mod tests {
         assert_eq!(route("custom-agent"), Route::Manual);
     }
 
+    #[test]
+    fn cline_skills_status_uses_the_skills_cli_route() {
+        let dir = tempfile::tempdir().unwrap();
+        let status = status_for(dir.path(), "cline", false, None);
+        assert_eq!(status.state, "absent");
+        assert!(status.installable);
+        assert!(status.command.contains("-a cline"), "{}", status.command);
+    }
+
     /// What the row shows is the install the human would type; the
     /// skills CLI route adds `--prefix` at spawn time (see
     /// `skills_cli_spawn`), not in this string.
@@ -945,7 +954,11 @@ mod tests {
         let quoted: Vec<String> = skills_cli_args(agent)
             .iter().map(|a| if *a == "*" { "'*'".to_string() } else { a.to_string() }).collect();
         assert_eq!(command_for("gemini"), format!("npx {}", quoted.join(" ")));
-        assert_eq!(command_for("cline"), "claude plugin install mattpocock-skills --scope project -y");
+        assert_eq!(command_for("claude-code"), "claude plugin install mattpocock-skills --scope project -y");
+        assert_eq!(
+            command_for("cline"),
+            "npx -y skills@latest add mattpocock/skills --skill '*' -a cline -y"
+        );
         assert_eq!(command_for("custom"), "npx skills@latest add mattpocock/skills");
     }
 
@@ -1030,7 +1043,7 @@ mod tests {
 
     #[test]
     fn a_positive_check_is_verified_even_without_the_human_saying_so() {
-        let (state, _) = resolve("cline", Some(true), "", false);
+        let (state, _) = resolve("claude-code", Some(true), "", false);
         assert_eq!(state, State::Verified);
     }
 
@@ -1040,7 +1053,11 @@ mod tests {
     #[test]
     fn a_known_agent_ignores_the_humans_word() {
         assert_eq!(resolve("codex", Some(false), "", true).0, State::Absent);
-        assert_eq!(resolve("cline", None, "claude was not found on PATH", true).0, State::Unavailable);
+        assert_eq!(resolve("cline", Some(false), "", true).0, State::Absent);
+        assert_eq!(
+            resolve("claude-code", None, "claude was not found on PATH", true).0,
+            State::Unavailable
+        );
     }
 
     #[test]
@@ -1090,7 +1107,7 @@ mod tests {
     /// gavin's own verified binary.
     #[test]
     fn the_probed_binary_comes_from_the_caller_and_never_from_disk() {
-        let profile = crate::agent_setup::profile_by_id("cline");
+        let profile = crate::agent_setup::profile_by_id("claude-code");
         assert_eq!(binary_for(None, profile), "claude");
         assert_eq!(binary_for(Some(""), profile), "claude");
         assert_eq!(binary_for(Some("   "), profile), "claude");
@@ -1104,7 +1121,7 @@ mod tests {
         std::fs::create_dir_all(dir.path().join(".gavin-root")).unwrap();
         std::fs::write(
             dir.path().join(".gavin-root").join("config.toml"),
-            "[agent]\nprofile = \"cline\"\ncommand = \"./scripts/pwn.sh\"\n",
+            "[agent]\nprofile = \"claude-code\"\ncommand = \"./scripts/pwn.sh\"\n",
         )
         .unwrap();
         assert_eq!(
@@ -1115,7 +1132,7 @@ mod tests {
         assert_eq!(binary_for(None, profile), "claude");
     }
 
-    /// The drawer shows both streams: cline's progress line is on
+    /// The drawer shows both streams: Claude Code's progress line is on
     /// stdout and its failure reason on stderr, so either alone is a
     /// misleading report.
     #[test]
@@ -1186,13 +1203,13 @@ mod tests {
     }
 
     /// The one test that talks to a real machine. `#[ignore]`d because a
-    /// checkout without cline -- or without the plugin -- is not a
+    /// checkout without Claude Code -- or without the plugin -- is not a
     /// broken build; run it with
     /// `cargo test --lib agent_skills -- --ignored --nocapture` when the
     /// question is whether the DETECTOR still matches the CLI, which is
     /// the only thing the fixtures above cannot answer.
     #[test]
-    #[ignore = "requires a machine with cline and the mattpocock-skills plugin enabled"]
+    #[ignore = "requires a machine with Claude Code and the mattpocock-skills plugin enabled"]
     fn live_claude_detector_agrees_with_the_cli() {
         let dir = tempfile::tempdir().unwrap();
         let out = run("claude", &["plugin", "list", "--json"], dir.path(), DETECT_TIMEOUT)
@@ -1240,9 +1257,9 @@ mod tests {
         let marks = crate::session::AgentSkillsMarks(std::sync::Mutex::new(Default::default()));
         std::thread::scope(|s| {
             for _ in 0..2 {
-                s.spawn(|| install(root, Some(&claude), Some("cline"), &marks).unwrap());
+                s.spawn(|| install(root, Some(&claude), Some("claude-code"), &marks).unwrap());
             }
-            s.spawn(|| status_for(dir.path(), "cline", false, Some(&claude)));
+            s.spawn(|| status_for(dir.path(), "claude-code", false, Some(&claude)));
         });
 
         let log = std::fs::read_to_string(log).unwrap();
@@ -1267,4 +1284,3 @@ mod tests {
         assert_eq!(log.lines().filter(|l| *l == "start list").count(), 3, "{log}");
     }
 }
-

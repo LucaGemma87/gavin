@@ -8,8 +8,8 @@
 /// `let r; (...)(r ||= {})` in `requestMode`, drops the `let` and keeps the
 /// write. The first DECRQM query (`CSI ? Ps $ p`) then throws a
 /// ReferenceError inside xterm's write loop, and the terminal never draws
-/// another byte. cline asks one as it starts, so `claude` typed into
-/// a plain tab froze the release app's terminal on the command line. `vite
+/// another byte. Because xterm sends a query at startup, the first agent
+/// command typed into a plain tab froze the release app's terminal. `vite
 /// dev` serves xterm unlowered, which is why only a built app showed it.
 ///
 /// What actually runs these bundles: WKWebView (macOS, iOS) and WebKitGTK,
@@ -19,4 +19,3 @@
 /// `vite-build-target.test.mjs` compiles xterm for this list the way a
 /// release does and sends it that query.
 export const buildTarget = ["safari14", "chrome105"];
-

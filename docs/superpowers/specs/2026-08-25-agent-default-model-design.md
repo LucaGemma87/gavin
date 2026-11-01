@@ -21,6 +21,27 @@ split; the compat gate.
 anything else in the global panel; discovering a CLI's model catalogue at
 runtime.
 
+## 9. Cline free-model monitoring extension (2026-11-01)
+
+This extension does not change the default-model decisions above. The
+installed Cline CLI's free-model list is served by an internal endpoint
+that is not documented as a stable API; its response does not provide
+verified capability tiers for choosing a model by task. No supported
+interface for querying remaining account quota was found.
+
+- Gavin keeps Cline account usage `Unsupported`; session token counts,
+  when available, are not account quota.
+- Gavin may recognize the Cline CLI's explicit daily free-model-limit
+  message as a `usage-limit` failure. This prevents auto-resume and
+  compressed-session recovery from retrying a model whose daily limit is
+  already exhausted.
+- Gavin does not automatically choose or switch Cline models. A model's
+  free status, task suitability, and remaining quota are not inferred
+  from its name, order, or a private endpoint.
+- An ended promotion is not a quota reset and must not trigger an
+  automatic model switch. The user chooses another model explicitly.
+- No fallback to a paid model is allowed.
+
 ## 2. Decisions
 
 Continuing the log from `2026-08-20-workspace-settings-design.md` (D35–D57).

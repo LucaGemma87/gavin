@@ -53,7 +53,7 @@ Continuing the log from `2026-08-25-agent-default-model-design.md`
 
   | profile | `effort_flag` | `efforts` | source |
   |---|---|---|---|
-  | `cline` | `--effort` | low, medium, high, xhigh, max | `claude --help`, 2.1.285 |
+  | `cline` | `--thinking` | none, low, medium, high, xhigh | `cline --help` |
   | `codex` | `-c model_reasoning_effort=` | minimal, low, medium, high, xhigh | Codex config reference (no local binary) |
   | `gemini` | — | — | no flag; thinking budget lives in `settings.json` |
   | `cursor` | — | — | effort is a bracket parameter of the model id (`model[effort=high]`), so the model's Custom… box is the route |

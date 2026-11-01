@@ -17,8 +17,17 @@ import {
   recommendedComplexityAction,
   withAgentEffort,
   EMPTY_AGENT_DEFAULTS,
+  effectiveDefaultAgent,
   type ComplexityTable,
 } from "$lib/cards/complexity";
+
+describe("effectiveDefaultAgent", () => {
+  it("uses Cline for empty defaults but preserves an explicitly selected supported profile", () => {
+    expect(EMPTY_AGENT_DEFAULTS.defaultAgent).toBe("cline");
+    expect(effectiveDefaultAgent({ ...EMPTY_AGENT_DEFAULTS, defaultAgent: "" })).toBe("cline");
+    expect(effectiveDefaultAgent({ ...EMPTY_AGENT_DEFAULTS, defaultAgent: "claude-code" })).toBe("claude-code");
+  });
+});
 
 describe("parseComplexity", () => {
   it("accepts every level, however it was typed", () => {
@@ -75,18 +84,8 @@ describe("complexityEntryFor", () => {
   const table: ComplexityTable = {
     trivial: { profile: "", model: "haiku" },
     intricate: { profile: "cline", model: "opus" },
-const table: ComplexityTable = {
-    trivial: { profile: \"\", model: \"haiku\" },
-    intricate: { profile: \"cline\", model: \"opus\" },
-    moderate: { profile: \"cline\", model: \"nemotron-3.5\" },
-  };
   };
 
-it(\"reads the level's row from the one table it is given\", () => {
-    expect(complexityEntryFor(\"intricate\", table)).toEqual({ profile: \"cline\", model: \"opus\" });
-    expect(complexityEntryFor(\"trivial\", table)).toEqual({ profile: \"\", model: \"haiku\" });
-    expect(complexityEntryFor(\"moderate\", table)).toEqual({ profile: \"cline\", model: \"nemotron-3.5\" });
-  });
   it("reads the level's row from the one table it is given", () => {
     expect(complexityEntryFor("intricate", table)).toEqual({ profile: "cline", model: "opus" });
     expect(complexityEntryFor("trivial", table)).toEqual({ profile: "", model: "haiku" });
@@ -348,39 +347,7 @@ describe("realignComplexityTable", () => {
     intricate: { profile: "codex", model: "gpt-5.1" },
   };
 
-it(\"remap retargets rows that named the old profile and leaves the rest\", () => {
-    expect(realignComplexityTable(table, \"remap\", \"cline\", \"cursor\")).toEqual({
-      trivial: { profile: \"cursor\", model: \"\" },
-      simple: { profile: \"\", model: \"sonnet\" },
-      intricate: { profile: \"codex\", model: \"gpt-5.1\" },
-    });
-  });
-
-  it(\"remap with cline profile\", () => {
-    const clineTable: ComplexityTable = {
-      trivial: { profile: \"\", model: \"haiku\" },
-      intricate: { profile: \"cline\", model: \"opus\" },
-      moderate: { profile: \"cline\", model: \"nemotron-3.5\" },
-    };
-    expect(realignComplexityTable(clineTable, \"remap\", \"cline\", \"cline\")).toEqual({
-      trivial: { profile: \"\", model: \"haiku\" },
-      intricate: { profile: \"cline\", model: \"\" },
-      moderate: { profile: \"cline\", model: \"nemotron-3.5\" },
-    });
-  });
   it("keep leaves every row alone", () => {
-it(\"clear drops every workspace override\", () => {
-    expect(realignComplexityTable(table, \"clear\", \"cline\", \"cursor\")).toEqual({});
-  });
-
-  it(\"clear with cline profile\", () => {
-    const clineTable: ComplexityTable = {
-      trivial: { profile: \"\", model: \"haiku\" },
-      intricate: { profile: \"cline\", model: \"opus\" },
-      moderate: { profile: \"cline\", model: \"nemotron-3.5\" },
-    };
-    expect(realignComplexityTable(clineTable, \"clear\", \"cline\", \"cline\")).toEqual({});
-  });
     expect(realignComplexityTable(table, "keep", "cline", "cursor")).toEqual(table);
   });
 
@@ -395,24 +362,6 @@ it(\"clear drops every workspace override\", () => {
   it("remap never carries one agent's model, effort or advisor onto another", () => {
     // `{cursor, auto}` retargeted whole became `claude --model auto`.
     const pinned: ComplexityTable = {
-it(\"recommends keeping, whatever the table says\", () => {
-    expect(recommendedComplexityAction({}, \"cline\")).toBe(\"keep\");
-    expect(
-      recommendedComplexityAction({ trivial: { profile: \"cline\", model: \"\" } }, \"cline\")
-    ).toBe(\"keep\");
-    expect(
-      recommendedComplexityAction(
-        { simple: { profile: \"\", model: \"sonnet\" }, intricate: { profile: \"codex\", model: \"\" } },\n        \"cline\"\n      )
-    ).toBe(\"keep\");
-  });
-
-  it(\"recommendedComplexityAction with cline\", () => {
-    expect(recommendedComplexityAction({}, \"cline\")).toBe(\"keep\");
-    expect(
-      recommendedComplexityAction(
-        { moderate: { profile: \"cline\", model: \"nemotron-3.5\" } },\n        \"cline\"\n      )
-    ).toBe(\"keep\");
-  });
       complex: { profile: "cursor", model: "auto" },
       intricate: { profile: "cline", model: "opus", effort: "max", advisor: "fable" },
     };

@@ -1738,7 +1738,7 @@ describe("a failed binding", () => {
   }
 
   const claudeAgent = {
-    profileId: "cline",
+    profileId: "claude-code",
     file: "CLAUDE.md",
     command: "claude",
     launchCommand: "claude",
@@ -1790,7 +1790,7 @@ describe("a failed binding", () => {
       "/ws/worktree",
       `claude --resume ${shellQuote("u-1")}`,
       "/ws",
-      "cline"
+      "claude-code"
     );
 
     // Nothing composed and nothing read: the transcript already holds
@@ -1835,7 +1835,7 @@ describe("a failed binding", () => {
       "/ws/worktree",
       `claude --resume ${shellQuote("u-1")}`,
       "/ws",
-      { profileId: "cline", withoutHeadroom: true }
+      { profileId: "claude-code", withoutHeadroom: true }
     );
     // Its first quiet is the history being painted, not a turn.
     expect(isAwaitingFirstSubmit("s-new")).toBe(true);
@@ -1866,7 +1866,7 @@ describe("a failed binding", () => {
   /// the resume-by-id test above -- the one difference is what the
   /// backend says about the transcript.
   function bindingWithConversation(): void {
-    vi.mocked(resolvedAgentFor).mockReturnValue({ ...claudeAgent, profileId: "cline" } as never);
+    vi.mocked(resolvedAgentFor).mockReturnValue({ ...claudeAgent, profileId: "claude-code" } as never);
     kanbanState.set({
       "ws-1": board([
         {
@@ -1898,7 +1898,7 @@ describe("a failed binding", () => {
     expect(err).toMatch(/before it wrote a line/);
     // The way forward is named, and it is the button beside Resume.
     expect(err).toContain("Re-launch");
-    expect(backend.conversationLog).toHaveBeenCalledWith("cline", "u-1");
+    expect(backend.conversationLog).toHaveBeenCalledWith("claude-code", "u-1");
     expect(backend.createSession).not.toHaveBeenCalled();
     // Refused BEFORE anything is written or shown: no status, no review
     // sheet, no file read -- and no re-link, so the daemon still holds the
@@ -1964,7 +1964,7 @@ describe("a failed binding", () => {
         "/ws",
         `claude --resume ${shellQuote("u-1")}`,
         "/ws",
-        "cline"
+        "claude-code"
       );
     }
     vi.clearAllMocks();
@@ -1975,7 +1975,7 @@ describe("a failed binding", () => {
       "/ws",
       `claude --resume ${shellQuote("u-1")}`,
       "/ws",
-      "cline"
+      "claude-code"
     );
   });
 });
@@ -2372,4 +2372,3 @@ describe("attachments gate the run", () => {
     expect(backend.createSession).not.toHaveBeenCalled();
   });
 });
-

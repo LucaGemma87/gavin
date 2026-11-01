@@ -201,7 +201,7 @@ impl Serving {
             Purpose::Pair => (&PAIRING, MAX_STREAMS),
             Purpose::Connect => (&CONNECTING, MAX_CONNECTING),
         };
-        held.fetch_update(Ordering::SeqCst, Ordering::SeqCst, |n| (n < ceiling).then_some(n + 1))
+        held.try_update(Ordering::SeqCst, Ordering::SeqCst, |n| (n < ceiling).then_some(n + 1))
             .ok()
             .map(|_| Serving(held))
     }

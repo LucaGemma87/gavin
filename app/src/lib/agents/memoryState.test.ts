@@ -120,7 +120,7 @@ describe("memory across windows", () => {
   it("takes another window's reading without asking the host", async () => {
     await initMemorySharing();
     const agents = {
-      s1: { sessionId: "s1", profileId: "cline", rssBytes: 8, processCount: 3, command: "claude" },
+      s1: { sessionId: "s1", profileId: "claude-code", rssBytes: 8, processCount: 3, command: "claude" },
     };
     eventMock.fire("memory-reading", {
       origin: "ws-2",

@@ -55,7 +55,7 @@ describe("agentAvatarLabels", () => {
 
 describe("commandArgv0 / profileIdForCommand", () => {
   const profiles = [
-    { id: "cline", command: "claude" },
+    { id: "claude-code", command: "claude" },
     { id: "cursor", command: "agent --approve-mcps --trust" },
     { id: "codex", command: "codex" },
   ];
@@ -69,7 +69,7 @@ describe("commandArgv0 / profileIdForCommand", () => {
   it("matches a session to its profile by argv0, not the workspace default", () => {
     expect(profileIdForCommand("agent --approve-mcps --trust", profiles)).toBe("cursor");
     expect(profileIdForCommand("claude --model opus 'mention agent'", profiles)).toBe(
-      "cline"
+      "claude-code"
     );
     expect(profileIdForCommand(null, profiles)).toBeNull();
     expect(profileIdForCommand("bash", profiles)).toBeNull();
@@ -146,4 +146,3 @@ describe("usageRowBadges", () => {
     });
   });
 });
-

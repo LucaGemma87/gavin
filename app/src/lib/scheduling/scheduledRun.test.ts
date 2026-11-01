@@ -10,8 +10,8 @@ import {
 } from "$lib/scheduling/scheduledRun";
 
 describe("the argv a scheduled run launches with", () => {
-  it("lets cline edit files, beyond the commit agent's git-only grant", () => {
-    expect(scheduledRunArgs("cline", '-p --allowedTools "Bash(git *)" --')).toBe(
+  it("lets Claude Code edit files, beyond the commit agent's git-only grant", () => {
+    expect(scheduledRunArgs("claude-code", '-p --allowedTools "Bash(git *)" --')).toBe(
       '-p --permission-mode acceptEdits --allowedTools "Bash(git *)" --'
     );
   });
@@ -23,6 +23,7 @@ describe("the argv a scheduled run launches with", () => {
   });
 
   it("refuses a profile with no headless mode, or only the commit agent's", () => {
+    expect(scheduledRunArgs("cline", "")).toBeNull();
     expect(scheduledRunArgs("custom", "")).toBeNull();
     expect(scheduledRunArgs("opencode", "run --agent gavin-commit --auto --")).toBeNull();
     expect(scheduledRunBlocker({ profileId: "opencode", label: "opencode", headlessArgs: "run --" })).toBe(
@@ -59,4 +60,3 @@ describe("the scheduled run's prompt", () => {
     expect(placeholdersIn(DEFAULT_RUN_SCHEDULED).sort()).toEqual([...declared].sort());
   });
 });
-

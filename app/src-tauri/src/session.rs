@@ -5401,6 +5401,10 @@ mod resolve_workspaces_tests {
         assert_eq!(api_family_for_daemon(at - 1, Some("custom"), Some("openai")), None);
         // Stock built-ins are binaries the daemon knows the API of.
         assert_eq!(api_family_for_daemon(at, Some("cline"), Some("openai")), None);
+        assert_eq!(
+            api_family_for_daemon(at, Some("copilot"), Some("openai")),
+            None
+        );
         assert_eq!(api_family_for_daemon(at, Some("codex"), Some("anthropic")), None);
         // A shell names no profile, and so no family.
         assert_eq!(api_family_for_daemon(at, None, Some("openai")), None);

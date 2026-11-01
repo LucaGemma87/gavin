@@ -35,8 +35,8 @@ use crate::agent_setup::{stock_profile_by_id, TokenLog};
 
 /// The transcript layout a profile id's conversations are read through.
 /// Named customs answer None even though `profile_by_id` would fall back
-/// to cline: a custom is not claude, and reading under claude's
-/// log root would attribute claude's conversations (and their token
+/// to Cline: a custom is not Claude Code, and reading under Claude Code's
+/// log root would attribute Claude Code's conversations (and their token
 /// costs) to it.
 fn token_log_for(profile_id: &str) -> Option<TokenLog> {
     stock_profile_by_id(profile_id).and_then(|p| p.token_log)
@@ -143,7 +143,7 @@ pub enum ConversationLog {
 ///
 /// The SAME resolver `card_run_tokens` uses below, deliberately: it
 /// scans every project directory for `<conversation_id>.jsonl` rather
-/// than reproducing cline's slug rule, which is undocumented, has
+/// than reproducing Claude Code's slug rule, which is undocumented, has
 /// changed, and is wrong for any agent that moved into a worktree. An
 /// existence check that reproduced the slug would report `Missing` for
 /// every run that did.
@@ -321,7 +321,7 @@ pub(crate) fn log_root(log: TokenLog) -> Option<PathBuf> {
 /// `<projects>/<slugged cwd>/<session id>.jsonl`, found by looking in
 /// every project directory rather than by reproducing the slug.
 ///
-/// The slug rule is cline's, undocumented, and has changed; the
+/// The slug rule is Claude Code's, undocumented, and has changed; the
 /// file name is the session id, which gavin minted and therefore knows
 /// exactly. Reproducing the slug would also be wrong more often than it
 /// looks: a run's launch cwd is where gavin STARTED the agent, and an
@@ -501,7 +501,7 @@ pub fn claude_totals(text: &str) -> TokenReport {
     TokenReport::Ready { totals, models }
 }
 
-/// The parts of a cline record `claude_totals` reads; every other
+/// The parts of a Claude Code record `claude_totals` reads; every other
 /// field, content blocks included, is skipped by the parser unbuilt.
 ///
 /// Each one stays a loose `Value` on purpose. A typed `u64` count or
@@ -650,15 +650,16 @@ pub fn kimi_totals(text: &str) -> TokenReport {
 mod tests {
     use super::*;
 
-    /// A named custom -- the migrated `custom-agent`, a user slug, a
-    /// workspace `local:` id -- has no transcript layout of gavin's own:
+    /// Cline, Copilot and a named custom -- the migrated `custom-agent`,
+    /// a user slug, a workspace `local:` id -- have no transcript layout
+    /// of gavin's own:
     /// the read paths answer Unknown/Unsupported through `token_log_for`
     /// (`stock_profile_by_id`), never `profile_by_id`'s cline
     /// fallback, which would read claude's conversations and token costs
     /// as the custom's.
     #[test]
-    fn a_named_custom_has_no_token_log_and_is_not_read_under_claudes_root() {
-        for id in ["custom", "custom-agent", "my-bot", "local:desk"] {
+    fn profiles_without_token_logs_are_not_read_under_claudes_root() {
+        for id in ["cline", "copilot", "custom", "custom-agent", "my-bot", "local:desk"] {
             assert!(token_log_for(id).is_none(), "{id} took claude's token log");
             assert_eq!(
                 conversation_log_blocking(id, Some("conv-1".to_string())),
@@ -672,7 +673,7 @@ mod tests {
         }
         // And the stock rows still resolve, so the guard is the custom
         // shape and not the lookup itself.
-        for id in ["cline", "codex", "kimi-code"] {
+        for id in ["claude-code", "codex", "kimi-code"] {
             assert!(token_log_for(id).is_some(), "{id} lost its token log");
         }
     }
@@ -860,7 +861,7 @@ mod tests {
     }
 
     /// The transcript is found by NAME, in whichever project directory
-    /// holds it -- the slug is cline's rule, and a run's launch
+    /// holds it -- the slug is Claude Code's rule, and a run's launch
     /// cwd is not necessarily where the agent ended up.
     #[test]
     fn a_claude_transcript_is_found_by_session_id_in_any_project_directory() {
@@ -1046,4 +1047,3 @@ mod tests {
         assert!(matches!(kimi_totals(r#"{"type":"turn.ended"}"#), TokenReport::Unavailable { .. }));
     }
 }
-

@@ -8,7 +8,7 @@ use crate::screen::SessionScreen;
 use crate::status::{StatusEvent, StatusScanner, HEURISTIC_QUIET_PERIOD};
 use notify_debouncer_mini::Debouncer;
 use std::collections::{HashMap, HashSet};
-use std::io::{BufReader, Read, Write};
+use std::io::{BufReader, Read};
 use protocol::transport::{Listener, Stream};
 use std::net::Shutdown;
 use std::sync::atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering};
@@ -781,6 +781,8 @@ fn headroom_reason() -> String {
 /// and Kimi Code's) is listed, pinned by
 /// `headroom_not_blamed_markers_cover_every_non_network_cause` there.
 pub const NOT_HEADROOMS_MARKERS: &[&str] = &[
+    "Daily free model limit reached",
+    "today's free usage limit for this model",
     "/login",
     "OAuth token has expired",
     "disabled Claude subscription access",
@@ -22615,4 +22617,3 @@ mod forwarding_tests {
         );
     }
 }
-

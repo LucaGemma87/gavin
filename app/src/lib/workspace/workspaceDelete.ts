@@ -68,8 +68,8 @@ export interface GavinRootFootprint {
 
 export interface McpFootprint {
   path: string;
-  /// The key gavin's entry hangs off -- `gavin` for every stock profile,
-  /// but read from the profile table rather than assumed.
+  /// The key gavin's entry hangs off -- `gavin` for each stock profile
+  /// with an MCP layout, read from the profile table rather than assumed.
   serverKey: string;
 }
 
@@ -351,4 +351,3 @@ export function summaryLines(
   lines.push("Remove the workspace from gavin");
   return lines;
 }
-

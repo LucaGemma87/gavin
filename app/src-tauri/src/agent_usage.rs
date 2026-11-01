@@ -3,7 +3,7 @@
 //!
 //! Which agents can be asked at all, and by what route, is the profile
 //! table's answer (`agent_setup::UsageProbe`); this module only carries
-//! the routes out. Custom is the only profile with no route, and the
+//! the routes out. Custom profiles and Copilot have no verified route, and the
 //! honest report there is `Unsupported`, never an invented bar. A stock
 //! CLI whose route could not answer (no login, no Go subscription, a
 //! consumer Gemini account) is `Unavailable` -- a different sentence.
@@ -40,7 +40,7 @@ use tauri::Manager;
 
 use crate::agent_setup::{stock_profile_by_id, UsageProbe};
 
-/// Anthropic's own usage endpoint, which every cline client reads.
+/// Anthropic's own usage endpoint for the Claude Code OAuth profile.
 const ANTHROPIC_USAGE_URL: &str = "https://api.anthropic.com/api/oauth/usage";
 
 /// The beta gate the endpoint requires; without it the request is
@@ -307,7 +307,7 @@ impl UsageReport {
     }
 }
 
-// ---- cline ------------------------------------------------------------
+// ---- Anthropic OAuth --------------------------------------------------
 
 /// The CLI's own version, for the user-agent the endpoint wants. Best
 /// effort: a plausible fallback beats no header at all, since it is the
@@ -342,7 +342,7 @@ fn claude_version() -> &'static str {
 }
 
 /// The OAuth token, from the Keychain first and the file second -- the
-/// order cline itself resolves them in on macOS, so gavin reads
+/// order Claude Code itself resolves them in on macOS, so gavin reads
 /// whichever one is actually current.
 ///
 /// Returns the secret; every caller must keep it out of argv, logs and
@@ -367,7 +367,7 @@ fn credentials_blob(keychain: Option<String>, file: &Path) -> Option<String> {
 /// The Keychain copy, on the one OS that has a Keychain.
 ///
 /// `security(1)` is a macOS binary and there is no Linux equivalent to
-/// fall back to: cline stores the blob in `~/.claude/.credentials.json`
+/// fall back to: Claude Code stores the blob in `~/.claude/.credentials.json`
 /// there, plainly, which is why `credentials_blob`'s file arm is the
 /// whole story off macOS. Shelling out anyway would spend a process
 /// launch per probe on a command that cannot exist -- and on a machine
@@ -376,7 +376,7 @@ fn credentials_blob(keychain: Option<String>, file: &Path) -> Option<String> {
 #[cfg(target_os = "macos")]
 fn keychain_credentials() -> Option<String> {
     crate::program::command("security")
-        .args(["find-generic-password", "-s", "cline-credentials", "-w"])
+        .args(["find-generic-password", "-s", "Claude Code-credentials", "-w"])
         .output()
         .ok()
         .filter(|o| o.status.success())
@@ -406,7 +406,7 @@ fn anthropic_usage(now: i64) -> (UsageReport, Option<i64>) {
         None => {
             return (
                 UsageReport::Unavailable {
-                    reason: "gavin could not find cline's login — run `claude` and sign in"
+                    reason: "gavin could not find Claude Code's login — run `claude` and sign in"
                         .to_string(),
                     retry_after: None,
                 },
@@ -456,7 +456,7 @@ fn anthropic_usage(now: i64) -> (UsageReport, Option<i64>) {
         },
         401 | 403 => (
             UsageReport::Unavailable {
-                reason: "cline's login is not valid any more — run `claude` and sign in"
+                reason: "Claude Code's login is not valid any more — run `claude` and sign in"
                     .to_string(),
                 retry_after: None,
             },
@@ -528,7 +528,7 @@ pub(crate) fn split_status(output: &str) -> (&str, u16) {
 /// `{utilization, resets_at}`, plus `spend_limit` behind a gateway.
 ///
 /// A window whose `resets_at` has already passed is DROPPED rather than
-/// shown at its last value -- that is what cline's own statusline
+/// shown at its last value -- that is what Claude Code's own statusline
 /// does, and a bar reading 96% for a window that reset an hour ago is
 /// the single most misleading thing this panel could show.
 fn parse_anthropic(body: &str, now: i64) -> Option<UsageReport> {
@@ -1903,7 +1903,7 @@ mod tests {
         let poll = {
             let (cache, calls) = (cache.clone(), calls.clone());
             std::thread::spawn(move || {
-                cache.read("cline", false, |now| {
+                cache.read("claude-code", false, |now| {
                     calls.fetch_add(1, SeqCst);
                     entered_tx.send(()).unwrap();
                     release_rx.recv().unwrap();
@@ -1912,11 +1912,11 @@ mod tests {
             })
         };
         entered_rx.recv().unwrap();
-        let asked_at = cache.generation("cline");
+        let asked_at = cache.generation("claude-code");
         let refresh = {
             let (cache, calls) = (cache.clone(), calls.clone());
             std::thread::spawn(move || {
-                cache.read_since("cline", true, asked_at, |now| {
+                cache.read_since("claude-code", true, asked_at, |now| {
                     calls.fetch_add(1, SeqCst);
                     ready_at(now)
                 })
@@ -1951,7 +1951,7 @@ mod tests {
     fn a_429_park_holds_a_forced_refresh() {
         let cache = UsageCache::new();
         let calls = std::cell::Cell::new(0);
-        cache.read("cline", false, |now| {
+        cache.read("claude-code", false, |now| {
             calls.set(calls.get() + 1);
             let until = now + BACKOFF_SECS;
             let report = UsageReport::Unavailable {
@@ -1960,7 +1960,7 @@ mod tests {
             };
             (report, Some(until))
         });
-        let again = cache.read("cline", true, |now| {
+        let again = cache.read("claude-code", true, |now| {
             calls.set(calls.get() + 1);
             ready_at(now)
         });
@@ -2199,8 +2199,8 @@ mod tests {
         assert!(matches!(codex_usage(&dir), UsageReport::Unavailable { .. }));
     }
 
-    /// The profile table decides who can be asked: every stock CLI has a
-    /// verified route, even if that route often answers Unavailable
+    /// The profile table decides who can be asked: every stock CLI with a
+    /// verified usage route is listed here, even if that route often answers Unavailable
     /// (Gemini consumer OAuth, OpenCode without Go). A named custom --
     /// the migrated `custom-agent`, a user slug, a workspace `local:` id
     /// -- carries no probe at all: the command answers Unsupported
@@ -2210,10 +2210,10 @@ mod tests {
     /// whenever claude is.
     #[test]
     fn profiles_without_a_route_are_unsupported() {
-        for id in ["cline", "codex", "gemini", "cursor", "opencode", "kimi-code"] {
+        for id in ["claude-code", "codex", "gemini", "cursor", "opencode", "kimi-code"] {
             assert!(usage_probe_for(id).is_some(), "{id} has no probe");
         }
-        for id in ["custom", "custom-agent", "my-bot", "local:desk"] {
+        for id in ["cline", "copilot", "custom", "custom-agent", "my-bot", "local:desk"] {
             assert!(usage_probe_for(id).is_none(), "{id} took claude's probe");
         }
     }
@@ -2537,4 +2537,3 @@ mod tests {
         format!("eyJhbGciOiJub25l.{}.sig", super::b64url_encode(payload.as_bytes()))
     }
 }
-

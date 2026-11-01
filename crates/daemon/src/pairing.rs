@@ -326,7 +326,7 @@ pub fn run_responder_with_keys<S: Read + Write>(
         .parse()
         .map_err(|e| anyhow::anyhow!("gavin-daemon: bad Noise parameters {NOISE_PARAMS:?}: {e:?}"))?;
     let private = &keys.private;
-    let daemon_public = &keys.public;
+    let _daemon_public = &keys.public;
     let psk = offer.psk()?;
 
     let mut handshake = snow::Builder::new(params)

@@ -66,7 +66,7 @@ vi.mock("$lib/core/layoutState", () => ({
     command: "claude",
     launchCommand: "claude",
     file: "CLAUDE.md",
-    profileId: "cline",
+    profileId: "claude-code",
   })),
   agentDefaultsStore: writable({
     customCommand: "",
@@ -237,7 +237,7 @@ describe("requestOrganize", () => {
     expect(await requestOrganize("ws-1", [], [])).toBeNull();
 
     const launch = vi.mocked(backend.createSession).mock.calls[0];
-    expect(launch).toEqual(["/ws", expect.stringContaining("claude "), "/ws", "cline"]);
+    expect(launch).toEqual(["/ws", expect.stringContaining("claude "), "/ws", "claude-code"]);
   });
 
   it("launches with no profile against a daemon too old to read one", async () => {

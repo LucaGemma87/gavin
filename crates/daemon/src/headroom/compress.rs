@@ -89,7 +89,7 @@ pub const OPENCODE_PLUGIN: [&str; 5] =
     ["headroom", "providers", "opencode", "_dist", "entry.opencode.js"];
 
 fn is_stock_profile_id(id: &str) -> bool {
-    matches!(id, "cline" | "codex" | "gemini" | "cursor" | "opencode" | "kimi-code")
+    matches!(id, "cline" | "copilot" | "claude-code" | "codex" | "gemini" | "cursor" | "opencode" | "kimi-code")
 }
 
 /// What is about to be launched, as far as the daemon can tell.
@@ -169,6 +169,7 @@ impl ApiFamily {
 /// The agents gavin knows by name.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Agent {
+    Copilot,
     ClaudeCode,
     Codex,
     Gemini,
@@ -188,7 +189,8 @@ impl Agent {
     /// (`agent_setup.rs`'s `AGENT_PROFILES`).
     pub fn from_profile(id: &str) -> Agent {
         match id {
-            "cline" => Agent::ClaudeCode,
+            "copilot" => Agent::Copilot,
+            "claude-code" => Agent::ClaudeCode,
             "codex" => Agent::Codex,
             "gemini" => Agent::Gemini,
             "cursor" => Agent::Cursor,
@@ -211,6 +213,7 @@ impl Agent {
         let first = line.split_whitespace().next()?;
         let name = std::path::Path::new(first).file_stem()?.to_str()?;
         match name {
+            "copilot" => Some(Agent::Copilot),
             "claude" => Some(Agent::ClaudeCode),
             "codex" => Some(Agent::Codex),
             "gemini" => Some(Agent::Gemini),
@@ -440,7 +443,7 @@ fn unroutable(agent: Agent) -> Option<Reason> {
         | Agent::Kimi
         | Agent::Custom(_) => None,
         Agent::Cursor => Some(Reason::UnsupportedAgent),
-        Agent::Other => Some(Reason::NoRecipe),
+        Agent::Copilot | Agent::Other => Some(Reason::NoRecipe),
     }
 }
 
@@ -531,7 +534,7 @@ pub fn recipe(agent: Agent, port: u16, facts: &Facts) -> Option<Recipe> {
             (KIMI_BASE_URL, tagged_v1_url(&base, session)),
             (KIMI_OAUTH_HOST, facts.kimi_oauth_host.to_string()),
         ])),
-        Agent::Gemini | Agent::Cursor | Agent::Other => None,
+        Agent::Gemini | Agent::Cursor | Agent::Copilot | Agent::Other => None,
     }
 }
 
@@ -1166,14 +1169,14 @@ mod tests {
     const SESSION: &str = "0b6c4a52-7f0e-4d0c-9a53-3f6f0c1f2a11";
     const PORT: u16 = 41873;
 
-    /// A cline card run in a workspace with compression on, and a
+    /// A Claude Code card run in a workspace with compression on, and a
     /// Headroom that is ready: the one case that is compressed. Every
     /// test below changes one fact of it.
     fn facts() -> Facts<'static> {
         Facts {
             workspace_on: true,
             ready_port: Some(PORT),
-            launch: Launch::Profile("cline"),
+            launch: Launch::Profile("claude-code"),
             session_id: SESSION,
             command: Some("claude --model opus 'Read the card'"),
             inherited_headers: None,
@@ -1680,8 +1683,22 @@ oauth_host = "https://auth.kimi.ai"
     /// harness, which the command line alone could not have said.
     #[test]
     fn a_profile_is_believed_whatever_the_command_line_would_have_said() {
-        assert_eq!(Agent::from_profile("cline"), Agent::ClaudeCode);
+        assert_eq!(Agent::from_profile("claude-code"), Agent::ClaudeCode);
+        assert_eq!(Agent::from_profile("cline"), Agent::Other);
+        assert_eq!(Agent::from_profile("copilot"), Agent::Copilot);
         assert_eq!(Agent::from_command("claude-wrapper --fast"), None);
+    }
+
+    #[test]
+    fn cline_cli_is_not_routed_with_claude_code_environment_variables() {
+        let decision = decide(Facts {
+            launch: Launch::Profile("cline"),
+            command: Some("cline --auto-approve false 'Read the card'"),
+            ..facts()
+        });
+
+        assert_eq!(decision, Decision::Uncompressed(Some(Reason::NoRecipe)));
+        assert!(decision.env().is_empty());
     }
 
     #[test]
@@ -1862,6 +1879,7 @@ oauth_host = "https://auth.kimi.ai"
     fn a_binary_is_recognised_by_name_whatever_its_path_or_extension() {
         assert_eq!(Agent::from_command("/usr/local/bin/codex exec"), Some(Agent::Codex));
         assert_eq!(Agent::from_command("claude.exe"), Some(Agent::ClaudeCode));
+        assert_eq!(Agent::from_command("copilot -i 'x'"), Some(Agent::Copilot));
         assert_eq!(Agent::from_command("cursor-agent -p"), Some(Agent::Cursor));
         assert_eq!(Agent::from_command("opencode --prompt='x'"), Some(Agent::Opencode));
         assert_eq!(Agent::from_command("gemini"), Some(Agent::Gemini));
@@ -2169,6 +2187,21 @@ oauth_host = "https://auth.kimi.ai"
         assert_eq!(Launch::requested(Some("custom-agent"), Some(" openai ")), Launch::Custom(ApiFamily::OpenAi));
         assert_eq!(Launch::requested(Some("my-bot"), Some("anthropic")), Launch::Custom(ApiFamily::Anthropic));
         assert_eq!(Launch::requested(Some("cline"), Some("openai")), Launch::Profile("cline"));
+        assert_eq!(
+            Launch::requested(Some("copilot"), Some("openai")),
+            Launch::Profile("copilot")
+        );
+        assert_eq!(
+            decide(Facts {
+                launch: Launch::requested(Some("copilot"), Some("openai")),
+                ..facts()
+            }),
+            Decision::Uncompressed(Some(Reason::NoRecipe))
+        );
+        assert_eq!(
+            Launch::requested(Some("claude-code"), Some("anthropic")),
+            Launch::Profile("claude-code")
+        );
         assert_eq!(Launch::requested(Some("kimi-code"), Some("anthropic")), Launch::Profile("kimi-code"));
         assert_eq!(Launch::requested(None, Some("anthropic")), Launch::Shell);
     }
@@ -2228,4 +2261,3 @@ oauth_host = "https://auth.kimi.ai"
         }
     }
 }
-

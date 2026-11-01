@@ -207,7 +207,7 @@ describe("effortOptions", () => {
 
 describe("mergeDiscoveredModels", () => {
   const profiles = [
-    { id: "cline", models: ["opus", "sonnet"] },
+    { id: "claude-code", models: ["opus", "sonnet"] },
     { id: "opencode", models: [] as string[] },
   ];
 
@@ -215,14 +215,14 @@ describe("mergeDiscoveredModels", () => {
     // Aliases lead because they cannot go stale; the discovered names
     // follow in the order the agent itself listed them.
     expect(mergeDiscoveredModels(profiles, { opencode: ["a/one", "b/two"] })).toEqual([
-      { id: "cline", models: ["opus", "sonnet"] },
+      { id: "claude-code", models: ["opus", "sonnet"] },
       { id: "opencode", models: ["a/one", "b/two"] },
     ]);
   });
 
   it("never lists a name twice", () => {
     expect(
-      mergeDiscoveredModels(profiles, { "cline": ["sonnet", "claude-opus-5"] })[0].models
+      mergeDiscoveredModels(profiles, { "claude-code": ["sonnet", "claude-opus-5"] })[0].models
     ).toEqual(["opus", "sonnet", "claude-opus-5"]);
   });
 
@@ -246,6 +246,7 @@ describe("mergeDiscoveredModels", () => {
 
 describe("modelOptions", () => {
   const claude = { modelFlag: "--model", models: ["fable", "opus", "sonnet"] };
+  const copilot = { modelFlag: "--model", models: ["auto"] };
   const gemini = { modelFlag: "--model", models: [] };
   const cursor = { modelFlag: "", models: [] };
 
@@ -262,6 +263,10 @@ describe("modelOptions", () => {
       "sonnet",
       CUSTOM_MODEL,
     ]);
+  });
+
+  it("offers Auto as Copilot's only named preset without guessing the underlying model", () => {
+    expect(modelOptions(copilot, "").map((o) => o.value)).toEqual(["", "auto", CUSTOM_MODEL]);
   });
 
   it("offers Custom alone for a profile with no presets", () => {

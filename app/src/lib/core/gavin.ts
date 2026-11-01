@@ -151,7 +151,7 @@ export interface AgentConfig {
   model?: string | null;
   /// The argv that carries `model` into this workspace's agent. Absent
   /// means the profile table's own flag applies, which is the right
-  /// answer for the five stock profiles; it exists for `custom`, whose
+  /// answer for stock profiles; it exists for `custom`, whose
   /// binary the table cannot know. Optional because a pre-v31 daemon
   /// never sends it.
   modelFlag?: string | null;

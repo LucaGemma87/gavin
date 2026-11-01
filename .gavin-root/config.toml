@@ -3,4 +3,4 @@
 [agent]
 profile = "cline"
 command = "cline"
-file = "Cline.md"
+file = "AGENTS.md"

@@ -89,10 +89,11 @@ pub const LEGACY_CUSTOM_PROFILE_ID: &str = "custom";
 /// with an app-wide custom slug the human chose.
 pub const LOCAL_PROFILE_PREFIX: &str = "local:";
 
-/// The six stock built-in profile ids, in their shipped order. Migration
+/// The eight stock built-in profile ids, in their shipped order. Migration
 /// folds a legacy single fallback chain onto exactly these plus every
 /// custom id known at the time.
-pub const STOCK_PROFILE_IDS: [&str; 6] = ["cline", "codex", "gemini", "cursor", "opencode", "kimi-code"];
+pub const STOCK_PROFILE_IDS: [&str; 8] =
+    ["cline", "copilot", "claude-code", "codex", "gemini", "cursor", "opencode", "kimi-code"];
 
 /// Stock built-in profile ids. A custom slug must not use these; Headroom
 /// and `api_family_for_daemon` treat anything else as custom-like.
@@ -832,7 +833,7 @@ pub struct ComplexityAgent {
 /// machine and this subscription, not about the project. The per-workspace
 /// override lives on `Workspace::complexity_agents` for the same reason,
 /// rather than in the repo's `.gavin-root/config.toml`.
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct AgentDefaultsConfig {
     /// Named app-wide custom agent profiles. Built-ins stay in
@@ -893,9 +894,9 @@ pub struct AgentDefaultsConfig {
     #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub extra_cli_args: HashMap<String, Vec<String>>,
     /// The app-wide default agent: the profile a workspace with no
-    /// `[agent] profile` of its own resolves to. Absent — the shipped
-    /// state — means "cline", the new default fallback every build
-    /// before this field used, so no migration is needed.
+    /// `[agent] profile` of its own resolves to. New configs and older
+    /// configs without this field default to Cline; an explicit choice,
+    /// including Claude Code, is retained.
     #[serde(default = "default_agent_default", skip_serializing_if = "Option::is_none")]
     pub default_agent: Option<String>,
     /// Legacy single fallback chain — one list walked no matter which
@@ -932,6 +933,29 @@ pub struct AgentDefaultsConfig {
     /// `Workspace::action_prompt_overrides`.
     #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub action_prompt_overrides: HashMap<String, String>,
+}
+
+impl Default for AgentDefaultsConfig {
+    fn default() -> Self {
+        Self {
+            custom_profiles: Vec::new(),
+            custom_command: String::new(),
+            custom_model_flag: String::new(),
+            custom_effort_flag: String::new(),
+            agent_efforts: HashMap::new(),
+            custom_api_family: String::new(),
+            complexity: HashMap::new(),
+            complexity_tables: HashMap::new(),
+            pause_cycles: HashMap::new(),
+            prompt_extras: HashMap::new(),
+            extra_cli_args: HashMap::new(),
+            default_agent: default_agent_default(),
+            agent_fallback: Vec::new(),
+            fallback_chains: HashMap::new(),
+            fallback_thresholds: HashMap::new(),
+            action_prompt_overrides: HashMap::new(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
@@ -1635,7 +1659,7 @@ pub fn migrate_custom_profiles(config: &mut AppConfig) -> bool {
 
 /// Fold the legacy single fallback chain — one list walked no matter
 /// which agent was spent — into the per-primary maps: the old vec becomes
-/// EVERY known primary's chain (the six stock ids plus every custom id
+/// EVERY known primary's chain (the eight stock ids plus every custom id
 /// known at migration time), because the old model offered it for any
 /// spent agent. A workspace legacy `None` means it never chose, which the
 /// new model already spells as an empty map (inherit). Runs AFTER
@@ -2192,7 +2216,7 @@ mod tests {
             MIGRATED_CUSTOM_PROFILE_ID
         );
         // The legacy single chain was rewritten, then folded onto every
-        // known primary (the six stock ids plus the migrated custom one)
+        // known primary (the eight stock ids plus the migrated custom one)
         // by `migrate_fallback_chains`.
         assert!(loaded.agent_defaults.agent_fallback.is_empty());
         let expected_chain = vec![MIGRATED_CUSTOM_PROFILE_ID.to_string(), "gemini".to_string()];
@@ -2433,22 +2457,29 @@ mod tests {
         assert_eq!(loaded.fallback_thresholds.get("cline"), Some(&80));
     }
 
-    /// The app-wide default agent round-trips, and a config written before
-    /// the field existed reads as absent — which the frontend resolves to
-    /// "cline", the hard-coded fallback every older build used.
+    /// Both fresh defaults and configs written before the field existed
+    /// resolve to Cline, while explicit supported profiles round-trip.
     #[test]
-    fn default_agent_roundtrips_and_defaults_to_absent() {
+    fn default_agent_defaults_to_cline_and_roundtrips_explicit_profiles() {
+        assert_eq!(
+            AgentDefaultsConfig::default().default_agent.as_deref(),
+            Some("cline")
+        );
+
         let dir = tempfile::tempdir().unwrap();
         let mut config = AppConfig::default();
-        config.agent_defaults.default_agent = Some("codex".to_string());
+        config.agent_defaults.default_agent = Some("claude-code".to_string());
         save(dir.path(), &config).unwrap();
         assert_eq!(
             load(dir.path()).unwrap().agent_defaults.default_agent.as_deref(),
-            Some("codex")
+            Some("claude-code")
         );
 
         std::fs::write(config_path(dir.path()), r#"{"workspaces":[],"agent_defaults":{"complexity":{}}}"#).unwrap();
-        assert_eq!(load(dir.path()).unwrap().agent_defaults.default_agent, None);
+        assert_eq!(
+            load(dir.path()).unwrap().agent_defaults.default_agent.as_deref(),
+            Some("cline")
+        );
     }
 
     /// The legacy single fallback chain — one list for every agent —
@@ -3571,4 +3602,3 @@ mod tests {
         assert_eq!(config, AppConfig::default());
     }
 }
-

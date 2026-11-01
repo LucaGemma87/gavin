@@ -2973,7 +2973,7 @@ export async function setAgentField(
 /// then inherits its own app-wide defaults.
 ///
 /// Left behind, they are not a preference but a broken argv: Cursor's
-/// `model = "auto"` under `profile = "cline"` launched `claude
+/// `model = "auto"` under `profile = "claude-code"` launched `claude
 /// --model auto`, which refuses to start, on every route.
 ///
 /// Each beside the feature that taught the daemon its key. A daemon older
