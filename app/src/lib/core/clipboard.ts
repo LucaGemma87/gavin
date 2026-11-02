@@ -30,6 +30,13 @@ export async function copySelection(
   await writeText(selection);
 }
 
+async function readClipboardText(): Promise<string> {
+  const text = await readText().catch(() => "");
+  if (text) return text;
+  if (typeof navigator === "undefined" || !navigator.clipboard) return "";
+  return navigator.clipboard.readText().catch(() => "");
+}
+
 /// Pastes the clipboard's text into the session's terminal through
 /// xterm's own `paste()`, which is what a paste event would have done:
 /// line breaks become Enter, and a program that asked for bracketed
@@ -38,7 +45,7 @@ export async function copySelection(
 /// raw write this replaced sent every line break straight to the pty.
 /// A clipboard holding no text (an image) pastes nothing.
 export async function pasteClipboard(sessionId: string): Promise<void> {
-  const text = await readText().catch(() => "");
+  const text = await readClipboardText();
   if (!text) return;
   getTerminal(sessionId)?.paste(text);
 }

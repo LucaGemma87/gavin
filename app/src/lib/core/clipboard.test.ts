@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("@tauri-apps/plugin-clipboard-manager", () => ({
   writeText: vi.fn().mockResolvedValue(undefined),
@@ -31,6 +31,10 @@ function withTerminal(selection: string) {
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(getTerminal).mockReturnValue(undefined);
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
 });
 
 describe("terminalHasSelection", () => {
@@ -91,6 +95,18 @@ describe("pasteClipboard", () => {
     vi.mocked(readText).mockResolvedValueOnce("echo one\necho two");
     await pasteClipboard("s1");
     expect(term.paste).toHaveBeenCalledWith("echo one\necho two");
+  });
+
+  it("pastes text from the WebView clipboard when the Tauri read fails", async () => {
+    const term = withTerminal("");
+    vi.mocked(readText).mockRejectedValueOnce("clipboard read failed");
+    const clipboardReadText = vi.fn().mockResolvedValue("C:\\work\\repo\\file.txt");
+    vi.stubGlobal("navigator", { clipboard: { readText: clipboardReadText } });
+
+    await pasteClipboard("s1");
+
+    expect(clipboardReadText).toHaveBeenCalledOnce();
+    expect(term.paste).toHaveBeenCalledWith("C:\\work\\repo\\file.txt");
   });
 
   it("pastes nothing when the clipboard holds no text", async () => {
