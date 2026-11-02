@@ -145,11 +145,18 @@ function domTarget(props: {
   tagName: string;
   isContentEditable?: boolean;
   inTerminal?: boolean;
+  terminalSessionId?: string;
 }): EventTarget {
   return {
     tagName: props.tagName,
     isContentEditable: props.isContentEditable ?? false,
-    closest: (selector: string) => (props.inTerminal && selector === ".xterm" ? {} : null),
+    closest: (selector: string) => {
+      if (props.inTerminal && selector === ".xterm") return {};
+      if (props.terminalSessionId && selector === "[data-terminal-session-id]") {
+        return { dataset: { terminalSessionId: props.terminalSessionId } };
+      }
+      return null;
+    },
   } as unknown as EventTarget;
 }
 
@@ -565,6 +572,27 @@ describe("clipboard shortcuts on Windows/Linux", () => {
     const e = ctrl({ key: "v", code: "KeyV" });
     expect(await handleShortcutKeydown(e)).toBe(true);
     expect(pasteClipboard).toHaveBeenCalledWith("a");
+  });
+
+  it("Ctrl+V pastes into the focused Main Agent terminal on Home", async () => {
+    (globalThis as Record<string, unknown>).__testPlatform = "windows";
+    setState({
+      workspaces: hubWorkspace("home"),
+      focusedSessionId: null,
+    });
+    const e = ctrl({
+      key: "v",
+      code: "KeyV",
+      target: domTarget({
+        tagName: "TEXTAREA",
+        inTerminal: true,
+        terminalSessionId: "main-agent",
+      }),
+    });
+
+    expect(await handleShortcutKeydown(e)).toBe(true);
+    expect(pasteClipboard).toHaveBeenCalledWith("main-agent");
+    expect(e.preventDefault).toHaveBeenCalled();
   });
 
   it("Ctrl+Shift+V pastes on Windows too", async () => {

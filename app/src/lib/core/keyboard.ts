@@ -142,18 +142,16 @@ function routeDigit(
   return () => switchWorkspaceView(ws.id, viewId);
 }
 
-/// The session the terminal chords may act on: the focused session, but
-/// only while a terminal page is what the workspace is actually SHOWING
-/// and that session is one of the page's own tabs.
+/// The session non-clipboard terminal shortcuts may act on: the focused
+/// session, but only while a terminal page is what the workspace is
+/// actually SHOWING and that session is one of the page's own tabs.
 ///
 /// LayoutState.focusedSessionId deliberately outlives a detour into a hub
 /// tab -- switching back has to restore the same pane, which is why
-/// switchWorkspaceView leaves it alone. That made every terminal chord
-/// fire from the hub against a page nowhere on screen: ⌘T spawned a
-/// session into it, ⌘W closed one of its tabs, and ⌘V typed the
-/// clipboard into it while the human was looking at the board. The digit
-/// router has always refused to address tabs off the terminal view; the
-/// letters have to refuse for the same reason.
+/// switchWorkspaceView leaves it alone. Without this guard, terminal
+/// shortcuts from hub chrome would act on a page nowhere on screen.
+/// Clipboard chords from an actual xterm are routed separately by the
+/// terminal element that owns keyboard focus.
 ///
 /// The membership check is not redundant with the view check: the two
 /// halves of "which page" (activePageId, and the app-wide focus) are
@@ -166,6 +164,61 @@ function focusedTerminalSession(state: LayoutState): string | null {
   const focused = state.focusedSessionId;
   if (!tree || !focused) return null;
   return findLeafPath(tree, focused) ? focused : null;
+}
+
+function terminalSessionFromTarget(target: EventTarget | null | undefined): string | null {
+  const el = target as
+    | {
+        closest?: (selector: string) => { dataset?: { terminalSessionId?: string } } | null;
+      }
+    | null
+    | undefined;
+  const sessionId = el?.closest?.("[data-terminal-session-id]")?.dataset?.terminalSessionId;
+  return typeof sessionId === "string" && sessionId.length > 0 ? sessionId : null;
+}
+
+function isClipboardChord(event: ShortcutKeyEvent, isMac: boolean): boolean {
+  const key = event.key.toLowerCase();
+  if (key !== "c" && key !== "v") return false;
+  return isMac
+    ? event.metaKey && !event.shiftKey && !event.altKey
+    : event.ctrlKey && !event.metaKey && !event.altKey;
+}
+
+async function handleClipboardShortcut(
+  event: ShortcutKeyEvent,
+  sessionId: string,
+  isMac: boolean
+): Promise<boolean> {
+  // The main-agent terminal is embedded in the Home view rather than
+  // represented by the workspace's focused terminal tab. Use the actual
+  // focused xterm's owning session for clipboard chords.
+  if (isTextFieldTarget(event.target) || !hasTerminal(sessionId)) return false;
+  const key = event.key.toLowerCase();
+  const consume = (): void => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  if (isMac) {
+    if (!event.metaKey || event.shiftKey || event.altKey) return false;
+    if (key !== "c" && key !== "v") return false;
+    consume();
+    await (key === "c" ? copySelection(sessionId) : pasteClipboard(sessionId));
+    return true;
+  }
+  if (!event.ctrlKey || event.metaKey || event.altKey) return false;
+  if (key === "c") {
+    if (!terminalHasSelection(sessionId)) return false;
+    consume();
+    await copySelection(sessionId, { clear: !event.shiftKey });
+    return true;
+  }
+  if (key === "v" && (event.shiftKey || currentPlatform() === "windows")) {
+    consume();
+    await pasteClipboard(sessionId);
+    return true;
+  }
+  return false;
 }
 
 /// Handles one keydown. Exported for tests; the window listener below is
@@ -220,6 +273,11 @@ export async function handleShortcutKeydown(event: ShortcutKeyEvent): Promise<bo
     return true;
   }
 
+  const targetSession = terminalSessionFromTarget(event.target);
+  if (targetSession && isClipboardChord(event, isMac)) {
+    return handleClipboardShortcut(event, targetSession, isMac);
+  }
+
   // Everything below acts on the focused terminal session -- and only
   // while that session's page is the one on screen.
   const focused = focusedTerminalSession(state);
@@ -251,46 +309,10 @@ export async function handleShortcutKeydown(event: ShortcutKeyEvent): Promise<bo
     }
     return true;
   }
-  // The clipboard chords belong to a TERMINAL. A text field keeps its
-  // own: WebKit hands ⌘V to the page first, so claiming it here stopped
-  // macOS from ever reaching the Edit menu's Paste, and the field got
-  // nothing while the terminal got the clipboard. So does a card, file or
-  // board tab sharing the page: it holds the focus but has no terminal,
-  // and claiming ⌘C there copied nothing while cancelling the browser's
-  // copy of the text selected in it.
-  if (isTextFieldTarget(event.target) || !hasTerminal(focused)) return false;
-  const key = event.key.toLowerCase();
-  if (isMac) {
-    if (!event.metaKey || event.shiftKey || event.altKey) return false;
-    if (key !== "c" && key !== "v") return false;
-    consume();
-    await (key === "c" ? copySelection(focused) : pasteClipboard(focused));
-    return true;
-  }
-  // Windows/Linux have no Command key and no Edit menu to fall back on,
-  // so Ctrl+C has to be both the copy and the terminal's interrupt. The
-  // selection decides, as in Windows Terminal: with one, Ctrl+C copies it
-  // and clears it, so the next Ctrl+C interrupts; with none it is left to
-  // xterm and reaches the shell as ^C. Ctrl+Shift+C, the Linux terminals'
-  // copy, never interrupts and keeps the selection. macOS is untouched:
-  // ⌃C there is only ever the interrupt. AltGr arrives as Ctrl+Alt.
-  if (!event.ctrlKey || event.metaKey || event.altKey) return false;
-  if (key === "c") {
-    if (!terminalHasSelection(focused)) return false;
-    consume();
-    await copySelection(focused, { clear: !event.shiftKey });
-    return true;
-  }
-  // Ctrl+Shift+V pastes on both; plain Ctrl+V only on Windows, where
-  // Windows Terminal does the same. On Linux it stays the shell's quoted
-  // insert and vim's block select, which is why the terminals there moved
-  // paste onto Shift.
-  if (key === "v" && (event.shiftKey || currentPlatform() === "windows")) {
-    consume();
-    await pasteClipboard(focused);
-    return true;
-  }
-  return false;
+  // On terminal pages, chords over chrome still address the focused
+  // terminal. Text fields and tabs without terminals keep their native
+  // clipboard behavior.
+  return handleClipboardShortcut(event, focused, isMac);
 }
 
 export function installKeyboardShortcuts(): () => void {

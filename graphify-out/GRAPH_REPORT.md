@@ -1,58 +1,58 @@
 # Graph Report - gavin  (2026-11-02)
 
 ## Corpus Check
-- 2498 files · ~3,371,166 words
+- 2498 files · ~3,369,747 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 77 file(s) not represented in the graph (top: (none) 24, .xml 15, .toml 4)
+- Unclassified: 76 file(s) not represented in the graph (top: (none) 23, .xml 15, .toml 4)
 
 ## Summary
-- 29975 nodes · 76338 edges · 1215 communities (774 shown, 441 thin omitted)
+- 29953 nodes · 76319 edges · 1189 communities (746 shown, 443 thin omitted)
 - Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 4630 edges (avg confidence: 0.91)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2b76ad65`
+- Built from commit: `63f0bb42`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - protocol/src/lib.rs
-- messages.ts
+- BoardCard.svelte
 - layoutState.ts
 - ReviewHubView.svelte
+- vitest
+- indicators.ts
 - svelte
-- settings.ts
-- PhoneAppSettings.svelte
-- DecisionsHubView.svelte
-- serve_connection
+- decisions/decisions.ts
+- SessionManager
 - backend.ts
 - BestOfNDialog.svelte
 - CardDetailModal.svelte
-- kanbanState.ts
+- bestOfN.ts
 - daemon/src/server.rs
-- PlanExplorerHubView.svelte
+- planExplorer.ts
 - session.rs
 - cardRunActions.ts
-- Global Constraints
-- turnVerdict.ts
+- kanban.ts
+- orchestrationDrop.test.ts
 - write_message
 - GitDiff.svelte
 - Request
 - GlobalSettingsView.svelte
-- app/src/routes/+page.svelte
+- hubTabPrefs.ts
 - daemon/src/remote.rs
 - OrchestrationRail.svelte
 - gitState.ts
-- patchPlanField
+- File structure
 - AppHubView.svelte
-- planBoard.ts
-- Evidence
+- BoardPane.svelte
+- turnVerdict.ts
 - askConfirm
-- orchestration.ts
-- changeAttributionState.ts
+- slugStatus
+- PhoneTerminal.svelte
 - terminalRegistry.ts
-- .replace_plan
-- remoteAccess.ts
+- orchestration.rs
+- featureBlockedReason
 - agentsHub.ts
 - command_lane.rs
 - State
@@ -60,54 +60,54 @@
 - agent_setup.rs
 - Sidebar.svelte
 - agent_usage.rs
-- indicators.ts
-- PhoneGit.svelte
-- vitest
-- .start
-- IconButton.svelte
+- RailBindDialog.svelte
+- phoneGit.ts
+- svelteSources
+- tests/device_wire.rs
+- keyboard.ts
 - state/workstation.ts
-- Global Constraints
-- mock
+- buildRunCommand
+- cardReview.ts
 - gavin.rs
 - paired_manager
-- state/browser.ts
-- cardMenu.test.ts
+- @lucide/svelte
+- criticalReviewActions.ts
 - git/commands.rs
-- svelte
+- contextMenu.ts
 - browser_view.rs
 - Response
 - GitConflictView.svelte
-- SessionManager
+- hubViewMeta.ts
 - ToolsExplorerView.svelte
 - orchestrationTools.ts
 - transport.rs
 - commands.ts
-- compressionDriver.ts
+- Workstation
 - FilesHubView.svelte
 - gavin-relay/src/server.rs
 - agent_playwright.rs
 - init_gavin_root
-- DevicesPanel.svelte
+- devicesState.ts
 - headroom_sessions.rs
 - forwarding.rs
-- git.ts
-- attentionAnswer.ts
+- GitGraph.svelte
+- attentionInbox.ts
 - GitWorktreeSwitcher.svelte
-- cwd
+- run_git_ro
 - GitCommitDetail.svelte
 - agent_skills.rs
-- sec-hunt-windows-cmd-reparse.md
-- orchestrationLoop.test.ts
+- PlanExplorerHubView.svelte
+- nextActions
 - WorkspaceLogHubView.svelte
 - companion-core/src/pairing.rs
 - compress.rs
 - ref_companion
 - GitChanges.svelte
-- layout.ts
+- quickReplies.ts
 - Pane.svelte
 - supervisor.rs
-- daemonCompat
-- tests/playwright.rs
+- workspaceToolsActions.ts
+- path
 - gavin-relay/src/direct.rs
 - gavin-mcp/src/main.rs
 - featureBlockedReason
@@ -119,11 +119,11 @@
 - proc.rs
 - registry.rs
 - DeviceKeysPlugin.java
-- persist_workspaces
-- seam/selection.test.ts
-- agentPrimary.ts
+- bootstrap
+- touchTargets.test.ts
+- PhoneAgentPrimary.svelte
 - codeMirror.ts
-- connection/connection.ts
+- manager_with_budget
 - ops.rs
 - KanbanBoard.svelte
 - daemon/src/pairing.rs
@@ -133,16 +133,16 @@
 - fileviewer.rs
 - src/relay.rs
 - daemon/src/direct.rs
-- .get
+- RemoteLink
 - SessionsManagerModal.svelte
 - agent_tokens.rs
 - apns.rs
 - trust.rs
-- activity/activity.ts
+- ActivityCalendar.svelte
 - BundleActivity.java
-- orchestrations
-- fileCommands.ts
-- RelayHello
+- headroomReachDriver.test.ts
+- reviewBoard.ts
+- Global Constraints
 - arc
 - commitCardLink.ts
 - recovered_manager
@@ -150,8 +150,8 @@
 - SettingsHubView.svelte
 - RunChangesModal.svelte
 - tests/relay.rs
-- LogKind
-- PhoneTerminal.svelte
+- super
+- sessionOwnershipState.ts
 - usageProjection.ts
 - HomeHubView.svelte
 - app/package.json
@@ -159,20 +159,20 @@
 - client.rs
 - workspace.ts
 - sec-hardening-2026-10-15.md
-- GitNav.svelte
+- git.ts
 - common/mod.rs
-- PhoneAddWorkspace.svelte
-- PhoneAgentPrimary.svelte
+- PhoneFiles.svelte
+- agentFallbackState.ts
 - agentPauseState.ts
 - launchQueue.ts
 - memoryIndexState.ts
 - Entropy
 - BundleViewController
-- daemonCompat.ts
-- agentUsage.ts
+- PhoneTools.svelte
+- TerminalPane.svelte
 - protocol/src/kimi_trust.rs
 - daemon/src/connect.rs
-- super
+- serialize
 - memory.rs
 - workspace_delete.rs
 - human_items
@@ -185,7 +185,7 @@
 - WorkspaceDeleteWizard.svelte
 - gavin
 - status.rs
-- .connect
+- Desk
 - run_integration
 - confirm_gate.rs
 - daemon/src/scheduled.rs
@@ -198,14 +198,14 @@
 - complexity.ts
 - Id
 - DeviceKeysPlugin
-- BundleViewPlugin
+- enabled
 - settingsSearchFallback.ts
-- memoryState.ts
+- detectConflicts
 - cards.rs
 - jwt.rs
 - agent
 - headroomSetup.ts
-- pullRequest.ts
+- OrchestrationRail.svelte
 - headroom/http.rs
 - steps
 - WorkspaceFiles
@@ -217,43 +217,43 @@
 - appIconMotion.ts
 - keep_running.rs
 - browser/mod.rs
-- Findings
-- sidebarPrefs.ts
+- Findings, deduped and ranked
+- PhoneAddWorkspace.svelte
 - desk_relay.rs
 - GavinWatcher
-- LayoutState
+- working
 - window.ts
 - setupWizard.test.ts
 - ToolLibraryDialog.svelte
-- appDuty.ts
+- updatesState.ts
 - headroom/install.rs
 - unlock.rs
-- Workstation
+- memory.ts
 - gavin-mcp/src/shell_writes.rs
 - appIcon.ts
 - qr.ts
-- FollowUpQueueView.svelte
+- MainAgentPanel.svelte
 - pull_request.rs
 - single_instance.rs
-- DaemonTransport
+- GitToolbar.svelte
 - dev-sidecars.mjs
-- workspaceSettings.ts
+- SetupWizard.svelte
 - title
 - git/run.rs
 - tests.rs
 - protocol/src/companion_bundle.rs
 - detect.rs
 - companion-shell/package.json
-- criticalReviewState.ts
-- .write_bytes
-- AppConfig
+- Stream
+- Global Constraints
+- path
 - stream_writer.rs
 - memory_index.rs
 - reflog.rs
 - daemon/src/watch_canary.rs
 - String
 - AgentArmWizard.svelte
-- pathbuf
+- 04 — Dependencies, build & release (S11)
 - agent_edits.rs
 - scan_root
 - tracking.rs
@@ -270,9 +270,9 @@
 - src-tauri/src/watch_canary.rs
 - pty.rs
 - Implementation Decisions
-- probe.test.ts
+- 2026-10-08-playwright-integration-design.md
 - railEditorFit.test.ts
-- planFilter.ts
+- a_sessions_browser_launches_on_first_use_streams_frames_and_dies_with_the_session
 - protocol/src/playwright.rs
 - typesafe.rs
 - screencast.rs
@@ -289,15 +289,15 @@
 - kanbanDrag.ts
 - Headroom
 - hub/workstations.ts
-- demo/agentCommit.ts
+- scheduledState.ts
 - FileTree.svelte
-- TerminalPane.svelte
-- PhoneRails.svelte
-- project.yml
+- doneSessionReclaim.ts
+- kanbanState.ts
+- Complexity
 - session_owner.rs
 - BundleFiles
-- orchestration.rs
-- memory.ts
+- launchGate.ts
+- memoryCard.ts
 - PhoneCard.svelte
 - orchestrationScroll.ts
 - agent_models.rs
@@ -315,13 +315,13 @@
 - edge_expand.rs
 - src-tauri/src/remote.rs
 - AppDelegate
-- .scene
+- WorkstationsPlugin
 - core/core.ts
 - relaySocket.ts
 - boardFilters.ts
 - ScheduledHubView.svelte
 - autoResumeState.ts
-- Modal.svelte
+- core/clipboard.ts
 - grant_kimi_launch_trust
 - ScheduleDialog.svelte
 - headroom_probe.rs
@@ -334,29 +334,29 @@
 - Process
 - Triage
 - Foundation
-- themeContrast.test.ts
-- store
-- WorkspaceRootControl.svelte
+- memoryState.ts
+- scheduledView.ts
+- sshWorkspace.ts
 - absolutePaneMount.test.ts
-- diff_cards
+- shortcutHints.ts
 - doneSessionReclaimState.ts
 - tauri.conf.json
 - Machine
 - api.rs
 - pairing.ts
-- devDependencies
+- vite-build-target.test.mjs
 - cardCommands.ts
-- HANDLE
+- jwt.rs
 - windowDrag.ts
 - headroomState.ts
 - Agent
 - Implementation Decisions
-- types.rs
-- GitIgnoreEditor.svelte
+- resolved_mcp
+- GitNav.svelte
 - daemon_lock.rs
 - proxy.rs
 - switch.rs
-- turnVerdictDriver.ts
+- svelte
 - daemon/src/kimi_trust.rs
 - osc.rs
 - presence.rs
@@ -364,37 +364,37 @@
 - chore-stable-release-install-on-windows.md
 - feat-windows-port-on-a-windows-machine.md
 - native/deviceKeys.ts
-- Global Constraints
+- allSources
 - textScale.ts
 - BundleViewPlugin
-- ActivityCalendar.svelte
-- ConfirmPrompt.svelte
-- seam/landscape.test.ts
+- findSessionLocation
+- activityLoad.ts
+- PhoneScheduled.svelte
 - AppHandle
 - compare.rs
 - kanban.rs
 - Codebase Design
-- keepRunningState.ts
-- headroomSavings.ts
-- recipe
+- app/src/routes/+page.svelte
+- 4. The threats
+- inherited_routing
 - lineClipboard.ts
 - channel.rs
 - hashmap
 - store
 - Admission
-- ActivityRun
-- headroom/store.rs
-- fixture
-- fake_daemon
+- attach_and_relay
+- find
+- write_learned
+- Global Constraints
 - SocketTransport
 - mcp_env.rs
 - During the session
 - android.content.Context
-- Listener
+- queryTokens
 - WindowResizeEdges.svelte
-- TrustFiles
+- TokenReport
 - read_file_for_viewer_impl
-- WorktreeWatch
+- gemini_usage
 - pty_borrow.rs
 - GitToolbar.svelte
 - env
@@ -403,7 +403,7 @@
 - visit.ts
 - demo/browser.ts
 - orchestrationState.ts
-- .set_remote_access
+- attachBoardDrag
 - hashset
 - src-tauri/src/program.rs
 - binary.rs
@@ -417,61 +417,61 @@
 - store-submit.sh
 - probe.ts
 - toolParams
-- notifications.ts
+- diff_cards
 - 2. SP2 frontend
 - BuildProfile
 - KanbanStore
-- start_rail_verdict
+- TrustFiles
 - protocol/src/shell_writes.rs
 - template.sh
 - attention.ts
 - pairFlow.ts
 - workstationEndpoint.ts
-- tauriModules.test.ts
+- types.rs
 - fix-windows-installer-collides-with-the-daemon.md
 - wheelScroll.test.ts
 - taps.test.ts
-- browser/install.rs
+- OrchestrationDrawer.svelte
 - ChangesOnly
 - companion_push.rs
 - claim
 - Embedder
 - README.md
 - shellChannel.ts
-- Roadmap (not part of this plan)
-- bug-interrupted-agent-runs.md
-- Findings, deduped and ranked
-- sampleState
-- deviceCommit.test.ts
+- Modal.svelte
+- criticalReviewState.ts
+- ComplexityTable.svelte
+- sampleProjects.ts
+- owners.ts
 - scripts
-- permission.rs
+- PushBody
 - activity.rs
 - .any_relevant
 - .get_board
-- File structure
+- Companion 11: a paired Device connects (IK plus hardware signature) — Implementation Plan
 - archive/perf-main-thread-command-audit.md
-- companionSources.ts
+- Findings
 - longPress.ts
 - unlockedHub.ts
 - Resolver
 - Verified, 2026-09-23 — a real Linux host over real ssh
 - worktreeCards.ts
-- ChangesOnly
+- src-tauri/src/changes_only.rs
 - .any_relevant
 - src-tauri/src/scheduled.rs
-- path
+- worktree_setup.rs
 - Memories
-- SessionRecord
+- ProcessHandle
 - HTTP API
 - Device keys and the Unlock on real phones
 - Daemon version compatibility and OTA updates
-- fix-app-crate-windows-path-shape-failures.md
+- Global Constraints
 - release.yml
 - Ask Matt
-- StandIn
+- ReviewAgentPane.svelte
 - pairing.e2e.ts
 - decrypt.ts
-- `app/companion-shell/` — the Companion shell
+- 2026-08-06-agent-orchestration-foundations-design.md
 - build
 - push.ts
 - updater.rs
@@ -480,147 +480,141 @@
 - The Relay
 - Releasing gavin
 - Global Constraints
-- gitTracking.ts
+- .scene
 - File structure
-- FindingsRailDialog.svelte
+- PairingVerdict
 - Diagnosing Bugs
 - createLiveHub
 - compilerOptions
 - humanTests.ts
 - Workstation
 - viewport.test.ts
-- a_group_template
+- orchestrationAgentRun.test.ts
 - Setup
-- Trickle
-- decisionsState.ts
+- Call
+- companion-core-and-the-companion-shell-dial-the-direct-address-first-and-fall-back-to-the-relay-keep-the-core-free-of-i-o-and-randomness-add-the-cleartext-rule-for-the-platform-only-if-tls-is-not-used.md
 - BundleRefusal
 - .link_card_session
-- .search_cards
+- fixture
 - NotifyPlaintext
-- remote/core.ts
+- parse_rfc3339
 - Home
 - Indented
 - 04 — Dependencies, build & release (S11)
-- launchGate.ts
+- pointerDrag.test.ts
 - Developing a card into a plan
 - manifest.ts
 - inboxView.ts
-- Git Tab — History Graph (SP4) — Design Spec
-- Terminal Core — Window Polish
+- WorkspacesData
+- sec-hunt-windows-cmd-reparse.md
 - 2026-08-25-agent-default-model-design.md
 - Developing a card into a plan
-- baseline.rs
+- super
 - Developing a card into a plan
-- OrchestrationDrawer.svelte
+- toolKindIcon.ts
 - Decision
-- clock.rs
+- device_scheduled.rs
 - Developing a card into a plan
-- reviewPrefs.ts
+- orchestrationConflictBanner.test.ts
 - Developing a card into a plan
 - Developing a card into a plan
 - Developing a card into a plan
-- Working in a gavin workspace
+- Terminal Core — Milestone C: Split Panes
 - Test-Driven Development
 - Process
 - writing-for-agents/SKILL.md
 - .consume
 - compilerOptions
 - Plans — Archive Done cards into `plans/done/` — Design Spec
-- migrate_custom_profiles
+- Card Nesting Interaction Implementation Plan (2 of 3)
 - appHeader.test.ts
-- fix-daemon-suite-deadlocks-on-windows.md
+- KanbanDragPreview.svelte
 - UsageReport
 - Working in a gavin workspace
 - compilerOptions
-- connection.test.ts
+- recipe
 - Working in a gavin workspace
-- plugins.test.ts
-- scope
+- reviewTabStyles.test.ts
+- bundle.e2e.ts
 - headroom/run.rs
-- ignore.rs
+- liveHub.test.ts
 - Working in a gavin workspace
 - Working in a gavin workspace
-- Working in a gavin workspace
-- verdictAttention.test.ts
+- bodyStart
+- Gavin orchestration smoke test — fixture guide
 - Working in a gavin workspace
 - wayfinder/SKILL.md
 - Override
-- UI Design Tokens & Light/Dark — Design (sub-project 1 of 4)
+- Global Constraints
 - device-drive.sh
 - sync.mjs
 - LiveHub
-- Global Constraints
-- Session ownership: one writer per session, a lock for everyone else
+- orchestration.ts
+- Gavin Agent Orchestration — Brainstorm Session Log
 - CompanionWindow
 - src-tauri/src/companion_bundle.rs
 - CoreError
 - FakeGateway
-- ConnectCause
-- Log
+- BrowserViewPorts
+- CapturedLog
 - Local Dev Stack
-- mcpServerTrust.ts
-- notify
-- 2026-08-06-agent-orchestration-foundations-design.md
-- find
-- agentModel.ts
+- fake_headroom.rs
+- Git tab "à la Fork" — brainstorm (session log, 2026-08-20)
+- opencode
+- File structure
+- resolveAgentConfig
 - steps
 - Refusal
 - bundle.ts
 - CoreExchange
-- live.ts
-- 3. Diff viewer and staging model
+- Route
+- Git Tab — Local Changes (sub-project 1 of 3) — Design Spec
 - data-model-default-agent-setting-per-primary-fallback-chains-rust-config-session-workspace-settings-ts-types-migrations-decidelaunch-launchdecision-keying-fixture-updates.md
 - socket_path
-- Global Constraints
+- archive-closes-session-build.md
 - Restoring a terminal's screen after a restart or a hot reload
 - createHoverIntent
 - Done (2026-10-12)
 - UsageProbe
 - DirectIdentity
-- feat-auto-resume.md
-- Companion mobile: compile and run
-- fix-release-app-console-windows-on-windows.md
+- daemon/src/program.rs
+- perf-agent-model-catalog-off-main-thread.md
+- Architecture
 - Per-build daemon isolation
 - images
 - pairing.test.ts
 - schedule.ts
-- touchTargets.test.ts
+- TypeSafe round 2: whose change is this? Experiment record and question sets
 - rate.rs
-- gemini_usage
+- Result (2026-09-29)
 - PushTransport
 - unlockedHub.test.ts
-- fieldFontSize.test.ts
+- RelaySocket
 - demo/sessions.ts
 - Store policy: running a Workstation-served web bundle in the Companion
-- unlock.ts
-- Global Constraints
+- companion-08-security-doc.md
+- initialize
 - File Structure
 - Terminal Core — Milestone B: Minimal Client (Tauri + Svelte + xterm.js)
-- kimi_session_wires
+- compressedLaunchSurfaces.test.ts
 - orchestrationPrompts.ts
-- nesting_tree
-- 5. Resolution and persistence
-- Native window polish
 - sec-fix-companion-task-snapshot-cover.md
 - sec-fix-windows-pipe-server-identity.md
 - macos
 - to-spec/SKILL.md
 - app/README.md
-- Terminal Core — Design Spec
-- bundle.test.ts
-- Global Constraints
+- reviewState.ts
 - InboxList.svelte
 - Kanban card model — final form (session log, 2026-08-20)
-- Route
-- Global Constraints
+- sec-fix-linux-watchers-no-follow.md
 - Language
 - SSH workspaces
-- TokenLog
+- commandGate.test.ts
 - Network git sync, the git watcher, conflicts and tree mutations over ssh
-- PhoneMarkdown.svelte
-- endpoints.ts
+- target
+- railBindTeardown.test.ts
 - companion-24-early-store-review.md
-- phoneSettings.ts
+- agentPause.ts
 - sec-check-browser-cdp-port.md
 - sec-check-relay-per-principal-limits.md
 - sec-check-revoke-all-survives-restore.md
@@ -631,24 +625,17 @@
 - <Questionnaire title>
 - fetch.ts
 - store.ts
-- parse_rfc3339
 - workspace_log
 - AttachmentLocation
-- Gavin Agent Orchestration — Brainstorm Session Log
-- .devices
+- sec-hardening-loopback-publish-ports.md
 - ConnectionKind
 - archive-implementation.md
 - Where it landed
 - mainThreadCommands.test.ts
-- feat-windows-port.md
-- initToolListeners
+- src-tauri/src/trash.rs
 - perf-file-viewer-unbounded-reads.md
-- liveConnection
-- Self-hosting the Relay
 - Global Constraints
-- perf-watchman-off-main-thread.md
-- typesafe-turn-verdict.md
-- bug-agent-connection-failure.md
+- HeadroomReach
 - feat-linux-port.md
 - cline-free-model-usage-and-selection.md
 - sec-check-device-key-attestation.md
@@ -660,20 +647,17 @@
 - sec-fix-npx-neutral-cwd.md
 - sec-fix-ssh-link-drop-desk-pushes.md
 - sec-fix-ssh-tree-card-paths-under-root.md
-- Gavin — Product Requirements
 - with
-- Features
 - publish-preview.sh
 - Markdown Rendering Test
 - Process
 - main.swift
-- Packaging gavin
+- viewBoundary.test.ts
 - Value
 - bundle
 - a_conversations_shell_writes_fold_into_its_calls_and_each_file_once
-- autoResumeNotify.ts
-- Global Constraints
-- nofile.rs
+- indicatorSurfaces.test.ts
+- terminalRegistryHot.test.ts
 - feat-critical-review.md
 - LocalDisk
 - gavin-mcp-compat-window.md
@@ -694,7 +678,6 @@
 - sec-fix-organize-review-gate.md
 - sec-fix-relaunch-review-gate.md
 - protocol
-- Build from source
 - install-release-mac.sh
 - File Viewer — Manual Smoke Test
 - interface
@@ -712,32 +695,27 @@
 - interface
 - interface
 - TaskSnapshotCover
-- NotificationService
+- .remove
 - usb-install.sh
 - wireTiming.ts
-- cdp_call
-- keyedQueue.test.ts
-- Lease
-- fix-rail-agent-edits-its-worktree-card-copy.md
-- sec-remote-access.md
+- railCommands.ts
 - default.json
 - manager
 - Each Workstation serves the Companion UI it speaks
 - Domain Docs
-- Findings
-- CloseRequestedEvent
-- themeState.svelte.ts
+- theme.ts
 - perf-git-worktree-add-remove-off-main-thread.md
-- next
+- Stream
 - sec-relay-per-principal-limits.md
-- tests/device_wire.rs
 - done/perf-main-thread-command-audit.md
 - Card nesting & promotion — smoke fixture
 - Resuming a card someone already worked
-- ConnectDeps
+- tooltipSurfaces.test.ts
+- globalStyleScope.test.ts
 - bundle.mjs
+- hubTabStrip.test.ts
+- toolLibraryLayout.test.ts
 - State
-- navigation_guard.rs
 - Resuming a card someone already worked
 - Resuming a card someone already worked
 - PushOutcome
@@ -748,7 +726,9 @@
 - companion-21-shell-pairs.md
 - feat-review-tab.md
 - fix-open-workspace-window-windows-deadlock.md
-- perf-agent-model-catalog-off-main-thread.md
+- compose_agent_prompt
+- fix-ui-freezes-from-main-thread-gh-calls.md
+- perf-get-board-payload-and-refresh-storm.md
 - tab-naming-and-link-build.md
 - review-cline-default-and-copilot-free.md
 - Resuming a card someone already worked
@@ -768,7 +748,8 @@
 - GLOSSARY.md Format
 - interface
 - interface
-- Page
+- windowControls.test.ts
+- windowCorners.test.ts
 - Writing this repo's agent instructions file
 - Writing this workspace's PRD
 - tauri.bundle.conf.json
@@ -793,22 +774,20 @@
 - fix-daemon-tests-red-on-macos-var-symlink.md
 - fix-remote-pump-test-sets-a-timeout-on-a-closed-socket.md
 - headroom-07-gemini.md
-- SSH workspaces — a workspace whose root lives on another machine
 - review-blame-headroom-masks-auth-and-limit-failures.md
 - review-first-install-launches-headroom-twice.md
 - review-security-audit.md
 - sec-agent-surface.md
 - sec-app-surface.md
 - sec-daemon-protocol.md
-- bundle.e2e.ts
 - jobs
 - .mcp.json
 - start-dev-mac.sh
 - smoke-test.sh
 - publisherKey.ts
-- dialFirst
+- connection/connection.ts
 - liveHub.test.ts
-- McpForeignChoice
+- IntegrationResult
 - .of
 - deploy.sh
 - tls_provider
@@ -887,13 +866,7 @@
 - setup.sh
 - gavin-push-gateway
 - feat-touched-files-shell-hook.md
-- fix-the-last-twelve-vitest-failures-on-main.md
-- fix-tauri-dev-cannot-rebuild-a-sidecar-another-session-is-running.md
-- event
-- agent_skills_farewell
 - State
-- perf-plan-relocation-rereads-every-card.md
-- orchestration-branch-binding.md
 
 ## God Nodes (most connected - your core abstractions)
 1. `vitest` - 493 edges
@@ -908,16 +881,16 @@
 10. `Workspace` - 133 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `D. Resilience` --references--> `unreachable()`  [INFERRED]
-  .gavin-root/plans/companion-iphone-smoke-tests.md → app/companion-shell/src/shell/connection/connection.ts
-- `7. Protocol sketch` --references--> `qr()`  [INFERRED]
-  docs/security/05-remote-access.md → app/companion-shell/src/shell/core/core.test.ts
 - `Relay admission: the first frame` --references--> `malformed()`  [INFERRED]
   docs/superpowers/plans/2026-09-28-companion-10-pair-through-relay.md → app/companion/src/companion/channel/messages.ts
 - ``gitState.ts` + `gitStore`` --references--> `workspaceId()`  [INFERRED]
   docs/superpowers/specs/2026-08-20-git-tab-local-changes-design.md → app/companion/src/companion/demo/commands.ts
 - `2. Decisions` --references--> `workspaceId()`  [INFERRED]
   docs/superpowers/specs/2026-08-25-agent-default-model-design.md → app/companion/src/companion/demo/commands.ts
+- `Q3. Can a second CDP client follow the agent's tab with `Page.startScreencast`?` --references--> `sessionId()`  [INFERRED]
+  docs/superpowers/specs/2026-10-08-playwright-integration-design.md → app/companion/src/companion/demo/commands.ts
+- `1.2 Step` --references--> `cardPath()`  [INFERRED]
+  docs/superpowers/specs/2026-08-21-orchestration-tools-design.md → app/companion/src/companion/demo/sampleCards.ts
 
 ## Import Cycles
 - 1-file cycle: `app/src-tauri/src/session.rs -> app/src-tauri/src/session.rs`
@@ -935,279 +908,279 @@
 - 4-file cycle: `app/src/lib/cards/bestOfN.ts -> app/src/lib/orchestration/railConfirm.ts -> app/src/lib/orchestration/orchestration.ts -> app/src/lib/review/criticalReview.ts -> app/src/lib/cards/bestOfN.ts`
 - 5-file cycle: `app/src/lib/cards/cardRun.ts -> app/src/lib/git/worktreeCards.ts -> app/src/lib/orchestration/orchestration.ts -> app/src/lib/review/criticalReview.ts -> app/src/lib/review/codeReview.ts -> app/src/lib/cards/cardRun.ts`
 
-## Communities (1215 total, 441 thin omitted)
+## Communities (1189 total, 443 thin omitted)
 
 ### Community 0 - "protocol/src/lib.rs"
 Cohesion: 0.01
-Nodes (149): a_group_template(), a_missing_home_is_an_error_naming_the_variable_not_a_panic(), a_windows_data_directory_is_not_measured_against_sun_path(), ActivityRun, ActivityRunKind, Card, Tool, AgentConfig (+141 more)
+Nodes (119): a_card_session_carries_its_command_only_when_it_has_one(), a_group_template(), a_missing_home_is_an_error_naming_the_variable_not_a_panic(), a_windows_data_directory_is_not_measured_against_sun_path(), activity_run_serializes_to_the_camel_case_shape_the_frontend_expects(), ActivityRun, ActivityRunKind, Card (+111 more)
 
-### Community 1 - "messages.ts"
-Cohesion: 0.05
-Nodes (50): ChannelClient, ChannelError, coreCapabilities(), createChannelClient(), act(), capabilities(), request(), supports() (+42 more)
+### Community 1 - "BoardCard.svelte"
+Cohesion: 0.04
+Nodes (80): bar, DEVICE_ACTIONS, deviceBar(), cancelLaunch(), queuedForCard(), agentOverride, attachmentCount, binding (+72 more)
 
 ### Community 2 - "layoutState.ts"
 Cohesion: 0.01
-Nodes (300): withPauseCycleForPrimary(), requireReviewFromSelect(), agentProfiles(), signalFrontendReady(), restartConfirmLines(), AgentConfig, CardTab, CardTabView (+292 more)
+Nodes (361): What is here, and what is not, DemoSettings, drawn(), CYCLE, invokes(), appearance, dismissSaveProblem(), loadSettings() (+353 more)
 
 ### Community 3 - "ReviewHubView.svelte"
 Cohesion: 0.03
-Nodes (121): MergedProjection, done(), ReviewTestRow, attributionHint(), claimedFiles(), clusterIndexes(), criticalReviewOffer(), digest() (+113 more)
+Nodes (77): agentPane, allCards, answerTest(), archivedPaths, baseline, baselineFor(), binding, board (+69 more)
 
-### Community 4 - "svelte"
+### Community 4 - "vitest"
+Cohesion: 0.02
+Nodes (269): ChannelClient, ChannelError, coreCapabilities(), createChannelClient(), act(), capabilities(), request(), supports() (+261 more)
+
+### Community 5 - "indicators.ts"
+Cohesion: 0.05
+Nodes (60): ProjectionBand, tabDeviceBadge(), tabGitBadge(), AGENT, AGENT_STATES, allIndicators(), attentionIndicator(), AXIS_LABEL (+52 more)
+
+### Community 6 - "svelte"
 Cohesion: 0.04
-Nodes (167): The Demo Workstation, BundleMessage, CORE_MESSAGES, NOT_REACHABLE, ChannelEndpoint, loopback(), ShellChannel, ADR-0005 (+159 more)
+Nodes (58): Props, { title, intro = null, children }, DEFAULT_HEADROOM, HeadroomWorkspace, headroomWorkspaces(), headroomWorkspacesKey(), normalizeHeadroom(), ownHeadroom() (+50 more)
 
-### Community 5 - "settings.ts"
-Cohesion: 0.04
-Nodes (74): current, Props, { value, onChange }, setPrdPath(), agentFileFromPick(), applyCursorMcpApproval(), channelLuminance(), customProfileToInfo() (+66 more)
+### Community 7 - "decisions/decisions.ts"
+Cohesion: 0.06
+Nodes (59): HumanItemKind, HumanItemState, activeStatuses(), answerOutcome(), answerRefusal(), answerText(), DecisionsFilter, decisionsFiltering() (+51 more)
 
-### Community 6 - "PhoneAppSettings.svelte"
-Cohesion: 0.04
-Nodes (65): appearance, dismissSaveProblem(), loadSettings(), saveProblem, saveSetting(), setThreshold(), activeAgentProfile, activeCustom (+57 more)
-
-### Community 7 - "DecisionsHubView.svelte"
-Cohesion: 0.03
-Nodes (124): What is here, and what is not, AttentionRow, VerdictsBySession, HumanItemKind, HumanItemOutcome, HumanItemState, activeStatuses(), answerOutcome() (+116 more)
-
-### Community 8 - "serve_connection"
-Cohesion: 0.03
-Nodes (38): a_desk_that_does_not_answer_in_time_is_told_as_not_answering(), a_desk_that_goes_away_mid_ask_is_told_as_a_lost_connection(), a_device_typing_where_the_desk_just_typed_is_asked_first(), a_devices_input_into_a_session_another_device_owns_never_reaches_the_desk(), a_devices_resize_of_a_session_hosted_elsewhere_still_goes_to_the_desk(), a_newer_desk_takes_the_slot_and_the_older_one_is_shut_without_failing_it(), a_resize_does_not_hold_the_screens_map_while_it_waits_for_a_screen(), a_take_over_is_answered_by_the_daemon_as_the_device_that_asked() (+30 more)
+### Community 8 - "SessionManager"
+Cohesion: 0.02
+Nodes (64): a_card_move_reads_the_watching_workspaces_card_index(), a_card_moved_behind_the_daemons_back_re_keys_its_rail_step_on_the_next_scan(), a_card_the_daemon_archives_pushes_its_re_keyed_step_to_the_watching_app(), a_device_typing_where_the_desk_just_typed_is_asked_first(), a_failure_verdict_does_not_hold_the_sleep_marks_while_it_waits_for_the_screen(), a_group_template(), a_push_gateway_url_is_http_with_a_host_or_nothing(), a_resize_does_not_hold_the_screens_map_while_it_waits_for_a_screen() (+56 more)
 
 ### Community 9 - "backend.ts"
 Cohesion: 0.01
-Nodes (52): agentUsage(), appDuty(), cardSession(), CheckoutMarkOffer, composeAgentPrompt(), connectRemoteWorkspace(), DeviceCommitRequest, editorWrites (+44 more)
+Nodes (69): editedFiles, NO_RECORDS, shellWrites, TranscriptNarrowRequest, agentUsage(), appDuty(), cardSession(), CheckoutMarkOffer (+61 more)
 
 ### Community 10 - "BestOfNDialog.svelte"
-Cohesion: 0.03
-Nodes (64): base, candidates, error, gavinRoot, labels, plans, profiles, promptError (+56 more)
+Cohesion: 0.06
+Nodes (29): base, candidates, error, gavinRoot, labels, plans, profiles, promptError (+21 more)
 
 ### Community 11 - "CardDetailModal.svelte"
-Cohesion: 0.01
-Nodes (210): An agent's browser (playwright-companion-view), `app/companion/` — Companion web, Commands, Terminals (companion-26), The board and its cards (companion-27), Why it lives inside `app/`, addAttachment(), attachmentChipLabel() (+202 more)
+Cohesion: 0.02
+Nodes (182): handleResume(), NOTHING_TO_REPLAY, handleResume(), addAttachment(), attachmentChipLabel(), attachmentFromPick(), AttachmentLocation, attachmentName() (+174 more)
 
-### Community 12 - "kanbanState.ts"
-Cohesion: 0.05
-Nodes (55): loadRails(), failed, { onOpen, onAdd }, Props, rows, waiting, addColumnAction(), addLabelAction() (+47 more)
+### Community 12 - "bestOfN.ts"
+Cohesion: 0.07
+Nodes (47): abandonConfirm(), BestOfNRun, candidateAgentConfig(), candidateLabel(), CandidatePlan, candidateSlug(), discardBranchesLabel(), forkBase() (+39 more)
 
 ### Community 13 - "daemon/src/server.rs"
 Cohesion: 0.02
-Nodes (134): a_compressed_session_that_breaks_while_headroom_answers_keeps_its_own_reason(), a_compressed_session_that_breaks_while_headroom_does_not_answer_is_headroom_s_failure(), a_disabled_subscription_line_goes_failed_not_idle(), a_remote_identity_may_remove_itself_and_nothing_else(), a_request_timed_out_line_goes_failed_not_idle(), a_rewatched_repo_poller_checks_at_once_and_has_a_new_watch(), a_scheduled_task_outside_an_open_workspace_is_refused(), a_session_limit_line_goes_failed_not_idle() (+126 more)
+Nodes (199): a_busy_session_keeps_its_follow_up_queued_instead_of_being_typed_over(), a_claim_from_outside_a_repository_binds_with_no_baseline(), a_compressed_session_that_breaks_while_headroom_answers_keeps_its_own_reason(), a_compressed_session_that_breaks_while_headroom_does_not_answer_is_headroom_s_failure(), a_daemon_with_no_headroom_compresses_nothing_and_owes_no_reason(), a_disabled_subscription_line_goes_failed_not_idle(), a_failed_agent_is_not_handed_a_follow_up(), a_first_claim_records_the_baseline_of_the_sessions_checkout() (+191 more)
 
-### Community 14 - "PlanExplorerHubView.svelte"
-Cohesion: 0.03
-Nodes (94): GavinContext, EditorMode, allFilePaths(), buildExplorerTree(), CREATABLE_GROUPS, CreatableGroup, ExplorerContextNode, ExplorerFile (+86 more)
+### Community 14 - "planExplorer.ts"
+Cohesion: 0.05
+Nodes (53): FilteredExplorer, GavinContext, EditorMode, allFilePaths(), buildExplorerTree(), CREATABLE_GROUPS, CreatableGroup, ExplorerContextNode (+45 more)
 
 ### Community 15 - "session.rs"
 Cohesion: 0.02
-Nodes (171): a_command_the_daemon_predates_never_reaches_the_wire(), a_command_the_daemon_understands_still_reaches_the_wire(), a_custom_agent_with_no_api_family_sends_none(), a_custom_launch_names_the_api_family_its_settings_name(), a_daemon_below_the_floor_is_rejected(), a_daemon_newer_than_the_app_is_rejected(), a_daemon_that_never_answers_ends_the_probe_at_its_deadline(), a_file_tab_alongside_a_stale_session_leaves_the_file_tab_and_replaces_only_the_session() (+163 more)
+Nodes (156): DaemonLanes, a_command_the_daemon_predates_never_reaches_the_wire(), a_command_the_daemon_understands_still_reaches_the_wire(), a_custom_agent_with_no_api_family_sends_none(), a_custom_launch_names_the_api_family_its_settings_name(), a_daemon_below_the_floor_is_rejected(), a_daemon_newer_than_the_app_is_rejected(), a_file_tab_alongside_a_stale_session_leaves_the_file_tab_and_replaces_only_the_session() (+148 more)
 
 ### Community 16 - "cardRunActions.ts"
-Cohesion: 0.02
-Nodes (303): fileCard(), landed(), launch(), message(), moveCard(), renameCard(), tickItem(), bar (+295 more)
+Cohesion: 0.04
+Nodes (138): DEFAULT_NAME_TAB_FIRST, fillTemplate(), mustPromptBody(), execute(), holdOrQueue(), NewLaunchIntent, CardSessionRecord, linkCardSessionAction() (+130 more)
 
-### Community 17 - "Global Constraints"
-Cohesion: 0.09
-Nodes (23): reorderColumn(), Decisions, Execution notes (2026-08-19), Incident: drop left the board stuck in drag state (2026-08-20), Incidents, Kanban Trello-quality rework — session log (2026-08-19), Global Constraints, Kanban Trello-Quality Rework Implementation Plan (+15 more)
+### Community 17 - "kanban.ts"
+Cohesion: 0.05
+Nodes (59): addColumn(), addLabel(), Board, Column, deleteColumn(), deleteLabel(), Label, Priority (+51 more)
 
-### Community 18 - "turnVerdict.ts"
-Cohesion: 0.10
-Nodes (36): ACTIVE_NOUL_VETO, agentLastLine(), blockedStepReason(), CAUSE_MIN_CONFIDENCE, causeFrom(), choiceOf(), isChrome(), noulOf() (+28 more)
+### Community 18 - "orchestrationDrop.test.ts"
+Cohesion: 0.06
+Nodes (39): position(), OrchDragKind, OrchDropTarget, CommittedDrag, DropContext, DropIntent, dropIntent(), drag() (+31 more)
 
 ### Community 19 - "write_message"
-Cohesion: 0.04
-Nodes (153): ask(), stop_asks_over_the_wire_and_returns_once_nothing_answers(), pump_relays_both_ways_and_ends_when_the_child_closes(), a_distrusted_osc_133_emitter_goes_idle_on_silence(), a_distrusted_session_still_raises_waiting_for_input_on_a_bell(), a_focus_report_is_not_the_agent_working(), a_follow_up_for_a_fresh_session_waits_for_its_agent_then_falls_back_to_idle_delivery(), a_follow_up_queued_mid_turn_reaches_the_terminal_once_the_session_goes_idle() (+145 more)
+Cohesion: 0.05
+Nodes (125): a_distrusted_osc_133_emitter_goes_idle_on_silence(), a_distrusted_session_still_raises_waiting_for_input_on_a_bell(), a_focus_report_is_not_the_agent_working(), a_follow_up_for_a_fresh_session_waits_for_its_agent_then_falls_back_to_idle_delivery(), a_follow_up_queued_mid_turn_reaches_the_terminal_once_the_session_goes_idle(), a_hello_with_no_auth_is_local_and_a_wrong_token_does_not_elevate(), a_hello_with_the_daemon_token_becomes_app_with_a_valid_proof(), a_hovering_pointer_is_not_the_agent_working() (+117 more)
 
 ### Community 20 - "GitDiff.svelte"
 Cohesion: 0.02
-Nodes (131): editScript(), hunkOf(), keysOf(), lineDiff(), linesOf(), Text, body, expanded (+123 more)
+Nodes (108): editScript(), hunkOf(), keysOf(), lineDiff(), linesOf(), numbered(), Text, HunkRow (+100 more)
 
 ### Community 21 - "Request"
 Cohesion: 0.01
-Nodes (160): deadline_for(), name_of(), roomy(), short(), the_family_sent(), the_override_sent(), the_profile_sent(), sff() (+152 more)
+Nodes (171): deadline_for(), name_of(), roomy(), short(), sff(), gate_request(), HeadroomWorkspace, HelloAuth (+163 more)
 
 ### Community 22 - "GlobalSettingsView.svelte"
 Cohesion: 0.02
-Nodes (95): withAdmission(), withAgentEffort(), activeAgentProfile, activeCustom, admissionDraft, admissionGate, admissionLine, agentsQuerySeen (+87 more)
+Nodes (94): withAdmission(), withAgentEffort(), activeAgentProfile, activeCustom, admissionDraft, admissionGate, admissionLine, agentsQuerySeen (+86 more)
 
-### Community 23 - "app/src/routes/+page.svelte"
-Cohesion: 0.03
-Nodes (123): appHubOpen, appSettingsOpen, wizardWorkspaceId, hubLabel(), hubViewIsVisible(), SOURCES, flipSide(), HUB_NAVIGATOR_SIDE_KEY (+115 more)
+### Community 23 - "hubTabPrefs.ts"
+Cohesion: 0.06
+Nodes (57): flipSide(), HUB_NAVIGATOR_SIDE_KEY, hubNavigatorLabel(), HubNavigatorSide, hubNavigatorViewIds(), loadHubNavigatorSide(), MaybeStorage, otherHubNavigatorSide() (+49 more)
 
 ### Community 24 - "daemon/src/remote.rs"
 Cohesion: 0.03
-Nodes (85): a_dev_build_does_not_dial_a_public_relay_the_store_holds(), a_handshake_has_one_deadline_however_slowly_it_arrives(), a_handshake_that_arrives_in_time_is_read_whole(), a_line_is_said_once_until_something_else_is_said(), a_poke_ends_a_wait_and_a_wait_with_nothing_to_wait_for_returns(), a_relay_url_naming_this_machines_direct_listener_is_not_dialled(), a_rotated_key_is_a_different_rendezvous(), a_stream_is_picked_up_for_what_it_is_for() (+77 more)
+Nodes (94): a_dev_build_does_not_dial_a_public_relay_the_store_holds(), a_handshake_has_one_deadline_however_slowly_it_arrives(), a_handshake_that_arrives_in_time_is_read_whole(), a_line_is_said_once_until_something_else_is_said(), a_poke_ends_a_wait_and_a_wait_with_nothing_to_wait_for_returns(), a_relay_url_naming_this_machines_direct_listener_is_not_dialled(), a_rotated_key_is_a_different_rendezvous(), a_stream_is_picked_up_for_what_it_is_for() (+86 more)
 
 ### Community 25 - "OrchestrationRail.svelte"
-Cohesion: 0.02
-Nodes (166): PlacedCardView, nestedProgressTip(), attentionTip(), datetimeLocalToEpochSeconds(), epochSecondsToDatetimeLocal(), RAIL_TRIGGER_CHOICES, RailTrigger, RailTriggerKind (+158 more)
+Cohesion: 0.03
+Nodes (110): description, disabledReason, dropped, error, keeping, members, name, nameOf() (+102 more)
 
 ### Community 26 - "gitState.ts"
 Cohesion: 0.03
-Nodes (163): deviceLaunchRefusal(), emptyDiff, repo, snapshot, status, CommitDetail, CompareSummary, defaultCompareRefs() (+155 more)
+Nodes (146): deviceLaunchRefusal(), AGENT_COMMIT_REQUESTED, AgentCommitRequested, Answer, answerRequest(), answersRequest(), startDeviceCommitRequests(), heard (+138 more)
 
-### Community 27 - "patchPlanField"
-Cohesion: 0.04
-Nodes (60): breakOutChildren(), CompletionCascade, completionCascadeFor(), CompletionChild, CompletionDecision, completionPrompt(), CompletionSubject, GO (+52 more)
+### Community 27 - "File structure"
+Cohesion: 0.22
+Nodes (8): File structure, Global Constraints, Plans — Archive Done cards into `plans/done/` — Implementation Plan, Task 1: The daemon rule, Task 2: Path re-keying and the protocol, Task 4: UI follows the move, Task 5: Explorer grouping, Task 6: Smoke, migration, card
 
 ### Community 28 - "AppHubView.svelte"
-Cohesion: 0.02
-Nodes (132): phoneBoard(), row(), WorkspaceListInput, WorkspaceRow, workspaceRows(), version, openRunCard(), openToolsTab() (+124 more)
-
-### Community 29 - "planBoard.ts"
 Cohesion: 0.01
-Nodes (281): estimateLines(), FacetedBoard, agentAvailable, allCards, board, columnsEl, composerAvailable, composerRails (+273 more)
+Nodes (230): Landing, returnedFrom, agents, AgentsInput, board, cardAgent(), columnAt(), columnNames (+222 more)
 
-### Community 30 - "Evidence"
-Cohesion: 0.40
-Nodes (4): sessionScreen(), typesafeAsk(), Evidence, Verify
+### Community 29 - "BoardPane.svelte"
+Cohesion: 0.02
+Nodes (112): status, agentAvailable, allCards, board, columnsEl, composerAvailable, composerRails, composeSelf (+104 more)
+
+### Community 30 - "turnVerdict.ts"
+Cohesion: 0.08
+Nodes (44): today(), ACTIVE_NOUL_VETO, agentLastLine(), blockedStepReason(), CAUSE_MIN_CONFIDENCE, causeFrom(), choiceOf(), isChrome() (+36 more)
 
 ### Community 31 - "askConfirm"
 Cohesion: 0.03
-Nodes (144): activePageIdle(), closeIdle(), line, reclaimLabel, openAttachment(), deleteBoard(), gavinRootExists(), killSession() (+136 more)
+Nodes (102): activePageIdle(), closeIdle(), line, reclaimLabel, openAttachment(), gavinRootExists(), openPathExternally(), revealPathExternally() (+94 more)
 
-### Community 32 - "orchestration.ts"
-Cohesion: 0.02
-Nodes (336): announce(), beginChildren(), DESK_ORIGIN, DEVICE_ORIGIN, isDone(), launchable(), NESTED_STATES, RAIL_STATES (+328 more)
-
-### Community 33 - "changeAttributionState.ts"
+### Community 32 - "slugStatus"
 Cohesion: 0.04
-Nodes (84): AttributedRun, ATTRIBUTION_INSTRUCTIONS, ATTRIBUTION_MIN_CONFIDENCE, AttributionAnswer, AttributionOption, AttributionPlan, attributionPlan(), AttributionRequest (+76 more)
+Nodes (87): isDone(), inColumn, AgentSlotInput, CardChoice, cardsToPlace(), fileNameOf(), openingRail(), PRESS_LABEL (+79 more)
+
+### Community 33 - "PhoneTerminal.svelte"
+Cohesion: 0.06
+Nodes (52): sessionId(), badge, behind, browser, browserUp, ctrlArmed, deskInput, deskInputGate (+44 more)
 
 ### Community 34 - "terminalRegistry.ts"
-Cohesion: 0.03
-Nodes (63): getFileTabs(), readFileForViewer(), resolvePathUnderCursor(), snapshotSession(), unwatchFileForViewer(), viewableExtensions(), watchFileForViewer(), hotState() (+55 more)
-
-### Community 35 - ".replace_plan"
-Cohesion: 0.17
-Nodes (29): a_conflict_note_naming_an_unknown_step_is_refused(), a_rails_auto_resume_opt_in_round_trips(), a_rails_branch_round_trips_without_a_worktree(), a_rails_trigger_round_trips_with_and_without_a_named_rail(), a_stage_row_written_before_v15_reads_as_parallel(), a_step_that_is_both_a_card_and_a_tool_is_refused(), a_step_that_is_neither_a_card_nor_a_tool_is_refused(), a_tool_step_round_trips_with_its_overrides() (+21 more)
-
-### Community 36 - "remoteAccess.ts"
 Cohesion: 0.04
-Nodes (90): pairingSubject(), askPairing(), startPairing(), current(), { pairing, nowMs, onClose }, ADMISSION_CLEAR, ADMISSION_NOTE, admissionPlaceholder() (+82 more)
+Nodes (40): An agent's browser (playwright-companion-view), Terminals (companion-26), snapshotSession(), osc52Text(), PathCandidate, pathCandidatesIn(), texts(), activatePath() (+32 more)
+
+### Community 35 - "orchestration.rs"
+Cohesion: 0.05
+Nodes (90): a_blank_icon_is_stored_as_absent(), a_blank_working_directory_is_stored_as_absent(), a_builtin_id_cannot_be_saved_over(), a_conflict_note_naming_an_unknown_step_is_refused(), a_global_template_is_visible_from_every_workspace(), a_group_template(), a_kind_this_daemon_has_never_heard_of_is_stored(), a_nested_run_follows_its_childs_card() (+82 more)
+
+### Community 36 - "featureBlockedReason"
+Cohesion: 0.03
+Nodes (118): pairingSubject(), actionError, askPairing(), busy, gate, notifyGate, nowMs, { onClose } (+110 more)
 
 ### Community 37 - "agentsHub.ts"
 Cohesion: 0.06
-Nodes (52): ADD_TAB, ADD_TAB_HINT, addCustomProfile(), agentDefaultsWithoutCustom(), AGENTS_SECTION, AGENTS_SECTION_KEYWORDS, AgentsHubTab, AgentsHubTabDef (+44 more)
+Nodes (53): ADD_TAB, ADD_TAB_HINT, addCustomProfile(), agentDefaultsWithoutCustom(), AGENTS_SECTION, AGENTS_SECTION_KEYWORDS, AgentsHubTabDef, agentsHubTabs() (+45 more)
 
 ### Community 38 - "command_lane.rs"
 Cohesion: 0.05
-Nodes (66): a_lane_fails_fast_while_swapping_and_moves_to_the_new_connection(), a_lane_names_the_process_serving_its_connection(), a_lane_with_no_redial_drops_a_late_answer_and_stays_usable(), a_lane_with_nothing_to_dial_sends_end_orphan_on_its_own_connection(), a_link_that_owes_an_answer_refuses_new_requests_until_it_arrives(), a_redial_refuses_a_daemon_whose_proof_does_not_match(), a_redial_says_hello_with_the_daemon_token(), a_redial_to_a_different_daemon_version_sends_nothing() (+58 more)
+Nodes (62): a_lane_fails_fast_while_swapping_and_moves_to_the_new_connection(), a_lane_names_the_process_serving_its_connection(), a_lane_with_no_redial_drops_a_late_answer_and_stays_usable(), a_lane_with_nothing_to_dial_sends_end_orphan_on_its_own_connection(), a_link_that_owes_an_answer_refuses_new_requests_until_it_arrives(), a_redial_refuses_a_daemon_whose_proof_does_not_match(), a_redial_says_hello_with_the_daemon_token(), a_redial_to_a_different_daemon_version_sends_nothing() (+54 more)
 
 ### Community 39 - "State"
 Cohesion: 0.07
-Nodes (96): activity_runs(), add_external_gavin_context(), adopt_session(), announce_run_written(), archive_card(), begin_pairing(), card_runs(), card_session() (+88 more)
+Nodes (102): activity_runs(), add_external_gavin_context(), adopt_session(), announce_run_written(), archive_card(), begin_pairing(), card_runs(), card_session() (+94 more)
 
 ### Community 40 - "CardComposeModal.svelte"
-Cohesion: 0.03
-Nodes (125): CardDraft, body, BODY_HINTS, BODY_LABELS, context, contexts, file(), filing (+117 more)
+Cohesion: 0.02
+Nodes (126): FacetedBoard, handleDragCommit(), AUTO_KEY_PREFIX, cardMatches(), ColumnLens, filterBoard(), FilteredBoard, MergedBoard (+118 more)
 
 ### Community 41 - "agent_setup.rs"
-Cohesion: 0.02
-Nodes (105): a_learned_heading_outside_the_block_is_not_the_block_s_business(), a_profile_less_root_composes_for_the_app_default_agent(), a_stale_hook_script_is_rewritten(), a_step_skill_lands_under_the_opencode_skill_root(), AGENT_FILE_SKILL_MD, agent_profile_dto(), agent_profile_dto_from_custom(), agent_profiles() (+97 more)
+Cohesion: 0.03
+Nodes (93): a_learned_heading_outside_the_block_is_not_the_block_s_business(), a_profile_less_root_composes_for_the_app_default_agent(), a_stale_hook_script_is_rewritten(), a_step_skill_lands_under_the_opencode_skill_root(), AGENT_FILE_SKILL_MD, agent_profile_dto(), agent_profile_dto_from_custom(), agent_profiles() (+85 more)
 
 ### Community 42 - "Sidebar.svelte"
 Cohesion: 0.02
-Nodes (171): openContextMenuFromEvent(), movePaneOrTab(), renamePage(), reorderTabWithinPane(), reorderWorkspaceAction(), GitStatus, openMenu(), checking() (+163 more)
+Nodes (191): addWorkspace(), openAppHub(), GitStatus, UNFILED_WORKSPACE_ID, cardRecap(), closeIdle, commitPageEdit(), commitSessionEdit() (+183 more)
 
 ### Community 43 - "agent_usage.rs"
 Cohesion: 0.04
-Nodes (43): ANTHROPIC_USAGE_URL, b64url_decode(), BACKOFF_SECS, claude_token(), credentials_blob(), cursor_cookie(), cursor_cookie_is_sub_then_the_jwt(), cursor_state_vscdb() (+35 more)
+Nodes (41): ANTHROPIC_USAGE_URL, b64url_decode(), BACKOFF_SECS, credentials_blob(), cursor_cookie(), cursor_cookie_is_sub_then_the_jwt(), cursor_state_vscdb(), cursor_token() (+33 more)
 
-### Community 44 - "indicators.ts"
-Cohesion: 0.06
-Nodes (59): ProjectionBand, tabDeviceBadge(), tabGitBadge(), AGENT, AGENT_STATES, agentIndicatorByState(), allIndicators(), attentionIndicator() (+51 more)
+### Community 44 - "RailBindDialog.svelte"
+Cohesion: 0.05
+Nodes (55): datetimeLocalToEpochSeconds(), epochSecondsToDatetimeLocal(), RAIL_TRIGGER_CHOICES, RailTrigger, RailTriggerKind, railTriggerLabel(), RailTriggerVerdict, collapsed (+47 more)
 
-### Community 45 - "PhoneGit.svelte"
+### Community 45 - "phoneGit.ts"
 Cohesion: 0.04
-Nodes (82): changes(), control(), gitView(), ask(), askDeskToCommit(), askDeskToStop(), Asked, askedStore (+74 more)
+Nodes (81): AgentCommitControl, agentCommitControl(), branchLine(), BranchRow, changesCount(), ChangeSection, changeSections(), conflicted() (+73 more)
 
-### Community 46 - "vitest"
-Cohesion: 0.01
-Nodes (164): apps, records, flow(), KEPT, memoryStore(), hub(), items(), KEYS (+156 more)
+### Community 46 - "svelteSources"
+Cohesion: 0.02
+Nodes (89): SVELTE, TS, SVELTE, TS, SVELTE, TS, APP_SETTINGS, CONTROLS (+81 more)
 
-### Community 47 - ".start"
-Cohesion: 0.19
-Nodes (50): a_change_made_by_another_daemon_is_followed(), a_copied_noise_key_on_another_phone_is_refused(), a_daemon_that_was_never_told_has_remote_access_off(), a_daemon_token_presented_over_the_remote_path_is_ignored(), a_daemon_without_the_admission_token_is_not_registered(), a_desk_whose_forwarding_connection_dropped_and_came_back_is_ready_again(), a_device_half_way_through_pairing_is_let_go_when_remote_access_is_turned_off(), a_device_hands_over_its_send_permission_over_the_wire() (+42 more)
+### Community 47 - "tests/device_wire.rs"
+Cohesion: 0.10
+Nodes (82): a_change_made_by_another_daemon_is_followed(), a_change_of_the_dials_state_is_pushed_to_the_desk(), a_copied_noise_key_on_another_phone_is_refused(), a_daemon_that_was_never_told_has_remote_access_off(), a_daemon_token_presented_over_the_remote_path_is_ignored(), a_daemon_without_the_admission_token_is_not_registered(), a_desk_whose_forwarding_connection_dropped_and_came_back_is_ready_again(), a_device_half_way_through_pairing_is_let_go_when_remote_access_is_turned_off() (+74 more)
 
-### Community 48 - "IconButton.svelte"
-Cohesion: 0.03
-Nodes (129): NextWaitingJump, nextWaitingJump(), provideNextWaitingJump(), providers, ComposeTarget, requestedCompose, resolveComposeTarget(), sameTarget() (+121 more)
+### Community 48 - "keyboard.ts"
+Cohesion: 0.07
+Nodes (42): cmdHeld(), Chord, ChordEvent, digitFromCode(), formatChord(), formatShortcut(), hintDigitFor(), matchesChord() (+34 more)
 
 ### Community 49 - "state/workstation.ts"
-Cohesion: 0.03
-Nodes (113): watch(), Appearance, appearanceKey(), APPEARANCES, DEFAULT_APPEARANCE, isAppearance(), loadAppearance(), localThemePref() (+105 more)
-
-### Community 50 - "Global Constraints"
 Cohesion: 0.04
-Nodes (44): profileForSession(), createSession(), getBoard(), position(), createReviewRules(), Global Constraints, Kanban Integration Layer — Backend (Part 1) Implementation Plan, Task 1: `SessionLink` protocol type + `Card.session_link` field (+36 more)
+Nodes (102): Appearance, appearanceKey(), APPEARANCES, DEFAULT_APPEARANCE, isAppearance(), loadAppearance(), localThemePref(), saveAppearance() (+94 more)
 
-### Community 51 - "mock"
-Cohesion: 0.07
-Nodes (54): a_payload_that_would_never_substitute_is_refused_before_the_wire(), a_plan_with_no_nested_children_carries_nothing_and_a_refused_scan_says_so_too(), a_refusal_from_the_daemon_reaches_the_agent_verbatim(), a_refused_claim_never_fails_the_card_write_that_earned_it(), a_refused_labels_write_says_the_card_was_still_created(), call_start_rail(), call_with(), create_plan_resolves_relative_context_and_maps_arguments() (+46 more)
+### Community 50 - "buildRunCommand"
+Cohesion: 0.03
+Nodes (65): buildHeadlessCommand(), buildRunCommand(), buildToolCommand(), shellQuote(), createSession(), linkCardSession(), queueInput(), unlinkCardSession() (+57 more)
+
+### Community 51 - "cardReview.ts"
+Cohesion: 0.08
+Nodes (40): AttachmentStatus, attachmentReviewLine(), CardContent, cardContentDigest(), cardContentReviewed(), cardNeedsReview(), DEFAULT_REQUIRE_REVIEW, formatBytes() (+32 more)
 
 ### Community 52 - "gavin.rs"
 Cohesion: 0.03
 Nodes (88): a_folder_that_moved_away_is_relevant_because_a_known_context_lived_there(), a_missing_root_watches_only_itself_never_its_parent(), a_symlink_inside_gavin_root_does_not_spend_inotify_watches_on_its_target(), ANSWER_PREFIX, ARCHIVE_DIR, build_context(), BURST_FREE_SCANS, card_agent_and_model_parse_raw_on_every_kind() (+80 more)
 
 ### Community 53 - "paired_manager"
-Cohesion: 0.05
-Nodes (88): await_decision(), client::RelayStream, give_up(), Held, said(), a_change_to_what_is_dialled_wakes_the_dial(), a_confirm_that_lands_as_the_wait_gives_up_is_a_pairing(), a_confirm_the_store_refuses_can_be_retried_after_revoking() (+80 more)
+Cohesion: 0.06
+Nodes (79): a_change_to_what_is_dialled_wakes_the_dial(), a_confirm_that_lands_as_the_wait_gives_up_is_a_pairing(), a_confirm_the_store_refuses_can_be_retried_after_revoking(), a_confirm_the_store_refuses_decides_nothing(), a_confirmed_pairing_stores_the_hardware_key_and_mints_a_notification_key(), a_confirmed_pairing_tells_whoever_is_waiting(), a_connection_is_where_a_revocation_finds_it_before_its_row_is_read(), a_connection_that_is_no_device_has_no_permission_to_hand_over() (+71 more)
 
-### Community 54 - "state/browser.ts"
-Cohesion: 0.03
-Nodes (77): UnlistenFn, shown(), tapOpen(), attachBrowser(), BROWSER_FRAME_EVENT, browserProblems, browserShown, browserViews (+69 more)
+### Community 54 - "@lucide/svelte"
+Cohesion: 0.02
+Nodes (101): UnlistenFn, shown(), BROWSER_FRAME_EVENT, browserProblems, browserShown, browserViews, createPhoneViews(), ask() (+93 more)
 
-### Community 55 - "cardMenu.test.ts"
-Cohesion: 0.03
-Nodes (98): ReviewIntent, abandonConfirm(), BestOfNRun, Candidate, candidateAgentConfig(), candidateLabel(), CandidatePlan, candidatePromptSuffix() (+90 more)
+### Community 55 - "criticalReviewActions.ts"
+Cohesion: 0.04
+Nodes (94): Candidate, candidatesError(), seedCandidates(), REVIEW_CONFIRM_LABEL, createDaemonSession(), createFreshSession(), createPage(), createSessionForCard() (+86 more)
 
 ### Community 56 - "git/commands.rs"
-Cohesion: 0.05
-Nodes (83): abort_in_progress(), add_remote(), apply_patch(), author(), commit_detail(), delete_branch(), diff_at(), discard_files() (+75 more)
+Cohesion: 0.04
+Nodes (124): a_repo_with_a_bare_remote_answers_its_commits_files_and_pushes(), commit_at(), sha(), a_diff_past_the_cap_is_still_too_large_under_the_capped_read(), a_worktree_add_stopped_mid_checkout_leaves_nothing_behind(), a_worktree_in_gavin_worktrees_leaves_the_enclosing_checkout_clean(), a_worktrees_folder_below_the_git_root_ignores_itself_too(), add_remote() (+116 more)
 
-### Community 57 - "svelte"
-Cohesion: 0.02
-Nodes (134): Props, { title, back = null, onBack = null, tag = null, actions, status, onSettings = null }, agentLine(), allTabIds(), attentionInbox(), AttentionInboxInput, AttentionReason, AttentionState (+126 more)
+### Community 57 - "contextMenu.ts"
+Cohesion: 0.04
+Nodes (80): AttentionReason, AttentionRow, rowTip(), waitLabel(), CURRENT_DOT_COLOR, NEXT_WAITING_LABEL, NEXT_WAITING_TITLE, nextWaitingEntries() (+72 more)
 
 ### Community 58 - "browser_view.rs"
 Cohesion: 0.05
-Nodes (84): a_device_stream_closes_when_its_last_view_lets_go_and_not_before(), a_device_stream_is_not_the_desks_and_the_desks_is_not_a_devices(), a_device_stream_nobody_holds_is_read_to_the_end_and_offered_to_nobody(), a_device_streams_frames_are_offered_while_held_and_its_end_is_told(), a_devices_stream_dials_once_however_many_views_hold_it(), a_devices_watch_is_answered_in_camel_case_with_its_lease(), a_dial_let_go_of_meanwhile_hands_its_stream_back_to_be_closed(), a_failed_device_dial_takes_its_lease_with_it_and_the_next_watch_dials() (+76 more)
+Nodes (72): a_device_stream_closes_when_its_last_view_lets_go_and_not_before(), a_device_stream_is_not_the_desks_and_the_desks_is_not_a_devices(), a_device_stream_nobody_holds_is_read_to_the_end_and_offered_to_nobody(), a_device_streams_frames_are_offered_while_held_and_its_end_is_told(), a_devices_stream_dials_once_however_many_views_hold_it(), a_devices_watch_is_answered_in_camel_case_with_its_lease(), a_dial_let_go_of_meanwhile_hands_its_stream_back_to_be_closed(), a_failed_device_dial_takes_its_lease_with_it_and_the_next_watch_dials() (+64 more)
 
 ### Community 59 - "Response"
 Cohesion: 0.01
-Nodes (134): NotRunningReason, ConnectionLost, NotAnswering, NotConnected, BrowserInfo, CardRun, DeskRelayState, Failed (+126 more)
+Nodes (135): NotRunningReason, ConnectionLost, NotAnswering, NotConnected, BrowserInfo, CardRun, DeskRelayState, Failed (+127 more)
 
 ### Community 60 - "GitConflictView.svelte"
 Cohesion: 0.04
-Nodes (74): applyChoice(), Choice, ConflictBlock, Eol, hasMarkers(), joinEol(), locateRegion(), marker() (+66 more)
+Nodes (71): applyChoice(), Choice, ConflictBlock, Eol, hasMarkers(), joinEol(), locateRegion(), marker() (+63 more)
 
-### Community 61 - "SessionManager"
-Cohesion: 0.02
-Nodes (97): a_busy_session_keeps_its_follow_up_queued_instead_of_being_typed_over(), a_card_move_reads_the_watching_workspaces_card_index(), a_card_moved_behind_the_daemons_back_re_keys_its_rail_step_on_the_next_scan(), a_card_the_daemon_archives_pushes_its_re_keyed_step_to_the_watching_app(), a_claim_from_outside_a_repository_binds_with_no_baseline(), a_failed_agent_is_not_handed_a_follow_up(), a_failure_verdict_does_not_hold_the_sleep_marks_while_it_waits_for_the_screen(), a_first_claim_records_the_baseline_of_the_sessions_checkout() (+89 more)
+### Community 61 - "hubViewMeta.ts"
+Cohesion: 0.09
+Nodes (39): hubViewIsVisible(), SOURCES, buildHubTabMenuEntries(), HubTabMenuContext, HubTabMenuHooks, labelFor(), items(), labels() (+31 more)
 
 ### Community 62 - "ToolsExplorerView.svelte"
 Cohesion: 0.04
-Nodes (86): DEFAULT_BEST_OF_N_SUFFIX, DEFAULT_CLEAN_STALE, DEFAULT_CODE_REVIEW, DEFAULT_CRITICAL_REVIEW_SUFFIX, DEFAULT_DEVELOP, DEFAULT_ORGANIZE, DEFAULT_REORGANIZE, DEFAULT_RESUME_PLAN (+78 more)
+Nodes (90): DEFAULT_BEST_OF_N_SUFFIX, DEFAULT_CLEAN_STALE, DEFAULT_CODE_REVIEW, DEFAULT_CRITICAL_REVIEW_SUFFIX, DEFAULT_DEVELOP, DEFAULT_ORGANIZE, DEFAULT_REORGANIZE, DEFAULT_RESUME_PLAN (+82 more)
 
 ### Community 63 - "orchestrationTools.ts"
 Cohesion: 0.06
-Nodes (50): byId(), SOURCES, bodyForKind(), BUILTIN_TOOLS, CRITIQUE_BODY, GAVIN_ACTIONS, GavinAction, isBuiltinId() (+42 more)
+Nodes (49): bodyForKind(), CRITIQUE_BODY, describeOverrides(), duplicateTool(), GAVIN_ACTIONS, GavinAction, gavinActionOf(), isBuiltinId() (+41 more)
 
 ### Community 64 - "transport.rs"
-Cohesion: 0.04
-Nodes (10): a_pipe_name_is_in_the_pipe_namespace_and_readable(), a_pipe_name_is_the_same_for_two_spellings_of_one_path(), an_endless_path_still_yields_a_short_name(), CONNECT_BUDGET, CONNECT_GAP_GRACE, Inner, PIPE_BUFFER_BYTES, pipe_name_for_path() (+2 more)
+Cohesion: 0.03
+Nodes (31): wait_until_gone(), a_client_that_hangs_up_before_accept_is_still_accepted(), a_connection_names_the_process_serving_the_endpoint(), a_listener_answers_a_connect_and_the_accepted_side_has_no_peer_path(), a_pipe_name_is_in_the_pipe_namespace_and_readable(), a_pipe_name_is_the_same_for_two_spellings_of_one_path(), an_endless_path_still_yields_a_short_name(), bind_at_on_a_name_that_already_exists_fails() (+23 more)
 
 ### Community 65 - "commands.ts"
-Cohesion: 0.05
-Nodes (60): ACTIVITY_COMMANDS, busyness(), daysIn(), drawnGit(), drawnRuns(), generator(), number(), OUTCOMES (+52 more)
+Cohesion: 0.04
+Nodes (82): ACTIVITY_COMMANDS, busyness(), daysIn(), drawnGit(), drawnRuns(), generator(), number(), OUTCOMES (+74 more)
 
-### Community 66 - "compressionDriver.ts"
+### Community 66 - "Workstation"
 Cohesion: 0.10
-Nodes (32): DEFAULT_HEADROOM, HeadroomWorkspace, headroomWorkspaces(), headroomWorkspacesKey(), normalizeHeadroom(), ownHeadroom(), resolveHeadroom(), SwitchedWorkspace (+24 more)
+Nodes (15): a_connection_over_the_direct_listeners_cap_is_closed_on(), a_device_pairs_and_connects_directly_with_no_relay(), a_device_pairs_and_connects_through_the_relay_the_desk_runs(), a_peer_that_never_says_hello_is_let_go(), eventually_state(), gavin_relay_binary(), nothing_listens_unless_remote_access_and_direct_connection_are_both_on(), refreshing_the_desks_token_keeps_a_connected_device_and_hands_it_the_new_one() (+7 more)
 
 ### Community 67 - "FilesHubView.svelte"
-Cohesion: 0.04
-Nodes (121): listing(), browse(), FilesPlace, read(), reread(), above, atOrUnder(), Crumb (+113 more)
+Cohesion: 0.05
+Nodes (94): listing(), browse(), retargetFileTabs(), anchorSessionId, composer, copyPath(), createEntry(), dragging (+86 more)
 
 ### Community 68 - "gavin-relay/src/server.rs"
 Cohesion: 0.06
@@ -1221,9 +1194,9 @@ Nodes (54): a_browser_already_installed_is_not_downloaded_again(), a_custom_prof
 Cohesion: 0.07
 Nodes (67): a_deleted_card_is_not_recovered_onto_some_other_file(), a_huge_labels_value_is_clamped_and_the_tree_fits_under_max_line_bytes(), a_name_collision_leaves_the_file_in_place_and_still_writes_status(), a_nested_child_stays_with_its_archived_parent_on_its_own_writes(), a_nested_gavin_context_archives_the_same_way_the_root_does(), a_plan_move_reads_every_card_changed_or_created_since_the_scan(), a_plan_move_takes_every_card_the_index_vouches_for_on_its_word(), a_prd_path_outside_the_root_is_refused_by_the_writer_and_ignored_by_the_reader() (+59 more)
 
-### Community 71 - "DevicesPanel.svelte"
-Cohesion: 0.04
-Nodes (79): presenceLine(), Presences, typingBySession(), typingChangesAt(), typingNow(), actionError, admitted(), busy (+71 more)
+### Community 71 - "devicesState.ts"
+Cohesion: 0.05
+Nodes (72): deviceNameBySession(), placeDeviceSession(), presenceLine(), PresenceNaming, Presences, presencesFromList(), sessionsToPlace(), startedWhere() (+64 more)
 
 ### Community 72 - "headroom_sessions.rs"
 Cohesion: 0.07
@@ -1233,109 +1206,109 @@ Nodes (78): kill(), serving(), unavailable_here(), wait_for(), a_daemon_asked_to
 Cohesion: 0.05
 Nodes (49): a_connection_that_ends_is_dialled_again_and_served(), a_forwarded_call_has_an_origin_no_desk_window_has(), a_forwarded_call_reaches_the_same_handler_as_webview_invoke(), an_ask_that_lands_between_an_offer_and_its_ok_is_answered_and_the_connection_lives(), an_emitted_event_reaches_the_forwarding_connection(), an_orchestration_write_reaches_the_desk_only_when_a_device_made_it(), announce_orchestration_written(), attention_items() (+41 more)
 
-### Community 74 - "git.ts"
-Cohesion: 0.04
-Nodes (63): ApplyMode, branchLabel(), branchResolvable(), changedCount(), CommitInfo, ConflictKind, defaultWorktreePath(), InProgressKind (+55 more)
+### Community 74 - "GitGraph.svelte"
+Cohesion: 0.03
+Nodes (71): CommitInfo, LogPage, matchesFilter(), RefLabel, ResetMode, branch, branchFrom, commits (+63 more)
 
-### Community 75 - "attentionAnswer.ts"
-Cohesion: 0.11
-Nodes (26): verdictsOf(), ATTENTION_API_VERSION, AttentionAnswer, AttentionAnswerInput, AttentionKind, AttentionTarget, buildAttentionAnswer(), fromInboxRow() (+18 more)
+### Community 75 - "attentionInbox.ts"
+Cohesion: 0.03
+Nodes (73): groupedEntries(), notesOrchestration(), orchestrations(), agentLine(), allTabIds(), attentionInbox(), AttentionInboxInput, AttentionState (+65 more)
 
 ### Community 76 - "GitWorktreeSwitcher.svelte"
-Cohesion: 0.04
-Nodes (71): gitStatus(), ConfirmCheck, compareRefOptions(), splitPath(), mergeBack(), pruneWorktrees(), removeWorktree(), sweepFacts() (+63 more)
+Cohesion: 0.03
+Nodes (105): gitStatus(), ConfirmCheck, validateBranchName(), anchor, branch, branchError, checkedOut, currentHead (+97 more)
 
-### Community 77 - "cwd"
-Cohesion: 0.07
-Nodes (81): a_repo_with_a_bare_remote_answers_its_commits_files_and_pushes(), commit_at(), sha(), a_diff_past_the_cap_is_still_too_large_under_the_capped_read(), a_worktree_add_stopped_mid_checkout_leaves_nothing_behind(), a_worktree_in_gavin_worktrees_leaves_the_enclosing_checkout_clean(), a_worktrees_folder_below_the_git_root_ignores_itself_too(), an_existing_worktrees_gitignore_is_left_as_the_human_wrote_it() (+73 more)
+### Community 77 - "run_git_ro"
+Cohesion: 0.10
+Nodes (39): git_log(), log(), remote_names(), run_git_ro(), a_baseline_missing_from_this_checkout_is_an_answer(), a_baseline_older_than_this_one_is_not_a_bound(), a_baseline_on_a_divergent_branch_is_not_a_bound(), a_cwd_outside_any_repository_says_so() (+31 more)
 
 ### Community 78 - "GitCommitDetail.svelte"
-Cohesion: 0.03
-Nodes (81): setGitViewPrefs(), GitViewPrefs, evenOut(), fitBox(), startBoxResize(), startResize(), DEFAULT_SHARE, MIN_LIST_PX (+73 more)
+Cohesion: 0.04
+Nodes (58): changes(), gitView(), setGitViewPrefs(), GitViewPrefs, evenOut(), fitBox(), startBoxResize(), allCards (+50 more)
 
 ### Community 79 - "agent_skills.rs"
-Cohesion: 0.06
-Nodes (52): a_custom_agent_is_unavailable_with_its_reason_until_vouched_for(), a_custom_profile_has_nothing_to_install(), a_missing_binary_names_itself(), a_positive_check_is_verified_even_without_the_human_saying_so(), a_verified_check_outranks_the_humans_word(), ADD_MARKETPLACE, agent_skills_install(), agent_skills_status() (+44 more)
+Cohesion: 0.05
+Nodes (57): a_custom_agent_is_unavailable_with_its_reason_until_vouched_for(), a_custom_profile_has_nothing_to_install(), a_missing_binary_names_itself(), a_positive_check_is_verified_even_without_the_human_saying_so(), a_verified_check_outranks_the_humans_word(), ADD_MARKETPLACE, agent_skills_farewell(), agent_skills_install() (+49 more)
 
-### Community 80 - "sec-hunt-windows-cmd-reparse.md"
-Cohesion: 0.17
-Nodes (11): 1. MSYS → CreateProcess quoting, and whether a POSIX-quoted arg can escape, 2026-10-19 — source half, 2. Do any shipped profiles hit the bare `.cmd` fallback on a stock Windows install?, Comments, Disposition, Done when, Method, Open questions (+3 more)
+### Community 80 - "PlanExplorerHubView.svelte"
+Cohesion: 0.04
+Nodes (77): emptyFacets(), facets(), emptyWorkspace(), facetsFor(), HUB_FACET_TABS, hubFacetState, HubFacetTab, isTabLinked() (+69 more)
 
-### Community 81 - "orchestrationLoop.test.ts"
-Cohesion: 0.11
-Nodes (35): path(), checkTail(), DEFAULT_UNTIL_MAX, exhaustedReason(), flatSteps(), isLoopingStep(), isPrStep(), isUntilStep() (+27 more)
+### Community 81 - "nextActions"
+Cohesion: 0.04
+Nodes (68): gitCheckout(), liveSessionIds(), agentTurnEnded(), branchSwitchFor(), launchBlocker(), nextActions(), checkTail(), DEFAULT_UNTIL_MAX (+60 more)
 
 ### Community 82 - "WorkspaceLogHubView.svelte"
 Cohesion: 0.05
 Nodes (77): cardName(), CardTarget, cardTarget(), categoriesForQuery(), CATEGORY_LABEL, categoryOf(), categorySummary(), clearConfirm() (+69 more)
 
 ### Community 83 - "companion-core/src/pairing.rs"
-Cohesion: 0.08
-Nodes (56): frame(), unframe(), a_client_does_not_print_its_handshake(), a_frame_that_is_not_the_acknowledgement_shows_no_code(), a_hardware_key_that_is_not_a_point_is_refused(), a_long_name_is_cut_to_what_the_desk_shows(), a_proof_is_made_once_and_only_when_asked_for(), a_qr_with_only_a_direct_listener_is_paired_there() (+48 more)
+Cohesion: 0.09
+Nodes (55): frame(), unframe(), a_client_does_not_print_its_handshake(), a_frame_that_is_not_the_acknowledgement_shows_no_code(), a_hardware_key_that_is_not_a_point_is_refused(), a_long_name_is_cut_to_what_the_desk_shows(), a_proof_is_made_once_and_only_when_asked_for(), a_qr_with_only_a_direct_listener_is_paired_there() (+47 more)
 
 ### Community 84 - "compress.rs"
 Cohesion: 0.04
-Nodes (34): a_refreshed_target_keeps_its_token(), a_stale_or_wiped_target_gets_the_freshest_credential(), CLAUDE_BASE_URL, CLAUDE_HEADERS, CLAUDE_TOOL_SEARCH, CODEX_BASE_URL_KEY, CODEX_FLAG, freshest_kimi_credential() (+26 more)
+Nodes (37): a_refreshed_target_keeps_its_token(), a_stale_or_wiped_target_gets_the_freshest_credential(), CLAUDE_BASE_URL, CLAUDE_HEADERS, CLAUDE_TOOL_SEARCH, CODEX_BASE_URL_KEY, CODEX_FLAG, freshest_kimi_credential() (+29 more)
 
 ### Community 85 - "ref_companion"
 Cohesion: 0.03
-Nodes (36): { children }, DEMO_IDENTITY, paired, opening, openingDetail, preview, Props, removing (+28 more)
+Nodes (37): { children }, DEMO_IDENTITY, paired, opening, openingDetail, preview, Props, removing (+29 more)
 
 ### Community 86 - "GitChanges.svelte"
 Cohesion: 0.05
-Nodes (57): ChangeSection, bulk(), locked, Props, sections, toggle(), view, { workspaceId } (+49 more)
+Nodes (53): workspaceId(), bulk(), locked, Props, sections, toggle(), view, { workspaceId } (+45 more)
 
-### Community 87 - "layout.ts"
-Cohesion: 0.05
-Nodes (85): movePage(), reorderWorkspace(), TabRowDrop, activeSessionId(), addTab(), bulkCloseTargets(), clampReorderIndex(), closeTab() (+77 more)
+### Community 87 - "quickReplies.ts"
+Cohesion: 0.09
+Nodes (38): arrowMenu(), blankish(), CANNED, isAsking(), isBorder(), isFurniture(), NOT_ASKING, numberedMenu() (+30 more)
 
 ### Community 88 - "Pane.svelte"
-Cohesion: 0.04
-Nodes (92): cardAgent(), DESK_PLACES_WITHIN_MS, deskPlacing(), detailOf(), phoneSessionLabel(), row(), SessionGroup, sessionGroups() (+84 more)
+Cohesion: 0.03
+Nodes (137): DESK_PLACES_WITHIN_MS, deskPlacing(), detailOf(), phoneSessionLabel(), row(), SessionGroup, sessionGroups(), SessionListInput (+129 more)
 
 ### Community 89 - "supervisor.rs"
 Cohesion: 0.05
 Nodes (41): a_headroom_is_re_adopted_only_when_every_recorded_fact_still_holds(), a_living_process_that_does_not_answer_as_recorded_is_not_adopted(), a_port_in_use_is_not_free_and_a_released_one_is(), a_recorded_process_that_is_gone_is_replaced_by_a_fresh_one(), ADOPT_PATIENCE, backoff(), free_port(), health() (+33 more)
 
-### Community 90 - "daemonCompat"
+### Community 90 - "workspaceToolsActions.ts"
 Cohesion: 0.07
-Nodes (49): DEVICE_TOOL_HOST, filed, fileVerdict(), fileVerdicts(), loadTools(), message(), runTool(), toolSessionEnded() (+41 more)
+Nodes (52): groups(), row(), DEVICE_TOOL_HOST, filed, fileVerdict(), fileVerdicts(), loadTools(), message() (+44 more)
 
-### Community 91 - "tests/playwright.rs"
-Cohesion: 0.13
-Nodes (8): a_sessions_browser_launches_on_first_use_streams_frames_and_dies_with_the_session(), alive(), an_ssh_hosts_daemon_checks_and_installs_playwright_on_its_own_machine(), Bridge, Cdp, Daemon, installed_browsers(), over_an_ssh_bridge_the_browser_runs_on_the_host_and_its_frames_cross_the_link()
+### Community 91 - "path"
+Cohesion: 0.04
+Nodes (57): embed_companion_bundle(), main(), a_child_that_binds_nothing(), ask_daemon_to_stop(), connect_or_spawn(), connect_or_spawn_returns_immediately_if_already_listening(), connect_or_spawn_spawns_and_retries_until_listening(), connect_or_spawn_times_out_if_nothing_ever_listens() (+49 more)
 
 ### Community 92 - "gavin-relay/src/direct.rs"
-Cohesion: 0.06
-Nodes (28): a_certificate_other_than_the_pinned_one_is_not_trusted(), a_device_that_pinned_the_certificate_is_answered_and_gets_a_pipe(), a_first_frame_that_is_not_a_hello_is_refused_as_malformed(), a_peer_that_says_nothing_runs_out_of_time(), a_peer_that_trickles_runs_out_of_time_all_the_same(), a_pin_on_a_plain_address_is_refused_rather_than_ignored(), a_silent_peer_is_bounded_by_the_first_byte_deadline(), answer() (+20 more)
+Cohesion: 0.05
+Nodes (34): a_certificate_other_than_the_pinned_one_is_not_trusted(), a_device_that_pinned_the_certificate_is_answered_and_gets_a_pipe(), a_first_frame_that_is_not_a_hello_is_refused_as_malformed(), a_peer_that_says_nothing_runs_out_of_time(), a_peer_that_trickles_runs_out_of_time_all_the_same(), a_pin_on_a_plain_address_is_refused_rather_than_ignored(), a_silent_peer_is_bounded_by_the_first_byte_deadline(), answer() (+26 more)
 
 ### Community 93 - "gavin-mcp/src/main.rs"
-Cohesion: 0.04
-Nodes (52): a_blank_agent_conversation_id_is_sent_as_absent(), a_connect_rides_out_a_daemon_that_binds_late(), a_failed_announce_is_swallowed(), a_malicious_agent_conversation_id_is_refused_without_calling_the_daemon(), a_replay_blob_survives_an_env_var_round_trip(), a_session_name_is_one_short_line(), a_status_write_and_a_new_card_are_the_two_claimable_writes(), a_windows_sock_path_error_names_the_pipe_it_maps_to() (+44 more)
+Cohesion: 0.02
+Nodes (180): a_blank_agent_conversation_id_is_sent_as_absent(), a_connect_rides_out_a_daemon_that_binds_late(), a_connection_a_restarted_daemon_closed_is_replaced_without_failing_the_call(), a_daemon_below_the_floor_is_refused_at_connect(), a_daemon_below_the_floor_is_refused_without_a_handover(), a_daemon_newer_than_this_gavin_mcp_asks_for_a_handover(), a_daemon_newer_than_this_gavin_mcp_is_refused_naming_both_versions(), a_failed_announce_is_swallowed() (+172 more)
 
 ### Community 94 - "featureBlockedReason"
 Cohesion: 0.04
-Nodes (41): defaultName(), keepPairing(), MAX_WORKSTATION_NAME, PairedStore, PairedWorkstation, readRecord(), workstationId(), featureBlockedReason() (+33 more)
+Nodes (41): defaultName(), keepPairing(), MAX_WORKSTATION_NAME, PairedStore, readRecord(), workstationId(), featureBlockedReason(), devicesAskable() (+33 more)
 
 ### Community 95 - "custom"
-Cohesion: 0.03
-Nodes (76): banner(), custom(), status(), unavailable(), 1. Scope, 2. Decisions, 4.1 The table, 4.2 Resolution order (+68 more)
+Cohesion: 0.04
+Nodes (53): banner(), custom(), status(), 1. Scope, 2. Decisions, 3.1 The two files, 3.2 Reads ride the existing watcher, 3.3 Writes get one new request (+45 more)
 
 ### Community 96 - "OrchestrationHubView.svelte"
 Cohesion: 0.02
-Nodes (126): AgentPresses, agentPresses(), estimateFor(), OrchestrationAgentRecord, description, disabledReason, dropped, error (+118 more)
+Nodes (104): AgentPresses, agentPresses(), OrchestrationAgentRecord, finishedRailDoneCards(), firstColumnOf(), busyTip(), launchBlocker(), OrchestrationAgentAction (+96 more)
 
 ### Community 97 - "src-tauri/src/config.rs"
-Cohesion: 0.07
-Nodes (62): absent_orchestration_agent_is_not_serialized(), absent_theme_loads_as_none(), agent_defaults_fallback_roundtrips(), agent_efforts_roundtrip_and_default_to_absent(), board_tabs_roundtrip_alongside_workspaces(), card_tabs_roundtrip_and_default_empty_for_a_config_that_predates_them(), CLINE, config_path() (+54 more)
+Cohesion: 0.04
+Nodes (106): absent_orchestration_agent_is_not_serialized(), absent_theme_loads_as_none(), agent_defaults_fallback_roundtrips(), agent_efforts_roundtrip_and_default_to_absent(), AgentCommitRecord, AgentDefaultsConfig, AgentPauseConfig, AgentSkillsMark (+98 more)
 
 ### Community 98 - "test_device.rs"
 Cohesion: 0.06
 Nodes (29): Connection, entropy(), Inbound, Meddling, Outbound, Pairing, Proof, Payload (+21 more)
 
 ### Community 99 - "companion-core/src/connect.rs"
-Cohesion: 0.07
-Nodes (54): a_client_does_not_print_its_channel(), a_direct_address_with_nothing_to_trust_it_by_is_left_out(), a_frame_altered_on_the_way_is_an_error_not_a_message(), a_frame_delivered_twice_is_an_error_not_a_second_message(), a_message_arrives_whole_and_without_its_newline(), a_message_cut_across_frames_arrives_whole(), a_message_is_sent_as_one_line_in_padded_frames(), a_message_that_is_not_one_line_is_not_sent() (+46 more)
+Cohesion: 0.08
+Nodes (47): a_client_does_not_print_its_channel(), a_direct_address_with_nothing_to_trust_it_by_is_left_out(), a_frame_altered_on_the_way_is_an_error_not_a_message(), a_frame_delivered_twice_is_an_error_not_a_second_message(), a_message_arrives_whole_and_without_its_newline(), a_message_cut_across_frames_arrives_whole(), a_message_is_sent_as_one_line_in_padded_frames(), a_message_that_is_not_one_line_is_not_sent() (+39 more)
 
 ### Community 100 - "proc.rs"
 Cohesion: 0.05
@@ -1345,105 +1318,101 @@ Nodes (46): a_comm_full_of_parens_and_spaces_does_not_shift_the_fields(), a_dead
 Cohesion: 0.08
 Nodes (46): a_database_written_before_scope_cwd_gains_the_column_backfilled_from_cwd(), a_database_written_before_v21_gains_the_columns_without_losing_its_rows(), a_database_written_before_v26_gains_the_queue_table(), a_database_written_before_v35_gains_the_token_hash_column(), a_database_written_before_v47_gains_the_compression_columns(), a_fresh_record_is_neither_interrupted_nor_from_an_earlier_generation(), a_half_written_handle_reads_as_unknown_rather_than_as_a_pid(), a_pre_v20_database_migrates_with_its_rows_reading_as_inherited() (+38 more)
 
-### Community 103 - "persist_workspaces"
+### Community 103 - "bootstrap"
 Cohesion: 0.16
-Nodes (65): BoardTabRecord, CardTabRecord, GitTrackingDefault, HeadroomDefault, a_headroom_default_nobody_chose_is_absent_from_the_file_and_reads_as_unset(), agent_skills_marks_serialize_as_lowercase_names(), AgentDefaults, AgentModels (+57 more)
+Nodes (67): BoardTabRecord, CardTabRecord, GitTrackingDefault, HeadroomDefault, RequireReviewDefault, a_headroom_default_nobody_chose_is_absent_from_the_file_and_reads_as_unset(), agent_skills_marks_serialize_as_lowercase_names(), AgentDefaults (+59 more)
 
-### Community 104 - "seam/selection.test.ts"
-Cohesion: 0.16
-Nodes (22): DESK_ROUTES, DRAWN, OWN, PRESSED, READ, { root, read, press }, componentRules(), attributesAt() (+14 more)
+### Community 104 - "touchTargets.test.ts"
+Cohesion: 0.04
+Nodes (73): ADR-0006, covers(), floorRule, inputTypesLeftOut(), SHIPPED, UNTYPED_INPUTS, DRAWN, frame (+65 more)
 
-### Community 105 - "agentPrimary.ts"
-Cohesion: 0.13
-Nodes (27): setList(), PauseCycle, pauseCycleForPrimary(), has(), ownListSeed(), primaryReportsUsage(), PrimaryView, primaryView() (+19 more)
+### Community 105 - "PhoneAgentPrimary.svelte"
+Cohesion: 0.05
+Nodes (61): cycle, cycleError, defaults, editCycle(), editorKey, Props, { scope, primaryId, label, profiles, workspaceId = "" }, setComplexity() (+53 more)
 
 ### Community 106 - "codeMirror.ts"
 Cohesion: 0.04
-Nodes (28): @codemirror/state@^6.7.1, completionThemeStyles(), createEditor(), CreateEditorOptions, EditorHandle, LANGUAGE_BY_EXTENSION, languageIdForPath(), { doc, path, readOnly, onChange, onSave } (+20 more)
+Nodes (33): @codemirror/state@^6.7.1, @codemirror/view@^6.43.9, completionThemeStyles(), createEditor(), CreateEditorOptions, EditorHandle, LANGUAGE_BY_EXTENSION, languageExtension() (+25 more)
 
-### Community 107 - "connection/connection.ts"
-Cohesion: 0.15
-Nodes (16): CONNECTION_TIMEOUTS, ConnectionKeys, ConnectionTimeouts, ConnectOutcome, ConnectTarget, ADR-0001, ADR-0004, ADR-0009 (+8 more)
+### Community 107 - "manager_with_budget"
+Cohesion: 0.08
+Nodes (24): a_desk_that_does_not_answer_in_time_is_told_as_not_answering(), a_desk_that_goes_away_mid_ask_is_told_as_a_lost_connection(), a_devices_input_into_a_session_another_device_owns_never_reaches_the_desk(), a_devices_resize_borrows_the_pty_and_closing_gives_the_desk_its_size_back(), a_devices_resize_of_a_session_hosted_elsewhere_still_goes_to_the_desk(), a_newer_desk_takes_the_slot_and_the_older_one_is_shut_without_failing_it(), a_take_over_is_answered_by_the_daemon_as_the_device_that_asked(), asked() (+16 more)
 
 ### Community 108 - "ops.rs"
-Cohesion: 0.15
-Nodes (22): a_running_op_is_cancellable_by_its_id_until_it_ends(), an_op_ending_leaves_a_newer_op_under_the_same_id_registered(), cancel(), current_branch(), emit_progress(), fetch_blocking(), fetch_pull_push_round_trip_against_a_bare_remote(), git_cancel_op() (+14 more)
+Cohesion: 0.11
+Nodes (36): git_abort_in_progress(), git_checkout(), git_checkout_commit(), git_cherry_pick(), git_commit(), git_continue_in_progress(), git_continue_rebase(), git_create_branch() (+28 more)
 
 ### Community 109 - "KanbanBoard.svelte"
-Cohesion: 0.03
-Nodes (79): ColumnComposerCommit, ColumnComposerKey, columnComposerKey(), commitColumnDraft(), addingColumn, agentAvailable, allCards, archive (+71 more)
+Cohesion: 0.02
+Nodes (137): estimateFor(), pendingDeleteLines, hiddenAcross(), project(), boardSelection, clearBoardSelection(), runnableSelection(), selectedCards() (+129 more)
 
 ### Community 110 - "daemon/src/pairing.rs"
 Cohesion: 0.07
-Nodes (44): a_completed_handshake_writes_nothing_to_the_store(), a_correct_secret_reaches_a_matching_six_digit_code(), a_pairing_registers_the_hardware_key_the_device_proved(), a_pairing_without_a_proof_fails(), a_proof_signed_by_another_key_fails_the_pairing(), a_proof_that_is_not_a_padded_frame_fails_the_pairing(), a_proof_that_registers_no_key_fails_the_pairing(), a_re_pairing_phone_is_offered_under_the_id_it_already_has() (+36 more)
+Nodes (45): a_completed_handshake_writes_nothing_to_the_store(), a_correct_secret_reaches_a_matching_six_digit_code(), a_pairing_registers_the_hardware_key_the_device_proved(), a_pairing_without_a_proof_fails(), a_proof_signed_by_another_key_fails_the_pairing(), a_proof_that_is_not_a_padded_frame_fails_the_pairing(), a_proof_that_registers_no_key_fails_the_pairing(), a_re_pairing_phone_is_offered_under_the_id_it_already_has() (+37 more)
 
 ### Community 111 - "ref_shell"
-Cohesion: 0.04
-Nodes (23): TrustSources, TrustVerdict, ADR-0005, qr(), start, wasm, combinedInbox(), InboxRow (+15 more)
+Cohesion: 0.03
+Nodes (27): TrustSources, TrustVerdict, ADR-0005, apps, records, combinedInbox(), InboxRow, row() (+19 more)
 
 ### Community 112 - "DeviceKeysPlugin"
 Cohesion: 0.08
 Nodes (12): Away, brief, told, Backing, secureEnclave, softwareDebug, DeviceKeysPlugin, .checkRequested (+4 more)
 
 ### Community 113 - "FileEditor.svelte"
-Cohesion: 0.05
-Nodes (55): canEdit(), classifyExternalRead(), defaultMode(), dirtyPaths, ExternalChangeVerdict, ExternalReadVerdict, modesFor(), resolveExternalChange() (+47 more)
+Cohesion: 0.04
+Nodes (65): followMarkdownLink(), canEdit(), classifyExternalRead(), defaultMode(), dirtyPaths, ExternalChangeVerdict, ExternalReadVerdict, modesFor() (+57 more)
 
 ### Community 114 - "fileviewer.rs"
 Cohesion: 0.06
 Nodes (59): attachment_status(), attachment_status_classifies_an_extra_context_and_refuses_a_sensitive_home_dir(), attachment_status_classifies_by_where_a_symlink_inside_the_root_actually_leads(), attachment_status_from_stat(), attachment_status_impl(), attachment_status_resolves_against_the_root_and_classifies_by_location(), AttachmentStatus, canonical_root() (+51 more)
 
 ### Community 115 - "src/relay.rs"
-Cohesion: 0.05
-Nodes (42): a_plain_url_to_loopback_or_a_private_address_is_accepted(), a_secure_url_is_accepted_for_any_host(), address_is_local(), admission_matches(), certificate_pin(), DIRECT_PORT_DEV, DIRECT_PORT_RELEASE, every_case_in_the_shared_table_is_judged_as_the_table_says() (+34 more)
+Cohesion: 0.04
+Nodes (51): a_plain_url_to_loopback_or_a_private_address_is_accepted(), a_secure_url_is_accepted_for_any_host(), address_is_local(), admission_matches(), certificate_pin(), DIRECT_PORT_DEV, DIRECT_PORT_RELEASE, every_case_in_the_shared_table_is_judged_as_the_table_says() (+43 more)
 
 ### Community 116 - "daemon/src/direct.rs"
 Cohesion: 0.06
 Nodes (43): a_listed_address_is_a_secure_url_relay_url_reads_as_local(), a_relay_url_naming_a_direct_port_here_is_one_of_this_machines_listeners(), a_third_silent_socket_from_one_address_is_refused(), ACCEPT_POLL, addresses(), admit(), Answering, ANSWERING (+35 more)
 
-### Community 117 - ".get"
-Cohesion: 0.10
-Nodes (16): a_nested_run_follows_its_childs_card(), activity_runs_are_one_workspaces_tool_runs_started_inside_the_window_oldest_first(), clearing_a_steps_nested_runs_leaves_every_other_steps_alone(), insert_tool_run(), nested_runs_go_with_their_step(), nested_runs_upsert_per_child_and_keep_what_a_resume_needs(), opening_a_pre_branch_database_adds_the_rail_column(), opening_a_pre_tools_database_adds_the_step_columns() (+8 more)
-
 ### Community 118 - "SessionsManagerModal.svelte"
 Cohesion: 0.02
-Nodes (160): GavinMemorySample, refreshMemory(), gavinMemory(), confirmDestructive(), DAEMON_SUBJECT, GatedAction, settle(), FEATURE_MIN_VERSION (+152 more)
+Nodes (180): end(), SOURCES, GavinMemorySample, gavinMemory(), SessionBaseline, confirmDestructive(), DAEMON_SUBJECT, GatedAction (+172 more)
 
 ### Community 119 - "agent_tokens.rs"
-Cohesion: 0.09
-Nodes (22): a_codex_rollout_reports_its_last_cumulative_total_not_a_sum(), a_message_written_once_per_content_block_is_counted_once(), a_real_shaped_transcript_is_judged_by_type_and_usage_alone(), an_oddly_typed_field_costs_that_field_not_the_turn(), assistant(), card_run_tokens(), card_run_tokens_blocking(), claude_totals() (+14 more)
+Cohesion: 0.08
+Nodes (29): locate(), stock_profile_by_id(), TokenLog, ClaudeSessionJsonl, CodexRollout, KimiWireJsonl, claude_projects_dir(), claude_transcript() (+21 more)
 
 ### Community 120 - "apns.rs"
-Cohesion: 0.05
-Nodes (36): Apns, ApnsConfig, DEVELOPMENT_URL, EXPIRY_S, PLACEHOLDER_BODY, PLACEHOLDER_TITLE, PRODUCTION_URL, PROVIDER_TOKEN_REUSE_S (+28 more)
+Cohesion: 0.08
+Nodes (19): Apns, ApnsConfig, DEVELOPMENT_URL, EXPIRY_S, PLACEHOLDER_BODY, PLACEHOLDER_TITLE, PRODUCTION_URL, PROVIDER_TOKEN_REUSE_S (+11 more)
 
 ### Community 121 - "trust.rs"
 Cohesion: 0.07
-Nodes (54): a_confirmed_device_is_listed_and_admitted(), a_confirmed_device_keeps_the_keys_it_paired_with(), a_device_does_not_print_its_notification_key(), a_device_is_judged_the_same_by_its_id_as_by_its_key(), a_device_unseen_for_ninety_days_is_refused_and_a_fresh_one_is_not(), a_device_with_no_hardware_key_is_told_to_pair_again(), a_devices_database_from_before_notifications_gains_the_columns(), a_devices_database_from_before_revocation_gains_the_column() (+46 more)
+Nodes (56): a_confirmed_device_is_listed_and_admitted(), a_confirmed_device_keeps_the_keys_it_paired_with(), a_device_does_not_print_its_notification_key(), a_device_is_judged_the_same_by_its_id_as_by_its_key(), a_device_unseen_for_ninety_days_is_refused_and_a_fresh_one_is_not(), a_device_with_no_hardware_key_is_told_to_pair_again(), a_devices_database_from_before_notifications_gains_the_columns(), a_devices_database_from_before_revocation_gains_the_column() (+48 more)
 
-### Community 122 - "activity/activity.ts"
-Cohesion: 0.06
-Nodes (58): ACTIVITY_KINDS, ActivityCommit, ActivityEvent, ActivityIndex, ActivityKind, add(), badgeOutcome(), breadcrumb() (+50 more)
+### Community 122 - "ActivityCalendar.svelte"
+Cohesion: 0.04
+Nodes (98): ACTIVITY_KINDS, ActivityCommit, ActivityEvent, ActivityIndex, ActivityKind, add(), badgeOutcome(), breadcrumb() (+90 more)
 
 ### Community 123 - "BundleActivity.java"
 Cohesion: 0.06
 Nodes (7): BundleActivity, WebChromeClient, WebViewClient, MainActivity, SystemTextSize, stepReturn(), Progress (2026-10-09): the way back
 
-### Community 124 - "orchestrations"
-Cohesion: 0.08
-Nodes (38): HeadroomException, headroomException(), HeadroomReach, parseReach(), reachCheckDue(), ReachCheckInput, SessionCompression, sessionCompressionFrom() (+30 more)
+### Community 124 - "headroomReachDriver.test.ts"
+Cohesion: 0.06
+Nodes (50): asTauriRejects(), pageClipboard(), readText(), writeText(), HeadroomException, headroomException(), parseReach(), reachCheckDue() (+42 more)
 
-### Community 125 - "fileCommands.ts"
-Cohesion: 0.12
-Nodes (23): change(), putBack(), atOrUnder(), Entry, FILE_COMMANDS, inAWorkspace(), isDirectory(), roots() (+15 more)
+### Community 125 - "reviewBoard.ts"
+Cohesion: 0.05
+Nodes (70): BoardFacets, WorkspaceHubFacets, RailIndex, MergedProjection, ReviewTestOptions, ReviewTestRow, attributionHint(), claimedFiles() (+62 more)
 
-### Community 126 - "RelayHello"
-Cohesion: 0.08
-Nodes (20): a_hello_round_trips_in_kebab_case(), RefusalReason, Admission, Busy, Gone, Malformed, Offline, Unclaimed (+12 more)
+### Community 126 - "Global Constraints"
+Cohesion: 0.06
+Nodes (35): reorderColumn(), buildColumnSlots(), setPlanFrontmatterField(), merged(), Decisions, Execution notes (2026-08-19), Incident: drop left the board stuck in drag state (2026-08-20), Incidents (+27 more)
 
 ### Community 127 - "arc"
-Cohesion: 0.08
-Nodes (27): Gateway, Granted, MAX_CIPHERTEXT, Refusal, BadRequest, DeviceUnauthorized, DeviceUnreachable, Internal (+19 more)
+Cohesion: 0.06
+Nodes (30): Gateway, Granted, MAX_CIPHERTEXT, Refusal, BadRequest, DeviceUnauthorized, DeviceUnreachable, Internal (+22 more)
 
 ### Community 128 - "commitCardLink.ts"
 Cohesion: 0.06
@@ -1451,103 +1420,103 @@ Nodes (53): CANDIDATE_COUNT, CARD_LINK_MIN_CONFIDENCE, CardAnswer, CardLink, Car
 
 ### Community 129 - "recovered_manager"
 Cohesion: 0.06
-Nodes (68): a_daemon_with_no_headroom_compresses_nothing_and_owes_no_reason(), a_devices_resize_borrows_the_pty_and_closing_gives_the_desk_its_size_back(), a_focus_report_does_not_dismiss_the_restored_badge(), a_mouse_report_does_not_dismiss_the_restored_badge(), a_natural_exit_keeps_its_screen_until_kill_session(), a_session_that_left_a_process_behind_keeps_its_row_when_its_shell_ends(), a_session_whose_process_ends_stops_being_listed(), attach_announces_an_interrupted_session_alongside_the_restored_marker() (+60 more)
+Nodes (65): a_focus_report_does_not_dismiss_the_restored_badge(), a_mouse_report_does_not_dismiss_the_restored_badge(), a_session_that_left_a_process_behind_keeps_its_row_when_its_shell_ends(), attach_announces_an_interrupted_session_alongside_the_restored_marker(), attach_announces_an_orphan_alongside_the_interrupted_marker(), attach_never_calls_a_merely_restored_session_interrupted(), attach_never_calls_an_ordinary_interrupted_session_orphaned(), attach_never_sends_session_restored_when_restored_is_false() (+57 more)
 
 ### Community 130 - "TrustStore"
-Cohesion: 0.08
-Nodes (8): accepted_admissions(), direct_connection_is_off_until_it_is_switched_on(), generate_static_keypair(), opening_a_fresh_directory_creates_the_file_and_one_key_pair(), push_gateway_url_round_trips(), reopening_keeps_the_same_key_pair(), the_desk_relay_option_port_and_url_are_rows_absent_means_none(), TrustStore
+Cohesion: 0.06
+Nodes (17): a_blank_relay_admission_reads_back_as_none(), a_blank_relay_url_reads_back_as_none(), a_store_from_before_the_token_reads_it_as_absent(), accepted_admissions(), direct_connection_is_off_until_it_is_switched_on(), generate_static_keypair(), opening_a_fresh_directory_creates_the_file_and_one_key_pair(), push_gateway_url_round_trips() (+9 more)
 
 ### Community 131 - "SettingsHubView.svelte"
-Cohesion: 0.02
-Nodes (94): commitName(), mcpFormatsStore, setAgentField(), fieldCommit(), validateMcpConfigPath(), agent, agentSkills, agentSkillsMark (+86 more)
+Cohesion: 0.01
+Nodes (278): commitName(), CustomProfile, ForeignMcpServer, current, Props, { value, onChange }, AgentConfig, mcpFormatsStore (+270 more)
 
 ### Community 132 - "RunChangesModal.svelte"
-Cohesion: 0.04
-Nodes (73): changesProblem(), changesSummary(), checkoutSourceStrip(), chipTooltip(), discardBlockedReason(), discardOutcome(), DiscardPrompt, discardPrompt() (+65 more)
+Cohesion: 0.03
+Nodes (125): CardSession, AttributedRun, ATTRIBUTION_INSTRUCTIONS, ATTRIBUTION_MIN_CONFIDENCE, AttributionAnswer, AttributionOption, AttributionPlan, attributionPlan() (+117 more)
 
 ### Community 133 - "tests/relay.rs"
 Cohesion: 0.11
 Nodes (47): RunningRelay, T, a_connection_with_the_wrong_token_is_refused(), a_connection_without_the_admission_token_is_refused(), a_device_with_no_workstation_is_told_it_is_offline(), a_fifth_registration_under_one_rendezvous_is_refused(), a_first_frame_that_is_not_a_hello_is_refused(), a_hello_the_relay_cannot_serve_is_refused_by_name() (+39 more)
 
-### Community 134 - "LogKind"
-Cohesion: 0.05
-Nodes (40): LogCategory, .ALL, Cards, Git, Human, Rails, Runs, Scheduled (+32 more)
+### Community 134 - "super"
+Cohesion: 0.04
+Nodes (45): LogCategory, .ALL, Cards, Git, Human, Rails, Runs, Scheduled (+37 more)
 
-### Community 135 - "PhoneTerminal.svelte"
-Cohesion: 0.02
-Nodes (175): sessionId(), announce(), DEMO_DEVICE, DEMO_TABLET, deviceNamed(), inputFromThisPhone(), nowSeconds(), OWNER_COMMANDS (+167 more)
+### Community 135 - "sessionOwnershipState.ts"
+Cohesion: 0.06
+Nodes (70): line(), send(), sendAsOwner(), sendKey(), sendLine(), sendReply(), sendTyped(), Sent (+62 more)
 
 ### Community 136 - "usageProjection.ts"
-Cohesion: 0.06
-Nodes (59): agentUsageStore, usageHistoryStore, usageProjections, usageRefreshingStore, worstUsageProjection, profileOptionLabel(), CRITICAL_PERCENT, WARN_PERCENT (+51 more)
+Cohesion: 0.07
+Nodes (49): recordSample(), worstUsageProjection, CRITICAL_PERCENT, WARN_PERCENT, tabIndicators, BAND_RANK, BurnRate, burnRate() (+41 more)
 
 ### Community 137 - "HomeHubView.svelte"
 Cohesion: 0.04
-Nodes (53): home, SOURCES, agent, agentCfg, agentCommand, agentEl, agentFile, agentFileBody (+45 more)
+Nodes (54): wizardWorkspaceId, home, SOURCES, agent, agentCfg, agentCommand, agentEl, agentFile (+46 more)
 
 ### Community 138 - "app/package.json"
-Cohesion: 0.06
-Nodes (50): dependencies, @codemirror/autocomplete@6.20.3, @codemirror/commands@^6.11.0, @codemirror/lang-css@^6.3.1, @codemirror/lang-html@^6.4.12, @codemirror/lang-javascript@^6.2.5, @codemirror/lang-json@^6.0.2, @codemirror/lang-markdown@^6.5.2 (+42 more)
+Cohesion: 0.04
+Nodes (71): config, ADR-0002, ADR-0005, vitest, aliased, config, ADR-0003, ADR-0005 (+63 more)
 
 ### Community 139 - "watch.rs"
-Cohesion: 0.08
-Nodes (37): a_batch_counts_when_any_path_in_it_does(), a_gitignore_edit_rearms_the_matcher(), a_gitignore_inside_an_ignored_folder_is_not_read(), a_new_top_level_directory_needs_rearming_before_its_contents_are_seen(), a_new_top_level_directory_symlink_is_not_rearmed(), a_rearmed_watch_reports_once_and_keeps_hearing(), a_top_level_directory_symlink_is_not_armed(), a_tracked_file_an_ignore_rule_matches_stays_relevant() (+29 more)
+Cohesion: 0.07
+Nodes (38): ChangesOnly, a_batch_counts_when_any_path_in_it_does(), a_gitignore_edit_rearms_the_matcher(), a_gitignore_inside_an_ignored_folder_is_not_read(), a_new_top_level_directory_needs_rearming_before_its_contents_are_seen(), a_new_top_level_directory_symlink_is_not_rearmed(), a_rearmed_watch_reports_once_and_keeps_hearing(), a_top_level_directory_symlink_is_not_armed() (+30 more)
 
 ### Community 140 - "client.rs"
 Cohesion: 0.07
-Nodes (25): Arrived, Bytes, End, Nothing, connect(), dial(), DialError, Closed (+17 more)
+Nodes (30): Arrived, Bytes, End, Nothing, connect(), dial(), DialError, Closed (+22 more)
 
 ### Community 141 - "workspace.ts"
 Cohesion: 0.02
-Nodes (142): workspaceId(), workspaces(), CustomProfile, initGavinRoot(), deviceNameBySession(), placeDeviceSession(), PresenceNaming, presencesFromList() (+134 more)
+Nodes (233): The shell's end of the channel, workspaces(), authPageTabs(), NextWaitingJump, nextWaitingJump(), provideNextWaitingJump(), providers, ComposeTarget (+225 more)
 
 ### Community 142 - "sec-hardening-2026-10-15.md"
 Cohesion: 0.05
-Nodes (33): Done when, Taking more from the list, 2026-10-19 — deploy.sh stub runs, Comments, Done when, Test, What, Where (lines as of 2026-10-16; re-read before editing) (+25 more)
+Nodes (32): Done when, Taking more from the list, Change, Done when, Test, What, Where (lines as of 2026-10-16; re-read before editing), Why (+24 more)
 
-### Community 143 - "GitNav.svelte"
-Cohesion: 0.03
-Nodes (65): filterList(), BranchInfo, CompareRefOption, FileEntry, LIST_DISPLAY_CAP, RemoteInfo, StashInfo, compare (+57 more)
+### Community 143 - "git.ts"
+Cohesion: 0.04
+Nodes (60): filterList(), ApplyMode, BranchInfo, branchLabel(), branchResolvable(), CompareRefOption, compareRefOptions(), ConflictKind (+52 more)
 
 ### Community 144 - "common/mod.rs"
 Cohesion: 0.09
 Nodes (22): Answer, APNS_KEY_ID, APNS_TEAM_ID, ApnsRequest, apple_development(), apple_production(), apple_push(), decode_json() (+14 more)
 
-### Community 145 - "PhoneAddWorkspace.svelte"
-Cohesion: 0.09
-Nodes (26): above, add(), asking, BrowserListing, browserListing(), browseRoot(), BrowserRow, busy (+18 more)
+### Community 145 - "PhoneFiles.svelte"
+Cohesion: 0.11
+Nodes (31): FilesPlace, above, atOrUnder(), Crumb, crumbs(), enter(), folder, folderAbove() (+23 more)
 
-### Community 146 - "PhoneAgentPrimary.svelte"
-Cohesion: 0.04
-Nodes (81): cycle, cycleError, defaults, editCycle(), editorKey, Props, { scope, primaryId, label, profiles, workspaceId = "" }, setChain() (+73 more)
+### Community 146 - "agentFallbackState.ts"
+Cohesion: 0.07
+Nodes (48): setChain(), agentsOwedArming(), chainForPrimary(), decideLaunch(), DEFAULT_FALLBACK_THRESHOLD, effectiveFallbackChain(), FallbackChain, FallbackDecision (+40 more)
 
 ### Community 147 - "agentPauseState.ts"
-Cohesion: 0.07
-Nodes (47): effectivePauseCycle(), activePause, agentPauseStore, armStaleTimer(), earliestResetMs(), editableCycle(), effectiveCycle(), gateReason() (+39 more)
+Cohesion: 0.06
+Nodes (58): fallbackBlockedReason(), effectivePauseCycle(), activePause, agentPauseStore, agentUsageStore, armStaleTimer(), earliestResetMs(), editableCycle() (+50 more)
 
 ### Community 148 - "launchQueue.ts"
 Cohesion: 0.07
-Nodes (44): setGateReasonHook(), armRecheck(), cancelCardLaunches(), cancelLaunch(), CardIntent, CardLaunchMode, CleanIntent, CommitIntent (+36 more)
+Nodes (45): setGateReasonHook(), armRecheck(), cancelCardLaunches(), CardIntent, CardLaunchMode, CleanIntent, CommitIntent, drain() (+37 more)
 
 ### Community 149 - "memoryIndexState.ts"
 Cohesion: 0.08
-Nodes (50): adoptIndexNotice(), backfillWanted(), loadMemorySkipped(), MaybeStorage, MEMORY_SKIPPED_KEY, memoryCount(), memoryIndexReady(), MemoryIndexStatus (+42 more)
+Nodes (47): adoptIndexNotice(), backfillWanted(), loadMemorySkipped(), MaybeStorage, MEMORY_SKIPPED_KEY, memoryCount(), memoryIndexReady(), MemoryIndexStatus (+39 more)
 
 ### Community 150 - "Entropy"
 Cohesion: 0.06
 Nodes (18): a_pool_does_not_print_its_bytes(), a_pool_is_read_from_the_front_and_spent(), a_pool_that_runs_out_fails_without_writing(), CONNECT_ENTROPY, Entropy, KEY_ENTROPY, PAIRING_ENTROPY, a_kept_private_key_gives_back_its_public_key() (+10 more)
 
 ### Community 151 - "BundleViewController"
-Cohesion: 0.09
-Nodes (3): BundleViewController, BundleViewEvents, ChannelGate
+Cohesion: 0.06
+Nodes (4): BundleViewController, BundleViewEvents, ChannelGate, BundleViewPlugin
 
-### Community 152 - "daemonCompat.ts"
-Cohesion: 0.05
-Nodes (66): Tools, groups(), row(), badgeFor(), expanded, GROUP_TITLES, groups, lastRuns (+58 more)
+### Community 152 - "PhoneTools.svelte"
+Cohesion: 0.06
+Nodes (56): Tools, badgeFor(), expanded, GROUP_TITLES, groups, lastRuns, library, now (+48 more)
 
-### Community 153 - "agentUsage.ts"
-Cohesion: 0.09
-Nodes (43): agentLimitSpent(), CyclePhase, cyclePhase(), DEFAULT_CYCLE, maxPauseMinutes(), MIN_PERIOD_MINUTES, pauseBlockedReason(), PauseCyclesByPrimary (+35 more)
+### Community 153 - "TerminalPane.svelte"
+Cohesion: 0.08
+Nodes (28): ownerClock, ownershipViewer, BORROW_ACTION, BORROW_DETAIL, BorrowingDevice, Borrows, borrowTitle(), PtySizeBorrowed (+20 more)
 
 ### Community 154 - "protocol/src/kimi_trust.rs"
 Cohesion: 0.11
@@ -1555,11 +1524,11 @@ Nodes (20): a_gavin_keyed_entry_must_run_gavins_own_absolute_command(), a_worktr
 
 ### Community 155 - "daemon/src/connect.rs"
 Cohesion: 0.10
-Nodes (39): a_copied_noise_key_with_another_hardware_key_is_refused(), a_device_that_hangs_up_mid_handshake_is_an_error_and_not_a_connection(), a_device_that_sends_no_signature_is_refused(), a_device_the_store_does_not_admit_is_told_why(), a_first_message_altered_on_the_way_fails_the_handshake(), a_paired_device_is_accepted_once_its_signature_verifies(), a_recorded_connection_played_again_is_refused(), a_refusal_names_the_device_and_what_was_wrong_for_the_log() (+31 more)
+Nodes (38): a_copied_noise_key_with_another_hardware_key_is_refused(), a_device_that_hangs_up_mid_handshake_is_an_error_and_not_a_connection(), a_device_that_sends_no_signature_is_refused(), a_device_the_store_does_not_admit_is_told_why(), a_first_message_altered_on_the_way_fails_the_handshake(), a_paired_device_is_accepted_once_its_signature_verifies(), a_recorded_connection_played_again_is_refused(), a_refusal_names_the_device_and_what_was_wrong_for_the_log() (+30 more)
 
-### Community 156 - "super"
-Cohesion: 0.05
-Nodes (32): all_session_ids_on_a_single_leaf(), Direction, Column, Row, LayoutNode, Leaf, Split, leaf() (+24 more)
+### Community 156 - "serialize"
+Cohesion: 0.07
+Nodes (24): all_session_ids_on_a_single_leaf(), Direction, Column, Row, LayoutNode, Leaf, Split, leaf() (+16 more)
 
 ### Community 157 - "memory.rs"
 Cohesion: 0.06
@@ -1583,7 +1552,7 @@ Nodes (35): a_32_bit_install_contributes_its_own_mingw(), a_32_bit_or_relocated_
 
 ### Community 162 - "keysCheck.ts"
 Cohesion: 0.10
-Nodes (43): CODES, derToP1363(), errorCode(), fromHex(), HANDSHAKE_HASH_BYTES, HARDWARE_KEY_BYTES, isHardwareKey(), NOISE_KEY_BYTES (+35 more)
+Nodes (42): CODES, derToP1363(), errorCode(), fromHex(), HANDSHAKE_HASH_BYTES, HARDWARE_KEY_BYTES, isHardwareKey(), NOISE_KEY_BYTES (+34 more)
 
 ### Community 163 - "parse.rs"
 Cohesion: 0.07
@@ -1602,20 +1571,20 @@ Cohesion: 0.07
 Nodes (43): deleteWorkspaceFromApp(), applicableSteps(), confirmationMatches(), ContextFootprint, defaultAnswers(), DELETE_STEPS, DeleteAnswers, DeleteStep (+35 more)
 
 ### Community 167 - "gavin"
-Cohesion: 0.04
-Nodes (59): validateTool(), save(), gavin(), 11.2 Three body shapes (`toolBodyEditor`), 11.3 Editing from the Tools tab, 11.4 The daemon was a second obstacle (fixed 2026-09-07), 11. Authoring every kind, and editing from the tab (added 2026-09-04, T13), 13.1 The scope rule, and where it is enforced (+51 more)
+Cohesion: 0.06
+Nodes (33): gavin(), 9.1 `until` — the verdict is an exit code, 9.2 `pr` — the verdict is GitHub, 9. `until` and `pr`: kinds that can move a rail backwards (added 2026-09-03), Already proven (feedback loop), Fix order (do this, top to bottom), Out of scope unless you hit them, Agreed folders (+25 more)
 
 ### Community 168 - "status.rs"
 Cohesion: 0.07
 Nodes (45): a_long_bel_terminated_sequence_past_max_sequence_len_is_not_misclassified_as_a_standalone_bell(), a_non_osc_escape_sequence_does_not_swallow_a_later_standalone_bell(), a_notification_osc_terminator_is_still_not_a_standalone_bell(), a_notification_sequence_split_across_feeds_is_still_detected(), a_stray_repeated_esc_before_the_introducer_does_not_lose_the_real_sequence(), a_title_that_reads_like_the_reminder_does_not_hide_a_real_request(), abandons_a_sequence_that_never_terminates_without_growing_forever(), an_idle_reminder_split_across_feeds_is_still_recognised() (+37 more)
 
-### Community 169 - ".connect"
-Cohesion: 0.15
-Nodes (14): check, a_change_of_the_dials_state_is_pushed_to_the_desk(), a_session_the_desk_starts_itself_names_no_device(), a_started_session_is_its_devices_until_the_device_is_revoked(), an_app_older_than_the_bump_is_not_sent_the_owner_push(), an_app_older_than_the_bump_is_not_sent_the_presence_push(), an_owner_that_hangs_up_keeps_its_session_through_the_grace(), Desk (+6 more)
+### Community 169 - "Desk"
+Cohesion: 0.09
+Nodes (11): check, a_browser_frame_the_desk_offers_reaches_the_listening_device_whole(), a_real_agent_browsers_phone_frame_reaches_the_device(), cdp_call(), Desk, desktop(), frame_payload(), heard_frame() (+3 more)
 
 ### Community 170 - "run_integration"
-Cohesion: 0.11
-Nodes (45): a_codex_root_gets_its_skills_and_mcp_entry(), a_cursor_root_gets_its_skills_and_mcp_entry(), a_custom_mcp_path_that_escapes_the_root_is_refused(), a_custom_profile_writes_the_config_its_own_settings_name(), a_foreign_playwright_server_or_a_missing_block_gets_no_browser_paragraph(), a_forged_gavin_checkout_gets_the_absolute_binary(), a_kimi_code_root_gets_its_skills_and_mcp_entry(), a_kimi_run_over_a_forged_checkout_trusts_only_the_absolute_binary() (+37 more)
+Cohesion: 0.09
+Nodes (49): a_codex_root_gets_its_skills_and_mcp_entry(), a_cursor_root_gets_its_skills_and_mcp_entry(), a_custom_mcp_path_that_escapes_the_root_is_refused(), a_custom_profile_writes_the_config_its_own_settings_name(), a_disk_with_no_reachable_home_gets_no_trust_record(), a_foreign_playwright_server_or_a_missing_block_gets_no_browser_paragraph(), a_forged_gavin_checkout_gets_the_absolute_binary(), a_kimi_code_home_override_moves_the_record() (+41 more)
 
 ### Community 171 - "confirm_gate.rs"
 Cohesion: 0.13
@@ -1639,67 +1608,71 @@ Nodes (7): AppForeground, Listener, BundleChannel, Events, BundleChannelService,
 
 ### Community 176 - "RunHistoryModal.svelte"
 Cohesion: 0.08
-Nodes (45): agentLabel(), CardRun, formatDuration(), formatTokens(), grouped(), historyBlockedReason(), historySummary(), outcomeLabel() (+37 more)
+Nodes (46): agentLabel(), CardRun, formatDuration(), formatTokens(), grouped(), historyBlockedReason(), historySummary(), outcomeLabel() (+38 more)
 
 ### Community 177 - "criticalReviewFindingsRailActions.ts"
-Cohesion: 0.19
-Nodes (21): flattenCardViews(), buildFindingsRail(), BuildFindingsRailResult, collectFindingsForRun(), cullFindings(), FindingCardRef, findingsRailName(), isReviewFindingFileName() (+13 more)
+Cohesion: 0.18
+Nodes (22): flattenCardViews(), buildFindingsRail(), BuildFindingsRailResult, collectFindingsForRun(), cullFindings(), FindingCardRef, findingsRailName(), isReviewFindingFileName() (+14 more)
 
 ### Community 178 - "run_git_ro"
-Cohesion: 0.10
-Nodes (39): checkout(), create_branch(), in_progress_at(), local_branch_exists(), added_by_both_binary_and_crlf_kinds(), cherry_pick_label_names_the_commit(), commit_all(), conflict_info() (+31 more)
+Cohesion: 0.09
+Nodes (46): abort_in_progress(), checkout(), cherry_pick_conflict_revert_and_reset_modes(), commit(), create_branch(), create_checkout_and_delete_branches(), delete_branch(), in_progress_at() (+38 more)
 
 ### Community 179 - "complexity.ts"
-Cohesion: 0.10
-Nodes (42): attributionPhrase(), cardAgentEntry(), cardAgentOverride(), cardAgentSummary(), cardEffortUnreachable(), cardModelUnreachable(), cardOverrideNote(), app (+34 more)
+Cohesion: 0.15
+Nodes (30): attributionPhrase(), cardAgentEntry(), cardAgentOverride(), cardAgentSummary(), cardEffortUnreachable(), cardModelUnreachable(), cardOverrideNote(), NO_CARD_AGENT (+22 more)
 
 ### Community 180 - "Id"
-Cohesion: 0.10
-Nodes (20): Id, a_file_database_keeps_its_rows_across_a_reopen(), an_existing_database_gains_the_pending_columns(), confirming_a_claim_clears_other_holders_tokens_not_their_rows(), ConfirmOutcome, BadNonce, Confirmed, NothingPending (+12 more)
+Cohesion: 0.09
+Nodes (23): Id, ApnsEnvironment, Development, Production, a_file_database_keeps_its_rows_across_a_reopen(), an_existing_database_gains_the_pending_columns(), confirming_a_claim_clears_other_holders_tokens_not_their_rows(), ConfirmOutcome (+15 more)
+
+### Community 182 - "enabled"
+Cohesion: 0.06
+Nodes (31): scope(), unavailable(), enabled(), 1.1 Tool, 1.2 Step, 1.3 SQLite, 1. Data model, 1. cline — verified baseline (+23 more)
 
 ### Community 183 - "settingsSearchFallback.ts"
-Cohesion: 0.06
-Nodes (42): searchFallback, searchFallback, searchSettings(), SettingsSearch, SettingsSection, GLOBAL_SYNONYMS, HUB_SYNONYMS, SECTIONS (+34 more)
+Cohesion: 0.08
+Nodes (33): TYPESAFE_MODEL, searchFallback, searchFallback, searchSettings(), SettingsSearch, SettingsSection, GLOBAL_SYNONYMS, HUB_SYNONYMS (+25 more)
 
-### Community 184 - "memoryState.ts"
-Cohesion: 0.14
-Nodes (23): AgentSample, loadStoredMeans(), parseStoredMeans(), saveStoredMeans(), WatchmanSample, agentSessions, arm(), fleetMemory (+15 more)
+### Community 184 - "detectConflicts"
+Cohesion: 0.03
+Nodes (60): RailRow, WorktreeInfo, BoardSummary, ColumnSummary, OrchestrationSummary, orchestrationSummary(), PlanSummary, planSummary() (+52 more)
 
 ### Community 185 - "cards.rs"
 Cohesion: 0.08
 Nodes (25): a_card_is_one_line_without_the_fields_that_say_nothing(), board(), card(), CardView, CardView<'a>, CLOSE_TO_BEST, ContextView, ContextView<'a> (+17 more)
 
 ### Community 186 - "jwt.rs"
-Cohesion: 0.11
-Nodes (10): a_secret_matches_only_its_own_hash(), an_id_has_exactly_one_spelling(), an_id_round_trips_through_its_text(), new_secret(), random_bytes(), an_es256_token_verifies_with_the_public_key(), es256(), pkcs8_from_pem() (+2 more)
+Cohesion: 0.10
+Nodes (15): a_secret_matches_only_its_own_hash(), an_id_has_exactly_one_spelling(), an_id_round_trips_through_its_text(), new_secret(), random_bytes(), a_signed_permission_verifies_to_its_claims(), an_edited_permission_does_not_verify(), another_keys_permission_does_not_verify() (+7 more)
 
 ### Community 187 - "agent"
 Cohesion: 0.05
-Nodes (49): agent(), 05 — Remote access: a mobile client reaching the daemon without widening the blast radius, 10. Phased plan, 11. Open questions for the human, 2. Goals and non-goals, 3. Pairing, 4. Identity, roles, authorization, 5. Transport (+41 more)
+Nodes (61): qr(), start, wasm, agent(), atlasAgent(), atlasAuth(), atlasBilling(), atlasStore() (+53 more)
 
 ### Community 188 - "headroomSetup.ts"
-Cohesion: 0.06
-Nodes (60): API_FAMILIES, ApiFamily, apiFamilyOf(), normalizeFamily(), withApiFamily(), compareVersions(), EMPTY, HEADROOM_INHERIT (+52 more)
+Cohesion: 0.09
+Nodes (43): HeadroomStatus, compareVersions(), EMPTY, HEADROOM_INHERIT, HEADROOM_OFF, HEADROOM_ON, headroomActionLabel(), headroomActions() (+35 more)
 
-### Community 189 - "pullRequest.ts"
-Cohesion: 0.10
-Nodes (33): inFlight, Interest, __interestKeys(), interests, prPollingRunning(), prPollTick, prReportFor(), prReports (+25 more)
+### Community 189 - "OrchestrationRail.svelte"
+Cohesion: 0.03
+Nodes (82): resumeTrail, PlacedCardView, inFlight, Interest, __interestKeys(), interests, prPollingRunning(), prPollTick (+74 more)
 
 ### Community 190 - "headroom/http.rs"
 Cohesion: 0.06
-Nodes (27): a_proxy_is_ready_only_when_readyz_answers_200(), a_stranger_on_the_port_has_no_health(), CONNECT_TIMEOUT, DEFAULT_PROJECTS_LIMIT, get(), Health, HEALTH_0_39_1, health() (+19 more)
+Nodes (25): a_proxy_is_ready_only_when_readyz_answers_200(), a_stranger_on_the_port_has_no_health(), CONNECT_TIMEOUT, DEFAULT_PROJECTS_LIMIT, get(), Health, HEALTH_0_39_1, health() (+17 more)
 
 ### Community 191 - "steps"
 Cohesion: 0.06
 Nodes (46): name, runs-on, steps, concurrency, cancel-in-progress, group, GAVIN_REQUIRE_PLAYWRIGHT, jobs (+38 more)
 
 ### Community 192 - "WorkspaceFiles"
-Cohesion: 0.05
-Nodes (44): contained_dest(), contained_under(), foreign_mcp_servers(), foreign_mcp_servers_json(), foreign_mcp_servers_toml(), ForeignMcpServer, json_foreign_entry(), json_string_array() (+36 more)
+Cohesion: 0.06
+Nodes (41): checkout_mark_key(), checkout_mark_matches(), checkout_marks_path(), foreign_mcp_servers(), foreign_mcp_servers_json(), foreign_mcp_servers_toml(), ForeignMcpServer, json_foreign_entry() (+33 more)
 
 ### Community 193 - "companion-wasm/src/lib.rs"
-Cohesion: 0.07
-Nodes (44): answer(), bytes(), Call, call(), BundleCheck, BundleOpen, ConnectProve, ConnectReceive (+36 more)
+Cohesion: 0.10
+Nodes (33): answer(), bytes(), call(), connect_events(), dials_json(), Event, CompareCode, Connected (+25 more)
 
 ### Community 194 - "git_status.rs"
 Cohesion: 0.09
@@ -1726,16 +1699,16 @@ Cohesion: 0.07
 Nodes (27): a_hold_is_a_level_not_a_counter(), Activity, alpha_at(), apply_hold(), ask_before_quit(), ask_before_terminate(), begin(), CELL_PX (+19 more)
 
 ### Community 200 - "browser/mod.rs"
-Cohesion: 0.09
-Nodes (17): a_dropped_guard_closes_its_watch(), a_session_id_that_is_not_a_plain_id_is_refused(), an_endpoint_is_stable_per_session_and_secret_per_session(), Announce, Browsers, browsers(), ending_a_session_ends_its_watches_with_browser_gone(), Find (+9 more)
+Cohesion: 0.10
+Nodes (14): a_dropped_guard_closes_its_watch(), a_session_id_that_is_not_a_plain_id_is_refused(), an_endpoint_is_stable_per_session_and_secret_per_session(), Announce, Browsers, browsers(), ending_a_session_ends_its_watches_with_browser_gone(), Find (+6 more)
 
-### Community 201 - "Findings"
-Cohesion: 0.06
-Nodes (26): Accepted by design, Adversaries, in order, Finding ids, Gavin security audit — threat model, Rules every pass follows, Severity, Surfaces, The isolated daemon (+18 more)
+### Community 201 - "Findings, deduped and ranked"
+Cohesion: 0.13
+Nodes (15): Accepted by design, positive, or informational — no card, Findings, deduped and ranked, Gavin security audit — report, Method and limits, R10 — git wrapper omits `--`, R1 — No client identity on the daemon socket, R2 — Unread repo content reaches an agent on the first Run, R3 — A cloned repo's `config.toml` and MCP files are executed as if the human wrote them (+7 more)
 
-### Community 202 - "sidebarPrefs.ts"
-Cohesion: 0.07
-Nodes (40): openAppHub(), pressedRail(), collapsed, ready, createPeekHoverController(), endSidebarPeek(), PEEK_HOVER_CLOSE_MS, PEEK_HOVER_OPEN_MS (+32 more)
+### Community 202 - "PhoneAddWorkspace.svelte"
+Cohesion: 0.08
+Nodes (30): above, action, add(), asking, BrowserListing, browserListing(), browseRoot(), BrowserRow (+22 more)
 
 ### Community 203 - "desk_relay.rs"
 Cohesion: 0.07
@@ -1745,25 +1718,25 @@ Nodes (29): ADMISSION_GRACE, BACKOFF_CEILING, BACKOFF_FLOOR, BINARY_SEAM, choose
 Cohesion: 0.08
 Nodes (20): a_folder_that_left_gives_its_watch_back(), a_new_folder_picks_up_its_own_watch_on_the_next_rescan(), a_rescan_that_wakes_while_another_is_emitting_scans_after_it(), a_scheduled_change_pushes_its_own_notice_and_not_the_tree(), a_snapshot_never_waits_on_a_rescan_sleeping_out_its_floor(), a_tree_past_the_line_cap_is_reported_not_pushed(), burst_position(), deleting_a_context_folder_pushes_a_tree_without_it() (+12 more)
 
-### Community 205 - "LayoutState"
-Cohesion: 0.04
-Nodes (64): isPermissionGranted(), Options, Permission, requestPermission(), sendNotification(), verdictAsksQuietly(), NO_READ_MARKS, verdictAttentionState (+56 more)
+### Community 205 - "working"
+Cohesion: 0.09
+Nodes (27): working(), isPermissionGranted(), Options, Permission, requestPermission(), sendNotification(), Global Constraints, Not covered by this plan (deliberately, per the design spec) (+19 more)
 
 ### Community 206 - "window.ts"
-Cohesion: 0.15
-Nodes (9): COMPANION_WINDOW_LABEL, companionWindow, getCurrentWindow(), ResizeDirection, Theme, ADR-0003, UnlistenFn, Self-Review Notes (+1 more)
+Cohesion: 0.12
+Nodes (10): CloseRequestedEvent, COMPANION_WINDOW_LABEL, companionWindow, getCurrentWindow(), ResizeDirection, Theme, ADR-0003, UnlistenFn (+2 more)
 
 ### Community 207 - "setupWizard.test.ts"
-Cohesion: 0.03
-Nodes (73): Unavailable, AGENT_SKILLS_NAME, agentSkillsDone(), agentSkillsLabel(), AgentSkillsLed, agentSkillsLed(), AgentSkillsMark, AgentSkillsState (+65 more)
+Cohesion: 0.05
+Nodes (51): Unavailable, agentSkillsDone(), headroomStepDone(), headroomStepSettled(), memoryStepSettled(), SSH_MEMORY_UNAVAILABLE, workspaceMemoryReading(), IntegrationResult (+43 more)
 
 ### Community 208 - "ToolLibraryDialog.svelte"
-Cohesion: 0.04
-Nodes (49): deleteTool(), saveGroupTemplate(), deleteGroupTemplateAction(), fetchGroupTemplates(), groupTemplateErrors, groupTemplateRecords, libraryFor(), refreshEveryWorkspace() (+41 more)
+Cohesion: 0.05
+Nodes (42): emptyTool(), activeTab, byScope, confirmingDelete, confirmingDeleteTemplate, currentIcon, currentIconLabel, cwdBlocked (+34 more)
 
-### Community 209 - "appDuty.ts"
-Cohesion: 0.07
-Nodes (48): applyEndpoint(), doInstall(), openInstallPrompt(), AppDuty, appDuty, FromAWindow, holdsAppDuties, holdsAppDutiesNow() (+40 more)
+### Community 209 - "updatesState.ts"
+Cohesion: 0.09
+Nodes (35): applyEndpoint(), doInstall(), openInstallPrompt(), tellOtherWindows(), installConfirmPrompt(), runInstall(), saveEndpoint(), gate (+27 more)
 
 ### Community 210 - "headroom/install.rs"
 Cohesion: 0.11
@@ -1773,25 +1746,25 @@ Nodes (30): a_failed_install_does_not_go_on_to_the_prefetch(), a_failed_prefetch
 Cohesion: 0.11
 Nodes (27): a_connection_is_judged_against_the_registered_key(), a_key_that_is_not_a_point_is_refused(), a_pairing_registers_the_key_it_proves(), a_pairing_that_names_no_key_or_proves_another_is_refused(), a_pairing_that_omits_the_kind_is_still_taken(), a_release_daemon_refuses_a_software_debug_key_at_pairing(), a_signature_altered_or_cut_short_is_refused(), a_signature_by_another_key_is_refused() (+19 more)
 
-### Community 212 - "Workstation"
-Cohesion: 0.10
-Nodes (19): a_connection_over_the_direct_listeners_cap_is_closed_on(), a_device_pairs_and_connects_directly_with_no_relay(), a_device_pairs_and_connects_through_the_relay_the_desk_runs(), a_device_whose_direct_address_does_not_answer_falls_back_to_the_relay(), a_peer_that_never_says_hello_is_let_go(), a_revocation_made_by_another_daemon_drops_the_live_connection(), assert_refused(), eventually_state() (+11 more)
+### Community 212 - "memory.ts"
+Cohesion: 0.13
+Nodes (29): EMPTY, EstimateInput, estimateLines(), LaunchEstimate, launchEstimate(), provenance(), slotsNow(), input() (+21 more)
 
 ### Community 213 - "gavin-mcp/src/shell_writes.rs"
 Cohesion: 0.10
 Nodes (33): a_call_is_credited_with_what_it_wrote_and_nothing_it_only_read(), a_path_is_changed_when_it_arrived_or_its_stamp_moved(), a_read_only_command_is_neither_scanned_nor_recorded(), a_watched_call_that_wrote_nothing_is_recorded_as_such(), after(), an_abandoned_snapshot_is_swept_and_a_fresh_one_kept(), before(), Call (+25 more)
 
 ### Community 214 - "appIcon.ts"
-Cohesion: 0.08
-Nodes (33): ios, res, shell, tileColour, work, APP_ICON_STYLE, appIconSvg(), BASELINE_DROP (+25 more)
+Cohesion: 0.07
+Nodes (36): ios, res, shell, tileColour, work, app, work, APP_ICON_STYLE (+28 more)
 
 ### Community 215 - "qr.ts"
 Cohesion: 0.12
 Nodes (39): addEccAndInterleave(), addRunToHistory(), alignmentPositions(), appendBits(), applyMask(), bit(), bitsForSegment(), Canvas (+31 more)
 
-### Community 216 - "FollowUpQueueView.svelte"
-Cohesion: 0.10
-Nodes (38): composeBlocked, count, draft, error, hold, now, Props, queued (+30 more)
+### Community 216 - "MainAgentPanel.svelte"
+Cohesion: 0.07
+Nodes (50): composeBlocked, count, draft, error, hold, now, Props, queued (+42 more)
 
 ### Community 217 - "pull_request.rs"
 Cohesion: 0.08
@@ -1801,25 +1774,25 @@ Nodes (32): a_pr_with_no_checks_is_ready(), a_report_serialises_the_field_names_
 Cohesion: 0.07
 Nodes (17): a_launch_line_says_who_asked_on_one_line(), Ancestor, ancestor_chain(), claim(), claim_or_exit(), image_path(), launch_line(), launch_log_path() (+9 more)
 
-### Community 219 - "DaemonTransport"
-Cohesion: 0.10
-Nodes (25): a_tool(), claim_card(), DaemonTransport, delete_tool(), dispatch_tool(), find_cards(), gated_tool_error(), get_orchestration() (+17 more)
+### Community 219 - "GitToolbar.svelte"
+Cohesion: 0.06
+Nodes (31): checked, PromptField, Props, { title, fields, checkbox, primary, onSubmit, onCancel }, valid, values, agent, agentBlocker (+23 more)
 
 ### Community 220 - "dev-sidecars.mjs"
-Cohesion: 0.08
-Nodes (25): installDrift(), build, out, repo, shell, app, work, IN_APP_STYLE (+17 more)
+Cohesion: 0.10
+Nodes (20): installDrift(), build, out, repo, shell, debugBinaryPaths(), diagnoseFailure(), freeParkPath() (+12 more)
 
-### Community 221 - "workspaceSettings.ts"
-Cohesion: 0.13
-Nodes (19): settingsPatch(), AssertNever, DoublyClassifiedWorkspaceKeys, isSettingsKey(), normalizeSettingsPatch(), patchWorkspaceSettings(), SETTINGS, settingsRecordOf() (+11 more)
+### Community 221 - "SetupWizard.svelte"
+Cohesion: 0.07
+Nodes (32): toPlaywrightReading(), closeWizard(), advance(), agentCfg, agentFileBody, agentSkills, agentSkillsMark, current (+24 more)
 
 ### Community 222 - "title"
-Cohesion: 0.06
-Nodes (33): runTitle(), title(), createPlan(), Conventions, Issue tracker: gavin cards, Wayfinding operations, When a skill says "fetch the relevant ticket", When a skill says "publish to the issue tracker" (+25 more)
+Cohesion: 0.04
+Nodes (48): 0. Name your tab, first thing, 1. Read the PRD first, 2. Cards: note, task, plan, 3. Nesting and promotion, 4. Keep status current, 5. When only a person can answer, 6. New feature or library? New context, 7. Parallel work: spawn visible sessions (+40 more)
 
 ### Community 223 - "git/run.rs"
 Cohesion: 0.07
-Nodes (44): checkout_commit(), cherry_pick(), continue_in_progress(), continue_rebase(), merge(), revert(), a_cancelled_action_stops_with_its_hook_says_cancelled_and_streams_until_then(), a_capped_read_keeps_one_byte_past_the_cap_and_lets_git_finish() (+36 more)
+Nodes (46): checkout_commit(), cherry_pick(), continue_in_progress(), continue_rebase(), merge(), revert(), a_cancelled_action_stops_with_its_hook_says_cancelled_and_streams_until_then(), a_capped_read_keeps_one_byte_past_the_cap_and_lets_git_finish() (+38 more)
 
 ### Community 224 - "tests.rs"
 Cohesion: 0.11
@@ -1837,17 +1810,17 @@ Nodes (34): a_file_reachable_two_ways_is_asked_its_version_once(), a_file_withou
 Cohesion: 0.08
 Nodes (21): dependencies, @capacitor/android@8.5.2, @capacitor/core@8.5.2, @capacitor/ios@8.5.2, description, devDependencies, @capacitor/cli@8.5.2, license (+13 more)
 
-### Community 228 - "criticalReviewState.ts"
-Cohesion: 0.21
-Nodes (12): requestFindingsRail(), CriticalReviewRun, criticalReviewRuns, critiqueSessionIdsByStep(), dropRun(), hydrateRuns(), MaybeStorage, parseRuns() (+4 more)
+### Community 228 - "Stream"
+Cohesion: 0.11
+Nodes (23): answer_handshake(), Banner, banner_parse_reads_what_the_bridge_prints(), banner_parse_refuses_anything_else_and_quotes_it(), banner_parse_tolerates_a_daemon_with_no_token(), banner_with(), Bridge, BridgeProcess (+15 more)
 
-### Community 229 - ".write_bytes"
-Cohesion: 0.07
-Nodes (17): a_disk_with_no_reachable_home_gets_no_trust_record(), a_kimi_code_home_override_moves_the_record(), a_launch_trust_needs_a_home_on_the_machine_kimi_runs_on(), a_remote_gavin_checkout_that_carries_the_launcher_is_named_by_relative_path(), checkout_mark_key(), checkout_mark_matches(), checkout_marks_path(), HomedFiles (+9 more)
+### Community 229 - "Global Constraints"
+Cohesion: 0.18
+Nodes (10): checking(), Git Status Detection — Part 1 (Backend) Implementation Plan, Global Constraints, Not covered by this plan (deliberately, per the design spec), Task 1: Dependencies and protocol types, Task 2: `git_status.rs` — pure porcelain-v2 parser, Task 3: `git_status.rs` — repo-root resolution and running `git status`, Task 4: Wire the shared per-repo-root poller into `SessionManager` (+2 more)
 
-### Community 230 - "AppConfig"
-Cohesion: 0.09
-Nodes (27): AgentCommitRecord, AgentDefaultsConfig, AgentPauseConfig, AgentSkillsMark, Installed, Skipped, api_family_for_profile(), AppConfig (+19 more)
+### Community 230 - "path"
+Cohesion: 0.06
+Nodes (30): path(), 01 — Daemon & protocol surface, DP-01 — Any connection obtains a shell (`CreateSession` → `/bin/sh -c`), DP-03 — Path-taking writes are not confined to a workspace, DP-04 — State at rest: plaintext queued input, `0644` DB files (and a threat-model correction), DP-05 — No resource caps; hostile-repo scan reads uncapped, DP-06 — Socket / pipe squatting: a rogue daemon impersonates gavin to the app, Findings (+22 more)
 
 ### Community 231 - "stream_writer.rs"
 Cohesion: 0.17
@@ -1858,11 +1831,11 @@ Cohesion: 0.07
 Nodes (33): an_empty_query_is_refused(), CARD_BODY_CHARS, card_passage(), card_rows(), configured_file(), CORPUS, DEFAULT_LIMIT, EMBED_BATCH (+25 more)
 
 ### Community 233 - "reflog.rs"
-Cohesion: 0.12
-Nodes (31): a_line_parses_with_spaces_in_the_identity_and_a_missing_message(), a_reflog_that_shrank_is_found_again_and_only_newer_lines_are_logged(), a_worktree_added_later_is_read_from_its_start_and_a_push_from_either_is_logged_once(), branch_name(), checkout_target(), commit(), common_dir(), Cursor (+23 more)
+Cohesion: 0.11
+Nodes (32): a_line_parses_with_spaces_in_the_identity_and_a_missing_message(), a_reflog_that_shrank_is_found_again_and_only_newer_lines_are_logged(), a_worktree_added_later_is_read_from_its_start_and_a_push_from_either_is_logged_once(), branch_name(), checkout_target(), commit(), common_dir(), Cursor (+24 more)
 
 ### Community 234 - "daemon/src/watch_canary.rs"
-Cohesion: 0.09
+Cohesion: 0.10
 Nodes (20): a_late_standing_watch_is_slow_not_deaf(), a_restart_reads_as_deaf_once_and_the_fresh_watch_stands(), arm(), drain(), events_lost_everywhere_are_not_a_dead_stream(), Fake, FolderSource, HEAR_TIMEOUT (+12 more)
 
 ### Community 235 - "String"
@@ -1870,16 +1843,16 @@ Cohesion: 0.10
 Nodes (11): BundleCache, .root, BundleCatalog, BundleOrigin, BundleSchemeHandler, InstallError, badPath, .description (+3 more)
 
 ### Community 236 - "AgentArmWizard.svelte"
-Cohesion: 0.16
-Nodes (14): AGENT_ARM_STEPS, AgentArmStep, nextAgentArmStep(), advance(), agentSkills, agentSkillsMark, current, declineHint (+6 more)
-
-### Community 237 - "pathbuf"
 Cohesion: 0.06
-Nodes (35): embed_companion_bundle(), main(), a_child_that_binds_nothing(), ask_daemon_to_stop(), connect_or_spawn(), connect_or_spawn_returns_immediately_if_already_listening(), connect_or_spawn_spawns_and_retries_until_listening(), connect_or_spawn_times_out_if_nothing_ever_listens() (+27 more)
+Nodes (43): AGENT_SKILLS_NAME, agentSkillsLabel(), AgentSkillsLed, agentSkillsLed(), AgentSkillsMark, AgentSkillsState, AgentSkillsStatus, FAREWELL_NOTE (+35 more)
+
+### Community 237 - "04 — Dependencies, build & release (S11)"
+Cohesion: 0.07
+Nodes (24): Accepted by design, Adversaries, in order, Finding ids, Gavin security audit — threat model, Rules every pass follows, Severity, Surfaces, The isolated daemon (+16 more)
 
 ### Community 238 - "agent_edits.rs"
-Cohesion: 0.10
-Nodes (30): a_record_under_another_root_is_not_this_checkouts(), a_run_with_no_conversation_id_is_unavailable(), a_symlinked_spelling_of_the_root_still_matches(), a_watched_command_is_judged_by_its_record_and_an_unwatched_one_by_its_text(), candidates_are_kept_by_what_the_run_named_and_nothing_else(), card_run_touched_files(), CLAUDE_EDIT_TOOLS, claude_edit_tools_and_shell_commands_are_read_and_every_other_tool_is_not() (+22 more)
+Cohesion: 0.09
+Nodes (32): a_record_under_another_root_is_not_this_checkouts(), a_run_with_no_conversation_id_is_unavailable(), a_symlinked_spelling_of_the_root_still_matches(), a_watched_command_is_judged_by_its_record_and_an_unwatched_one_by_its_text(), candidates_are_kept_by_what_the_run_named_and_nothing_else(), card_run_touched_files(), CLAUDE_EDIT_TOOLS, claude_edit_tools_and_shell_commands_are_read_and_every_other_tool_is_not() (+24 more)
 
 ### Community 239 - "scan_root"
 Cohesion: 0.11
@@ -1906,20 +1879,20 @@ Cohesion: 0.13
 Nodes (20): bearer(), BODY_LIMIT, cancel(), confirm_token(), ConfirmBody, grant(), log_request(), no_content() (+12 more)
 
 ### Community 245 - "device_commit.rs"
-Cohesion: 0.11
-Nodes (19): a_refusal_comes_back_in_the_desks_words(), a_stop_on_its_way_is_answered_with_nothing(), a_windows_answer_is_the_devices_result(), agent_commit_for_device(), an_ask_nobody_answers_says_so_and_stops_waiting(), Answer, answer(), answer_agent_commit_request() (+11 more)
+Cohesion: 0.16
+Nodes (14): a_refusal_comes_back_in_the_desks_words(), a_stop_on_its_way_is_answered_with_nothing(), a_windows_answer_is_the_devices_result(), agent_commit_for_device(), an_ask_nobody_answers_says_so_and_stops_waiting(), Answer, answer(), answer_agent_commit_request() (+6 more)
 
 ### Community 246 - "permissions.ts"
 Cohesion: 0.08
 Nodes (25): errorCode(), GatewayCall, gatewayClient(), send(), GatewayError, recording(), cancelWorkstationPermission(), ensureWorkstationPermissions() (+17 more)
 
 ### Community 247 - "repo.ts"
-Cohesion: 0.10
-Nodes (45): DemoFailure, planOf(), refuseDroppingALiveStep(), absolute(), aheadBehind(), ancestry(), checkout(), chip() (+37 more)
+Cohesion: 0.09
+Nodes (47): absolute(), aheadBehind(), ancestry(), checkout(), chip(), commit(), createBranch(), DemoCommit (+39 more)
 
 ### Community 248 - "SetupWizard.svelte"
-Cohesion: 0.04
-Nodes (65): RESTART_NOTE, loadPlaywrightMark(), marks(), MaybeStorage, NOTHING, PLAYWRIGHT_MARKS_KEY, PLAYWRIGHT_NAME, playwrightActionLabel() (+57 more)
+Cohesion: 0.08
+Nodes (35): loadPlaywrightMark(), marks(), MaybeStorage, NOTHING, PLAYWRIGHT_MARKS_KEY, PLAYWRIGHT_NAME, playwrightActionLabel(), PlaywrightCheck (+27 more)
 
 ### Community 249 - "stage-companion.mjs"
 Cohesion: 0.13
@@ -1930,7 +1903,7 @@ Cohesion: 0.08
 Nodes (32): DetectedAgent, detectWarnings(), foundAgentsSummary(), foundProfileIds(), isAgentFound(), missingFromAppFallback(), suggestFallbackChain(), suggestMainProfile() (+24 more)
 
 ### Community 251 - "src-tauri/src/watch_canary.rs"
-Cohesion: 0.10
+Cohesion: 0.09
 Nodes (21): Watch, a_late_standing_watch_is_slow_not_deaf(), a_restart_reads_as_deaf_once_and_the_fresh_watch_stands(), arm(), drain(), events_lost_everywhere_are_not_a_dead_stream(), Fake, FolderSource (+13 more)
 
 ### Community 252 - "pty.rs"
@@ -1941,17 +1914,17 @@ Nodes (49): a_failed_write_refuses_what_comes_after_it(), a_send_returns_while_t
 Cohesion: 0.05
 Nodes (37): At the desk, Board, cards and rails, Developing Gavin, Documentation and the PRD, Forwarding to the desktop app (ADR 0003), Further Notes, Git, files and settings, Implementation Decisions (+29 more)
 
-### Community 254 - "probe.test.ts"
-Cohesion: 0.07
-Nodes (22): checks(), IOS_DROPS, iosFrame(), NAVIGATION, verdict(), client(), memory(), Agent skills (+14 more)
+### Community 254 - "2026-10-08-playwright-integration-design.md"
+Cohesion: 0.06
+Nodes (28): checks(), IOS_DROPS, iosFrame(), NAVIGATION, verdict(), client(), memory(), Agent skills (+20 more)
 
 ### Community 255 - "railEditorFit.test.ts"
-Cohesion: 0.09
-Nodes (22): sizePx(), attributesAt(), classesOf(), Control, controls(), CONTROLS, declared(), FIELDS (+14 more)
+Cohesion: 0.07
+Nodes (28): DRAWN, LAYOUT, OWN, PHONE_CSS, PRESSED, READ, attributesAt(), classesOf() (+20 more)
 
-### Community 256 - "planFilter.ts"
-Cohesion: 0.06
-Nodes (45): project(), countFiles(), facetMatches(), fileHasLabel(), fileKeeper(), FilteredExplorer, filterExplorer(), NO_RAIL (+37 more)
+### Community 256 - "a_sessions_browser_launches_on_first_use_streams_frames_and_dies_with_the_session"
+Cohesion: 0.11
+Nodes (8): a_sessions_browser_launches_on_first_use_streams_frames_and_dies_with_the_session(), alive(), an_ssh_hosts_daemon_checks_and_installs_playwright_on_its_own_machine(), Bridge, Cdp, Daemon, installed_browsers(), over_an_ssh_bridge_the_browser_runs_on_the_host_and_its_frames_cross_the_link()
 
 ### Community 257 - "protocol/src/playwright.rs"
 Cohesion: 0.07
@@ -1962,24 +1935,24 @@ Cohesion: 0.16
 Nodes (27): a_blank_key_clears_rather_than_storing_an_unusable_one(), a_workspace_save_does_not_wipe_the_key(), admitted(), an_enabled_verdict_with_no_key_asks_for_one_rather_than_calling(), change_attribution_has_its_own_switch(), config_dir(), Feature, ChangeAttribution (+19 more)
 
 ### Community 259 - "screencast.rs"
-Cohesion: 0.09
-Nodes (22): a_failed_write_closes_the_watcher_and_a_closed_one_takes_nothing(), a_watcher_holds_only_the_newest_frame(), Cast, cast_params(), Caster, Commands, effective_follow(), Event (+14 more)
+Cohesion: 0.08
+Nodes (25): a_failed_write_closes_the_watcher_and_a_closed_one_takes_nothing(), a_watcher_holds_only_the_newest_frame(), Cast, cast_params(), Caster, Commands, effective_follow(), Event (+17 more)
 
 ### Community 260 - "decide"
-Cohesion: 0.13
-Nodes (33): a_claude_code_launch_in_a_compressed_workspace_is_compressed(), a_codex_launch_whose_line_runs_no_codex_has_no_recipe(), a_custom_agent_is_routed_by_the_api_family_its_settings_name(), a_gemini_that_is_not_ready_says_so_before_saying_it_has_no_recipe(), a_headroom_that_is_not_ready_leaves_the_session_uncompressed_and_says_so(), a_kimi_launch_with_no_readable_oauth_host_is_handed_the_default(), a_plain_shell_tab_never_qualifies(), a_relaunch_without_headroom_is_uncompressed_however_ready_headroom_looks() (+25 more)
+Cohesion: 0.14
+Nodes (30): a_claude_code_launch_in_a_compressed_workspace_is_compressed(), a_codex_launch_whose_line_runs_no_codex_has_no_recipe(), a_custom_agent_is_routed_by_the_api_family_its_settings_name(), a_gemini_that_is_not_ready_says_so_before_saying_it_has_no_recipe(), a_headroom_that_is_not_ready_leaves_the_session_uncompressed_and_says_so(), a_kimi_launch_with_no_readable_oauth_host_is_handed_the_default(), a_plain_shell_tab_never_qualifies(), a_relaunch_without_headroom_is_uncompressed_however_ready_headroom_looks() (+22 more)
 
 ### Community 261 - "Issue tracker: GitHub"
 Cohesion: 0.06
 Nodes (30): Before exploring, read these, Domain Docs, File structure, Flag ADR conflicts, Use the glossary's vocabulary, Conventions, Issue tracker: GitHub, Pull requests as a triage surface (+22 more)
 
 ### Community 262 - "handover.test.ts"
-Cohesion: 0.12
-Nodes (14): createHandover(), run(), handOver(), Handover, HANDOVER_TIMEOUT_MS, HandoverDeps, handoverKey(), HandoverRefused (+6 more)
+Cohesion: 0.11
+Nodes (16): refused(), createHandover(), run(), handOver(), Handover, HANDOVER_TIMEOUT_MS, HandoverDeps, handoverKey() (+8 more)
 
 ### Community 263 - "orchestrationDrag.ts"
-Cohesion: 0.07
-Nodes (61): Candidate, ActiveOrchDrag, beginCandidate(), cancelDrag(), Candidate, computeOrchDropTarget(), computeTarget(), endPointer() (+53 more)
+Cohesion: 0.11
+Nodes (40): Candidate, ActiveOrchDrag, beginCandidate(), cancelDrag(), Candidate, computeOrchDropTarget(), computeTarget(), endPointer() (+32 more)
 
 ### Community 264 - "card_ignore.rs"
 Cohesion: 0.11
@@ -1994,20 +1967,20 @@ Cohesion: 0.08
 Nodes (17): v(), an_unavailable_platform_outranks_anything_found_on_it(), FLOOR, PIN, platform_unavailable(), read_version_output(), State, Absent (+9 more)
 
 ### Community 267 - "src/device_wire.rs"
-Cohesion: 0.04
-Nodes (40): paired_as(), a_frame_whose_length_field_lies_is_refused(), a_padded_frame_is_a_multiple_of_the_bucket_on_the_wire(), a_paired_verdict_carries_the_notification_key(), a_payload_over_the_cap_is_refused(), a_proof_round_trips_with_and_without_a_key(), CONNECT_NOISE_PARAMS, CONNECT_PROLOGUE (+32 more)
+Cohesion: 0.07
+Nodes (24): a_frame_whose_length_field_lies_is_refused(), a_padded_frame_is_a_multiple_of_the_bucket_on_the_wire(), a_payload_over_the_cap_is_refused(), a_proof_round_trips_with_and_without_a_key(), CONNECT_NOISE_PARAMS, CONNECT_PROLOGUE, FRAME_BUCKET, frame_len() (+16 more)
 
 ### Community 268 - "json"
-Cohesion: 0.08
-Nodes (8): guarded(), main(), main(), Task 1: Protocol constants and the introduced-version table, field(), req(), rpc(), show()
+Cohesion: 0.06
+Nodes (17): guarded(), main(), main(), Daemon Compatibility Window Implementation Plan, Done when, Global Constraints, Task 1: Protocol constants and the introduced-version table, Task 2: Tolerant request parsing, Shutdown, and the v12 bump (+9 more)
 
 ### Community 269 - "windows"
 Cohesion: 0.14
 Nodes (21): a_spend_limit_over_a_hundred_survives(), a_window_past_its_reset_is_dropped(), anthropic_windows_are_normalised_and_labelled(), cursor_enterprise_overall_is_the_total_window(), cursor_on_demand_is_a_window_only_when_capped(), cursor_windows_come_from_current_period_usage(), cursor_windows_still_parse_usage_summary_plan(), gemini_buckets_collapse_to_pro_flash_and_lite() (+13 more)
 
 ### Community 270 - "kanbanDrag.ts"
-Cohesion: 0.06
-Nodes (73): countText, filtered, key, Props, slotDrag, slots, {
+Cohesion: 0.11
+Nodes (36): countText, filtered, key, Props, slotDrag, slots, {
     status,
     planCards,
     labels = [],
@@ -2019,23 +1992,23 @@ Nodes (73): countText, filtered, key, Props, slotDrag, slots, {
     onDeleteCard = null,
     onCardContextMenu = null,
     hiddenCount = 0,
-  }, ActiveDrag (+65 more)
+  }, ActiveDrag (+28 more)
 
 ### Community 271 - "Headroom"
-Cohesion: 0.09
-Nodes (13): kimi_config(), KimiConfig, Detected, gemini_configured_for_api_key(), Headroom, Inner, kimi_login(), Tracked (+5 more)
+Cohesion: 0.10
+Nodes (11): Detected, gemini_configured_for_api_key(), Headroom, Inner, Tracked, Reach, Reached, Unknown (+3 more)
 
 ### Community 272 - "hub/workstations.ts"
 Cohesion: 0.06
-Nodes (26): DEMO_COMPACT, DEMO_WORKSTATION, HubWorkstation, LOCKED, ADR-0003, ADR-0005, WorkstationState, locked() (+18 more)
+Nodes (25): DEMO_COMPACT, DEMO_WORKSTATION, HubWorkstation, LOCKED, ADR-0003, ADR-0005, WorkstationState, locked() (+17 more)
 
-### Community 273 - "demo/agentCommit.ts"
-Cohesion: 0.10
-Nodes (38): AGENT_COMMIT_COMMANDS, changed(), read, record(), runCommitAgents(), start(), stop(), subject() (+30 more)
+### Community 273 - "scheduledState.ts"
+Cohesion: 0.12
+Nodes (31): mayStartWork(), launchBlockedReason(), mayLaunch(), reportStamp(), scheduledAgentFields(), scheduledRunBlocker(), adopted, answerRunNowRequest() (+23 more)
 
 ### Community 274 - "FileTree.svelte"
-Cohesion: 0.13
-Nodes (17): draft, FileNode, omittedNote(), openMenu(), Props, TreeView, {
+Cohesion: 0.14
+Nodes (15): draft, FileNode, Props, TreeView, {
     view,
     rootPath,
     selectedPath,
@@ -2050,19 +2023,19 @@ Nodes (17): draft, FileNode, omittedNote(), openMenu(), Props, TreeView, {
     renaming,
     onRenameSubmit,
     onRenameCancel,
-  }, directoryMenuItems() (+9 more)
+  }, directoryMenuItems(), fileMenuItems(), FileTreeMenuCallbacks (+7 more)
 
-### Community 275 - "TerminalPane.svelte"
-Cohesion: 0.08
-Nodes (28): ownerClock, ownershipViewer, BORROW_ACTION, BORROW_DETAIL, BorrowingDevice, Borrows, borrowTitle(), PtySizeBorrowed (+20 more)
+### Community 275 - "doneSessionReclaim.ts"
+Cohesion: 0.14
+Nodes (23): StatusSince, reclaimed, bytesOf(), freeingClause(), IDLE_GRACE_MS, RECLAIM_SPACING_MS, ReclaimCandidate, RECLAIMED_CLAUSE_WINDOW_MS (+15 more)
 
-### Community 276 - "PhoneRails.svelte"
+### Community 276 - "kanbanState.ts"
 Cohesion: 0.03
-Nodes (93): The channel, openGit(), cleanStale(), newRail(), recoverRails(), setStageMode(), capital(), connectionChanged() (+85 more)
+Nodes (116): The channel, control(), openGit(), ask(), askDeskToCommit(), askDeskToStop(), Asked, askedStore (+108 more)
 
-### Community 277 - "project.yml"
-Cohesion: 0.08
-Nodes (25): activation_command, activation_command_timeout, added_modes, agent_interface, default_modes, encoding, excluded_apis, excluded_tools (+17 more)
+### Community 277 - "Complexity"
+Cohesion: 0.06
+Nodes (28): ChecklistLink, ChildrenMode, Parallel, Sequence, Complexity, .ALL, Complex, Intricate (+20 more)
 
 ### Community 278 - "session_owner.rs"
 Cohesion: 0.07
@@ -2072,17 +2045,17 @@ Nodes (28): a_refusal_crosses_in_camel_case(), a_refusal_survives_the_error_stri
 Cohesion: 0.11
 Nodes (4): AssetSource, BundleFiles, DirSource, Source
 
-### Community 280 - "orchestration.rs"
-Cohesion: 0.12
-Nodes (15): a_run_left_open_by_a_previous_daemon_is_abandoned_on_open(), a_session_whose_end_nobody_saw_is_abandoned_not_ended(), a_shell_tools_exit_code_becomes_its_verdict(), a_verdict_already_recorded_survives_the_sessions_later_exit(), a_workspace_with_no_tool_runs_reads_as_an_empty_list(), add_column_if_missing(), adding_a_column_twice_is_a_no_op(), an_unknown_tool_run_outcome_is_refused() (+7 more)
-
-### Community 281 - "memory.ts"
+### Community 280 - "launchGate.ts"
 Cohesion: 0.13
-Nodes (28): EMPTY, EstimateInput, LaunchEstimate, launchEstimate(), provenance(), slotsNow(), input(), machine() (+20 more)
+Nodes (22): ALLOWED, ceilingFrom(), countsInFlight(), DEFAULT_LAUNCH, DRAIN_SPACING_MS, DrainInput, gateBlockedReason(), GateInput (+14 more)
+
+### Community 281 - "memoryCard.ts"
+Cohesion: 0.12
+Nodes (26): followMove(), handleAdopt(), adoptBlockedReason(), adoptMemory(), AdoptResult, appendLearned(), cardTopicsField(), isMemoryCard() (+18 more)
 
 ### Community 282 - "PhoneCard.svelte"
-Cohesion: 0.02
-Nodes (131): card(), itemOn(), answerItem(), archiveCard(), DEVICE_LAUNCH_HOST, endAway(), jumpToAgent(), setChildren() (+123 more)
+Cohesion: 0.01
+Nodes (235): `app/companion/` — Companion web, Commands, The board and its cards (companion-27), The Demo Workstation, The remote shim, The three rules, and what holds each, Why it lives inside `app/`, openUrl() (+227 more)
 
 ### Community 283 - "orchestrationScroll.ts"
 Cohesion: 0.11
@@ -2093,28 +2066,24 @@ Cohesion: 0.09
 Nodes (19): CACHE, cached_catalog(), CODEX_CACHE, codex_home(), codex_models(), home_dir(), kimi_models(), KIMI_PROVIDER_LIST (+11 more)
 
 ### Community 285 - "browser/launch.rs"
-Cohesion: 0.10
+Cohesion: 0.11
 Nodes (28): a_missing_browsers_dir_says_how_to_install(), find_executable(), find_in(), finds_the_pinned_revision_then_the_newest_complete_one(), installed(), launch(), launch_with(), Launched (+20 more)
 
 ### Community 286 - "git_watch.rs"
-Cohesion: 0.13
-Nodes (24): ONE_RECURSIVE_WATCH, a_batch_counts_when_any_path_in_it_does(), a_directory_symlink_does_not_spend_inotify_watches_on_its_target(), a_gitignore_edit_rearms_the_matcher(), a_gitignore_inside_an_ignored_folder_is_not_read(), a_rearmed_watch_reports_once_and_keeps_hearing(), a_relevant_write_wakes_the_watcher(), a_top_level_directory_symlink_is_not_armed() (+16 more)
+Cohesion: 0.08
+Nodes (39): ONE_RECURSIVE_WATCH, a_batch_counts_when_any_path_in_it_does(), a_directory_symlink_does_not_spend_inotify_watches_on_its_target(), a_gitignore_edit_rearms_the_matcher(), a_gitignore_inside_an_ignored_folder_is_not_read(), a_new_top_level_directory_needs_rearming_before_its_contents_are_seen(), a_new_top_level_directory_symlink_is_not_rearmed(), a_rearmed_watch_reports_once_and_keeps_hearing() (+31 more)
 
 ### Community 287 - "protocol/src/scheduled.rs"
 Cohesion: 0.09
 Nodes (21): a_repeat_has_an_interval_and_a_count_or_none(), a_single_shot_is_a_start_alone(), completion_counts_fires_against_runs(), days_in_month(), Every, FireClaim, FIRES_LISTED, IntervalUnit (+13 more)
 
-### Community 288 - "PushPlugin"
-Cohesion: 0.11
-Nodes (3): PushPlugin, PushTaps, Notifications
-
 ### Community 289 - "Data"
-Cohesion: 0.15
-Nodes (4): WorkstationsPlugin, Data, Paired, SharedKeychain
+Cohesion: 0.13
+Nodes (6): NotificationService, Data, Paired, SharedKeychain, Progress (2026-10-09): the iOS half, uncommitted on main, Progress (2026-10-09, third round): taps never reached the hub; fixed, and the rest of what follows a push run on a Simulator
 
 ### Community 290 - "companion-shell/src/routes/+page.svelte"
-Cohesion: 0.09
-Nodes (20): bundleMemory(), cleared, core, debugBuild, handover, inbox, listing, native (+12 more)
+Cohesion: 0.05
+Nodes (32): bundleMemory(), cleared, core, debugBuild, handover, inbox, listing, native (+24 more)
 
 ### Community 291 - "notifyDevices.ts"
 Cohesion: 0.11
@@ -2126,7 +2095,7 @@ Nodes (27): ComplexityRealignAction, gate(), act(), AGENT_CHANGE_STEPS, agentCha
 
 ### Community 293 - "Stream"
 Cohesion: 0.07
-Nodes (47): a_daemon_reporting_version_34_is_refused(), a_handshake_presents_one_command_connection_and_one_push_connection(), a_peer_that_only_learns_the_token_from_hello_cannot_complete_handshake(), a_request_the_daemon_predates_is_refused_before_it_is_sent(), adopt_session_impl(), an_answering_peer_with_no_token_file_is_refused(), app_handshake(), app_handshake_command() (+39 more)
+Nodes (37): a_daemon_reporting_version_34_is_refused(), a_handshake_presents_one_command_connection_and_one_push_connection(), a_peer_that_only_learns_the_token_from_hello_cannot_complete_handshake(), an_answering_peer_with_no_token_file_is_refused(), app_handshake(), app_handshake_command(), app_handshake_stream(), app_handshake_with_token() (+29 more)
 
 ### Community 294 - "home.rs"
 Cohesion: 0.10
@@ -2141,55 +2110,52 @@ Cohesion: 0.10
 Nodes (11): already_at_the_screen_edge_is_a_no_op(), Edges, expanded_frame(), FRAME, go(), hit_edges(), Rect, SCREEN (+3 more)
 
 ### Community 297 - "src-tauri/src/remote.rs"
-Cohesion: 0.04
-Nodes (80): a_relinked_host_is_asked_to_watch_again_and_only_under_its_own_root(), abandon_git_ops(), an_unwatched_cwd_is_not_re_asked_after_a_relink(), answer_handshake(), ask_every_link(), Banner, banner_parse_reads_what_the_bridge_prints(), banner_parse_refuses_anything_else_and_quotes_it() (+72 more)
+Cohesion: 0.06
+Nodes (56): a_relinked_host_is_asked_to_watch_again_and_only_under_its_own_root(), abandon_git_ops(), an_unwatched_cwd_is_not_re_asked_after_a_relink(), ask_every_link(), cancel_git_op_over_link(), clear_git_host(), connect_remote_workspace(), every_link() (+48 more)
 
-### Community 299 - ".scene"
+### Community 298 - "AppDelegate"
+Cohesion: 0.08
+Nodes (15): AppDelegate, A physical iPhone, `app/companion-shell/` — the Companion shell, Commands, Notifications, Pairing, Store builds, The Companion core (+7 more)
+
+### Community 299 - "WorkstationsPlugin"
 Cohesion: 0.09
-Nodes (7): SceneDelegate, ShellViewController, Traps, Acceptance criteria, Outcome, Plan, What to build
+Nodes (8): QrScannerPlugin, ShellViewController, WorkstationsPlugin, Traps, Acceptance criteria, Outcome, Plan, What to build
 
 ### Community 300 - "core/core.ts"
-Cohesion: 0.08
-Nodes (22): Answer, BundleFile, bytes(), CONNECT_ENTROPY, ConnectEvent, ConnectRefusal, ConnectStart, CoreError (+14 more)
+Cohesion: 0.10
+Nodes (19): Answer, BundleFile, bytes(), CONNECT_ENTROPY, ConnectEvent, ConnectRefusal, ConnectStart, CoreError (+11 more)
 
 ### Community 301 - "relaySocket.ts"
-Cohesion: 0.11
-Nodes (16): closed(), DIRECT_DIAL_MS, Leg, openSocket(), reject(), RelayLegError, RelayLegFailure, RelayMessage (+8 more)
+Cohesion: 0.14
+Nodes (13): closed(), DIRECT_DIAL_MS, Leg, openSocket(), reject(), RelayLegError, RelayLegFailure, RelayMessage (+5 more)
 
 ### Community 302 - "boardFilters.ts"
 Cohesion: 0.05
-Nodes (73): ALL_CONTEXTS_LABEL, ANY_KIND_LABEL, ANY_LABEL_LABEL, ANY_RAIL_LABEL, ANY_STATUS_LABEL, BoardFacets, cardHasLabel(), cardPasses() (+65 more)
+Nodes (71): ALL_CONTEXTS_LABEL, ANY_KIND_LABEL, ANY_LABEL_LABEL, ANY_RAIL_LABEL, ANY_STATUS_LABEL, cardHasLabel(), cardPasses(), ContextFacet (+63 more)
 
 ### Community 303 - "ScheduledHubView.svelte"
-Cohesion: 0.04
-Nodes (88): listenScheduled(), action, act(), blocked, busy, expanded, lastReadable, listError (+80 more)
+Cohesion: 0.07
+Nodes (33): attempt(), deleteScheduled(), duplicateScheduled(), errorText(), scheduledFocus, scheduleRequest, setPaused(), unschedule() (+25 more)
 
 ### Community 304 - "autoResumeState.ts"
 Cohesion: 0.04
 Nodes (75): AutoResumeDecision, autoResumeDecision(), AutoResumeInput, AutoResumePolicy, autoResumePolicy(), BASE_DELAY_MS, classifyFailure(), CLOCK (+67 more)
 
-### Community 305 - "Modal.svelte"
-Cohesion: 0.11
-Nodes (19): backdropClick, handleKeydown(), {
-    onClose,
-    scrollKey,
-    wide = false,
-    innerScroll = false,
-    inline = false,
-    children,
-  }, panel, Props, token, isTopModal(), popModal() (+11 more)
+### Community 305 - "core/clipboard.ts"
+Cohesion: 0.30
+Nodes (10): copySelection(), hasTerminal(), pasteClipboard(), readClipboardText(), terminalHasSelection(), fakeTerminal(), withTerminal(), handleClipboardShortcut() (+2 more)
 
 ### Community 306 - "grant_kimi_launch_trust"
-Cohesion: 0.14
-Nodes (18): a_launch_in_a_gavin_worktree_vets_the_worktrees_own_mcp_file(), a_launch_trust_counts_the_playwright_entry_as_gavins(), a_launch_trust_is_withheld_by_shape_and_by_policy(), FolderTrust, KimiRecord, grant_folder_trust(), grant_kimi_launch_trust(), INTEGRATION_RUNS (+10 more)
+Cohesion: 0.07
+Nodes (22): a_launch_in_a_gavin_worktree_vets_the_worktrees_own_mcp_file(), a_launch_trust_counts_the_playwright_entry_as_gavins(), a_launch_trust_is_withheld_by_shape_and_by_policy(), FolderTrust, KimiRecord, grant_folder_trust(), grant_kimi_launch_trust(), HomedFiles (+14 more)
 
 ### Community 307 - "ScheduleDialog.svelte"
 Cohesion: 0.07
-Nodes (38): localStamp(), saveSchedule(), ScheduleRequest, AgentChoice, AgentVerdict, agentVerdict(), blocked, body (+30 more)
+Nodes (37): CardAgentFields, localStamp(), saveSchedule(), ScheduleRequest, AgentChoice, AgentVerdict, agentVerdict(), blocked (+29 more)
 
 ### Community 308 - "headroom_probe.rs"
-Cohesion: 0.12
-Nodes (20): wait_up_to(), json_string(), knob(), main(), record_launch(), serve(), value_after(), answer() (+12 more)
+Cohesion: 0.18
+Nodes (13): answer(), Arrived, Call, concurrent_compressions_do_not_leak_into_each_other(), first_result(), hashes(), noisy(), reading() (+5 more)
 
 ### Community 309 - "teach/SKILL.md"
 Cohesion: 0.07
@@ -2197,7 +2163,7 @@ Nodes (25): Learning Record Format, Numbering, Optional sections, Supersession, 
 
 ### Community 310 - "CardAgentControls.svelte"
 Cohesion: 0.07
-Nodes (24): changeCardAgent(), NO_CARD_AGENT, effortCustomOpen, effortDraft, effortFocused, effortGate, effortIsCustom, effortUnreachable (+16 more)
+Nodes (23): changeCardAgent(), effortCustomOpen, effortDraft, effortFocused, effortGate, effortIsCustom, effortUnreachable, inheritedEffort (+15 more)
 
 ### Community 311 - "ResolvedMcp"
 Cohesion: 0.09
@@ -2227,65 +2193,65 @@ Nodes (25): Bad agent brief, Behavioral, not procedural, Complete acceptance cri
 Cohesion: 0.12
 Nodes (12): TaskSnapshotCover, AppKit, AVFoundation, Capacitor, CryptoKit, Foundation, LocalAuthentication, Security (+4 more)
 
-### Community 318 - "themeContrast.test.ts"
-Cohesion: 0.17
-Nodes (17): COLOURS, FILLS, PENDING_FILL_DECISION, PLATFORM_COLOURS, THEMES, channels(), contrastRatio(), cssOf() (+9 more)
+### Community 318 - "memoryState.ts"
+Cohesion: 0.14
+Nodes (23): AgentSample, loadStoredMeans(), saveStoredMeans(), SystemMemorySample, WatchmanSample, agentSessions, arm(), initMemorySharing() (+15 more)
 
-### Community 319 - "store"
-Cohesion: 0.26
-Nodes (19): a_blank_icon_is_stored_as_absent(), a_blank_working_directory_is_stored_as_absent(), a_builtin_id_cannot_be_saved_over(), a_kind_this_daemon_has_never_heard_of_is_stored(), a_tool_with_no_kind_at_all_is_still_refused(), a_tools_icon_round_trips(), a_tools_working_directory_round_trips(), an_icon_name_this_daemon_has_never_heard_of_is_still_stored() (+11 more)
+### Community 319 - "scheduledView.ts"
+Cohesion: 0.13
+Nodes (25): describeRule(), formatWhen(), lastRun(), lastRunResult(), latestRunNeedsLook(), liveFire(), ScheduledState, scheduledState() (+17 more)
 
-### Community 320 - "WorkspaceRootControl.svelte"
-Cohesion: 0.03
-Nodes (118): LoadPlan, missingLines(), planLoads(), NEW, OLD, WINDOW, unavailableLine(), unavailableTip() (+110 more)
+### Community 320 - "sshWorkspace.ts"
+Cohesion: 0.13
+Nodes (26): SshConfig, isSshWorkspace(), linkFor(), readyHosts(), seedConnecting(), SSH_LIMITATION, SshBadge, sshBadge() (+18 more)
 
 ### Community 321 - "absolutePaneMount.test.ts"
 Cohesion: 0.09
 Nodes (23): CallSite, callSites(), classDeclarations(), fillsItsHost(), KINDS, maskMarkup(), OpenTag, openTags() (+15 more)
 
-### Community 322 - "diff_cards"
-Cohesion: 0.23
-Nodes (20): a_card_created_with_items_files_each_of_them(), a_card_still_on_disk_is_not_deleted_by_a_scan_that_missed_it(), a_column_change_and_a_file_into_done_are_moves(), a_move_to_another_context_under_the_same_name_is_not_a_delete_and_a_create(), a_new_card_is_created_and_a_vanished_one_deleted(), a_retitle_carries_both_titles(), an_unseen_or_truncated_context_keeps_its_cards(), archiving_moves_the_file_and_logs_one_archive() (+12 more)
+### Community 322 - "shortcutHints.ts"
+Cohesion: 0.10
+Nodes (21): createHintTracker(), apply(), clearTimer(), HINT_HOLD_MS, HintClock, HintEvent, HintKeyEvent, HintMode (+13 more)
 
 ### Community 323 - "doneSessionReclaimState.ts"
-Cohesion: 0.07
-Nodes (48): StatusSince, formatGb(), reclaimed, bytesOf(), freeingClause(), heldRailCount(), IDLE_GRACE_MS, mayReclaim() (+40 more)
+Cohesion: 0.11
+Nodes (25): memoryPressure, heldRailCount(), mayReclaim(), ReclaimReason, reclaimTrigger(), armRecheck(), ensurePermission(), initReclaimSharing() (+17 more)
 
 ### Community 324 - "tauri.conf.json"
 Cohesion: 0.07
 Nodes (27): app, security, windows, build, beforeBuildCommand, beforeDevCommand, devUrl, frontendDist (+19 more)
 
 ### Community 325 - "Machine"
-Cohesion: 0.12
-Nodes (3): alive(), Daemon, Machine
+Cohesion: 0.11
+Nodes (4): alive(), Daemon, Machine, wait_up_to()
 
 ### Community 326 - "api.rs"
-Cohesion: 0.13
-Nodes (23): a_cancelled_permission_is_refused_and_the_devices_others_keep_working(), a_device_cannot_mint_permissions_without_bound(), a_missing_forged_or_edited_permission_is_refused(), a_platform_without_credentials_cannot_register(), a_refused_permission_spends_none_of_the_devices_allowance(), a_token_apple_reports_gone_is_not_used_again_until_the_device_replaces_it(), a_token_google_reports_unregistered_is_forgotten(), an_expired_permission_is_refused() (+15 more)
+Cohesion: 0.08
+Nodes (26): Clock, ManualClock, SystemClock, a_cancelled_permission_is_refused_and_the_devices_others_keep_working(), a_device_cannot_mint_permissions_without_bound(), a_missing_forged_or_edited_permission_is_refused(), a_platform_without_credentials_cannot_register(), a_refused_permission_spends_none_of_the_devices_allowance() (+18 more)
 
 ### Community 327 - "pairing.ts"
 Cohesion: 0.14
 Nodes (22): checkAborted(), coreStep(), deviceKeys(), dialFirst(), failed(), keyKindFor(), legFailure(), message() (+14 more)
 
-### Community 328 - "devDependencies"
-Cohesion: 0.09
-Nodes (23): e2e, ADR-0005, devDependencies, svelte@^5.0.0, svelte-check@^4.0.0, @sveltejs/kit@^2.9.0, @tauri-apps/cli@^2, typescript@~5.6.2 (+15 more)
+### Community 328 - "vite-build-target.test.mjs"
+Cohesion: 0.12
+Nodes (14): e2e, ADR-0005, Hook, hooks(), buildTarget, HERE, XTERM, devCspMirror() (+6 more)
 
 ### Community 329 - "cardCommands.ts"
-Cohesion: 0.10
-Nodes (40): card(), checkedValue(), CLEARABLE, LEVELS, move(), moveWithChildren(), nestedIn(), plansUnder() (+32 more)
+Cohesion: 0.09
+Nodes (43): moveCard(), tickNext(), card(), CARD_COMMANDS, cardNamed(), checkedValue(), CLEARABLE, LEVELS (+35 more)
 
-### Community 330 - "HANDLE"
-Cohesion: 0.18
-Nodes (10): bind_at_on_a_name_that_already_exists_fails(), create_instance(), current_user_sid_string(), ensure_server_is_current_user(), pair_on_a_pre_created_name_fails(), SecurityDescriptor, sid_string_from_token_process(), squat_name() (+2 more)
+### Community 330 - "jwt.rs"
+Cohesion: 0.12
+Nodes (8): an_es256_token_verifies_with_the_public_key(), es256(), pkcs8_from_pem(), rs256(), signing_input(), main(), run(), shutdown()
 
 ### Community 331 - "windowDrag.ts"
 Cohesion: 0.11
 Nodes (17): macOS, createDoubleClickTracker(), createDragIntent(), doubleClickAction(), DoubleClickTracker, DRAG_INTENT_SLOP, DragIntent, MousedownVerdict (+9 more)
 
 ### Community 332 - "headroomState.ts"
-Cohesion: 0.08
-Nodes (38): HeadroomStatus, busy, copied, error, outputChosen, Props, { reading }, run() (+30 more)
+Cohesion: 0.09
+Nodes (35): busy, copied, error, outputChosen, Props, { reading }, run(), showOutput (+27 more)
 
 ### Community 333 - "Agent"
 Cohesion: 0.09
@@ -2295,29 +2261,29 @@ Nodes (21): a_custom_agent_with_no_api_family_has_no_recipe(), Agent, ClaudeCode
 Cohesion: 0.07
 Nodes (28): Tracked, compressed(), Compressed sessions, Detection and install, Further Notes, Gavin wires agents itself; it never runs `headroom wrap` (ADR 0007), Headroom: compressed agent sessions, Implementation Decisions (+20 more)
 
-### Community 335 - "types.rs"
-Cohesion: 0.18
-Nodes (18): Author, BranchInfo, CommitDetail, CommitInfo, ConflictInfo, ConflictLabels, FileDiff, FileEntry (+10 more)
+### Community 335 - "resolved_mcp"
+Cohesion: 0.11
+Nodes (18): contained_dest(), contained_under(), gavin_install(), gavin_install_falls_back_when_agent_file_escapes_the_root(), gavin_install_reports_the_agent_file_only_where_the_profile_has_one(), GavinInstall, LocalFiles, mcp_entry_present() (+10 more)
 
-### Community 336 - "GitIgnoreEditor.svelte"
-Cohesion: 0.08
-Nodes (33): chooseGitIgnore(), CARD_GIT_CHOICES, CardGitChoice, cardGitChoice(), cardGitLocked(), cardGitSummary(), CardIgnore, cardUntrackConfirm() (+25 more)
+### Community 336 - "GitNav.svelte"
+Cohesion: 0.04
+Nodes (64): openIgnoreMenu(), busy, cwdTarget, ignoreEditorKind, listWidth, navWidth, Props, repoName (+56 more)
 
 ### Community 337 - "daemon_lock.rs"
 Cohesion: 0.11
 Nodes (11): lock_holder(), LockHolder, Alive, Dead, Nobody, NO_SUCH_PID, pid_alive(), running() (+3 more)
 
 ### Community 338 - "proxy.rs"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (12): a_detached_session_stops_naming_its_target(), a_large_message_is_not_parsed(), acts(), attached(), PATH_PREFIX, secret_of(), serve(), Sessions (+4 more)
 
 ### Community 339 - "switch.rs"
 Cohesion: 0.17
 Nodes (15): a_damaged_record_reads_as_nothing_told(), a_list_naming_a_workspace_twice_ends_on_its_last_word(), a_release_and_a_dev_daemon_each_keep_their_own_copy(), a_workspace_is_on_when_the_app_said_so_and_only_then(), a_workspace_is_the_same_one_however_its_path_is_spelled(), a_workspace_left_out_of_the_next_list_stops_counting(), a_workspace_reached_through_a_symlink_is_the_one_it_points_at(), a_workspace_that_is_not_on_this_disk_keeps_its_setting_under_its_name() (+7 more)
 
-### Community 340 - "turnVerdictDriver.ts"
-Cohesion: 0.08
-Nodes (38): agentCliFor(), clearTurnVerdict(), initTurnVerdictSharing(), noteQuietTransition(), onSessionStatus(), Owner, ownerOf(), publishVerdict() (+30 more)
+### Community 340 - "svelte"
+Cohesion: 0.02
+Nodes (136): watch(), quiet(), resetTurns(), turnMovedOn(), watchTurn(), ask(), initResumeTrailSharing(), BOARD (+128 more)
 
 ### Community 341 - "daemon/src/kimi_trust.rs"
 Cohesion: 0.15
@@ -2332,24 +2298,24 @@ Cohesion: 0.17
 Nodes (16): a_command_naming_a_workspace_puts_the_device_in_it(), a_command_naming_no_workspace_leaves_it_where_it_was(), a_device_killing_a_session_it_started_takes_it_off_the_list(), create_session_records_the_session_the_desktop_answered(), create_session_records_the_workspace_it_named(), create_session_says_when_the_device_asked_for_the_workspace_agent(), INPUT_COMMANDS, input_is_typing_into_that_session_and_pushed_on_a_cadence() (+8 more)
 
 ### Community 344 - "bridge_starts_a_daemon_when_none_is_listening_and_that_daemon_outlives_the_bridge"
-Cohesion: 0.18
-Nodes (9): bridge_exits_when_the_daemon_closes_its_side(), bridge_prints_the_banner_then_relays_both_ways_until_stdin_closes(), bridge_rejects_an_argument_it_does_not_know(), bridge_starts_a_daemon_when_none_is_listening_and_that_daemon_outlives_the_bridge(), bridge_with_no_daemon_and_no_spawn_fails_naming_the_endpoint(), FakeHome, read_banner(), wait_until_gone() (+1 more)
+Cohesion: 0.19
+Nodes (8): bridge_exits_when_the_daemon_closes_its_side(), bridge_prints_the_banner_then_relays_both_ways_until_stdin_closes(), bridge_rejects_an_argument_it_does_not_know(), bridge_starts_a_daemon_when_none_is_listening_and_that_daemon_outlives_the_bridge(), bridge_with_no_daemon_and_no_spawn_fails_naming_the_endpoint(), FakeHome, read_banner(), Watchdog
 
 ### Community 345 - "chore-stable-release-install-on-windows.md"
-Cohesion: 0.13
-Nodes (13): First launch, 2026-09-10, Re-cut, 2026-09-10 17:08, Recipe, Status, 2026-09-22 11:30, Steps, What it does not do, Fix, Why (+5 more)
+Cohesion: 0.09
+Nodes (20): First launch, 2026-09-10, Re-cut, 2026-09-10 17:08, Recipe, Status, 2026-09-22 11:30, Steps, What it does not do, Fix, Why (+12 more)
 
 ### Community 346 - "feat-windows-port-on-a-windows-machine.md"
-Cohesion: 0.12
-Nodes (13): 1. It builds, and it packages, 2. The shell assumption — everything rests on this one, 3. The desktop pass — moved to its own card, 4. Two accounts, one machine, 5. Then, The pass's headline, 2026-09-11, What this section found: an emitted command line had no POSIX tools, Where this card stands, 2026-09-22 — read before starting an agent on it (+5 more)
+Cohesion: 0.04
+Nodes (39): 1. It builds, and it packages, 2. The shell assumption — everything rests on this one, 3. The desktop pass — moved to its own card, 4. Two accounts, one machine, 5. Then, The pass's headline, 2026-09-11, What this section found: an emitted command line had no POSIX tools, Where this card stands, 2026-09-22 — read before starting an agent on it (+31 more)
 
 ### Community 347 - "native/deviceKeys.ts"
 Cohesion: 0.08
 Nodes (12): DeviceKeys, DeviceKeysPlugin, DeviceKeysStatus, DevicePublicKeys, KeyBacking, KeysErrorCode, LifecyclePhase, LifecycleTracePlugin (+4 more)
 
-### Community 348 - "Global Constraints"
-Cohesion: 0.15
-Nodes (12): orchestration(), Task 10: The tab, Daemon Compatibility Window Implementation Plan, Done when, Global Constraints, Task 2: Tolerant request parsing, Shutdown, and the v12 bump, Task 3: The daemon answers instead of hanging up, Task 4: Classify the daemon's version into a band (+4 more)
+### Community 348 - "allSources"
+Cohesion: 0.06
+Nodes (29): COLOURS, FILLS, PENDING_FILL_DECISION, PLATFORM_COLOURS, THEMES, channels(), contrastRatio(), cssOf() (+21 more)
 
 ### Community 349 - "textScale.ts"
 Cohesion: 0.08
@@ -2359,17 +2325,17 @@ Nodes (14): CryptoLike, ensureRandomUUID(), uuidFrom(), BODY_PX_AT_DEFAULT, foll
 Cohesion: 0.11
 Nodes (6): BundleClosedEvent, BundleDroppedEvent, BundleFileToInstall, BundleMessageEvent, BundleViewPlugin, ADR-0005
 
-### Community 351 - "ActivityCalendar.svelte"
-Cohesion: 0.05
-Nodes (42): cardTitles(), eventsIn(), focusAt(), loadWindow(), normalised(), periodBounds(), step(), todayEnd() (+34 more)
-
-### Community 352 - "ConfirmPrompt.svelte"
+### Community 351 - "findSessionLocation"
 Cohesion: 0.10
-Nodes (19): cancelButton, checked, Choice, choiceButtons, enterIsSafe, picked, pickedOption, PickerOption (+11 more)
+Nodes (22): profileForSession(), bindingWithConversation(), board(), broke(), failedWithConversation(), interrupt(), remembered(), findSessionLocation() (+14 more)
 
-### Community 353 - "seam/landscape.test.ts"
-Cohesion: 0.17
-Nodes (13): DRAWN, frame, NOT_SIDEWAYS_PHONES, RULES, SIDEWAYS_PHONES, matchesMedia(), paddingSides(), padsBothSides() (+5 more)
+### Community 352 - "activityLoad.ts"
+Cohesion: 0.14
+Nodes (18): ActivityRun, GitActivity, WorkspaceActivity, refresh(), ActivityLoad, loadActivity(), LoadDeps, LoadPlan (+10 more)
+
+### Community 353 - "PhoneScheduled.svelte"
+Cohesion: 0.10
+Nodes (21): listenScheduled(), message(), runNowFromPhone(), ADR-0003, ADR-0010, blocked, busy, expanded (+13 more)
 
 ### Community 354 - "AppHandle"
 Cohesion: 0.13
@@ -2387,17 +2353,17 @@ Nodes (10): a_card_with_no_runs_reports_an_empty_history_rather_than_erroring(),
 Cohesion: 0.09
 Nodes (21): 1. In-process, 2. Local-substitutable, 3. Remote but owned (Ports & Adapters), 4. True external (Mock), Deepening, Dependency categories, Seam discipline, Testing strategy: replace, don't layer (+13 more)
 
-### Community 358 - "keepRunningState.ts"
+### Community 358 - "app/src/routes/+page.svelte"
+Cohesion: 0.03
+Nodes (68): hideToMenuBar(), openWizard(), BUTTON, PAGE, ROUTES, SIDEBAR, SOURCES, agentRunning() (+60 more)
+
+### Community 359 - "4. The threats"
 Cohesion: 0.08
-Nodes (25): BUTTON, PAGE, ROUTES, SIDEBAR, SOURCES, agentRunning(), CloseDecision, closeDecision() (+17 more)
+Nodes (24): 06 — The Companion: a phone that drives a Workstation, 1. What this supersedes, and what stands, 3. Threats at a glance, 4. The threats, 5.1 Keys, pairing, and the trust store (replaces 05 §8's key custody; 05 §3 stands), 5.2 The Unlock (ADR 0004, ADR 0001, spike §1), 5.3 The Remote role and the command table's policy (replaces 05 §6), 5.4 The transport and the Relay (05 §5 stands) (+16 more)
 
-### Community 359 - "headroomSavings.ts"
-Cohesion: 0.13
-Nodes (16): RunSavings, savedInWindow(), savingsByProfile(), savingsSince(), SPAN_SECONDS, WindowSavings, windowSavingsLine(), windowSavingsTip() (+8 more)
-
-### Community 360 - "recipe"
-Cohesion: 0.14
-Nodes (19): a_compressed_sessions_environment(), a_daemon_started_from_a_compressed_opencode_session_does_not_pass_its_routing_on(), a_daemon_started_from_a_compressed_session_does_not_pass_its_routing_on(), a_tag_that_merely_contains_the_launchers_id_is_not_the_launchers(), base_url(), claude_headers(), header(), inherited() (+11 more)
+### Community 360 - "inherited_routing"
+Cohesion: 0.24
+Nodes (10): a_compressed_sessions_environment(), a_daemon_started_from_a_compressed_session_does_not_pass_its_routing_on(), a_tag_that_merely_contains_the_launchers_id_is_not_the_launchers(), claude_headers(), header(), inherited(), inherited_routing(), own_headers() (+2 more)
 
 ### Community 361 - "lineClipboard.ts"
 Cohesion: 0.14
@@ -2416,28 +2382,28 @@ Cohesion: 0.20
 Nodes (19): a_cards_runs_follow_its_file_when_it_moves(), a_run_is_journaled_when_it_starts_and_when_it_exits_and_a_restatement_is_not(), a_run_left_open_by_a_dead_daemon_reads_as_abandoned_with_no_end_time(), a_session_exiting_closes_its_run_with_the_exit_code(), a_session_that_links_again_after_a_restart_reopens_its_run(), a_snapshot_lands_on_the_run_and_an_unsnapshotted_run_keeps_none(), a_snapshot_on_a_run_abandoned_mid_kill_gives_it_an_end_and_keeps_every_other_end(), a_snapshot_reaches_a_run_its_card_already_let_go_of() (+11 more)
 
 ### Community 365 - "Admission"
-Cohesion: 0.12
+Cohesion: 0.11
 Nodes (16): Admission, Admitted, NoHardwareKey, Revoked, SoftwareDebug, Stale, Unknown, UnreadableRole (+8 more)
 
-### Community 366 - "ActivityRun"
-Cohesion: 0.33
-Nodes (5): ActivityRun, GitActivity, loadActivity(), LoadDeps, message()
+### Community 366 - "attach_and_relay"
+Cohesion: 0.12
+Nodes (21): a_hosts_tree_drops_a_card_outside_its_root(), a_hosts_tree_drops_a_context_folder_outside_its_root(), a_hosts_tree_for_another_workspace_is_dropped(), a_hosts_tree_with_a_sibling_prefix_is_dropped(), accept_host_workspace_push(), an_oversize_streaming_line_is_skipped_and_pty_output_still_arrives(), attach_and_relay(), confine_host_tree() (+13 more)
 
-### Community 367 - "headroom/store.rs"
-Cohesion: 0.20
-Nodes (13): a_missing_or_damaged_record_reads_as_nothing_known(), a_record_is_readable_by_its_owner_alone(), a_record_reads_back_as_it_was_written(), a_record_with_missing_or_extra_fields_still_loads(), install_path(), InstallRecord, load(), ProcessRecord (+5 more)
+### Community 367 - "find"
+Cohesion: 0.21
+Nodes (21): a_parent_lists_its_children_either_spelling(), by_meaning_a_title_that_says_it_outright_comes_first_then_the_daemon_s_order(), by_words_only_cards_with_every_word_come_back_and_the_answer_says_why(), Criteria, criteria(), criteria_read_blank_as_absent_and_refuse_what_they_cannot_mean(), find(), found() (+13 more)
 
-### Community 368 - "fixture"
+### Community 368 - "write_learned"
 Cohesion: 0.20
 Nodes (17): a_failed_download_says_why(), a_hand_edit_heals_on_the_next_search_embedding_only_what_changed(), a_missing_model_is_a_clear_error_and_never_a_download(), a_topic_narrows_the_search(), an_idle_model_is_dropped_and_loaded_again_when_next_needed(), an_index_from_another_model_is_rebuilt_not_mixed(), emptying_learned_empties_the_index_without_a_model(), ensure_with_download_fetches_the_model_and_builds_the_index() (+9 more)
 
-### Community 369 - "fake_daemon"
-Cohesion: 0.17
-Nodes (21): a_daemon_below_the_floor_is_refused_at_connect(), a_daemon_below_the_floor_is_refused_without_a_handover(), a_daemon_newer_than_this_gavin_mcp_asks_for_a_handover(), a_daemon_newer_than_this_gavin_mcp_is_refused_naming_both_versions(), a_failed_handover_spends_the_budget_so_the_next_skew_is_the_hard_error(), a_gated_request_is_not_retried_through_a_reconnect(), a_re_execed_gavin_mcp_refuses_a_still_newer_daemon_instead_of_looping(), a_request_that_went_out_unanswered_is_not_sent_again() (+13 more)
+### Community 369 - "Global Constraints"
+Cohesion: 0.25
+Nodes (7): Global Constraints, Out of scope, Plan Explorer Implementation Plan, Task 1: `title` field + app-side plan creation, Task 3: `PlanTree.svelte` — presentational tree, Task 6: Checklist, full gates, manual smoke, Testing summary
 
 ### Community 370 - "SocketTransport"
-Cohesion: 0.09
-Nodes (18): a_handed_over_blob_is_read_before_stdin_and_a_partial_line_completed_from_it(), append_log(), current_session_id(), decode_replay(), Failure, Final, Unsent, Handover (+10 more)
+Cohesion: 0.08
+Nodes (20): a_failed_connect_names_one_cause_from_the_socket_and_the_lock(), a_windows_sock_path_error_names_the_pipe_it_maps_to(), append_log(), classify(), ConnectCause, NoDaemon, NotAccepting, PathMissing (+12 more)
 
 ### Community 371 - "mcp_env.rs"
 Cohesion: 0.15
@@ -2447,25 +2413,25 @@ Nodes (15): apply_from_ancestor_passthrough(), dir(), dir_name(), encode_skips_e
 Cohesion: 0.09
 Nodes (19): ADR Format, Numbering, Optional sections, Template, What qualifies, When to offer an ADR, CONTEXT.md Format, Rules (+11 more)
 
-### Community 374 - "Listener"
-Cohesion: 0.21
-Nodes (9): a_client_that_hangs_up_before_accept_is_still_accepted(), a_connection_names_the_process_serving_the_endpoint(), a_listener_answers_a_connect_and_the_accepted_side_has_no_peer_path(), connect_at_to_a_same_user_server_succeeds(), Incoming, is_listening(), is_listening_answers_yes_once_something_has_bound(), Listener (+1 more)
+### Community 374 - "queryTokens"
+Cohesion: 0.22
+Nodes (19): isSearching(), matchesFields(), matchesQuery(), queryTokens(), unplacedCount(), UnplacedGroup, cardFields(), DrawerLists (+11 more)
 
 ### Community 375 - "WindowResizeEdges.svelte"
-Cohesion: 0.23
-Nodes (9): CORNER, corner(), GRIP, needsResizeGrips(), ResizeDirection, ResizeZone, resizeZones(), show (+1 more)
+Cohesion: 0.13
+Nodes (15): tempDir(), AppPlatform, isMacSync(), resolve(), freshPlatform(), { platformMock }, CORNER, corner() (+7 more)
 
-### Community 376 - "TrustFiles"
+### Community 376 - "TokenReport"
 Cohesion: 0.15
-Nodes (11): declared(), declares_anything(), declares_only_gavins(), Disk, launch_grant(), record(), Server, TrustFiles (+3 more)
+Nodes (19): a_codex_rollout_reports_its_last_cumulative_total_not_a_sum(), a_message_written_once_per_content_block_is_counted_once(), a_real_shaped_transcript_is_judged_by_type_and_usage_alone(), an_oddly_typed_field_costs_that_field_not_the_turn(), assistant(), card_run_tokens(), card_run_tokens_blocking(), claude_totals() (+11 more)
 
 ### Community 377 - "read_file_for_viewer_impl"
 Cohesion: 0.15
 Nodes (21): a_50_mb_file_reads_no_more_than_one_byte_past_the_cap(), a_cut_that_splits_a_character_keeps_the_text_before_it(), a_file_exactly_at_the_cap_is_whole(), a_first_save_creates_the_parent_directory_it_needs(), a_truncated_file_with_a_bad_byte_before_the_cut_is_still_not_text(), read_file_for_viewer_impl(), read_file_for_viewer_refuses_a_path_outside_every_open_workspace(), read_file_for_viewer_refuses_a_symlink_that_leaves_every_open_workspace() (+13 more)
 
-### Community 378 - "WorktreeWatch"
-Cohesion: 0.13
-Nodes (13): a_new_top_level_directory_needs_rearming_before_its_contents_are_seen(), a_new_top_level_directory_symlink_is_not_rearmed(), is_dir(), is_recursive_top_level_entry(), is_relevant(), is_top_level_watch_target(), LIVE, new_debouncer() (+5 more)
+### Community 378 - "gemini_usage"
+Cohesion: 0.14
+Nodes (22): anthropic_usage(), claude_token(), codex_sessions_dir(), cursor_usage(), gemini_creds_path(), gemini_denied_reason(), gemini_post(), gemini_rate_limited() (+14 more)
 
 ### Community 379 - "pty_borrow.rs"
 Cohesion: 0.22
@@ -2473,7 +2439,7 @@ Nodes (14): a_device_borrows_and_the_desk_is_held_back_and_told_who(), a_device_
 
 ### Community 380 - "GitToolbar.svelte"
 Cohesion: 0.06
-Nodes (33): agentCommitBlocker(), agent, agentBlocker, agentBusy, agentElapsed, agentPhase, agentStopping, branch (+25 more)
+Nodes (40): attach(), cancel(), schedule(), showNow(), ensureBubble(), hide(), isClipped(), overflowTooltip() (+32 more)
 
 ### Community 381 - "env"
 Cohesion: 0.09
@@ -2492,16 +2458,16 @@ Cohesion: 0.16
 Nodes (13): createVisits(), close(), end(), isCurrent(), listen(), onMessage(), open(), Visit (+5 more)
 
 ### Community 385 - "demo/browser.ts"
-Cohesion: 0.17
-Nodes (14): BROWSER_COMMANDS, BROWSING_SESSION, closeBrowser(), DEMO_LEASE_MS, frameOf(), infoOf(), Page, PAGES (+6 more)
+Cohesion: 0.19
+Nodes (13): BROWSER_COMMANDS, BROWSING_SESSION, DEMO_LEASE_MS, frameOf(), infoOf(), Page, PAGES, sampleBrowsers() (+5 more)
 
 ### Community 386 - "orchestrationState.ts"
 Cohesion: 0.02
-Nodes (202): Rails (companion-28), The three rules, and what holds each, notesOrchestration(), orchestrations(), loadNestedRuns(), pressRail(), removeStep(), mayStartWork() (+194 more)
+Nodes (207): Rails (companion-28), addCard(), agentBrief(), deleteRailAsked(), loadNestedRuns(), moveStage(), organizeRails(), planOf() (+199 more)
 
-### Community 387 - ".set_remote_access"
-Cohesion: 0.23
-Nodes (9): a_blank_relay_admission_reads_back_as_none(), a_blank_relay_url_reads_back_as_none(), a_store_from_before_the_token_reads_it_as_absent(), refresh_rotates_only_the_desks_token_and_keeps_the_old_one_for_the_window(), RemoteAccess, the_desk_mints_its_relays_token_once_and_knows_it_from_one_typed_in(), the_relay_admission_survives_a_reopen_and_the_switch(), the_rendezvous_list_is_the_relay_or_nothing() (+1 more)
+### Community 387 - "attachBoardDrag"
+Cohesion: 0.22
+Nodes (18): cancelDrag(), endPointer(), movePointer(), attachBoardDrag(), attachGestureListeners(), detachGestureListeners(), frame(), onGestureCancel() (+10 more)
 
 ### Community 388 - "hashset"
 Cohesion: 0.12
@@ -2512,7 +2478,7 @@ Cohesion: 0.19
 Nodes (17): a_command_child_does_not_share_this_console(), a_name_that_already_has_an_extension_is_not_extended_again(), command(), CREATE_NO_WINDOW, DEFAULT_PATHEXT, join(), on_path(), os() (+9 more)
 
 ### Community 390 - "binary.rs"
-Cohesion: 0.20
+Cohesion: 0.24
 Nodes (10): a_certificate_that_is_not_one_is_refused_before_the_relay_listens(), an_argument_is_refused_rather_than_ignored(), half_a_certificate_is_refused_by_name(), refused(), relay(), Running, the_relay_it_starts_admits_by_token(), the_relay_will_not_start_in_the_clear_unless_told_tls_is_someone_elses() (+2 more)
 
 ### Community 391 - "CardKind"
@@ -2555,21 +2521,21 @@ Nodes (18): ChecksReport, failed(), NavigationReport, posted(), PROBE_FROM_FRAME
 Cohesion: 0.02
 Nodes (119): 1. Read before you write, 1a. What you were asked to change, 1b. A plan carries its nested children, 2. The parallelism rule, 2a. Placing tools, 2b. Worktrees and branches are not the same tool, 2c. Arming a rail yourself, 3. Record your reasoning (+111 more)
 
-### Community 401 - "notifications.ts"
-Cohesion: 0.20
-Nodes (15): agentCommitBody(), AgentCommitVerdict, ensurePermission(), KNOWN_STATUSES, maybeNotifyAgentCommit(), maybeNotifyReviewWait(), maybeNotifyTurnVerdict(), NotifyPrefs (+7 more)
+### Community 401 - "diff_cards"
+Cohesion: 0.23
+Nodes (20): a_card_created_with_items_files_each_of_them(), a_card_still_on_disk_is_not_deleted_by_a_scan_that_missed_it(), a_column_change_and_a_file_into_done_are_moves(), a_move_to_another_context_under_the_same_name_is_not_a_delete_and_a_create(), a_new_card_is_created_and_a_vanished_one_deleted(), a_retitle_carries_both_titles(), an_unseen_or_truncated_context_keeps_its_cards(), archiving_moves_the_file_and_logs_one_archive() (+12 more)
 
 ### Community 402 - "2. SP2 frontend"
-Cohesion: 0.09
-Nodes (22): gitRefs(), bare(), 1.1 Streaming runner and op registry (`run.rs`, `ops.rs`), 1.2 Refs snapshot — `git_refs(cwd) -> RefsSnapshot`, 1.3 Branch, remote, stash commands, 1. Backend additions (`app/src-tauri/src/git/`), 2.1 Store (`gitState.ts`), 2.2 Toolbar (`GitHubView.svelte` → extracted `GitToolbar.svelte`) (+14 more)
+Cohesion: 0.08
+Nodes (23): gitRefs(), bare(), 1.1 Streaming runner and op registry (`run.rs`, `ops.rs`), 1.2 Refs snapshot — `git_refs(cwd) -> RefsSnapshot`, 1.3 Branch, remote, stash commands, 1. Backend additions (`app/src-tauri/src/git/`), 2.1 Store (`gitState.ts`), 2.2 Toolbar (`GitHubView.svelte` → extracted `GitToolbar.svelte`) (+15 more)
 
 ### Community 403 - "BuildProfile"
-Cohesion: 0.19
-Nodes (16): a_release_and_a_dev_start_differ_only_in_port_and_state_directory(), command(), every_start_carries_exactly_the_fixed_flags(), explicit_env(), headrooms_own_inherited_variables_are_removed_and_nothing_else_is(), inherited_to_remove(), Launch, launch() (+8 more)
+Cohesion: 0.10
+Nodes (30): a_release_and_a_dev_start_differ_only_in_port_and_state_directory(), command(), every_start_carries_exactly_the_fixed_flags(), explicit_env(), headrooms_own_inherited_variables_are_removed_and_nothing_else_is(), HOST, inherited_to_remove(), Launch (+22 more)
 
-### Community 405 - "start_rail_verdict"
-Cohesion: 0.14
-Nodes (15): a_rail(), a_stage(), a_step(), done(), first_unfinished_stage(), orchestration(), running(), stage_label() (+7 more)
+### Community 405 - "TrustFiles"
+Cohesion: 0.15
+Nodes (11): declared(), declares_anything(), declares_only_gavins(), Disk, launch_grant(), record(), Server, TrustFiles (+3 more)
 
 ### Community 406 - "protocol/src/shell_writes.rs"
 Cohesion: 0.12
@@ -2591,29 +2557,44 @@ Nodes (5): createPairFlow(), startWith(), PairFlow, PairFlowDeps, PairSheet
 Cohesion: 0.16
 Nodes (13): ConnectionSource, DESK_UNREACHABLE, INVOKE_TIMEOUT_MS, isAnswer(), isObject(), LISTEN_TIMEOUT_MS, NOT_CONNECTED, Options (+5 more)
 
-### Community 411 - "tauriModules.test.ts"
-Cohesion: 0.13
-Nodes (13): config, ADR-0002, ADR-0005, vitest, aliased, config, ADR-0003, ADR-0005 (+5 more)
+### Community 411 - "types.rs"
+Cohesion: 0.18
+Nodes (18): Author, BranchInfo, CommitDetail, CommitInfo, ConflictInfo, ConflictLabels, FileDiff, FileEntry (+10 more)
 
 ### Community 412 - "fix-windows-installer-collides-with-the-daemon.md"
-Cohesion: 0.12
-Nodes (13): Landed 2026-09-23 — the committed launcher shape, Blast radius, Checklist, Reproduced against a real agent CLI, same day, The fix, What it costs: an `&` with no whitespace splits the line, and the tail runs, 1. `$INSTDIR` and the state directory are the same folder, 2. Nothing stops the daemon before overwriting it (+5 more)
+Cohesion: 0.08
+Nodes (21): on(), Landed 2026-09-23 — the committed launcher shape, Blast radius, Checklist, Reproduced against a real agent CLI, same day, The fix, What it costs: an `&` with no whitespace splits the line, and the tail runs, A second site any fix must touch (board audit, 2026-09-22) (+13 more)
 
 ### Community 413 - "wheelScroll.test.ts"
-Cohesion: 0.15
-Nodes (12): horizontalDelta(), LeadStrip, LeadTab, nextScrollLeft(), Scroller, scrollLeftToLead(), scrollsIntoLead(), apply() (+4 more)
+Cohesion: 0.17
+Nodes (11): horizontalDelta(), LeadStrip, LeadTab, nextScrollLeft(), Scroller, scrollLeftToLead(), scrollsIntoLead(), apply() (+3 more)
 
 ### Community 414 - "taps.test.ts"
 Cohesion: 0.19
 Nodes (11): config, ADR-0002, ADR-0005, clearsFor(), PendingTap, pendingTap(), stepTap(), TAP_WINDOW_MS (+3 more)
 
-### Community 415 - "browser/install.rs"
-Cohesion: 0.22
-Nodes (14): find_npx(), home_dir(), INSTALL_TIMEOUT, Installer, marker(), only_the_end_of_a_long_output_is_kept(), OUTPUT_KEPT, run_install() (+6 more)
+### Community 415 - "OrchestrationDrawer.svelte"
+Cohesion: 0.12
+Nodes (15): anyFilter, collapsed, dragging, {
+    groups,
+    tools,
+    templates,
+    nestedCounts,
+    targetRailId,
+    onOpenCard,
+    onAddTool,
+    onManageTools,
+    onAddTemplate,
+    onManageTemplates,
+    filtering = false,
+    hiddenCount = 0,
+    toolsBlocked = null,
+    groupsBlocked = null,
+  }, label, Props, query, rows (+7 more)
 
 ### Community 416 - "ChangesOnly"
-Cohesion: 0.12
-Nodes (4): ChangesOnly, is_change(), new_debouncer(), ReflogWatch
+Cohesion: 0.15
+Nodes (3): ChangesOnly, is_change(), new_debouncer()
 
 ### Community 417 - "companion_push.rs"
 Cohesion: 0.23
@@ -2628,64 +2609,71 @@ Cohesion: 0.12
 Nodes (12): Bge, CardJob, Download, Failed, Idle, Running, Embedder, Inner (+4 more)
 
 ### Community 420 - "README.md"
-Cohesion: 0.14
-Nodes (9): A Device can reach its Workstation directly, through a listener in the daemon, Consequences, Considered options, Architecture, Checks, Contributing, Development, License (+1 more)
+Cohesion: 0.04
+Nodes (47): Cross-compiling the Windows installer on a Mac, Packaging gavin, Targets, Version and build number, What produces the sidecars, Why `externalBin` is not in `tauri.conf.json`, Windows: the install directory and the daemon, Android signing (+39 more)
 
 ### Community 421 - "shellChannel.ts"
-Cohesion: 0.15
-Nodes (10): createShellChannel(), fail(), fromWorkstation(), ok(), perform(), toBundle(), ShellActs, ShellChannel (+2 more)
+Cohesion: 0.07
+Nodes (23): createShellChannel(), fail(), fromWorkstation(), ok(), perform(), toBundle(), Drop, ShellActs (+15 more)
 
-### Community 422 - "Roadmap (not part of this plan)"
+### Community 422 - "Modal.svelte"
 Cohesion: 0.18
-Nodes (10): Global Constraints, Roadmap (not part of this plan), Self-Review Notes, Task 1: Session registry persistence, Task 2: PTY session manager, Task 3: IPC protocol types and framing, Task 5: Attach — stream output to a (possibly new) connection, Task 6: Recovery after a daemon restart (+2 more)
+Nodes (13): backdropClick, handleKeydown(), {
+    onClose,
+    scrollKey,
+    wide = false,
+    innerScroll = false,
+    inline = false,
+    children,
+  }, panel, Props, token, isTopModal(), popModal() (+5 more)
 
-### Community 423 - "bug-interrupted-agent-runs.md"
-Cohesion: 0.13
-Nodes (13): liveSessionIds(), Conversation resume (root 3), Left open, Shape of the change, The clocks (root 1a), The family, as measured, Two daemon bugs the tests found on the way, Checks (+5 more)
+### Community 423 - "criticalReviewState.ts"
+Cohesion: 0.21
+Nodes (12): requestFindingsRail(), CriticalReviewRun, criticalReviewRuns, critiqueSessionIdsByStep(), dropRun(), hydrateRuns(), MaybeStorage, parseRuns() (+4 more)
 
-### Community 424 - "Findings, deduped and ranked"
-Cohesion: 0.13
-Nodes (15): Accepted by design, positive, or informational — no card, Findings, deduped and ranked, Gavin security audit — report, Method and limits, R10 — git wrapper omits `--`, R1 — No client identity on the daemon socket, R2 — Unread repo content reaches an agent on the first Run, R3 — A cloned repo's `config.toml` and MCP files are executed as if the human wrote them (+7 more)
+### Community 424 - "ComplexityTable.svelte"
+Cohesion: 0.23
+Nodes (15): profileOptionLabel(), tabs, advisorUnsupported(), commit(), effortUnreachable(), entryFor(), inheritLabel(), modelUnreachable() (+7 more)
 
-### Community 425 - "sampleState"
-Cohesion: 0.05
-Nodes (46): sampleOwners(), atlas(), notes(), Tree, atlasTree(), boards(), context(), homeFiles() (+38 more)
+### Community 425 - "sampleProjects.ts"
+Cohesion: 0.14
+Nodes (17): Tree, ATLAS_DOCUMENTED, ATLAS_EXPIRY_FIX, ATLAS_RATE_LIMITED, ATLAS_REFRESH, ATLAS_START, atlasRepo(), atlasWorkingTree() (+9 more)
 
-### Community 426 - "deviceCommit.test.ts"
-Cohesion: 0.26
-Nodes (11): AGENT_COMMIT_REQUESTED, AgentCommitRequested, Answer, answerRequest(), answersRequest(), startDeviceCommitRequests(), heard, START (+3 more)
+### Community 426 - "owners.ts"
+Cohesion: 0.21
+Nodes (14): announce(), DEMO_DEVICE, DEMO_TABLET, deviceNamed(), inputFromThisPhone(), nowSeconds(), OWNER_COMMANDS, ownership() (+6 more)
 
 ### Community 427 - "scripts"
 Cohesion: 0.11
 Nodes (18): scripts, build, bundle, check:watch, companion:build, companion:check, companion:dev, companion:preview (+10 more)
 
-### Community 428 - "permission.rs"
-Cohesion: 0.11
-Nodes (13): main(), run(), shutdown(), a_signed_permission_verifies_to_its_claims(), an_edited_permission_does_not_verify(), another_keys_permission_does_not_verify(), Claims, claims() (+5 more)
+### Community 428 - "PushBody"
+Cohesion: 0.19
+Nodes (12): BoxFuture, Delivery, Delivered, Rejected, TokenGone, Unavailable, PushBody, Ciphertext (+4 more)
 
 ### Community 429 - "activity.rs"
-Cohesion: 0.22
-Nodes (16): a_folder_that_is_not_a_repo_answers_empty_lists(), a_push_after_a_fetch_moved_the_ref_starts_from_the_fetched_sha(), a_repo_with_no_commits_answers_empty_lists(), activity(), ActivityCommit, ActivityPush, commits(), git_activity() (+8 more)
+Cohesion: 0.15
+Nodes (19): a_folder_that_is_not_a_repo_answers_empty_lists(), a_push_after_a_fetch_moved_the_ref_starts_from_the_fetched_sha(), a_repo_with_no_commits_answers_empty_lists(), activity(), ActivityCommit, ActivityPush, commits(), git_activity() (+11 more)
 
 ### Community 430 - ".any_relevant"
-Cohesion: 0.20
-Nodes (7): counts(), git_stdout(), IgnoreFilter, load_tracked_ignored(), locate_excludes(), Rules, TrackedIgnored
+Cohesion: 0.23
+Nodes (5): counts(), IgnoreFilter, load_tracked_ignored(), Rules, TrackedIgnored
 
 ### Community 431 - ".get_board"
 Cohesion: 0.21
 Nodes (12): boards_for_different_workspaces_are_independent(), column(), column_slug(), delete_board_removes_everything_and_a_later_get_board_reseeds_fresh_defaults(), get_board_does_not_reseed_over_an_edited_board(), get_board_restores_missing_permanent_columns_and_keeps_order(), get_board_seeds_the_default_three_columns_on_first_access(), label() (+4 more)
 
-### Community 432 - "File structure"
-Cohesion: 0.12
-Nodes (16): After review, Companion 11: a paired Device connects (IK plus hardware signature) — Implementation Plan, Connection, File structure, Global Constraints, Protocol v46, Review Focus, Task 1: The wire contract (+8 more)
+### Community 432 - "Companion 11: a paired Device connects (IK plus hardware signature) — Implementation Plan"
+Cohesion: 0.22
+Nodes (8): After review, Companion 11: a paired Device connects (IK plus hardware signature) — Implementation Plan, Connection, Global Constraints, Protocol v46, Review Focus, The proof: first on every channel, The wire contract (settled here, used by every task)
 
 ### Community 433 - "archive/perf-main-thread-command-audit.md"
-Cohesion: 0.07
-Nodes (22): After the fix, same measurement on the relaunched app, Measured, 2026-09-26, Steps, Why, Evidence (2026-09-26), Fix, Verify, Evidence (2026-09-26) (+14 more)
+Cohesion: 0.05
+Nodes (30): Evidence (2026-09-26), Fix, Verify, Evidence (2026-09-26), Progress, Verify, Why not just `spawn_blocking` each command, Evidence (2026-09-26) (+22 more)
 
-### Community 434 - "companionSources.ts"
-Cohesion: 0.17
-Nodes (12): ADR-0006, FIXED_SIZES, ROOT, codeOf(), companionSource(), companionSources(), fromSrc(), RAW (+4 more)
+### Community 434 - "Findings"
+Cohesion: 0.14
+Nodes (13): flow(), KEPT, memoryStore(), Appendix — command → path/command argument → guard, AS-01 — A compromised page is a compromised host (`csp:null`, all commands reachable), AS-02 — Repo-supplied `[agent] command` is executed on tab render, AS-03 — `setup_agent_integration` writes outside the root via unvalidated `[agent] file`, AS-04 — Raw-path file commands have no containment guard (+5 more)
 
 ### Community 435 - "longPress.ts"
 Cohesion: 0.13
@@ -2696,36 +2684,32 @@ Cohesion: 0.14
 Nodes (7): createUnlockedHub(), dispatch(), prompt(), describe(), UnlockedHub, UnlockedHubDeps, UnlockKeys
 
 ### Community 438 - "Verified, 2026-09-23 — a real Linux host over real ssh"
-Cohesion: 0.07
-Nodes (24): outside(), 1. What a run needs from the workspace's disk, 2. Decision: three workspace-file requests, and the host's commands route, 3. Gate, 4. Still not over ssh after this, Card runs on ssh workspaces, Plan explorer usability, Done when (+16 more)
+Cohesion: 0.06
+Nodes (27): outside(), 1. What a run needs from the workspace's disk, 2. Decision: three workspace-file requests, and the host's commands route, 3. Gate, 4. Still not over ssh after this, Card runs on ssh workspaces, Plan explorer usability, Done when (+19 more)
 
 ### Community 439 - "worktreeCards.ts"
 Cohesion: 0.42
 Nodes (8): cardIsOutside(), cardKey(), decoyEditedSteps(), DirtyPath, mirrorCardPath(), railSteps(), relativeTo(), trimSlashes()
 
-### Community 440 - "ChangesOnly"
-Cohesion: 0.14
-Nodes (3): ChangesOnly, is_change(), new_debouncer()
-
 ### Community 441 - ".any_relevant"
-Cohesion: 0.20
+Cohesion: 0.21
 Nodes (7): counts(), git_stdout(), IgnoreFilter, load_tracked_ignored(), locate_excludes(), Rules, TrackedIgnored
 
 ### Community 442 - "src-tauri/src/scheduled.rs"
 Cohesion: 0.36
 Nodes (12): claim_scheduled_fire(), create_scheduled_task(), created(), delete_scheduled_task(), duplicate_scheduled_task(), lanes(), list_scheduled_tasks(), ok() (+4 more)
 
-### Community 443 - "path"
-Cohesion: 0.08
-Nodes (24): a_trashed_file_lands_in_the_home_trash_with_a_complete_info_file(), a_trashed_file_lands_in_the_recycle_bin_with_its_restore_record(), find_info_for(), find_record_for(), recycle_bins_for(), trash_path(), a_wrong_typed_setup_costs_only_the_entries_that_are_wrong(), read_setup() (+16 more)
+### Community 443 - "worktree_setup.rs"
+Cohesion: 0.31
+Nodes (6): a_wrong_typed_setup_costs_only_the_entries_that_are_wrong(), read_setup(), reads_the_declared_commands_in_file_order(), root_with(), the_root_is_the_workspace_root_not_the_gavin_dir(), worktree_setup()
 
 ### Community 444 - "Memories"
 Cohesion: 0.24
 Nodes (3): index_model(), Memories, normalized()
 
-### Community 445 - "SessionRecord"
-Cohesion: 0.13
-Nodes (11): handle_from(), row_to_record(), SessionRecord, SessionStatus, Exited, Failed, Idle, Unknown (+3 more)
+### Community 445 - "ProcessHandle"
+Cohesion: 0.12
+Nodes (12): handle_from(), row_to_record(), SessionRecord, SessionStatus, Exited, Failed, Idle, Unknown (+4 more)
 
 ### Community 446 - "HTTP API"
 Cohesion: 0.12
@@ -2736,12 +2720,12 @@ Cohesion: 0.12
 Nodes (16): 1. Signing after one authentication, 2. Emulated hardware, 3. The Noise key, 4. Keeping keys out of bundles, Android, Android (minSdk 30), Brief interruptions, Considered and rejected (+8 more)
 
 ### Community 448 - "Daemon version compatibility and OTA updates"
-Cohesion: 0.12
-Nodes (16): 1. The versioning contract, 2. Update delivery, 4. Update UI, 5. Stale daemon at launch, 6. Daemon lifecycle in production, Client-side capability gating is the load-bearing mechanism, Daemon version compatibility and OTA updates, Design (+8 more)
+Cohesion: 0.17
+Nodes (11): 2. Update delivery, 4. Update UI, 5. Stale daemon at launch, 6. Daemon lifecycle in production, Daemon version compatibility and OTA updates, Design, Goals, Non-goals (+3 more)
 
-### Community 449 - "fix-app-crate-windows-path-shape-failures.md"
-Cohesion: 0.10
-Nodes (16): A. gavin emits MIXED separators (latent, not a live bug), B. Tests hand-write Windows paths into TOML, C. A test expects `display()` where the product normalises, Closed 2026-09-22 — 501 passed / 0 failed, D. CRLF in `include_str!`'d markdown, E. A unix-only assumption in a test that is not gated, F. One parallelism artifact, G. A Windows named-pipe teardown that reports an error instead of EOF (+8 more)
+### Community 449 - "Global Constraints"
+Cohesion: 0.15
+Nodes (12): createPlan(), Card Model Core Implementation Plan (1 of 3), Global Constraints, Task 10: Unified detail modal, Task 11: Checklist, docs, sweep, Task 1: Protocol v3 — CardKind, extended PlanFileInfo, card wipe, Task 3: Writer — new keys + empty-value-removes-line, Task 4: CreatePlan gains kind/parent (daemon + protocol + MCP schema) (+4 more)
 
 ### Community 450 - "release.yml"
 Cohesion: 0.18
@@ -2751,6 +2735,10 @@ Nodes (10): concurrency, cancel-in-progress, group, name, on, push, workflow_dis
 Cohesion: 0.12
 Nodes (14): Phase boundaries, Primary and secondary sources, The five options, The tree, These are judgement calls, Ask Matt, Codebase health, Context hygiene (+6 more)
 
+### Community 452 - "ReviewAgentPane.svelte"
+Cohesion: 0.15
+Nodes (11): bound, error, fontSize, idle, Props, sessionId, start(), starting (+3 more)
+
 ### Community 453 - "pairing.e2e.ts"
 Cohesion: 0.13
 Nodes (6): Desk, p1363ToDer(), pairing(), softwarePhone(), Stack, How the last stage went
@@ -2759,13 +2747,13 @@ Nodes (6): Desk, p1363ToDer(), pairing(), softwarePhone(), Stack, How the last s
 Cohesion: 0.17
 Nodes (13): deepLinkFor(), HUB_LINK, NOTIFY_GENERIC_BODY, NOTIFY_KEY_LEN, NOTIFY_NONCE_LEN, NOTIFY_PAD_BUCKET, NOTIFY_PAYLOAD_VERSION, NotifyLanding (+5 more)
 
-### Community 455 - "`app/companion-shell/` — the Companion shell"
+### Community 455 - "2026-08-06-agent-orchestration-foundations-design.md"
 Cohesion: 0.15
-Nodes (13): A physical iPhone, `app/companion-shell/` — the Companion shell, Commands, Pairing, Store builds, The Companion core, The Device's keys, The probe (+5 more)
+Nodes (12): 1. The on-disk convention, 2. Workspace ⇄ root binding, 4. Error handling, 5. Testing, 6. What later sub-projects consume from this one, config.toml, Edge rules, Plan file format (+4 more)
 
 ### Community 456 - "build"
-Cohesion: 0.18
-Nodes (8): build(), Findings, Progress, Evidence (2026-09-26), Fix, Progress, State when picked up (2026-09-26, perf/main-thread-commands @ 68be0be1), Verify
+Cohesion: 0.07
+Nodes (23): editorWrites, writeFileForEditor(), cancelFindingsRail(), FindingsRailRequest, findingsRailRequest, build(), busy, error (+15 more)
 
 ### Community 457 - "push.ts"
 Cohesion: 0.12
@@ -2788,24 +2776,20 @@ Cohesion: 0.12
 Nodes (16): Behind a TLS-terminating proxy (recommended), Build the image, Configuration, Dev / LAN (cleartext, phones on the same network), Limits, Mint an admission token, Operations notes, Point a Workstation at it (+8 more)
 
 ### Community 462 - "Releasing gavin"
-Cohesion: 0.12
-Nodes (16): Key custody, Linux, `--locked`, in two places, macOS, Not done yet, Preview builds, Releasing gavin, The build host (+8 more)
+Cohesion: 0.08
+Nodes (22): DEV, manifest(), PUBLISHER, toBase64(), workstation(), Key custody, Linux, `--locked`, in two places (+14 more)
 
 ### Community 463 - "Global Constraints"
-Cohesion: 0.12
-Nodes (15): Complete replacement: `app/src/lib/Terminal.svelte`, Complete replacement: `app/src-tauri/src/lib.rs`, Complete replacement: `app/src-tauri/src/session.rs`, Final Review Remediation, Global Constraints, Self-Review Notes, Targeted edit: `app/src-tauri/src/config.rs`, Task 1: Extract shared `crates/protocol` crate (+7 more)
-
-### Community 464 - "gitTracking.ts"
 Cohesion: 0.13
-Nodes (24): applyTracking(), toggleTracking(), canToggleTracking(), ConfirmCopy, DEFAULT_GIT_TRACKING, GAVIN_DIRS, GavinTracking, isGavinOwnPath() (+16 more)
+Nodes (14): Complete replacement: `app/src/lib/Terminal.svelte`, Complete replacement: `app/src-tauri/src/lib.rs`, Complete replacement: `app/src-tauri/src/session.rs`, Final Review Remediation, Global Constraints, Self-Review Notes, Targeted edit: `app/src-tauri/src/config.rs`, Task 1: Extract shared `crates/protocol` crate (+6 more)
 
 ### Community 465 - "File structure"
 Cohesion: 0.12
 Nodes (16): Companion 10: a test Device pairs through a local Relay — Implementation Plan, File structure, Global Constraints, Pairing stream, inside the Relay's pipe, Protocol v45, Relay admission: the first frame, Review Focus, Task 1: The wire contract in the protocol crate (+8 more)
 
-### Community 466 - "FindingsRailDialog.svelte"
-Cohesion: 0.15
-Nodes (11): cancelFindingsRail(), FindingsRailRequest, findingsRailRequest, busy, error, findings, kept, request (+3 more)
+### Community 466 - "PairingVerdict"
+Cohesion: 0.07
+Nodes (23): a_paired_workstation_does_not_print_its_notification_key(), a_pairing_leaves_a_workstation_to_connect_to(), a_workstation_with_a_direct_listener_is_dialled_there_first(), connect_dials(), offer(), paired(), PairedWorkstation, paired_as() (+15 more)
 
 ### Community 467 - "Diagnosing Bugs"
 Cohesion: 0.13
@@ -2820,8 +2804,8 @@ Cohesion: 0.13
 Nodes (14): compilerOptions, allowJs, checkJs, esModuleInterop, forceConsistentCasingInFileNames, moduleResolution, resolveJsonModule, skipLibCheck (+6 more)
 
 ### Community 470 - "humanTests.ts"
-Cohesion: 0.09
-Nodes (35): list(), DEVICE_AGENT_HOST, ItemCard, ItemsList, phoneItems(), summaryLine(), NO_FACETS, railIndex() (+27 more)
+Cohesion: 0.19
+Nodes (14): NO_FACETS, cardFinished(), DecisionCard, humanItemWaiting(), humanTestList(), HumanTestsInput, HumanTestsList, HumanTestsSummary (+6 more)
 
 ### Community 471 - "Workstation"
 Cohesion: 0.26
@@ -2831,21 +2815,21 @@ Nodes (4): Connected, frame(), unframe(), Workstation
 Cohesion: 0.24
 Nodes (9): drifted(), press(), PressOptions, SLOP_PX, tap(), Scope, trackVisibleArea(), VisibleArea (+1 more)
 
-### Community 473 - "a_group_template"
-Cohesion: 0.27
-Nodes (9): a_global_template_is_visible_from_every_workspace(), a_group_template(), a_template_needs_a_name_and_at_least_one_step(), a_template_with_unreadable_steps_json_degrades_to_an_empty_list(), an_unknown_group_template_mode_reads_as_parallel(), another_workspaces_template_is_not_visible(), delete_group_template_removes_it(), re_saving_with_the_other_scope_moves_it() (+1 more)
+### Community 473 - "orchestrationAgentRun.test.ts"
+Cohesion: 0.18
+Nodes (8): adopted(), layoutStore, LayoutValue, store, sweep(), workspace(), startOrchestrationAgentWatch(), sweepOrchestrationAgents()
 
 ### Community 474 - "Setup"
 Cohesion: 0.15
 Nodes (12): 1. `nest-drag-in` — drag, auto-expand, placeholder, 2. Escape mid-nest-drag, 3. `nest-note-refuses` — notes and plans refuse, 4. `nest-drag-out` — free a nested child, 5. `checklist-toggle` — live tick, then the retry path, 6. `promote-ui` — the Promote button, 7. `unparent` — the children list, 8. `promote-mcp` — nothing to do (+4 more)
 
-### Community 475 - "Trickle"
-Cohesion: 0.24
-Nodes (3): Timed, Trickle, Within<'_, S>
+### Community 475 - "Call"
+Cohesion: 0.15
+Nodes (11): Call, BundleCheck, BundleOpen, ConnectProve, ConnectReceive, ConnectSend, ConnectStart, PairingProve (+3 more)
 
-### Community 476 - "decisionsState.ts"
-Cohesion: 0.13
-Nodes (22): search, DecisionsPrefs, decisionsPrefs, empty(), prefsFor(), reviveFilter(), remembered, HUB_DECISIONS_FILTER_KEY (+14 more)
+### Community 476 - "companion-core-and-the-companion-shell-dial-the-direct-address-first-and-fall-back-to-the-relay-keep-the-core-free-of-i-o-and-randomness-add-the-cleartext-rule-for-the-platform-only-if-tls-is-not-used.md"
+Cohesion: 0.17
+Nodes (9): KeptWorkstation, RelayDial, PairedWorkstation, OpenRelaySocket, webSocketOpener(), A Device can reach its Workstation directly, through a listener in the daemon, Amended 2026-10-15: the direct listener asks for the admission token, Consequences (+1 more)
 
 ### Community 477 - "BundleRefusal"
 Cohesion: 0.26
@@ -2855,7 +2839,7 @@ Nodes (11): BundleManifest, BundleRefusal, BadSignature, HashMismatch, Malformed
 Cohesion: 0.15
 Nodes (9): a_board_of_bindings_with_huge_commands_serialises_without_them(), a_conversation_id_for_an_unbound_session_is_a_no_op(), a_self_reported_conversation_id_lands_on_the_bound_card(), a_single_binding_read_keeps_its_command(), purge_clears_a_path_across_workspaces(), rename_card_path_follows_a_moved_card_across_workspaces(), the_baseline_rides_the_binding_and_is_replaced_only_by_a_fresh_launch(), the_board_says_which_bindings_have_a_launch_to_replay() (+1 more)
 
-### Community 479 - ".search_cards"
+### Community 479 - "fixture"
 Cohesion: 0.22
 Nodes (12): a_filed_card_keeps_its_vector_and_an_edit_embeds_only_that_card(), a_tree_handed_in_is_indexed_in_the_background_and_a_search_then_embeds_only_the_query(), an_index_from_before_the_cards_table_gains_it(), cards_are_embedded_shortest_first_in_batches_of_thirty_two(), cards_rank_by_title_and_body_archived_ones_included(), eventually(), from_blob(), no_cards_needs_no_model_and_cards_need_one_never_a_download() (+4 more)
 
@@ -2863,21 +2847,21 @@ Nodes (12): a_filed_card_keeps_its_vector_and_an_edit_embeds_only_that_card(), a
 Cohesion: 0.21
 Nodes (15): a_plaintext_that_fills_its_bucket_still_opens(), ciphertext_fits_the_gateway_cap(), key(), notify_body(), NotifyOp, Notify, Resolve, NotifyPlaintext (+7 more)
 
-### Community 481 - "remote/core.ts"
-Cohesion: 0.24
-Nodes (10): channel(), NOT_CONNECTED, asTauriRejects(), invoke(), InvokeArgs, ADR-0003, ADR-0005, refusedOnDevice() (+2 more)
+### Community 481 - "parse_rfc3339"
+Cohesion: 0.17
+Nodes (11): a_cursor_cycle_that_has_already_reset_is_not_a_ready_report(), as_epoch_secs(), as_percent(), codex_limits_come_from_the_newest_event_that_has_them(), codex_usage(), collect_jsonl(), days_from_civil(), newest_codex_limits() (+3 more)
 
 ### Community 482 - "Home"
-Cohesion: 0.25
-Nodes (4): a_restart_that_waits_for_the_old_pid_does_not_race_the_lock(), a_second_daemon_of_the_same_build_exits_without_touching_anything(), Home, read()
+Cohesion: 0.23
+Nodes (5): a_restart_that_waits_for_the_old_pid_does_not_race_the_lock(), a_second_daemon_of_the_same_build_exits_without_touching_anything(), Home, read(), shutdown()
 
 ### Community 484 - "04 — Dependencies, build & release (S11)"
-Cohesion: 0.05
-Nodes (28): 1 — What the dependencies allow, 2 — "Free for personal use, still open source" does not exist, 3 — The options, 4 — Protecting the work, and the showcase, 5 — What to change in the tree, Assets, vendoring and the agents, Licensing — dependency audit and the choice for Gavin, Method and limits (+20 more)
+Cohesion: 0.09
+Nodes (13): 1 — What the dependencies allow, 2 — "Free for personal use, still open source" does not exist, 3 — The options, 4 — Protecting the work, and the showcase, 5 — What to change in the tree, Assets, vendoring and the agents, Licensing — dependency audit and the choice for Gavin, Method and limits (+5 more)
 
-### Community 485 - "launchGate.ts"
-Cohesion: 0.12
-Nodes (24): DemoSettings, ALLOWED, ceilingFrom(), countsInFlight(), DEFAULT_LAUNCH, DRAIN_SPACING_MS, DrainInput, gateBlockedReason() (+16 more)
+### Community 485 - "pointerDrag.test.ts"
+Cohesion: 0.38
+Nodes (5): exceedsThreshold(), columns(), nestColumns(), r(), strip()
 
 ### Community 486 - "Developing a card into a plan"
 Cohesion: 0.14
@@ -2891,13 +2875,13 @@ Nodes (12): askBundle(), BUNDLE_ASK_TIMEOUT_MS, BUNDLE_CHUNK_MAX, BUNDLE_SIZE_MA
 Cohesion: 0.18
 Nodes (10): InboxEntry, KIND_ORDER, kindCount(), kindPlural(), KindTotal, kindTotals(), ListLayout, PREVIEW_COUNT (+2 more)
 
-### Community 489 - "Git Tab — History Graph (SP4) — Design Spec"
-Cohesion: 0.17
-Nodes (11): 1.1 Log, 1.2 Commit detail + revision diffs, 1.3 Actions, 1. Backend (`app/src-tauri/src/git/`), 2. Lane model (`graphLanes.ts`, pure), 3.2 Components, 3.3 Prefs, 3. Frontend (+3 more)
+### Community 489 - "WorkspacesData"
+Cohesion: 0.24
+Nodes (9): attachable_ids_include_main_agents_that_live_outside_every_page_tree(), attachable_ids_skip_file_and_board_tabs(), attachable_ids_span_every_workspace(), attachable_session_ids(), data(), get_workspaces_state(), persist_current(), WorkspacesData (+1 more)
 
-### Community 490 - "Terminal Core — Window Polish"
-Cohesion: 0.25
-Nodes (7): 1. Rounded window corners, 3. Disable text selection outside the terminal, Context, Goals, Non-goals, Terminal Core — Window Polish, Testing
+### Community 490 - "sec-hunt-windows-cmd-reparse.md"
+Cohesion: 0.17
+Nodes (11): 1. MSYS → CreateProcess quoting, and whether a POSIX-quoted arg can escape, 2026-10-19 — source half, 2. Do any shipped profiles hit the bare `.cmd` fallback on a stock Windows install?, Comments, Disposition, Done when, Method, Open questions (+3 more)
 
 ### Community 491 - "2026-08-25-agent-default-model-design.md"
 Cohesion: 0.17
@@ -2907,48 +2891,33 @@ Nodes (11): 1. Scope, 2. Decisions, 3.1 Per workspace — `.gavin-root/config.to
 Cohesion: 0.14
 Nodes (13): 1. Read before you ask, 2. Interview, 3. Choose the shape, and say why, 4. Propose, then wait, 5. Write it, 6. Stop, Developing a card into a plan, How the children run: `children:` (+5 more)
 
-### Community 493 - "baseline.rs"
-Cohesion: 0.26
-Nodes (8): a_branch_with_no_upstream_reports_no_deltas(), every_cwd_in_one_checkout_gets_that_checkouts_status(), git_baselines(), parse(), parse_porcelain_v2(), reads_branch_and_upstream_deltas(), repo_root(), status_for_root()
+### Community 493 - "super"
+Cohesion: 0.09
+Nodes (19): a_branch_with_no_upstream_reports_no_deltas(), every_cwd_in_one_checkout_gets_that_checkouts_status(), git_baselines(), parse(), parse_porcelain_v2(), reads_branch_and_upstream_deltas(), repo_root(), status_for_root() (+11 more)
 
 ### Community 494 - "Developing a card into a plan"
 Cohesion: 0.14
 Nodes (13): 1. Read before you ask, 2. Interview, 3. Choose the shape, and say why, 4. Propose, then wait, 5. Write it, 6. Stop, Developing a card into a plan, How the children run: `children:` (+5 more)
 
-### Community 495 - "OrchestrationDrawer.svelte"
-Cohesion: 0.07
-Nodes (34): history(), anyFilter, collapsed, dragging, {
-    groups,
-    tools,
-    templates,
-    nestedCounts,
-    targetRailId,
-    onOpenCard,
-    onAddTool,
-    onManageTools,
-    onAddTemplate,
-    onManageTemplates,
-    filtering = false,
-    hiddenCount = 0,
-    toolsBlocked = null,
-    groupsBlocked = null,
-  }, label, Props, query (+26 more)
+### Community 495 - "toolKindIcon.ts"
+Cohesion: 0.14
+Nodes (19): history(), ToolKind, BY_NAME, ICON_LIBRARY, ICON_NAMES, iconByName(), IconGroup, iconLabel() (+11 more)
 
 ### Community 496 - "Decision"
-Cohesion: 0.14
-Nodes (13): an_inherited_opencode_config_that_is_no_object_is_replaced(), Decision, Compressed, Uncompressed, env_of(), opencode_content(), Reason, HeadroomFailed (+5 more)
+Cohesion: 0.16
+Nodes (10): Decision, Compressed, Uncompressed, env_of(), Reason, HeadroomFailed, NoRecipe, NotReady (+2 more)
 
-### Community 497 - "clock.rs"
-Cohesion: 0.20
-Nodes (3): Clock, ManualClock, SystemClock
+### Community 497 - "device_scheduled.rs"
+Cohesion: 0.27
+Nodes (5): ANSWER_BUDGET, answer_scheduled_run_now(), Requested, REQUESTED, scheduled_run_now_for_device()
 
 ### Community 498 - "Developing a card into a plan"
 Cohesion: 0.14
 Nodes (13): 1. Read before you ask, 2. Interview, 3. Choose the shape, and say why, 4. Propose, then wait, 5. Write it, 6. Stop, Developing a card into a plan, How the children run: `children:` (+5 more)
 
-### Community 499 - "reviewPrefs.ts"
-Cohesion: 0.14
-Nodes (21): select(), DEFAULT_REVIEW_PREFS, isDefault(), loadReviewPrefs(), MaybeStorage, normalizeReviewPrefs(), normalizeStrings(), prefsFor() (+13 more)
+### Community 499 - "orchestrationConflictBanner.test.ts"
+Cohesion: 0.27
+Nodes (6): collapseStorageKey(), loadConflictsCollapsed(), MaybeStorage, saveConflictsCollapsed(), SVELTE, toggle()
 
 ### Community 500 - "Developing a card into a plan"
 Cohesion: 0.14
@@ -2962,9 +2931,9 @@ Nodes (13): 1. Read before you ask, 2. Interview, 3. Choose the shape, and say w
 Cohesion: 0.14
 Nodes (13): 1. Read before you ask, 2. Interview, 3. Choose the shape, and say why, 4. Propose, then wait, 5. Write it, 6. Stop, Developing a card into a plan, How the children run: `children:` (+5 more)
 
-### Community 503 - "Working in a gavin workspace"
-Cohesion: 0.15
-Nodes (12): 0. Name your tab, first thing, 1. Read the PRD first, 2. Cards: note, task, plan, 3. Nesting and promotion, 4. Keep status current, 5. When only a person can answer, 6. New feature or library? New context, 7. Parallel work: spawn visible sessions (+4 more)
+### Community 503 - "Terminal Core — Milestone C: Split Panes"
+Cohesion: 0.18
+Nodes (10): Architecture, Context, Data flow, Data model, Error handling, Goals, Non-goals (this spec), Product decisions carried from brainstorming (why they're not obvious) (+2 more)
 
 ### Community 504 - "Test-Driven Development"
 Cohesion: 0.15
@@ -2983,20 +2952,20 @@ Cohesion: 0.15
 Nodes (12): compilerOptions, allowJs, checkJs, esModuleInterop, forceConsistentCasingInFileNames, moduleResolution, resolveJsonModule, skipLibCheck (+4 more)
 
 ### Community 509 - "Plans — Archive Done cards into `plans/done/` — Design Spec"
-Cohesion: 0.20
-Nodes (9): 1. The rule, 2. Daemon, 3. Protocol, 5. Migration, 6. Testing, Collisions, Nested children travel with their parent, Path re-keying (+1 more)
+Cohesion: 0.18
+Nodes (10): 1. The rule, 2. Daemon, 3. Protocol, 4. Frontend, 5. Migration, 6. Testing, Collisions, Nested children travel with their parent (+2 more)
 
-### Community 510 - "migrate_custom_profiles"
-Cohesion: 0.21
-Nodes (15): chain_map_references(), complexity_maps_reference(), ComplexityAgent, config_toml_profile_is_custom(), migrate_custom_profiles(), needs_custom_migration(), profile_id_is_legacy_custom(), references_legacy_custom() (+7 more)
+### Community 510 - "Card Nesting Interaction Implementation Plan (2 of 3)"
+Cohesion: 0.20
+Nodes (9): unparentChild(), Backend half of the smoke pass — actually executed, Card Nesting Interaction Implementation Plan (2 of 3), Gates re-run against the live working tree, Re-verification — 2026-08-24, Second re-verification — 2026-08-24 (clean worktree + live daemon), The pointer half is confirmed human-only, Third re-verification — 2026-08-24 (the GUI blocker lifted) (+1 more)
 
 ### Community 511 - "appHeader.test.ts"
 Cohesion: 0.17
 Nodes (10): ACTIONS, METRICS, OVERHANG, PAGE, PANE, route(), ROUTES, source() (+2 more)
 
-### Community 512 - "fix-daemon-suite-deadlocks-on-windows.md"
+### Community 512 - "KanbanDragPreview.svelte"
 Cohesion: 0.18
-Nodes (9): Drop, Final Review Remediation, After, How the hang was pinned on the EOF bug and not on this, Two things found here that are nobody's card yet, What is left for this card, Fix, The evidence, two tests in one file on one machine (+1 more)
+Nodes (9): activeDragRoot, { board, merged, labels, root }, draggedColumn, draggedColumnCount, draggedPlan, ownsDrag, Props, Settle (+1 more)
 
 ### Community 513 - "UsageReport"
 Cohesion: 0.22
@@ -3010,45 +2979,45 @@ Nodes (12): 0. Name your tab, first thing, 1. Read the PRD first, 2. Cards: note
 Cohesion: 0.15
 Nodes (12): compilerOptions, allowJs, checkJs, esModuleInterop, forceConsistentCasingInFileNames, moduleResolution, resolveJsonModule, skipLibCheck (+4 more)
 
-### Community 516 - "connection.test.ts"
-Cohesion: 0.20
-Nodes (12): byte(), connected(), deps(), DIAL, HASH, leg(), READY, refusedBy() (+4 more)
+### Community 516 - "recipe"
+Cohesion: 0.29
+Nodes (9): a_daemon_started_from_a_compressed_opencode_session_does_not_pass_its_routing_on(), base_url(), mentions_the_session_header(), opencode_config(), Recipe, recipe(), routing_to_somewhere_else_or_under_another_tag_is_the_humans_own(), tagged_v1_url() (+1 more)
 
 ### Community 517 - "Working in a gavin workspace"
-Cohesion: 0.15
-Nodes (12): 0. Name your tab, first thing, 1. Read the PRD first, 2. Cards: note, task, plan, 3. Nesting and promotion, 4. Keep status current, 5. When only a person can answer, 6. New feature or library? New context, 7. Parallel work: spawn visible sessions (+4 more)
+Cohesion: 0.17
+Nodes (11): 0. Name your tab, first thing, 1. Read the PRD first, 3. Nesting and promotion, 4. Keep status current, 5. When only a person can answer, 6. New feature or library? New context, 7. Parallel work: spawn visible sessions, 8. Proposing a memory (+3 more)
 
-### Community 518 - "plugins.test.ts"
-Cohesion: 0.27
-Nodes (9): asTauriRejects(), pageClipboard(), readText(), writeText(), open(), OpenDialogOptions, Platform, platform() (+1 more)
-
-### Community 519 - "scope"
+### Community 518 - "reviewTabStyles.test.ts"
 Cohesion: 0.18
-Nodes (9): ToolGroup, scope(), ToolScope, 1.1 Tool, 1.2 Step, 1.3 SQLite, 1. Data model, 1.4 Group template (+1 more)
+Nodes (8): AGENT, COLUMN_HEADS, FILE, HUB, LIST, ROOTS, SOURCES, STRIP_HEADS
+
+### Community 519 - "bundle.e2e.ts"
+Cohesion: 0.22
+Nodes (3): DEV_SEED, Packer, PUBLISHER_SEED
 
 ### Community 520 - "headroom/run.rs"
 Cohesion: 0.28
 Nodes (9): a_child_that_fills_both_pipes_still_finishes(), a_missing_program_names_itself(), a_run_past_its_deadline_is_killed_and_says_so(), a_run_returns_both_streams_and_the_exit_code(), arguments_and_environment_reach_the_child_as_given(), DRAIN_GRACE, Run, run() (+1 more)
 
-### Community 521 - "ignore.rs"
-Cohesion: 0.15
-Nodes (22): a_missing_gitignore_reads_as_empty(), add_ignore_pattern(), add_pattern_appends_with_a_trailing_newline_even_over_a_file_missing_one(), add_pattern_never_duplicates_a_line_already_there(), add_pattern_on_an_empty_or_missing_file_writes_just_the_pattern(), an_unknown_kind_is_refused(), common_git_dir(), exclude_resolves_to_the_common_dir_from_a_linked_worktree() (+14 more)
+### Community 521 - "liveHub.test.ts"
+Cohesion: 0.28
+Nodes (5): asleepUntilBack(), fakeConnection(), LAPTOP, settle(), STUDIO
 
 ### Community 522 - "Working in a gavin workspace"
 Cohesion: 0.15
 Nodes (12): 0. Name your tab, first thing, 1. Read the PRD first, 2. Cards: note, task, plan, 3. Nesting and promotion, 4. Keep status current, 5. When only a person can answer, 6. New feature or library? New context, 7. Parallel work: spawn visible sessions (+4 more)
 
 ### Community 523 - "Working in a gavin workspace"
-Cohesion: 0.15
-Nodes (12): 0. Name your tab, first thing, 1. Read the PRD first, 2. Cards: note, task, plan, 3. Nesting and promotion, 4. Keep status current, 5. When only a person can answer, 6. New feature or library? New context, 7. Parallel work: spawn visible sessions (+4 more)
+Cohesion: 0.17
+Nodes (11): 0. Name your tab, first thing, 1. Read the PRD first, 3. Nesting and promotion, 4. Keep status current, 5. When only a person can answer, 6. New feature or library? New context, 7. Parallel work: spawn visible sessions, 8. Proposing a memory (+3 more)
 
-### Community 524 - "Working in a gavin workspace"
-Cohesion: 0.15
-Nodes (12): 0. Name your tab, first thing, 1. Read the PRD first, 2. Cards: note, task, plan, 3. Nesting and promotion, 4. Keep status current, 5. When only a person can answer, 6. New feature or library? New context, 7. Parallel work: spawn visible sessions (+4 more)
+### Community 524 - "bodyStart"
+Cohesion: 0.36
+Nodes (6): bodyStart(), rendered, previewBody(), renderMarkdown(), sanitizeMarkdown(), What is wrong
 
-### Community 525 - "verdictAttention.test.ts"
-Cohesion: 0.18
-Nodes (7): groupedEntries(), asking, attentionState, blocked, finished, pending, working
+### Community 525 - "Gavin orchestration smoke test — fixture guide"
+Cohesion: 0.33
+Nodes (5): A. Root binding (Foundations), C. Per-session context boards, D. Cleanup, Gavin orchestration smoke test — fixture guide, Seeded fixture
 
 ### Community 526 - "Working in a gavin workspace"
 Cohesion: 0.15
@@ -3058,9 +3027,9 @@ Nodes (12): 0. Name your tab, first thing, 1. Read the PRD first, 2. Cards: note
 Cohesion: 0.17
 Nodes (11): Chart the map, Fog of war, Invocation, Out of scope, Plan, don't do, Refer by name, The Map, The map body (+3 more)
 
-### Community 529 - "UI Design Tokens & Light/Dark — Design (sub-project 1 of 4)"
-Cohesion: 0.18
-Nodes (10): 1. Scope, 3. File layout, 4.1 Tier 1 — ramps, 4.2 Tier 2 — semantic roles, 4.3 What stays as it is, 4. Token vocabulary, 6. Beachhead migration, 7. Known limitation after this sub-project (+2 more)
+### Community 529 - "Global Constraints"
+Cohesion: 0.22
+Nodes (8): Global Constraints, Self-Review Notes, Task 1: OSC 7 byte scanner (pure, daemon-side), Task 3: Wire the scanner into the daemon's relay loop + Attach baseline, Task 4: Tauri backend event relay, Task 5: `Tooltip.svelte` — standalone hover-tooltip component, Task 7: `folderName` helper + `Pane.svelte` tab-label integration, Terminal Core Refinements — Plan 2: Tab Naming via Live cwd Tracking Implementation Plan
 
 ### Community 530 - "device-drive.sh"
 Cohesion: 0.33
@@ -3074,13 +3043,17 @@ Nodes (10): args, demo, devKeyFile(), ADR-0005, placeDevKey(), platforms, probe,
 Cohesion: 0.20
 Nodes (4): LiveHub, Evidence (2026-09-26), Fix, Verify
 
-### Community 533 - "Global Constraints"
-Cohesion: 0.20
-Nodes (10): numbered(), Global Constraints, Task 0: Plan card on the board, Task 1: `GitDirtyPaths`, Task 2: Root-addressed requests and the push, Task 3: `gavin_get_orchestration`, Task 4: `gavin_set_orchestration`, Task 5: Apply the push in the app (+2 more)
+### Community 533 - "orchestration.ts"
+Cohesion: 0.03
+Nodes (120): rails(), orchWith(), addCardAsStage(), addRail(), addStage(), addStep(), addToolAsStage(), ATTENTION_RANK (+112 more)
 
-### Community 534 - "Session ownership: one writer per session, a lock for everyone else"
-Cohesion: 0.17
-Nodes (11): daemonCompat(), Busy: the confirm in item 4, Enforcement: where the check sits, Gaps, on purpose, Problem, Races, Session ownership: one writer per session, a lock for everyone else, State machine (+3 more)
+### Community 534 - "Gavin Agent Orchestration — Brainstorm Session Log"
+Cohesion: 0.25
+Nodes (7): loaded(), 1. The nucleus (user's vision), 2. What exists today (verified against the code, 2026-08-06), 3. Decomposition (sub-projects) — **APPROVED as build order, D13**, 4. Open questions (the backlog — asked one at a time), 4b. Sub-project progress, Gavin Agent Orchestration — Brainstorm Session Log
+
+### Community 535 - "CompanionWindow"
+Cohesion: 0.05
+Nodes (27): CompanionWindow, 1. Rounded window corners, 2. Fix window dragging, Context, Goals, Non-goals, Terminal Core — Window Polish, Testing (+19 more)
 
 ### Community 536 - "src-tauri/src/companion_bundle.rs"
 Cohesion: 0.29
@@ -3094,37 +3067,33 @@ Nodes (9): CoreError, Entropy, Finished, Frame, Handshake, HardwareKey, NotReady
 Cohesion: 0.27
 Nodes (5): FakeGateway, Gateway, RecordedPush, the_live_transport_reads_an_accepted_push(), the_live_transport_reads_the_gateways_refusal()
 
-### Community 539 - "ConnectCause"
-Cohesion: 0.20
-Nodes (8): a_failed_connect_names_one_cause_from_the_socket_and_the_lock(), classify(), ConnectCause, NoDaemon, NotAccepting, PathMissing, ConnectDiagnosis, diagnose()
-
-### Community 540 - "Log"
-Cohesion: 0.20
-Nodes (4): CapturedLog, Log, LogSink, Stderr
+### Community 540 - "CapturedLog"
+Cohesion: 0.23
+Nodes (3): CapturedLog, LogSink, Stderr
 
 ### Community 541 - "Local Dev Stack"
 Cohesion: 0.17
 Nodes (11): Build, Installing Node/npm, Installing Rust/Cargo, Local Dev Stack, Manually probe the running daemon, Prerequisites, Run tests, Run the app (primary dev flow) (+3 more)
 
-### Community 542 - "mcpServerTrust.ts"
-Cohesion: 0.06
-Nodes (47): ForeignMcpServer, IntegrationResult, CursorMcpForeignInput, H0, K, rotr(), sha256Hex(), agentFile (+39 more)
+### Community 542 - "fake_headroom.rs"
+Cohesion: 0.50
+Nodes (6): json_string(), knob(), main(), record_launch(), serve(), value_after()
 
-### Community 543 - "notify"
-Cohesion: 0.07
-Nodes (25): notify(), Load-bearing dependencies, Conflict resolution decisions (2026-08-21), Context found before the first question, Decisions, Execution notes — conflict resolution (2026-08-21), Execution notes — plan 1 (Local Changes, 2026-08-20), Execution notes — SP2 + SP3 (sync/branches/stashes, worktrees; 2026-08-20) (+17 more)
-
-### Community 544 - "2026-08-06-agent-orchestration-foundations-design.md"
+### Community 543 - "Git tab "à la Fork" — brainstorm (session log, 2026-08-20)"
 Cohesion: 0.17
-Nodes (11): 1. The on-disk convention, 2. Workspace ⇄ root binding, 4. Error handling, 5. Testing, config.toml, Edge rules, Plan file format, PRD template (+3 more)
+Nodes (11): Conflict resolution decisions (2026-08-21), Context found before the first question, Decisions, Execution notes — conflict resolution (2026-08-21), Execution notes — plan 1 (Local Changes, 2026-08-20), Execution notes — SP2 + SP3 (sync/branches/stashes, worktrees; 2026-08-20), Execution notes — SP4 (history graph, 2026-08-21), Git tab "à la Fork" — brainstorm (session log, 2026-08-20) (+3 more)
 
-### Community 545 - "find"
-Cohesion: 0.21
-Nodes (21): a_parent_lists_its_children_either_spelling(), by_meaning_a_title_that_says_it_outright_comes_first_then_the_daemon_s_order(), by_words_only_cards_with_every_word_come_back_and_the_answer_says_why(), Criteria, criteria(), criteria_read_blank_as_absent_and_refuse_what_they_cannot_mean(), find(), found() (+13 more)
+### Community 544 - "opencode"
+Cohesion: 0.32
+Nodes (8): an_inherited_opencode_config_that_is_no_object_is_replaced(), an_opencode_launch_on_a_headroom_without_its_plugin_has_no_recipe(), opencode(), opencode_content(), opencode_merge(), the_humans_own_opencode_config_is_kept_and_an_earlier_headroom_plugin_is_replaced(), the_opencode_config_content_keeps_the_mcp_servers_on_disk(), the_opencode_recipe_points_both_native_providers_and_the_plugin_at_this_session()
 
-### Community 546 - "agentModel.ts"
-Cohesion: 0.10
-Nodes (32): OWN, own(), boxOpen, commit(), custom, draft, { id, options, own, presets, placeholder, disabled = false, onPick }, Props (+24 more)
+### Community 545 - "File structure"
+Cohesion: 0.25
+Nodes (8): File structure, Task 1: The wire contract, Task 2: The Companion core, Task 3: The trust store, Task 4: Pairing registers the hardware key, Task 5: The Remote role, fixed by the transport, Task 6: The daemon serves connections, and seam 1, Task 7: Records
+
+### Community 546 - "resolveAgentConfig"
+Cohesion: 0.05
+Nodes (70): boxOpen, custom, draft, { id, options, own, presets, placeholder, disabled = false, onPick }, Props, typing, advisorPresets(), commandSpecifiesEffort() (+62 more)
 
 ### Community 547 - "steps"
 Cohesion: 0.39
@@ -3138,25 +3107,25 @@ Nodes (11): Refusal, background, badHash, cancelled, failed, keysExist, locked, 
 Cohesion: 0.22
 Nodes (6): BundleStore, ReadyBundle, readyBundle(), ReadyBundleDeps, sentence(), ADR-0005
 
-### Community 551 - "live.ts"
-Cohesion: 0.18
-Nodes (6): ATTENTION_POLL_MS, LiveState, LiveStateName, RECONNECT, TRY_NOW_GAP_MS, ADR-0003
+### Community 551 - "Route"
+Cohesion: 0.40
+Nodes (5): every_known_profile_has_an_install_route_and_custom_has_none(), Route, Manual, Plugin, SkillsCli
 
-### Community 552 - "3. Diff viewer and staging model"
-Cohesion: 0.33
-Nodes (6): 3. Diff viewer and staging model, After an action, One model, two layouts (`diffRows.ts`, pure), Patch builder (`patch.ts`, pure), Rendering, Selection
+### Community 552 - "Git Tab — Local Changes (sub-project 1 of 3) — Design Spec"
+Cohesion: 0.12
+Nodes (16): 1. The tab and its layout, 4. Frontend state, refresh, destructive actions, 5. Edge cases, 6. Testing, 7. Build order, Commit flow, Destructive actions, Empty states (+8 more)
 
 ### Community 553 - "data-model-default-agent-setting-per-primary-fallback-chains-rust-config-session-workspace-settings-ts-types-migrations-decidelaunch-launchdecision-keying-fixture-updates.md"
 Cohesion: 0.40
 Nodes (4): Launch, Migration, Shape, Verify
 
 ### Community 554 - "socket_path"
-Cohesion: 0.29
-Nodes (8): DaemonRestart, DaemonRestartClaim, FrontendReady, restart_blocking(), restart_daemon(), signal_frontend_ready(), stop_daemon(), socket_path()
+Cohesion: 0.15
+Nodes (12): a_daemon_that_never_answers_ends_the_probe_at_its_deadline(), a_second_restart_is_refused_while_one_is_under_way(), DaemonRestart, DaemonRestartClaim, FrontendReady, lifting_the_handshake_deadline_leaves_reads_unbounded(), reconnect(), restart_blocking() (+4 more)
 
-### Community 555 - "Global Constraints"
-Cohesion: 0.17
-Nodes (11): checkForUpdate(), Done when, Global Constraints, OTA Updates Implementation Plan, Task 1: Ship the sidecar binaries inside the bundle, Task 2: A daemon this install can identify, Task 3: gavin-mcp re-execs itself when the daemon moves ahead, Task 4: Wire up the updater plugin (+3 more)
+### Community 555 - "archive-closes-session-build.md"
+Cohesion: 0.40
+Nodes (3): Projection, Verify, Wiring
 
 ### Community 556 - "Restoring a terminal's screen after a restart or a hot reload"
 Cohesion: 0.20
@@ -3174,21 +3143,17 @@ Nodes (8): 2. The grant, 3. Tests, Constraints, Done (2026-10-12), Not covered, 
 Cohesion: 0.18
 Nodes (9): UsageProbe, AnthropicOauth, CodexRollout, CursorSession, GeminiCodeAssist, KimiOauth, OpencodeGo, agent_usage() (+1 more)
 
-### Community 560 - "DirectIdentity"
-Cohesion: 0.18
-Nodes (4): DirectIdentity, revoke_all_mints_a_new_direct_certificate(), revoke_all_rotates_the_key_and_leaves_the_settings_alone(), the_direct_certificate_is_minted_once_and_shared()
+### Community 561 - "daemon/src/program.rs"
+Cohesion: 0.24
+Nodes (5): a_command_child_does_not_share_this_console(), command(), CREATE_NO_WINDOW, every_spawn_in_this_crate_goes_through_command(), spawn_sites_outside()
 
-### Community 561 - "feat-auto-resume.md"
-Cohesion: 0.22
-Nodes (8): Checks, Out of scope, Pre-flight for the manual pass (2026-09-02), Standalone sessions, Steps, The trigger, Two resumes of one session is its own bug, What it triggers on is the REASON, not the failure
+### Community 562 - "perf-agent-model-catalog-off-main-thread.md"
+Cohesion: 0.40
+Nodes (4): Done (2026-09-26, uncommitted on perf/main-thread-commands), Evidence (2026-09-26), Fix, Verify
 
-### Community 562 - "Companion mobile: compile and run"
-Cohesion: 0.18
-Nodes (11): Android signing, Companion mobile: compile and run, Drive a physical iPhone, Manual steps (same as the script), One-shot compile, Pair with a local Relay, Prerequisites, Push notifications (iOS) (+3 more)
-
-### Community 563 - "fix-release-app-console-windows-on-windows.md"
-Cohesion: 0.22
-Nodes (7): Done, Was open, Why, and why only here, Done 2026-09-10, Fix, in two halves, both needed, Second pass, same day: the git tab, Why
+### Community 563 - "Architecture"
+Cohesion: 0.20
+Nodes (9): 1. Data model & protocol, 2. Creating and managing the link (frontend), 3. Session creation with options, 4. The card face, Architecture, Context, Non-goals, Terminal Core — Kanban Integration Layer — Design Spec (+1 more)
 
 ### Community 564 - "Per-build daemon isolation"
 Cohesion: 0.18
@@ -3203,20 +3168,20 @@ Cohesion: 0.24
 Nodes (6): deps(), HASH, KEPT, keys(), READY, scriptedCore()
 
 ### Community 567 - "schedule.ts"
-Cohesion: 0.10
-Nodes (38): completed(), describeRule(), dueSlot(), formatWhen(), Grid, lastRun(), lastRunResult(), latestRunNeedsLook() (+30 more)
+Cohesion: 0.13
+Nodes (21): completed(), dueSlot(), Grid, latestSlot(), LIVE, MONTHS, nextFireAt(), ruleLine() (+13 more)
 
-### Community 568 - "touchTargets.test.ts"
-Cohesion: 0.14
-Nodes (17): attributesAt(), BOXES, controlKind(), covers(), DRAWN, floorRule, inputTypesLeftOut(), LIB (+9 more)
+### Community 568 - "TypeSafe round 2: whose change is this? Experiment record and question sets"
+Cohesion: 0.18
+Nodes (10): Cost and latency, E4 -- file -> card attribution (promising), E5 -- commit -> card link, and finding a card by meaning (promising), E7 -- settings search by meaning (promising, small), Ground truth, Policy (code, not model), Question sets, The question (+2 more)
 
 ### Community 569 - "rate.rs"
 Cohesion: 0.29
 Nodes (5): a_burst_then_one_per_interval(), a_quiet_device_gets_its_whole_burst_back_and_is_pruned(), devices_do_not_share_an_allowance(), Limiter, RateLimit
 
-### Community 570 - "gemini_usage"
-Cohesion: 0.15
-Nodes (20): anthropic_usage(), codex_sessions_dir(), cursor_token(), cursor_usage(), gemini_creds_path(), gemini_denied_reason(), gemini_post(), gemini_rate_limited() (+12 more)
+### Community 570 - "Result (2026-09-29)"
+Cohesion: 0.20
+Nodes (9): Acceptance criteria, For the merge, How each recipe came out, How to run the human test, Not verified, Result (2026-09-29), Things the card did not say, and what was done, What to build (+1 more)
 
 ### Community 571 - "PushTransport"
 Cohesion: 0.22
@@ -3226,53 +3191,33 @@ Nodes (6): Arc<FakeGateway>, map_reply(), PushTransport, read_error_code(), Tran
 Cohesion: 0.36
 Nodes (6): LAPTOP, nativeUnlock(), settle(), started(), STUDIO, workstations()
 
-### Community 573 - "fieldFontSize.test.ts"
-Cohesion: 0.29
-Nodes (5): covers(), floorRule, inputTypesLeftOut(), SHIPPED, UNTYPED_INPUTS
-
 ### Community 574 - "demo/sessions.ts"
-Cohesion: 0.09
-Nodes (43): answerAtDesk(), DemoStep, moveCard(), SCRIPTED, SCRIPTED_CARDS, tickNext(), CARD_COMMANDS, cardNamed() (+35 more)
+Cohesion: 0.08
+Nodes (44): answerAtDesk(), DemoStep, SCRIPTED, SCRIPTED_CARDS, closeBrowser(), changed(), AgentAsk, agentKey() (+36 more)
 
 ### Community 575 - "Store policy: running a Workstation-served web bundle in the Companion"
 Cohesion: 0.20
 Nodes (9): 1. App Review Guidelines, 2. DPLA: executable and interpreted code, 3. Native API exposure, 4. Does the source of the code matter?, 5. Precedents, 6. Google Play, 7. Verdict and constraints for the spec, Store policy: running a Workstation-served web bundle in the Companion (+1 more)
 
-### Community 576 - "unlock.ts"
-Cohesion: 0.12
-Nodes (12): openItem(), INITIAL_UNLOCK, LAPSE_GRACE_MS, LockedWhy, ADR-0004, UNLOCK_REASON, UnlockAction, UnlockContext (+4 more)
-
-### Community 577 - "Global Constraints"
-Cohesion: 0.20
-Nodes (9): Global Constraints, MCP Part 1 (Protocol + Daemon + Shim) Implementation Plan, Out of scope (Part 2), Task 1: Protocol — version const + six requests + five responses, Task 2: Daemon — create_plan_file, read_prd, and the four simple arms, Task 3: Daemon — board-by-root and agent spawn with push, Task 4: The gavin-mcp shim, Task 5: End-to-end verification against the real daemon (+1 more)
+### Community 577 - "initialize"
+Cohesion: 0.05
+Nodes (35): checkForUpdate(), initialize(), Global Constraints, MCP Part 1 (Protocol + Daemon + Shim) Implementation Plan, Out of scope (Part 2), Task 1: Protocol — version const + six requests + five responses, Task 2: Daemon — create_plan_file, read_prd, and the four simple arms, Task 3: Daemon — board-by-root and agent spawn with push (+27 more)
 
 ### Community 578 - "File Structure"
-Cohesion: 0.17
-Nodes (11): parsed(), File Structure, Global Constraints, Per-build daemon isolation Implementation Plan, Task 1: The rule, in `protocol`, Task 2: Split the session registry, Task 3: Split the daemon log, Task 4: Tell every PTY which daemon opened it (+3 more)
+Cohesion: 0.20
+Nodes (9): File Structure, Global Constraints, Per-build daemon isolation Implementation Plan, Task 1: The rule, in `protocol`, Task 2: Split the session registry, Task 3: Split the daemon log, Task 4: Tell every PTY which daemon opened it, Task 5: `gavin-mcp` prefers the endpoint it was handed (+1 more)
 
 ### Community 579 - "Terminal Core — Milestone B: Minimal Client (Tauri + Svelte + xterm.js)"
 Cohesion: 0.20
 Nodes (9): Architecture, Context, Data flow, Data model, Error handling, Goals, Non-goals (this spec), Terminal Core — Milestone B: Minimal Client (Tauri + Svelte + xterm.js) (+1 more)
 
-### Community 580 - "kimi_session_wires"
-Cohesion: 0.25
-Nodes (7): transcript_files(), ClaudeMessage, ClaudeRecord, kimi_agent_wires(), kimi_session_dir(), kimi_session_wires(), kimi_transcript()
+### Community 580 - "compressedLaunchSurfaces.test.ts"
+Cohesion: 0.33
+Nodes (8): Call, CALLS, callsIn(), CREATORS, isShell(), onOneLine(), SHELLS, withoutComments()
 
 ### Community 581 - "orchestrationPrompts.ts"
 Cohesion: 0.20
 Nodes (14): ToolSummary, binding(), CARRY_THROUGH, composeOrganizePrompt(), composeRailPrompt(), conflictBlock(), plural(), railLine() (+6 more)
-
-### Community 582 - "nesting_tree"
-Cohesion: 0.36
-Nodes (7): a_connection_a_restarted_daemon_closed_is_replaced_without_failing_the_call(), nesting_tree(), the_scan_names_only_the_children_that_actually_travelled(), two_card_tree(), unplaced_cards_keep_free_standing_and_orphaned_children(), unplaced_cards_leave_out_nested_children(), unplaced_titles()
-
-### Community 583 - "5. Resolution and persistence"
-Cohesion: 0.33
-Nodes (5): 2. Decisions, 5.2 The flow, 5.3 Storage, 5.4 Failure modes, 5. Resolution and persistence
-
-### Community 584 - "Native window polish"
-Cohesion: 0.29
-Nodes (5): 2. Fix window dragging, If the edge gesture does nothing, Native window polish, Steps, Why
 
 ### Community 585 - "sec-fix-companion-task-snapshot-cover.md"
 Cohesion: 0.20
@@ -3294,17 +3239,9 @@ Nodes (8): Further Notes, Implementation Decisions, Out of Scope, Problem Statem
 Cohesion: 0.22
 Nodes (6): `app/`, Commands, Layout, `app/src/lib`, Imports, `sources.ts`
 
-### Community 590 - "Terminal Core — Design Spec"
-Cohesion: 0.20
-Nodes (9): Architecture, Context, Data flow, Data model, Error handling, Goals, Non-goals (this spec), Terminal Core — Design Spec (+1 more)
-
-### Community 591 - "bundle.test.ts"
-Cohesion: 0.25
-Nodes (6): DEV, manifest(), PUBLISHER, toBase64(), workstation(), The updater
-
-### Community 592 - "Global Constraints"
-Cohesion: 0.14
-Nodes (13): Backend half of the smoke pass — actually executed, Card Nesting Interaction Implementation Plan (2 of 3), Gates re-run against the live working tree, Global Constraints, Second re-verification — 2026-08-24 (clean worktree + live daemon), Task 1: pointerDrag — nest targets, Task 2: kanbanDrag — nested slots + no-op rules, Task 4: Glue + components — the interactive nested area (+5 more)
+### Community 592 - "reviewState.ts"
+Cohesion: 0.09
+Nodes (30): diff(), TouchSource, pickFile(), cached(), clearReviewFile(), emptyView(), errorText(), FETCH_CONCURRENCY (+22 more)
 
 ### Community 593 - "InboxList.svelte"
 Cohesion: 0.06
@@ -3314,13 +3251,9 @@ Nodes (30): ADR-0009, Props, { row, where = null, fixed = false, onOpen }, end, 
 Cohesion: 0.29
 Nodes (6): Decisions, Execution notes — plan 1 (card model core, 2026-08-20), Execution notes — plan 2 (nesting interaction, 2026-08-20), Execution notes — plan 3 (run & bindings, 2026-08-20), Kanban card model — final form (session log, 2026-08-20), Section approvals
 
-### Community 595 - "Route"
-Cohesion: 0.40
-Nodes (5): every_known_profile_has_an_install_route_and_custom_has_none(), Route, Manual, Plugin, SkillsCli
-
-### Community 596 - "Global Constraints"
-Cohesion: 0.29
-Nodes (6): Card Run & Bindings Implementation Plan (3 of 3), Global Constraints, Task 1: Protocol v5 + daemon card_sessions, Task 3: cardRun.ts — pure prompt/command composition, Task 6: SKILL.md + MCP polish, Task 7: Checklist, docs, final sweep
+### Community 595 - "sec-fix-linux-watchers-no-follow.md"
+Cohesion: 0.25
+Nodes (7): armed(), Done when, Fix, Root cause, The invariant to enforce, Trace (lines as of 2026-10-16; re-read before editing), What the audit could not observe
 
 ### Community 597 - "Language"
 Cohesion: 0.22
@@ -3330,29 +3263,29 @@ Nodes (8): Activity, Agents, Board, Distribution, Gavin, Language, Remote access
 Cohesion: 0.22
 Nodes (8): How it works, in one paragraph, Linux hosts, SSH workspaces, The workspace's ssh settings, What the host needs, What works over ssh today, and what does not yet, When it fails, Windows hosts
 
-### Community 599 - "TokenLog"
-Cohesion: 0.13
-Nodes (20): locate(), TokenLog, ClaudeSessionJsonl, CodexRollout, KimiWireJsonl, claude_projects_dir(), claude_transcript(), codex_rollout() (+12 more)
+### Community 599 - "commandGate.test.ts"
+Cohesion: 0.29
+Nodes (6): Bucket, CLASSIFICATION, registeredCommands(), RUST, rust(), ADR-0009
 
 ### Community 600 - "Network git sync, the git watcher, conflicts and tree mutations over ssh"
 Cohesion: 0.22
 Nodes (8): 1. What is already reachable, and what needs a bump, 2. Decision: streaming rides the STREAMING connection, not the command one, 3. Decision: trash on the host is the HOST's Trash, 4. The four new confined mutations, 5. Roles, Network git sync, the git watcher, conflicts and tree mutations over ssh, The watchers' lifetime is the connection's, Why not poll, for the watcher
 
-### Community 601 - "PhoneMarkdown.svelte"
-Cohesion: 0.04
-Nodes (46): The remote shim, openUrl(), { content }, follow(), html, Props, dompurify@^3.4.16, target() (+38 more)
+### Community 601 - "target"
+Cohesion: 0.09
+Nodes (19): target(), Scan algorithm, Design, Found while building, FS sync — build, Measured, Steps, The bug (verified) (+11 more)
 
-### Community 602 - "endpoints.ts"
-Cohesion: 0.40
-Nodes (4): demoEndpoint(), endpointFor(), Every, every()
+### Community 602 - "railBindTeardown.test.ts"
+Cohesion: 0.36
+Nodes (4): SOURCES, RailLike, RailSelection, railSelection()
 
 ### Community 603 - "companion-24-early-store-review.md"
 Cohesion: 0.22
 Nodes (8): Acceptance criteria, Apple's response, Blocker (2026-09-28), Owner submission wizard, Plan (agent prep, 2026-09-30), Play internal testing, Prepared: App Store — Notes for Review, What to build
 
-### Community 604 - "phoneSettings.ts"
-Cohesion: 0.60
-Nodes (4): folderLine(), inheritedPauseLine(), WorkspaceAgentView, workspaceAgentView()
+### Community 604 - "agentPause.ts"
+Cohesion: 0.12
+Nodes (23): folderLine(), inheritedPauseLine(), WorkspaceAgentView, workspaceAgentView(), agentLimitSpent(), CyclePhase, cyclePhase(), DEFAULT_CYCLE (+15 more)
 
 ### Community 605 - "sec-check-browser-cdp-port.md"
 Cohesion: 0.22
@@ -3390,10 +3323,6 @@ Nodes (7): Anything else?, Context, Document structure, How to answer, <Question
 Cohesion: 0.32
 Nodes (5): fetchArchive(), FetchOptions, FetchProgress, fromBase64(), ADR-0005
 
-### Community 615 - "parse_rfc3339"
-Cohesion: 0.17
-Nodes (11): a_cursor_cycle_that_has_already_reset_is_not_a_ready_report(), as_epoch_secs(), as_percent(), codex_limits_come_from_the_newest_event_that_has_them(), codex_usage(), collect_jsonl(), days_from_civil(), newest_codex_limits() (+3 more)
-
 ### Community 616 - "workspace_log"
 Cohesion: 0.53
 Nodes (3): workspace_log(), workspace_log_impl(), WorkspaceLogPage
@@ -3402,9 +3331,9 @@ Nodes (3): workspace_log(), workspace_log_impl(), WorkspaceLogPage
 Cohesion: 0.40
 Nodes (5): AttachmentLocation, ExtraContext, Outside, Refused, Root
 
-### Community 618 - "Gavin Agent Orchestration — Brainstorm Session Log"
+### Community 619 - "sec-hardening-loopback-publish-ports.md"
 Cohesion: 0.25
-Nodes (7): loaded(), 1. The nucleus (user's vision), 2. What exists today (verified against the code, 2026-08-06), 3. Decomposition (sub-projects) — **APPROVED as build order, D13**, 4. Open questions (the backlog — asked one at a time), 4b. Sub-project progress, Gavin Agent Orchestration — Brainstorm Session Log
+Nodes (7): 2026-10-19 — deploy.sh stub runs, Comments, Done when, Test, What, Where (lines as of 2026-10-16; re-read before editing), Why
 
 ### Community 620 - "ConnectionKind"
 Cohesion: 0.33
@@ -3422,41 +3351,21 @@ Nodes (4): Acceptance criteria, Plan, What to build, Where it landed
 Cohesion: 0.36
 Nodes (6): commandBody(), commands(), everyCommand(), OFF_MAIN_THREAD, RUST, rust()
 
-### Community 624 - "feat-windows-port.md"
-Cohesion: 0.40
-Nodes (4): Checklist, Corrections to the assumptions above, What the Windows pass has to answer, Window chrome: the controls stay top-left (decided)
-
-### Community 625 - "initToolListeners"
-Cohesion: 0.29
-Nodes (7): initToolListeners(), Done when, Fix, Root cause, The invariant to enforce, Trace (re-read before editing), What is wrong
+### Community 624 - "src-tauri/src/trash.rs"
+Cohesion: 0.52
+Nodes (6): a_trashed_file_lands_in_the_home_trash_with_a_complete_info_file(), a_trashed_file_lands_in_the_recycle_bin_with_its_restore_record(), find_info_for(), find_record_for(), recycle_bins_for(), trash_path()
 
 ### Community 626 - "perf-file-viewer-unbounded-reads.md"
-Cohesion: 0.40
-Nodes (4): Evidence (2026-09-26), Fix, Result (2026-09-26), Verify
-
-### Community 627 - "liveConnection"
-Cohesion: 0.28
-Nodes (4): liveConnection(), Waiting, Not done (follow-up if still slow), What was slow
-
-### Community 628 - "Self-hosting the Relay"
-Cohesion: 0.25
-Nodes (8): 1. Get the image, by digest, 2. Verify the signature, 3. Admission tokens, 4. TLS, 5. Run it, Limits, Self-hosting the Relay, The Push gateway
+Cohesion: 0.33
+Nodes (5): Evidence (2026-09-26), Fix, Progress, Result (2026-09-26), Verify
 
 ### Community 629 - "Global Constraints"
 Cohesion: 0.25
 Nodes (7): Global Constraints, Not covered by this plan (deliberately, per the design spec), Restored-Session UX Implementation Plan, Task 1: `recover()` self-heals, and Attach failures are isolated to one pane, Task 2: `SessionRestored` protocol event + daemon baseline + clearing on input, Task 3: App-side cwd-preserving replacement + Tauri relay, Task 5: `Pane.svelte` restored badge
 
-### Community 630 - "perf-watchman-off-main-thread.md"
-Cohesion: 0.40
-Nodes (4): Done (2026-09-26, uncommitted on perf/main-thread-commands), Evidence (2026-09-26), Fix, Verify
-
-### Community 631 - "typesafe-turn-verdict.md"
-Cohesion: 0.07
-Nodes (26): FailureCause, asking(), blocked(), Method, Policy (code, not model), Question set (v2), Results, The question (+18 more)
-
-### Community 632 - "bug-agent-connection-failure.md"
-Cohesion: 0.22
-Nodes (8): 1a — the machine slept, 1b — the agent said so, Checks, Constraints, Deliberately out of scope, Root 1 — nothing in gavin knows what a failure is, Root 2 — the status vocabulary has no room for failure, Root 3 — the recovery is a resumed conversation, not a fresh prompt
+### Community 631 - "HeadroomReach"
+Cohesion: 0.14
+Nodes (12): FailureCause, HeadroomReach, Failures, Acceptance criteria, Decided here, where the card left it open, For the merge, Known limits, Result (2026-09-29) (+4 more)
 
 ### Community 633 - "feat-linux-port.md"
 Cohesion: 0.25
@@ -3502,17 +3411,9 @@ Nodes (7): Done when, Fix, Root cause, The invariant to enforce, Trace (lines as
 Cohesion: 0.25
 Nodes (7): Done when, Fix, Root cause, The invariant to enforce, Trace (lines as of 2026-10-16; re-read before editing), What is wrong, What the audit could not observe
 
-### Community 644 - "Gavin — Product Requirements"
-Cohesion: 0.25
-Nodes (7): Architecture, Current focus, Gavin — Product Requirements, Out of scope, Principles, Vision, What is built
-
 ### Community 645 - "with"
 Cohesion: 0.25
 Nodes (8): with, cache, cache-dependency-path, fetch-depth, if-no-files-found, name, node-version, path
-
-### Community 646 - "Features"
-Cohesion: 0.25
-Nodes (8): And underneath, Decisions and Review, Every agent CLI you use, Features, Gavin Companion — the board in your pocket, Kanban that is the repo, Orchestration rails, Real terminals
 
 ### Community 647 - "publish-preview.sh"
 Cohesion: 0.54
@@ -3530,13 +3431,13 @@ Nodes (6): 1. Scope the procedure, 2. Map each stage's journey, 3. Author the wi
 Cohesion: 0.43
 Nodes (3): expectedBody(), fail(), hex()
 
-### Community 651 - "Packaging gavin"
-Cohesion: 0.29
-Nodes (7): Cross-compiling the Windows installer on a Mac, Packaging gavin, Targets, Version and build number, What produces the sidecars, Why `externalBin` is not in `tauri.conf.json`, Windows: the install directory and the daemon
+### Community 651 - "viewBoundary.test.ts"
+Cohesion: 0.40
+Nodes (4): LIB, PAGE(), ROUTES, source()
 
 ### Community 652 - "Value"
-Cohesion: 0.27
-Nodes (9): is_headroom_plugin(), is_tagged_for(), object_at(), opencode_merge(), plugin_file(), plugin_project(), remove_headroom_plugins(), the_opencode_config_content_keeps_the_mcp_servers_on_disk() (+1 more)
+Cohesion: 0.36
+Nodes (7): is_headroom_plugin(), is_tagged_for(), object_at(), plugin_file(), plugin_project(), remove_headroom_plugins(), without_opencode_recipe()
 
 ### Community 653 - "bundle"
 Cohesion: 0.29
@@ -3546,13 +3447,13 @@ Nodes (6): bundle, targets, windows, installerHooks, $schema, nsis
 Cohesion: 0.43
 Nodes (4): a_conversations_shell_writes_fold_into_its_calls_and_each_file_once(), opening_a_pre_v72_database_adds_the_shell_writes_table(), paths(), recording_a_call_twice_keeps_the_second_record()
 
-### Community 656 - "Global Constraints"
-Cohesion: 0.04
-Nodes (44): get(), writeInput(), Pane, Registry, Task 4: Socket server — session CRUD over the wire, Global Constraints, Task 1: Layout tree pure logic + vitest setup, Task 2: Backend bindings + reactive layout state store (+36 more)
+### Community 655 - "indicatorSurfaces.test.ts"
+Cohesion: 0.40
+Nodes (4): ALLOWED_DOTS, bareColouredDots(), ruleBlocks(), SOURCES
 
-### Community 657 - "nofile.rs"
-Cohesion: 0.29
-Nodes (7): current_nofile(), RAISE_SOFT_NOFILE, raise_soft_nofile(), raise_soft_nofile_lifts_a_mac_style_256_soft_limit(), raise_soft_nofile_never_lowers_an_already_high_soft_limit(), raise_soft_nofile_unix(), SoftNofileGuard
+### Community 656 - "terminalRegistryHot.test.ts"
+Cohesion: 0.10
+Nodes (8): get(), execute(), hot, Registry, Task 4: Socket server — session CRUD over the wire, Task 2: Protocol variant + registry plumbing, Task 2: The daemon stores `mode` and `name`, 3. Daemon-side storage
 
 ### Community 660 - "gavin-mcp-compat-window.md"
 Cohesion: 0.29
@@ -3626,10 +3527,6 @@ Nodes (6): Done when, Fix, Root cause, The invariant to enforce, Trace (lines as
 Cohesion: 0.43
 Nodes (7): app, companion-core, companion-wasm, gavin-daemon, gavin-mcp, gavin-relay, protocol
 
-### Community 678 - "Build from source"
-Cohesion: 0.29
-Nodes (7): Build from source, Download the Preview build, Gavin Companion (iOS and Android), Install, Linux, macOS, Windows
-
 ### Community 679 - "install-release-mac.sh"
 Cohesion: 0.52
 Nodes (6): die(), is_our_worktree(), note(), running(), say(), install-release-mac.sh script
@@ -3694,10 +3591,6 @@ Nodes (5): interface, display_name, short_description, policy, allow_implicit_in
 Cohesion: 0.33
 Nodes (5): interface, display_name, short_description, policy, allow_implicit_invocation
 
-### Community 696 - "NotificationService"
-Cohesion: 0.16
-Nodes (4): NotificationService, DeliveredNotify, Progress (2026-10-09): the iOS half, uncommitted on main, Progress (2026-10-09, third round): taps never reached the hub; fixed, and the rest of what follows a push run on a Simulator
-
 ### Community 697 - "usb-install.sh"
 Cohesion: 0.60
 Nodes (5): usb-install.sh script, team_problem(), usage(), wanted(), xcode_teams()
@@ -3706,17 +3599,9 @@ Nodes (5): usb-install.sh script, team_problem(), usage(), wanted(), xcode_teams
 Cohesion: 0.33
 Nodes (3): MIN_BURST_CALLS, SLOW_BURST_MS, WireBurst
 
-### Community 701 - "Lease"
-Cohesion: 0.67
-Nodes (3): Lease, Held, Over
-
-### Community 702 - "fix-rail-agent-edits-its-worktree-card-copy.md"
-Cohesion: 0.50
-Nodes (3): Checklist, Decisions to make, Why it is worth fixing rather than filing under agent error
-
-### Community 703 - "sec-remote-access.md"
-Cohesion: 0.50
-Nodes (3): Output, Propose, and argue each choice against at least one rejected alternative, Start from two facts
+### Community 702 - "railCommands.ts"
+Cohesion: 0.05
+Nodes (67): announce(), beginChildren(), cwdFor(), DESK_ORIGIN, DEVICE_ORIGIN, launchable(), launchChild(), launchStep() (+59 more)
 
 ### Community 704 - "default.json"
 Cohesion: 0.33
@@ -3730,29 +3615,21 @@ Nodes (5): Consequences, Considered options, Each Workstation serves the Compani
 Cohesion: 0.33
 Nodes (5): Before exploring, read these, Domain Docs, File structure, Flag ADR conflicts, Use the glossary's vocabulary
 
-### Community 708 - "Findings"
-Cohesion: 0.20
-Nodes (9): 03 — Agent & workspace-content surface (adversary A2), Accepted residual — agent headless browser CDP (2026-10-19), AG-01 — A cloned repo's card body is the prompt, and the human saw only the title, AG-03 — `gavin_set_plan_field` and the daemon's path-taking requests are unscoped to the agent's workspace, AG-04 — The MCP tool set is narrower than the wire protocol, but the narrowing grants nothing, AG-08 — State the scheduler trusts is writable over the socket for any rail/step/card, AG-09 — `GAVIN_SESSION_ID` is not an auth token, Findings (+1 more)
-
-### Community 710 - "themeState.svelte.ts"
-Cohesion: 0.06
-Nodes (37): drawn(), getAgentModelDefaults(), getThemePref(), setThemePref(), applyTerminalTheme(), LiveState, SOURCES, DARK (+29 more)
+### Community 710 - "theme.ts"
+Cohesion: 0.10
+Nodes (24): getAgentModelDefaults(), getThemePref(), setThemePref(), EffectiveTheme, parseThemePref(), PREFS, resolveTheme(), ThemePref (+16 more)
 
 ### Community 711 - "perf-git-worktree-add-remove-off-main-thread.md"
 Cohesion: 0.33
 Nodes (5): Evidence (2026-09-26), Fix, Outcome, Progress, Verify
 
-### Community 712 - "next"
-Cohesion: 0.43
-Nodes (6): next(), Read, Frame, Gone, Other, Refused
+### Community 712 - "Stream"
+Cohesion: 0.09
+Nodes (23): a_hosts_browser_reaches_a_device_at_the_phones_size_over_a_bridge_of_its_own(), ask(), BrowserWatches, built_daemon(), cdp_call(), dial(), dial_host(), installed_browsers() (+15 more)
 
 ### Community 713 - "sec-relay-per-principal-limits.md"
 Cohesion: 0.33
 Nodes (5): Build, Docs after the change, Done when, Regression tests (`crates/gavin-relay`), Trace (re-read before editing; lines as of 2026-10-16)
-
-### Community 714 - "tests/device_wire.rs"
-Cohesion: 0.08
-Nodes (22): a_browser_frame_the_desk_offers_reaches_the_listening_device_whole(), a_real_agent_browsers_phone_frame_reaches_the_device(), a_relay_that_alters_the_handshake_causes_it_to_fail(), Address, altering(), cdp_call(), FRAME_EVENT, frame_payload() (+14 more)
 
 ### Community 715 - "done/perf-main-thread-command-audit.md"
 Cohesion: 0.33
@@ -3766,17 +3643,29 @@ Nodes (5): Card nesting & promotion — smoke fixture, Running it, The human hal
 Cohesion: 0.40
 Nodes (4): 1. Reconstruct before you write, 2. What to do with what you find, 3. Then carry on, Resuming a card someone already worked
 
+### Community 718 - "tooltipSurfaces.test.ts"
+Cohesion: 0.50
+Nodes (3): localTooltipBubbles(), rules(), SOURCES
+
+### Community 720 - "globalStyleScope.test.ts"
+Cohesion: 0.50
+Nodes (3): ALLOWED, leadingGlobals(), splitSelectorList()
+
 ### Community 721 - "bundle.mjs"
 Cohesion: 0.38
 Nodes (6): buildNumber(), main(), runnerOf(), tauriArgs(), OVERLAY, versionOverlay()
 
+### Community 722 - "hubTabStrip.test.ts"
+Cohesion: 0.50
+Nodes (4): LIB, route(), ROUTES, source()
+
+### Community 723 - "toolLibraryLayout.test.ts"
+Cohesion: 0.50
+Nodes (3): ruleFor(), source(), SVELTE
+
 ### Community 725 - "State"
 Cohesion: 0.40
 Nodes (4): State, Absent, Unavailable, Verified
-
-### Community 726 - "navigation_guard.rs"
-Cohesion: 0.29
-Nodes (4): dev_url_only_in_debug(), init(), navigation_allowed(), parse()
 
 ### Community 727 - "Resuming a card someone already worked"
 Cohesion: 0.40
@@ -3814,9 +3703,13 @@ Nodes (4): Checklist, Decisions, Touched files: where they come from, What lande
 Cohesion: 0.40
 Nodes (4): Done (2026-09-26, uncommitted on perf/main-thread-commands), Evidence (2026-09-26), Fix, Verify
 
-### Community 739 - "perf-agent-model-catalog-off-main-thread.md"
+### Community 741 - "fix-ui-freezes-from-main-thread-gh-calls.md"
 Cohesion: 0.40
-Nodes (4): Done (2026-09-26, uncommitted on perf/main-thread-commands), Evidence (2026-09-26), Fix, Verify
+Nodes (4): After the fix, same measurement on the relaunched app, Measured, 2026-09-26, Steps, Why
+
+### Community 742 - "perf-get-board-payload-and-refresh-storm.md"
+Cohesion: 0.40
+Nodes (4): Evidence (2026-09-26), Fix, Progress, Verify
 
 ### Community 743 - "tab-naming-and-link-build.md"
 Cohesion: 0.40
@@ -3893,10 +3786,6 @@ Nodes (3): interface, display_name, short_description
 ### Community 762 - "interface"
 Cohesion: 0.50
 Nodes (3): interface, display_name, short_description
-
-### Community 766 - "Page"
-Cohesion: 0.67
-Nodes (3): Page, sample_layout(), sample_page()
 
 ### Community 767 - "Writing this repo's agent instructions file"
 Cohesion: 0.50
@@ -3994,10 +3883,6 @@ Nodes (3): Cause, Do, Outcome (2026-09-25, branch `merge/origin-main-20260925`)
 Cohesion: 0.50
 Nodes (3): Acceptance criteria, Spike record (Gemini CLI 0.35.3, Headroom 0.39.1, throwaway install, 2026-09-29), What to find out, then build
 
-### Community 792 - "SSH workspaces — a workspace whose root lives on another machine"
-Cohesion: 0.20
-Nodes (9): 1. The one fact that decides the shape, 2. Transport: ssh's stdio, through a bridge subcommand, 3. Identity: the host daemon's own token, so the gate is exercised, 4. In the app: a link per host, the same `Stream` everywhere, 5. Paths and OS, 6. The bridge, precisely, 7. What this slice leaves to its own cards, 8. Rejected, in one place (+1 more)
-
 ### Community 793 - "review-blame-headroom-masks-auth-and-limit-failures.md"
 Cohesion: 0.50
 Nodes (3): The case that breaks it, The defect, What to do
@@ -4022,10 +3907,6 @@ Nodes (3): Cover, Output, Rules
 Cohesion: 0.50
 Nodes (3): Cover, Output, Rules
 
-### Community 799 - "bundle.e2e.ts"
-Cohesion: 0.22
-Nodes (3): DEV_SEED, Packer, PUBLISHER_SEED
-
 ### Community 800 - "jobs"
 Cohesion: 0.12
 Nodes (16): jobs, linux, manifest, preflight, windows, name, needs, runs-on (+8 more)
@@ -4042,65 +3923,45 @@ Nodes (3): die(), say(), start-dev-mac.sh script
 Cohesion: 0.83
 Nodes (3): bold(), dim(), smoke-test.sh script
 
-### Community 806 - "dialFirst"
-Cohesion: 0.23
-Nodes (11): checkAborted(), connect(), coreStep(), dialFirst(), Ended, keysProblem(), messageOf(), sentence() (+3 more)
+### Community 806 - "connection/connection.ts"
+Cohesion: 0.05
+Nodes (49): Served bundles, checkAborted(), connect(), ConnectDeps, Connection, CONNECTION_TIMEOUTS, ConnectionKeys, ConnectionTimeouts (+41 more)
 
 ### Community 807 - "liveHub.test.ts"
-Cohesion: 0.28
-Nodes (5): asleepUntilBack(), fakeConnection(), LAPTOP, settle(), STUDIO
+Cohesion: 0.12
+Nodes (9): hub(), items(), KEYS, KINDS, STUDIO, SVELTE, SVELTE, SVELTE (+1 more)
 
-### Community 808 - "McpForeignChoice"
-Cohesion: 0.33
-Nodes (4): McpForeignChoice, Isolate, Keep, setup_agent_integration()
+### Community 808 - "IntegrationResult"
+Cohesion: 0.22
+Nodes (7): CheckoutMarkOffer, IntegrationResult, McpForeignChoice, Isolate, Keep, McpForeignServers, setup_agent_integration()
 
 ### Community 1224 - "feat-touched-files-shell-hook.md"
 Cohesion: 0.25
 Nodes (7): ShellWrites, Constraints, Done when, Goal, Outcome (2026-10-13), Plan (settled 2026-10-13), Shape (agreed in conversation; refine before building)
 
-### Community 1226 - "fix-the-last-twelve-vitest-failures-on-main.md"
-Cohesion: 0.25
-Nodes (6): Closed 2026-09-22 (`9d72df9`), The fix is in the two test files, not in the gate, Closed 2026-09-22 (`9d72df9`), Nine individual assertions, Three suites never load at all, Why this is worth a card rather than a baseline note
-
-### Community 1230 - "fix-tauri-dev-cannot-rebuild-a-sidecar-another-session-is-running.md"
-Cohesion: 0.29
-Nodes (6): A second site any fix must touch (board audit, 2026-09-22), Options, in the order they look promising, The route taken (2026-09-23), The workaround that got §1 ticked (superseded 2026-09-23), Two things a later change must not undo, What landed (branch `win/dev-loop`, uncommitted)
-
-### Community 1231 - "event"
-Cohesion: 0.17
-Nodes (8): Served bundles, The shell's end of the channel, Connection, event(), Acceptance criteria, Outcome, Plan, What to build
-
-### Community 1232 - "agent_skills_farewell"
-Cohesion: 0.33
-Nodes (5): agent_skills_farewell(), dismiss_agent_skills_farewell(), dismiss_farewell_in(), farewell_due(), the_farewell_is_targeted_and_dismissed_once()
-
 ### Community 1234 - "State"
 Cohesion: 0.33
 Nodes (5): State, Absent, Asserted, Unavailable, Verified
 
-### Community 1239 - "perf-plan-relocation-rereads-every-card.md"
-Cohesion: 0.33
-Nodes (5): Evidence (2026-09-26), Fix, Outcome (2026-09-26, uncommitted on perf/main-thread-commands), Verify, Work
-
 ## Knowledge Gaps
 - **872 isolated node(s):** `ADR-0002`, `ADR-0005`, `.root`, `notAHash`, `badPath` (+867 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 10993 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **441 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 10969 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **443 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `featureBlockedReason()` connect `featureBlockedReason` to `layoutState.ts`, `SettingsHubView.svelte`, `RunChangesModal.svelte`, `settings.ts`, `PhoneAppSettings.svelte`, `PhoneTerminal.svelte`, `DecisionsHubView.svelte`, `orchestrationState.ts`, `ReviewHubView.svelte`, `CardDetailModal.svelte`, `kanbanState.ts`, `PlanExplorerHubView.svelte`, `cardRunActions.ts`, `PhoneRails.svelte`, `memoryIndexState.ts`, `GlobalSettingsView.svelte`, `app/src/routes/+page.svelte`, `daemonCompat.ts`, `OrchestrationRail.svelte`, `PhoneCard.svelte`, `patchPlanField`, `gitState.ts`, `planBoard.ts`, `AppHubView.svelte`, `Session ownership: one writer per session, a lock for everyone else`, `orchestration.ts`, `changeAttributionState.ts`, `notifyDevices.ts`, `remoteAccess.ts`, `bug-interrupted-agent-runs.md`, `CardComposeModal.svelte`, `agent_setup.rs`, `core/core.ts`, `ScheduledHubView.svelte`, `autoResumeState.ts`, `RunHistoryModal.svelte`, `Global Constraints`, `state/browser.ts`, `agent`, `WorkspaceRootControl.svelte`, `compressionDriver.ts`, `DevicesPanel.svelte`, `feat-touched-files-shell-hook.md`, `headroomState.ts`, `Implementation Decisions`, `ToolLibraryDialog.svelte`, `File structure`, `WorkspaceLogHubView.svelte`, `turnVerdictDriver.ts`, `humanTests.ts`, `FollowUpQueueView.svelte`, `chore-stable-release-install-on-windows.md`, `daemonCompat`, `textScale.ts`, `custom`, `OrchestrationHubView.svelte`, `headroomSavings.ts`, `2026-08-25-agent-default-model-design.md`, `KanbanBoard.svelte`, `SessionsManagerModal.svelte`, `orchestrations`, `Implementation Decisions`?**
-  _High betweenness centrality (0.169) - this node is a cross-community bridge._
+- **Why does `featureBlockedReason()` connect `featureBlockedReason` to `BoardCard.svelte`, `layoutState.ts`, `SettingsHubView.svelte`, `RunChangesModal.svelte`, `orchestrationState.ts`, `svelte`, `sessionOwnershipState.ts`, `ReviewHubView.svelte`, `backend.ts`, `CardDetailModal.svelte`, `cardRunActions.ts`, `scheduledState.ts`, `orchestrationDrop.test.ts`, `kanbanState.ts`, `memoryIndexState.ts`, `GlobalSettingsView.svelte`, `PhoneTools.svelte`, `OrchestrationRail.svelte`, `PhoneCard.svelte`, `gitState.ts`, `AppHubView.svelte`, `BoardPane.svelte`, `PhoneTerminal.svelte`, `notifyDevices.ts`, `featureBlockedReason`, `CardComposeModal.svelte`, `RailBindDialog.svelte`, `autoResumeState.ts`, `RunHistoryModal.svelte`, `buildRunCommand`, `@lucide/svelte`, `agent`, `hubViewMeta.ts`, `devicesState.ts`, `feat-touched-files-shell-hook.md`, `headroomState.ts`, `Implementation Decisions`, `PlanExplorerHubView.svelte`, `ToolLibraryDialog.svelte`, `WorkspaceLogHubView.svelte`, `File structure`, `svelte`, `reviewState.ts`, `humanTests.ts`, `MainAgentPanel.svelte`, `chore-stable-release-install-on-windows.md`, `workspaceToolsActions.ts`, `companion-core-and-the-companion-shell-dial-the-direct-address-first-and-fall-back-to-the-relay-keep-the-core-free-of-i-o-and-randomness-add-the-cleartext-rule-for-the-platform-only-if-tls-is-not-used.md`, `textScale.ts`, `activityLoad.ts`, `OrchestrationHubView.svelte`, `compose_agent_prompt`, `perf-get-board-payload-and-refresh-storm.md`, `2026-08-25-agent-default-model-design.md`, `KanbanBoard.svelte`, `SessionsManagerModal.svelte`, `headroomReachDriver.test.ts`, `Implementation Decisions`?**
+  _High betweenness centrality (0.150) - this node is a cross-community bridge._
 - **Are the 9 inferred relationships involving `SessionManager` (e.g. with `Browsers` and `CompanionPushEvent`) actually correct?**
   _`SessionManager` has 9 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `ADR-0002`, `ADR-0005`, `.root` to the rest of the system?**
   _872 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `protocol/src/lib.rs` be split into smaller, more focused modules?**
-  _Cohesion score 0.009767744736270892 - nodes in this community are weakly interconnected._
-- **Why does `bootstrap()` connect `persist_workspaces` to `Stream`, `State`, `agent_setup.rs`, `socket_path`, `session.rs`, `agent`?**
-  _High betweenness centrality (0.134) - this node is a cross-community bridge._
-- **Should `messages.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.04924102184376157 - nodes in this community are weakly interconnected._
-- **Why does `7. Protocol sketch` connect `agent` to `DevicesPanel.svelte`, `persist_workspaces`, `ref_shell`, `probe.test.ts`, `featureBlockedReason`?**
-  _High betweenness centrality (0.129) - this node is a cross-community bridge._
+  _Cohesion score 0.01094185797039262 - nodes in this community are weakly interconnected._
+- **Why does `bootstrap()` connect `bootstrap` to `compose_agent_prompt`, `Stream`, `State`, `WorkspacesData`, `socket_path`, `attach_and_relay`, `session.rs`, `agent`?**
+  _High betweenness centrality (0.120) - this node is a cross-community bridge._
+- **Should `BoardCard.svelte` be split into smaller, more focused modules?**
+  _Cohesion score 0.03907203907203907 - nodes in this community are weakly interconnected._
+- **Why does `7. Protocol sketch` connect `agent` to `featureBlockedReason`, `bootstrap`, `2026-10-08-playwright-integration-design.md`, `devicesState.ts`?**
+  _High betweenness centrality (0.115) - this node is a cross-community bridge._
