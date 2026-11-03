@@ -106,7 +106,16 @@ export const AGENTS_SECTION: SettingsSection = {
   keywords: [...AGENTS_SECTION_KEYWORDS],
 };
 
-const STOCK_IDS = new Set(["cline", "codex", "gemini", "cursor", "opencode", "kimi-code"]);
+const STOCK_IDS = new Set([
+  "cline",
+  "copilot",
+  "claude-code",
+  "codex",
+  "gemini",
+  "cursor",
+  "opencode",
+  "kimi-code",
+]);
 
 export function isStockProfileId(id: string): boolean {
   return STOCK_IDS.has(id);
@@ -214,6 +223,10 @@ export function agentsTabForQuery(
     "agent file",
   ];
   if (agentHits.some((w) => q.includes(w))) {
+    if (["usage limit", "quota", "rate limit"].some((w) => q.includes(w))) {
+      const probed = profiles.find((profile) => profile.usageProbe);
+      if (probed) return probed.id;
+    }
     // Prefer the first custom when the query is about customs; else first profile.
     if (q.includes("custom") || q.includes("api family") || q.includes("named")) {
       const custom = profiles.find((p) => isCustomProfileId(p.id));
@@ -408,4 +421,3 @@ export function profilesForDefaults(profiles: AgentProfileInfo[]): AgentProfileI
 export function effortCapableProfiles(profiles: AgentProfileInfo[]): AgentProfileInfo[] {
   return profiles.filter((p) => Boolean(p.effortFlag?.trim()) || !isStockProfileId(p.id));
 }
-

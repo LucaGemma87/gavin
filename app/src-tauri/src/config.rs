@@ -1003,7 +1003,7 @@ pub struct AppConfig {
     #[serde(default)]
     pub theme: Option<String>,
     /// App-wide default model per agent profile id, e.g.
-    /// `{"cline": "opus"}`. A workspace with no `[agent] model` of
+    /// `{"claude-code": "opus"}`. A workspace with no `[agent] model` of
     /// its own inherits the entry for the profile it runs. Keyed by
     /// profile because one string cannot serve two CLIs -- `opus` is
     /// noise to Codex, so a single field would produce a bad flag the
@@ -2394,7 +2394,7 @@ mod tests {
             HashMap::from([(
                 "intricate".to_string(),
                 ComplexityAgent {
-                    profile: String::new(),
+                    profile: "claude-code".to_string(),
                     model: "sonnet".to_string(),
                     effort: "max".to_string(),
                     advisor: "opus".to_string(),
@@ -2413,7 +2413,11 @@ mod tests {
             "cline".to_string(),
             HashMap::from([(
                 "simple".to_string(),
-                ComplexityAgent { model: "haiku".to_string(), ..Default::default() },
+                ComplexityAgent {
+                    profile: "claude-code".to_string(),
+                    model: "haiku".to_string(),
+                    ..Default::default()
+                },
             )]),
         );
         save(dir.path(), &config).unwrap();
@@ -2581,7 +2585,7 @@ mod tests {
   }],
   "agent_pause": { "enabled": true, "periodMinutes": 240, "pauseMinutes": 5, "anchorMs": 3, "limitPercent": 95.0, "limitEnabled": false },
   "agent_defaults": {
-    "complexity": { "intricate": { "profile": "cline", "model": "opus" } },
+    "complexity": { "intricate": { "profile": "claude-code", "model": "opus" } },
     "customProfiles": [{"id": "my-bot", "label": "My Bot", "command": "mb", "modelFlag": ""}]
   }
 }"#;

@@ -455,9 +455,9 @@ describe("resolveAgentConfig", () => {
     const r = resolveAgentConfig(
       { profile: "cline", file: null, command: null, model: "  " },
       PROFILES,
-      { "cline": "opus" }
+      { "cline": "cline-default-test-model" }
     );
-    expect(r.model).toBe("opus");
+    expect(r.model).toBe("cline-default-test-model");
   });
 
   // The profile table is fetched asynchronously and its failure is
@@ -560,7 +560,7 @@ describe("resolveAgentConfig", () => {
 
   it("resolves effort by model's layers: the workspace's own, else the app-wide one", () => {
     const own = resolveAgentConfig(
-      { profile: "cline", file: null, command: null, model: "opus", effort: "high" },
+      { profile: "cline", file: null, command: null, model: CLINE_TEST_MODEL, effort: "high" },
       PROFILES,
       {},
       undefined,
@@ -569,7 +569,7 @@ describe("resolveAgentConfig", () => {
     );
     expect(own.effort).toBe("high");
     // Model first, then effort.
-    expect(own.launchCommand).toBe("cline --model opus --thinking high");
+    expect(own.launchCommand).toBe(`cline --model ${CLINE_TEST_MODEL} --thinking high`);
     const inherited = resolveAgentConfig(
       { profile: "cline", file: null, command: null },
       PROFILES,
@@ -652,11 +652,11 @@ describe("resolveAgentConfig", () => {
 
   it("lets a workspace flag override the profile table's, on any profile", () => {
     const r = resolveAgentConfig(
-      { profile: "cline", file: null, command: null, modelFlag: "--pick", model: "opus" },
+      { profile: "cline", file: null, command: null, modelFlag: "--pick", model: CLINE_TEST_MODEL },
       PROFILES,
       {}
     );
-    expect(r.launchCommand).toBe("cline --pick opus");
+    expect(r.launchCommand).toBe(`cline --pick ${CLINE_TEST_MODEL}`);
   });
 
   it("drops a repo-supplied modelFlag that carries shell syntax", () => {

@@ -2,6 +2,13 @@
 
 **Status:** approved 2026-08-25.
 
+**Implementation update (2026-11-02):** Cline CLI is now the default agent.
+Its model picker intentionally has no static presets: choose a model ID
+available to the Cline provider, including a current free promotion, from
+Cline's own settings. Claude Code remains available as the separate
+`claude-code` profile and owns the stable Claude aliases in the table below.
+The free list and account quota are not queried or inferred by Gavin.
+
 **Goal:** a default model for the coding agent, settable globally and per
 workspace, with popular picks offered where they exist and free text
 everywhere else. Enabling the global settings surface is part of the job:
@@ -93,7 +100,7 @@ Continuing the log from `2026-08-20-workspace-settings-design.md` (D35–D57).
 
 ```toml
 [agent]
-profile = "cline"
+profile = "claude-code"
 command = "claude"
 model   = "opus"          # new; absent = inherit the global default
 ```
@@ -119,7 +126,7 @@ if key == "model" && value.trim().is_empty() {
 ```jsonc
 {
   "theme": "dark",
-  "agentModels": { "cline": "opus", "gemini": "gemini-flash-latest" }
+  "agentModels": { "claude-code": "opus" }
 }
 ```
 
@@ -144,7 +151,8 @@ the entry.
 
 | profile | `model_flag` | `models` | why |
 |---|---|---|---|
-| `cline` | `--model` | `fable`, `opus`, `sonnet` | aliases named by its own `--help` |
+| `cline` | `--model` | — | free-model promotions rotate; no documented stable catalogue |
+| `claude-code` | `--model` | `fable`, `opus`, `sonnet`, `haiku`, `opusplan`, `best`, `sonnet[1m]`, `opus[1m]` | stable aliases documented by Claude Code |
 | `codex` | `--model` | — | dated ids only |
 | `gemini` | `--model` | — | dated ids only; `-m/--model` verified from `--help` |
 | `cursor` | — | — | the command is the IDE launcher; its positionals are paths |
@@ -199,8 +207,10 @@ which stops being disabled. Two sections:
 
 **Workspace Settings ▸ Agent** gains a **Model** row directly under
 Command, using the same picker, whose inherit row reads `Default (opus)` —
-naming the value it inherits, so the panel never shows an empty box that
-is secretly doing something. Profiles with no flag get the hint instead.
+for example, naming the value it inherits so the panel never shows an
+empty box that is secretly doing something. The inherited value is
+profile-specific (for Cline, the model ID chosen from Cline's own list);
+profiles with no flag get the hint instead.
 
 ## 7. Compatibility
 

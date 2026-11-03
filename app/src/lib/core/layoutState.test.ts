@@ -3759,12 +3759,14 @@ describe("adopting another writer's workspace settings", () => {
   it("reads the app-wide settings again when another writer changed one", async () => {
     const handlers = await bootstrapWith([ws("ws-1", [])]);
     await vi.waitFor(() => expect(backend.getAgentModelDefaults).toHaveBeenCalled());
-    vi.mocked(backend.getAgentModelDefaults).mockResolvedValue({ "cline": "opus" });
+    vi.mocked(backend.getAgentModelDefaults).mockResolvedValue({ "cline": "cline-default-test-model" });
     vi.mocked(backend.getAutoCommit).mockResolvedValue(true);
 
     handlers.get("app-settings-synced")!({ payload: { origin: "companion" } });
 
-    await vi.waitFor(() => expect(get(agentModelDefaultsStore)).toEqual({ "cline": "opus" }));
+    await vi.waitFor(() =>
+      expect(get(agentModelDefaultsStore)).toEqual({ "cline": "cline-default-test-model" })
+    );
     await vi.waitFor(() => expect(get(autoCommitDefault)).toBe(true));
   });
 
@@ -4864,8 +4866,11 @@ describe("workspace settings go through their own command", () => {
     ],
     [
       "setWorkspaceComplexityTable",
-      () => setWorkspaceComplexityTable("ws-1", "cline", { complex: { profile: "", model: "opus" } }),
-      { complexityTables: { "cline": { complex: { profile: "", model: "opus" } } } },
+      () =>
+        setWorkspaceComplexityTable("ws-1", "cline", {
+          complex: { profile: "", model: "cline-test-model" },
+        }),
+      { complexityTables: { "cline": { complex: { profile: "", model: "cline-test-model" } } } },
     ],
     // An own-but-empty table is a real answer ("no routing for this agent
     // here"), so it is kept; only null hands the primary back to the app.

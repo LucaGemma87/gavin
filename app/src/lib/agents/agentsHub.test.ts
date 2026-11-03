@@ -46,7 +46,8 @@ function profile(
 }
 
 const PROFILES: AgentProfileInfo[] = [
-  profile({ id: "cline", label: "cline", usageProbe: "anthropic-oauth" }),
+  profile({ id: "cline", label: "Cline CLI" }),
+  profile({ id: "claude-code", label: "Claude Code", usageProbe: "anthropic-oauth" }),
   profile({ id: "codex", label: "Codex", usageProbe: "codex-rollout" }),
   profile({ id: "work-agent", label: "Work", modelFlag: "--model" }),
   profile({ id: "local:desk", label: "Desk", local: true }),
@@ -56,7 +57,8 @@ describe("agents hub tabs", () => {
   it("is General plus one tab per agent, locals marked", () => {
     expect(agentsHubTabs(PROFILES).map((t) => t.label)).toEqual([
       "General",
-      "cline",
+      "Cline CLI",
+      "Claude Code",
       "Codex",
       "Work",
       "Desk (local)",
@@ -92,7 +94,7 @@ describe("agentsTabForQuery", () => {
   });
 
   it("opens a named agent for quota / custom / command", () => {
-    expect(agentsTabForQuery("app", "quota", PROFILES)).toBe("cline");
+    expect(agentsTabForQuery("app", "quota", PROFILES)).toBe("claude-code");
     expect(agentsTabForQuery("app", "API family", PROFILES)).toBe("work-agent");
     expect(agentsTabForQuery("workspace", "Codex", PROFILES)).toBe("codex");
   });
@@ -100,7 +102,9 @@ describe("agentsTabForQuery", () => {
   it("treats custom ids as customs", () => {
     expect(isCustomProfileId("work-agent")).toBe(true);
     expect(isCustomProfileId("local:desk")).toBe(true);
-    expect(isCustomProfileId("cline")).toBe(false);
+    for (const id of ["cline", "copilot", "claude-code", "codex", "gemini", "cursor", "opencode", "kimi-code"]) {
+      expect(isCustomProfileId(id)).toBe(false);
+    }
     expect(isCustomProfileId("general")).toBe(false);
   });
 });
@@ -109,6 +113,8 @@ describe("customProfiles CRUD helpers", () => {
   it("slugifies and avoids stock ids", () => {
     expect(slugifyCustomId("My Agent!", [])).toBe("my-agent");
     expect(slugifyCustomId("cline", [])).toBe("cline-agent");
+    expect(slugifyCustomId("Copilot", [])).toBe("copilot-agent");
+    expect(slugifyCustomId("Claude Code", [])).toBe("claude-code-agent");
     expect(slugifyCustomId("custom", ["custom-agent"])).toBe("custom-agent-2");
   });
 
@@ -203,7 +209,7 @@ describe("deleting a custom cleans its references", () => {
 });
 
 describe("the trailing + tab", () => {
-  const profiles = [profile({ id: "cline", label: "cline" }), profile({ id: "codex", label: "Codex" })];
+  const profiles = [profile({ id: "cline", label: "Cline CLI" }), profile({ id: "codex", label: "Codex" })];
 
   it("is added only when a hint is given, after every agent", () => {
     expect(agentsHubTabs(profiles).map((t) => t.id)).toEqual([GENERAL_TAB, "cline", "codex"]);
@@ -293,4 +299,3 @@ describe("cleaning a deleted local custom out of a workspace's own maps", () => 
     ).toEqual({});
   });
 });
-

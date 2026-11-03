@@ -43,8 +43,15 @@ vi.mock("$lib/core/layoutState", () => ({
   promptExtrasFor: vi.fn((): string[] => []),
   candidateAgentFor: vi.fn((_ws: string, c: { profileId: string; model: string }) => ({
     profileId: c.profileId,
-    label: c.profileId === "custom" ? "Custom" : "cline",
-    launchCommand: c.model ? `claude --model ${c.model}` : "claude",
+    label: c.profileId === "custom" ? "Custom" : c.profileId === "cline" ? "Cline CLI" : c.profileId,
+    launchCommand:
+      c.profileId === "cline"
+        ? c.model
+          ? `cline --model ${c.model}`
+          : "cline"
+        : c.model
+          ? `${c.profileId} --model ${c.model}`
+          : c.profileId,
     // custom is the stock profile that takes no prompt at all, which is
     // the one agent gate a run has to fail on.
     promptArgs: c.profileId === "custom" ? null : "",
@@ -146,13 +153,18 @@ const CARD: CardView = {
 function plan(profileId: string, model: string, branch: string): CandidatePlan {
   return {
     candidate: { profileId, model },
-    label: model ? `cline · ${model}` : profileId,
+    label: model
+      ? `${profileId === "cline" ? "Cline CLI" : profileId === "codex" ? "Codex CLI" : profileId} · ${model}`
+      : profileId,
     branch,
     worktreePath: `/repos/gavin-${branch}`,
   };
 }
 
-const PLANS = [plan("cline", "opus", "auth-opus"), plan("cline", "sonnet", "auth-sonnet")];
+const PLANS = [
+  plan("cline", "cline-free-model-a", "auth-cline-free-model-a"),
+  plan("cline", "cline-free-model-b", "auth-cline-free-model-b"),
+];
 
 beforeEach(() => {
   trace.length = 0;
@@ -190,7 +202,12 @@ describe("starting a run", () => {
     // happen after a refusal, and a session must never start in a folder
     // that does not exist yet.
     expect(await startBestOfN("ws-1", CARD, PLANS, "main")).toBeNull();
-    expect(trace).toEqual(["status", "fork:/repos/gavin-auth-opus", "fork:/repos/gavin-auth-sonnet", "sessions:2"]);
+    expect(trace).toEqual([
+      "status",
+      "fork:/repos/gavin-auth-cline-free-model-a",
+      "fork:/repos/gavin-auth-cline-free-model-b",
+      "sessions:2",
+    ]);
   });
 
   it("forks every candidate from the base it was given, never from whatever git would pick", async () => {
@@ -204,12 +221,12 @@ describe("starting a run", () => {
   it("chains the workspace's setup ahead of each agent, in that candidate's worktree", async () => {
     await startBestOfN("ws-1", CARD, PLANS, "main");
     const specs = createTiledPage.mock.calls[0][2];
-    expect(specs[0].cwd).toBe("/repos/gavin-auth-opus");
-    expect(specs[0].command.startsWith("npm install && claude --model opus ")).toBe(true);
-    expect(specs[1].command).toContain("--model sonnet");
+    expect(specs[0].cwd).toBe("/repos/gavin-auth-cline-free-model-a");
+    expect(specs[0].command.startsWith("npm install && cline --model cline-free-model-a ")).toBe(true);
+    expect(specs[1].command).toContain("--model cline-free-model-b");
     // Each candidate is told which one it is, or three tabs name
     // themselves the same thing.
-    expect(specs[0].command).toContain("cline · opus");
+    expect(specs[0].command).toContain("Cline CLI · cline-free-model-a");
   });
 
   // What makes each session a candidate for compression, which the
@@ -221,7 +238,7 @@ describe("starting a run", () => {
     await startBestOfN(
       "ws-1",
       CARD,
-      [plan("cline", "opus", "auth-opus"), plan("codex", "gpt", "auth-codex")],
+      [plan("cline", "cline-free-model-a", "auth-cline-free-model-a"), plan("codex", "gpt", "auth-codex")],
       "main"
     );
 
@@ -251,7 +268,7 @@ describe("starting a run", () => {
     configTrust = { trusted: false };
     await startBestOfN("ws-1", CARD, PLANS, "main");
     const specs = createTiledPage.mock.calls[0][2];
-    expect(specs[0].command.startsWith("claude --model opus ")).toBe(true);
+    expect(specs[0].command.startsWith("cline --model cline-free-model-a ")).toBe(true);
     expect(specs.every((sp: { command: string }) => !sp.command.includes("npm install"))).toBe(true);
   });
 
@@ -261,8 +278,8 @@ describe("starting a run", () => {
     expect(run.cardPath).toBe(CARD.id);
     expect(run.pageId).toBe("page-1");
     expect(run.candidates.map((c) => [c.sessionId, c.branch, c.worktreePath])).toEqual([
-      ["s1", "auth-opus", "/repos/gavin-auth-opus"],
-      ["s2", "auth-sonnet", "/repos/gavin-auth-sonnet"],
+      ["s1", "auth-cline-free-model-a", "/repos/gavin-auth-cline-free-model-a"],
+      ["s2", "auth-cline-free-model-b", "/repos/gavin-auth-cline-free-model-b"],
     ]);
   });
 
@@ -319,28 +336,35 @@ describe("starting a run", () => {
     const error = await startBestOfN("ws-1", CARD, PLANS, "main");
     // git's own words, not a pointer at a tab the human is not looking at.
     expect(error).toBe(
-      "Couldn't create the worktree for cline · sonnet — New worktree failed: fatal: '/repos/x' already exists"
+      "Couldn't create the worktree for Cline CLI · cline-free-model-b — New worktree failed: fatal: '/repos/x' already exists"
     );
-    expect(trace).toEqual(["status", "fork:/repos/gavin-auth-opus", "fork:FAILED", "discard:/repos/gavin-auth-opus:branches"]);
+    expect(trace).toEqual([
+      "status",
+      "fork:/repos/gavin-auth-cline-free-model-a",
+      "fork:FAILED",
+      "discard:/repos/gavin-auth-cline-free-model-a:branches",
+    ]);
     expect(get(bestOfNRuns)["ws-1"] ?? []).toEqual([]);
   });
 
   it("removes them all when the sessions cannot be started", async () => {
     createTiledPage.mockImplementation(async () => null as never);
     expect(await startBestOfN("ws-1", CARD, PLANS, "main")).toMatch(/Couldn't start the candidates/);
-    expect(trace.at(-1)).toBe("discard:/repos/gavin-auth-opus,/repos/gavin-auth-sonnet:branches");
+    expect(trace.at(-1)).toBe(
+      "discard:/repos/gavin-auth-cline-free-model-a,/repos/gavin-auth-cline-free-model-b:branches"
+    );
   });
 
   it("leaves an already In Progress card's status alone", async () => {
     await startBestOfN("ws-1", { ...CARD, status: "In Progress" }, PLANS, "main");
-    expect(trace[0]).toBe("fork:/repos/gavin-auth-opus");
+    expect(trace[0]).toBe("fork:/repos/gavin-auth-cline-free-model-a");
   });
 
   it("names the tabs after the candidates, not after the card they share", async () => {
     await startBestOfN("ws-1", CARD, PLANS, "main");
     expect(vi.mocked(layoutState.setSessionName).mock.calls.map((c) => c[1])).toEqual([
-      "cline · opus",
-      "cline · sonnet",
+      "Cline CLI · cline-free-model-a",
+      "Cline CLI · cline-free-model-b",
     ]);
   });
 });
@@ -352,8 +376,8 @@ function startedRun(): BestOfNRun {
     pageId: "page-1",
     startedAt: 1,
     candidates: [
-      { sessionId: "s1", label: "A", profileId: "cline", model: "opus", branch: "auth-opus", worktreePath: "/repos/gavin-auth-opus", command: "claude a", conversationId: "id-a" },
-      { sessionId: "s2", label: "B", profileId: "cline", model: "sonnet", branch: "auth-sonnet", worktreePath: "/repos/gavin-auth-sonnet", command: "claude b", conversationId: null },
+      { sessionId: "s1", label: "A", profileId: "cline", model: "cline-free-model-a", branch: "auth-cline-free-model-a", worktreePath: "/repos/gavin-auth-cline-free-model-a", command: "cline a", conversationId: "id-a" },
+      { sessionId: "s2", label: "B", profileId: "cline", model: "cline-free-model-b", branch: "auth-cline-free-model-b", worktreePath: "/repos/gavin-auth-cline-free-model-b", command: "cline b", conversationId: null },
       { sessionId: "s3", label: "C", profileId: "codex", model: "", branch: "auth-codex", worktreePath: "/repos/gavin-auth-codex", command: "codex c", conversationId: null },
     ],
   };
@@ -367,7 +391,7 @@ describe("picking a winner", () => {
     expect(trace).toEqual([
       "close:s1,s3",
       "bind",
-      "discard:/repos/gavin-auth-opus,/repos/gavin-auth-codex:branches",
+      "discard:/repos/gavin-auth-cline-free-model-a,/repos/gavin-auth-codex:branches",
     ]);
   });
 
@@ -376,10 +400,10 @@ describe("picking a winner", () => {
     expect(linkCardSessionAction).toHaveBeenCalledWith("ws-1", {
       path: CARD.id,
       sessionId: "s1",
-      cwd: "/repos/gavin-auth-opus",
-      command: "claude a",
+      cwd: "/repos/gavin-auth-cline-free-model-a",
+      command: "cline a",
       conversationId: "id-a",
-      launchCwd: "/repos/gavin-auth-opus",
+      launchCwd: "/repos/gavin-auth-cline-free-model-a",
       resumeAttempts: 0,
     });
   });
@@ -387,7 +411,7 @@ describe("picking a winner", () => {
   it("keeps the winner's worktree and branch, because merging is the human's", async () => {
     await pickCandidate("ws-1", startedRun(), "s2");
     const discarded = discardWorktrees.mock.calls[0][1].map((e) => e.path);
-    expect(discarded).not.toContain("/repos/gavin-auth-sonnet");
+    expect(discarded).not.toContain("/repos/gavin-auth-cline-free-model-b");
   });
 
   it("keeps the losing branches when the tick-box is cleared", async () => {
@@ -427,7 +451,7 @@ describe("abandoning a run", () => {
     expect(await abandonRun("ws-1", startedRun())).toBeNull();
     expect(trace).toEqual([
       "close:s1,s2,s3",
-      "discard:/repos/gavin-auth-opus,/repos/gavin-auth-sonnet,/repos/gavin-auth-codex:branches",
+      "discard:/repos/gavin-auth-cline-free-model-a,/repos/gavin-auth-cline-free-model-b,/repos/gavin-auth-codex:branches",
     ]);
     // No status write: discarding three attempts is not a decision that
     // the card has stopped being worked.
@@ -444,4 +468,3 @@ describe("abandoning a run", () => {
     expect(get(bestOfNRuns)["ws-1"]).toHaveLength(1);
   });
 });
-

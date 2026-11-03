@@ -24,7 +24,7 @@ const BASE = {
   rulesPath: "/repo/.gavin-root/REVIEW.md",
   contextFolder: "/repo",
   plansFolder: "/repo/.gavin-root/plans",
-  reviewerLabel: "cline · opus",
+  reviewerLabel: "Claude Code · opus",
   reviewerTotal: 2,
 };
 
@@ -41,8 +41,8 @@ describe("reviewersError", () => {
   it("refuses two identical profile+model rows", () => {
     expect(
       reviewersError([
-        { profileId: "cline", model: "sonnet" },
-        { profileId: "cline", model: "sonnet" },
+        { profileId: "claude-code", model: "sonnet" },
+        { profileId: "claude-code", model: "sonnet" },
       ])
     ).toMatch(/same agent and model/);
   });
@@ -50,8 +50,8 @@ describe("reviewersError", () => {
   it("clears for two distinct reviewers", () => {
     expect(
       reviewersError([
-        { profileId: "cline", model: "sonnet" },
-        { profileId: "cline", model: "opus" },
+        { profileId: "claude-code", model: "sonnet" },
+        { profileId: "claude-code", model: "opus" },
       ])
     ).toBeNull();
   });
@@ -61,13 +61,13 @@ describe("seedCandidates", () => {
   // Re-exported from bestOfN — the dialog seeds the same way.
   it("is the Best-of-N seeder", () => {
     const pair = seedCandidates(
-      [{ id: "cline", models: ["sonnet", "opus"], promptArgs: "" }],
-      "cline",
+      [{ id: "claude-code", models: ["sonnet", "opus"], promptArgs: "" }],
+      "claude-code",
       "sonnet"
     );
     expect(pair).toEqual([
-      { profileId: "cline", model: "sonnet" },
-      { profileId: "cline", model: "opus" },
+      { profileId: "claude-code", model: "sonnet" },
+      { profileId: "claude-code", model: "opus" },
     ]);
   });
 });
@@ -174,13 +174,13 @@ describe("composeCriticalReviewPrompt", () => {
     const prompt = composeCriticalReviewPrompt(BASE);
     expect(prompt).toContain("one of 2 reviewers");
     expect(prompt).toContain("same checkout");
-    expect(prompt).toContain("“cline · opus”");
+    expect(prompt).toContain("“Claude Code · opus”");
     expect(prompt).toContain("change no files");
   });
 
   it("asks the tab name to lead with the reviewer label", () => {
     expect(composeCriticalReviewPrompt(BASE)).toContain(
-      "Begin your tab name with “cline · opus ”"
+      "Begin your tab name with “Claude Code · opus ”"
     );
   });
 
@@ -281,4 +281,3 @@ describe("rail-step params", () => {
     ).toBe(false);
   });
 });
-

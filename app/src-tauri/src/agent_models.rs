@@ -2,20 +2,21 @@
 //! whose names are dated ids rather than aliases.
 //!
 //! The profile table's `models` is a constant compiled into gavin. That
-//! is the right answer for cline and Gemini, which promise that
-//! `sonnet` and `pro` keep pointing at the latest model of their tier --
-//! a name written once stays correct. It is the wrong answer for Codex,
+//! is the right answer for profiles such as Claude Code and Gemini,
+//! which document stable aliases that keep pointing at the latest model
+//! of a tier. Cline's list stays empty because its free-model promotions
+//! are dynamic and have no documented stable catalogue API. It is the
+//! wrong answer for Codex,
 //! whose picker is a list of dated slugs, and for opencode, whose
 //! catalogue is assembled per machine from whichever providers that user
 //! configured. Shipping a copy of either would ship something stale on
 //! the day it lands.
 //!
-//! So those two are read at runtime, once per app start, and merged
-//! BEHIND the static list rather than over it (`mergeDiscoveredModels`,
-//! agentModel.ts). kimi-code joins them for the same reason: its aliases
-//! are managed and refresh upstream. Which route each profile has is the
-//! table's answer (`agent_setup::ModelCatalog`); this module only carries
-//! the routes out.
+//! Profiles with a runtime catalogue are read once per app start and
+//! merged BEHIND the static list rather than over it
+//! (`mergeDiscoveredModels`, agentModel.ts). Which route each profile has
+//! is the table's answer (`agent_setup::ModelCatalog`); this module only
+//! carries the routes out.
 //!
 //! Three constraints shape it.
 //!
@@ -468,4 +469,3 @@ mod tests {
         }
     }
 }
-

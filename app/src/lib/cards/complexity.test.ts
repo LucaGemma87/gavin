@@ -67,7 +67,7 @@ describe("parseComplexity", () => {
 describe("isAttributed", () => {
   it("counts a row that names either half, and no other", () => {
     expect(isAttributed({ profile: "codex", model: "" })).toBe(true);
-    expect(isAttributed({ profile: "", model: "opus" })).toBe(true);
+    expect(isAttributed({ profile: "", model: "cline-test-model" })).toBe(true);
     expect(isAttributed({ profile: "  ", model: "  " })).toBe(false);
     // An effort alone is a whole row: the workspace's agent, harder.
     expect(isAttributed({ profile: "", model: "", effort: "max" })).toBe(true);
@@ -82,13 +82,13 @@ describe("isAttributed", () => {
 
 describe("complexityEntryFor", () => {
   const table: ComplexityTable = {
-    trivial: { profile: "", model: "haiku" },
-    intricate: { profile: "cline", model: "opus" },
+    trivial: { profile: "", model: "cline-test-model" },
+    intricate: { profile: "claude-code", model: "opus" },
   };
 
   it("reads the level's row from the one table it is given", () => {
-    expect(complexityEntryFor("intricate", table)).toEqual({ profile: "cline", model: "opus" });
-    expect(complexityEntryFor("trivial", table)).toEqual({ profile: "", model: "haiku" });
+    expect(complexityEntryFor("intricate", table)).toEqual({ profile: "claude-code", model: "opus" });
+    expect(complexityEntryFor("trivial", table)).toEqual({ profile: "", model: "cline-test-model" });
   });
 
   it("treats an empty row as nothing attributed", () => {
@@ -206,8 +206,8 @@ describe("per-primary complexity tables", () => {
     ).toBe(false);
     expect(
       sameComplexityTable(
-        { complex: { profile: "", model: "sonnet" } },
-        { complex: { profile: "", model: "sonnet", advisor: "opus" } }
+        { complex: { profile: "claude-code", model: "sonnet" } },
+        { complex: { profile: "claude-code", model: "sonnet", advisor: "opus" } }
       )
     ).toBe(false);
   });
@@ -215,7 +215,7 @@ describe("per-primary complexity tables", () => {
 
 describe("agentConfigWithAttribution", () => {
   const base = {
-    profile: "cline",
+    profile: "claude-code",
     file: "CLAUDE.md",
     command: "claude-wrapper",
     mcpFile: ".mcp.json",
@@ -260,7 +260,7 @@ describe("agentConfigWithAttribution", () => {
   });
 
   it("keeps them when the level names the profile the workspace already runs", () => {
-    const r = agentConfigWithAttribution(base, { profile: "cline", model: "opus" });
+    const r = agentConfigWithAttribution(base, { profile: "claude-code", model: "opus" });
     expect(r).toEqual({ ...base, model: "opus", effort: null });
   });
 
@@ -291,7 +291,8 @@ describe("agentConfigWithAttribution", () => {
 });
 
 describe("complexitySummary", () => {
-  const label = (id: string) => (id === "codex" ? "Codex CLI" : id);
+  const label = (id: string) =>
+    id === "codex" ? "Codex CLI" : id === "claude-code" ? "Claude Code" : id;
 
   it("says what the level will actually run", () => {
     expect(complexitySummary("intricate", { profile: "codex", model: "gpt-5.1" }, label)).toBe(
@@ -300,8 +301,8 @@ describe("complexitySummary", () => {
     expect(complexitySummary("simple", { profile: "codex", model: "" }, label)).toBe(
       "Simple — runs Codex CLI."
     );
-    expect(complexitySummary("trivial", { profile: "", model: "haiku" }, label)).toBe(
-      "Trivial — runs this workspace's agent on haiku."
+    expect(complexitySummary("trivial", { profile: "", model: "cline-test-model" }, label)).toBe(
+      "Trivial — runs this workspace's agent on cline-test-model."
     );
   });
 
@@ -316,8 +317,12 @@ describe("complexitySummary", () => {
 
   it("names the advisor after the effort", () => {
     expect(
-      complexitySummary("intricate", { profile: "", model: "sonnet", effort: "high", advisor: "opus" }, label)
-    ).toBe("Intricate — runs this workspace's agent on sonnet, at high effort, advised by opus.");
+      complexitySummary(
+        "intricate",
+        { profile: "claude-code", model: "sonnet", effort: "high", advisor: "opus" },
+        label
+      )
+    ).toBe("Intricate — runs Claude Code on sonnet, at high effort, advised by opus.");
   });
 
   it("says so when a level is rated but attributed to nothing", () => {
@@ -342,8 +347,8 @@ describe("withAgentEffort", () => {
 
 describe("realignComplexityTable", () => {
   const table: ComplexityTable = {
-    trivial: { profile: "cline", model: "haiku" },
-    simple: { profile: "", model: "sonnet" },
+    trivial: { profile: "claude-code", model: "haiku" },
+    simple: { profile: "", model: "cline-test-model" },
     intricate: { profile: "codex", model: "gpt-5.1" },
   };
 
@@ -352,9 +357,9 @@ describe("realignComplexityTable", () => {
   });
 
   it("remap retargets rows that named the old profile and leaves the rest", () => {
-    expect(realignComplexityTable(table, "remap", "cline", "cursor")).toEqual({
+    expect(realignComplexityTable(table, "remap", "claude-code", "cursor")).toEqual({
       trivial: { profile: "cursor", model: "" },
-      simple: { profile: "", model: "sonnet" },
+      simple: { profile: "", model: "cline-test-model" },
       intricate: { profile: "codex", model: "gpt-5.1" },
     });
   });
@@ -363,13 +368,13 @@ describe("realignComplexityTable", () => {
     // `{cursor, auto}` retargeted whole became `claude --model auto`.
     const pinned: ComplexityTable = {
       complex: { profile: "cursor", model: "auto" },
-      intricate: { profile: "cline", model: "opus", effort: "max", advisor: "fable" },
+      intricate: { profile: "claude-code", model: "opus", effort: "max", advisor: "fable" },
     };
     expect(realignComplexityTable(pinned, "remap", "cursor", "cline").complex).toEqual({
       profile: "cline",
       model: "",
     });
-    expect(realignComplexityTable(pinned, "remap", "cline", "codex").intricate).toEqual({
+    expect(realignComplexityTable(pinned, "remap", "claude-code", "codex").intricate).toEqual({
       profile: "codex",
       model: "",
     });
@@ -399,7 +404,7 @@ describe("recommendedComplexityAction", () => {
     ).toBe("keep");
     expect(
       recommendedComplexityAction(
-        { simple: { profile: "", model: "sonnet" }, intricate: { profile: "codex", model: "" } },
+        { simple: { profile: "", model: "cline-test-model" }, intricate: { profile: "codex", model: "" } },
         "cline"
       )
     ).toBe("keep");

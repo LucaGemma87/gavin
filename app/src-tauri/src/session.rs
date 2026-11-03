@@ -533,7 +533,7 @@ mod workspaces_data_tests {
         let dir = tempfile::tempdir().unwrap();
         let data = WorkspacesData { workspaces: vec![], active_workspace_id: None, removed_workspaces: vec![] };
         let mut models = HashMap::new();
-        models.insert("cline".to_string(), "opus".to_string());
+        models.insert("cline".to_string(), "cline-test-model".to_string());
         persist_workspaces(
             dir.path(),
             &data,

@@ -78,8 +78,8 @@ import { REVIEW_CONFIRM_LABEL } from "$lib/cards/cardReview";
 import type { CardView } from "$lib/core/planBoard";
 
 const AGENT = {
-  profileId: "cline",
-  label: "cline",
+  profileId: "claude-code",
+  label: "Claude Code",
   file: "CLAUDE.md",
   command: "claude",
   launchCommand: "claude",
@@ -361,4 +361,3 @@ describe("confirmReview", () => {
     expect(backend.createSession).not.toHaveBeenCalled();
   });
 });
-

@@ -588,6 +588,8 @@ pub struct AgentProfile {
     /// - gemini (legacy CLI only) -- `auto`, `pro`, `flash` and
     ///   `flash-lite`. Antigravity CLI (`agy`) takes dated / display
     ///   slugs via `--model` with no stable alias set worth pinning.
+    /// - Cline CLI -- no static list: the Cline provider's free-model
+    ///   promotions rotate, and no stable catalogue API is documented.
     /// - codex, opencode and kimi-code -- no stable alias exists. All
     ///   three ship empty here and are enumerated at runtime instead; see
     ///   `model_catalog` below.
@@ -601,13 +603,14 @@ pub struct AgentProfile {
     /// `models` above is a constant compiled into gavin: correct for an
     /// agent that promises "sonnet is always the latest sonnet", useless
     /// for one whose picker is `gpt-5.2` today and something else next
-    /// month. Those agents keep their own catalogue, and gavin reads it
+    /// month. Such agents keep their own catalogue, and gavin reads it
     /// once per app START (`agent_models::agent_model_catalog`) rather
-    /// than shipping a copy that is stale the day it lands.
+    /// than shipping a copy that is stale the day it lands. Cline's
+    /// rotating free-model list is not exposed through a documented
+    /// catalogue route, so its picker remains free text.
     ///
-    /// `None` is the honest default and says gavin has no route: three
-    /// of the six rows have none, and for them the picker is `models`
-    /// plus "Custom…", exactly as before.
+    /// `None` is the honest default and says gavin has no runtime route;
+    /// those profiles use their static list plus "Custom…".
     pub model_catalog: Option<ModelCatalog>,
     /// How a chosen effort level reaches this agent's launch command,
     /// composed by `composeEffort` in agentModel.ts. Three shapes, told

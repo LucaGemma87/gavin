@@ -18,19 +18,20 @@ import {
 } from "$lib/cards/bestOfN";
 
 const LABELS = new Map([
-  ["cline", "cline"],
+  ["cline", "Cline CLI"],
+  ["claude-code", "Claude Code"],
   ["codex", "Codex CLI"],
 ]);
 
 function runCandidate(over: Partial<RunCandidate> = {}): RunCandidate {
   return {
     sessionId: "s1",
-    label: "cline",
+    label: "Cline CLI",
     profileId: "cline",
     model: "",
     branch: "auth-cline",
     worktreePath: "/repos/gavin-auth-cline",
-    command: "claude 'do it'",
+    command: "cline --auto-approve false 'do it'",
     conversationId: null,
     ...over,
   };
@@ -38,8 +39,8 @@ function runCandidate(over: Partial<RunCandidate> = {}): RunCandidate {
 
 describe("naming a candidate", () => {
   it("shows profile and model together, since a run varies one or the other", () => {
-    expect(candidateLabel("cline", "sonnet")).toBe("cline · sonnet");
-    expect(candidateLabel("cline", "  ")).toBe("cline");
+    expect(candidateLabel("Claude Code", "sonnet")).toBe("Claude Code · sonnet");
+    expect(candidateLabel("Cline CLI", "  ")).toBe("Cline CLI");
   });
 
   it("slugs a model alias into something git will accept as a ref", () => {
@@ -52,7 +53,7 @@ describe("naming a candidate", () => {
 
 describe("the config a candidate resolves through", () => {
   const base = {
-    profile: "cline",
+    profile: "claude-code",
     file: "CLAUDE.md",
     command: "/opt/wrappers/claude",
     mcpFile: ".mcp.json",
@@ -63,8 +64,8 @@ describe("the config a candidate resolves through", () => {
     // Same binary, different model: a workspace that pins a wrapper
     // script must keep running it, or a best-of-N run would silently
     // stop using the agent the workspace actually runs.
-    expect(candidateAgentConfig(base, { profileId: "cline", model: "sonnet" })).toEqual({
-      profile: "cline",
+    expect(candidateAgentConfig(base, { profileId: "claude-code", model: "sonnet" })).toEqual({
+      profile: "claude-code",
       file: "CLAUDE.md",
       command: "/opt/wrappers/claude",
       mcpFile: ".mcp.json",
@@ -73,7 +74,7 @@ describe("the config a candidate resolves through", () => {
   });
 
   it("drops the pinned command, file and MCP path when the profile differs", () => {
-    // The whole reason this function exists: cline's wrapper on
+    // The whole reason this function exists: Claude Code's wrapper on
     // codex's command line is garbage in codex's argv, and .mcp.json is
     // not where codex reads MCP config.
     expect(candidateAgentConfig(base, { profileId: "codex", model: "gpt-5.1" })).toEqual({
@@ -88,7 +89,7 @@ describe("the config a candidate resolves through", () => {
   it("reads an empty model as inherit, not as an empty model", () => {
     // "" would resolve as a deliberate empty model and lose the profile's
     // app-wide default; null is what resolveAgentConfig treats as absent.
-    expect(candidateAgentConfig(base, { profileId: "cline", model: "  " }).model).toBeNull();
+    expect(candidateAgentConfig(base, { profileId: "claude-code", model: "  " }).model).toBeNull();
   });
 });
 
@@ -97,16 +98,16 @@ describe("planning the git objects", () => {
     const plans = planCandidates(
       "Auth rework",
       [
-        { profileId: "cline", model: "sonnet" },
+        { profileId: "claude-code", model: "sonnet" },
         { profileId: "codex", model: "" },
       ],
       LABELS,
       "/repos/gavin",
       []
     );
-    expect(plans.map((p) => p.branch)).toEqual(["auth-rework-cline-sonnet", "auth-rework-codex"]);
+    expect(plans.map((p) => p.branch)).toEqual(["auth-rework-claude-code-sonnet", "auth-rework-codex"]);
     expect(plans[1].worktreePath).toBe("/repos/gavin/.gavin-worktrees/auth-rework-codex");
-    expect(plans[0].label).toBe("cline · sonnet");
+    expect(plans[0].label).toBe("Claude Code · sonnet");
   });
 
   it("skips past branches the repo already has", () => {
@@ -167,8 +168,8 @@ describe("refusing a set that is not a run", () => {
   it("allows the same profile at two models, which is the commonest run", () => {
     expect(
       candidatesError([
-        { profileId: "cline", model: "opus" },
-        { profileId: "cline", model: "sonnet" },
+        { profileId: "claude-code", model: "opus" },
+        { profileId: "claude-code", model: "sonnet" },
       ])
     ).toBeNull();
   });
@@ -240,7 +241,7 @@ describe("the pair the dialog opens with", () => {
 });
 
 describe("what a candidate is told on top of the card's own prompt", () => {
-  const suffix = composeCandidatePrompt("RUN THE CARD", "cline · sonnet", 3);
+  const suffix = composeCandidatePrompt("RUN THE CARD", "Claude Code · sonnet", 3);
 
   it("keeps the card's prompt intact and adds to it", () => {
     // The card's run prompt is the one the board builds; a best-of-N run
@@ -254,7 +255,7 @@ describe("what a candidate is told on top of the card's own prompt", () => {
   });
 
   it("makes the tab name carry the candidate, since all N name themselves the same otherwise", () => {
-    expect(suffix).toMatch(/Begin your tab name with “cline · sonnet ”/);
+    expect(suffix).toMatch(/Begin your tab name with “Claude Code · sonnet ”/);
   });
 
   it("takes the card's status away from it", () => {
@@ -283,8 +284,20 @@ describe("picking one", () => {
     pageId: "page-1",
     startedAt: 0,
     candidates: [
-      runCandidate({ sessionId: "a", label: "cline · opus", branch: "auth-a" }),
-      runCandidate({ sessionId: "b", label: "cline · sonnet", branch: "auth-b", worktreePath: "/repos/gavin-auth-b" }),
+      runCandidate({
+        sessionId: "a",
+        label: "Claude Code · opus",
+        profileId: "claude-code",
+        branch: "auth-a",
+        worktreePath: "/repos/gavin-auth-claude-code",
+      }),
+      runCandidate({
+        sessionId: "b",
+        label: "Claude Code · sonnet",
+        profileId: "claude-code",
+        branch: "auth-b",
+        worktreePath: "/repos/gavin-auth-b",
+      }),
       runCandidate({ sessionId: "c", label: "Codex CLI", branch: "auth-c", worktreePath: "/repos/gavin-auth-c" }),
     ],
   };
@@ -302,8 +315,8 @@ describe("picking one", () => {
 
   it("names every folder it deletes and says the winner is not merged yet", () => {
     const confirm = pickConfirm(run.candidates[1], losersOf(run, "b"));
-    expect(confirm.title).toBe("Keep cline · sonnet and discard 2 candidates?");
-    expect(confirm.lines?.[0]).toBe("gavin-auth-cline — cline · opus");
+    expect(confirm.title).toBe("Keep Claude Code · sonnet and discard 2 candidates?");
+    expect(confirm.lines?.[0]).toBe("gavin-auth-claude-code — Claude Code · opus");
     expect(confirm.lines?.at(-1)).toMatch(/merging it is still yours to do/);
     expect(confirm.danger).toBe(true);
     // Enter must not fire a deletion, so the dismissing answer is the

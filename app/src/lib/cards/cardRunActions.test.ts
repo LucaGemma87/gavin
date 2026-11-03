@@ -33,8 +33,8 @@ vi.mock("$lib/core/backend", () => ({
 /// `agentForCard` can be the same function object.
 const agentMock = vi.hoisted(() =>
   vi.fn(() => ({
-    profileId: "cline",
-    label: "cline",
+    profileId: "claude-code",
+    label: "Claude Code",
     file: "CLAUDE.md",
     command: "claude --model opus",
     launchCommand: "claude --model opus",
@@ -219,10 +219,10 @@ function remembered(record: CardSessionRecord): void {
 
 /// The default profile: verified failure patterns, and NO conversation
 /// resume -- which is what codex, gemini and opencode look like, and
-/// what cline looks like against a daemon too old to persist the
+/// what Claude Code looks like against a daemon too old to persist the
 /// id. The tests that want resume opt in.
 const NO_RESUME_AGENT = {
-  profileId: "cline",
+  profileId: "claude-code",
   file: "CLAUDE.md",
   command: "claude --model opus",
   launchCommand: "claude --model opus",
@@ -1348,7 +1348,7 @@ describe("relaunchCard", () => {
       "/p",
       `${STORED_COMMAND}${shellQuote(relaunchNote("/p/t.md"))}`,
       "/ws",
-      "cline"
+      "claude-code"
     );
     expect(handleAgentSessionSpawned).toHaveBeenCalledWith("ws-1", "s-new");
     expect(get(kanbanState)["ws-1"].cardSessions[0].sessionId).toBe("s-new");
@@ -1382,7 +1382,7 @@ describe("relaunchCard", () => {
   // Resume, which is a different entry with different words on it.
   it("mints a new conversation id rather than replaying the one baked into the command", async () => {
     vi.mocked(resolvedAgentFor).mockReturnValue({
-      profileId: "cline",
+      profileId: "claude-code",
       file: "CLAUDE.md",
       command: "claude",
       launchCommand: "claude",
@@ -1480,7 +1480,7 @@ describe("relaunchCard", () => {
     expect(command).not.toContain("gemini");
     expect(command).toContain("do the thing");
     expect(command).toContain(relaunchNote("/p/t.md").trim());
-    expect(profileId).toBe("cline");
+    expect(profileId).toBe("claude-code");
   });
 
   // sec-fix-relaunch-review-gate: the replayed plan prompt only names the
@@ -1986,7 +1986,7 @@ describe("a failed binding", () => {
 /// about Headroom itself, and none is ever refused over it.
 describe("the launching profile", () => {
   const conversing = {
-    profileId: "cline",
+    profileId: "claude-code",
     file: "CLAUDE.md",
     command: "claude",
     launchCommand: "claude",
@@ -2066,7 +2066,7 @@ describe("the launching profile", () => {
       expect(await launch()).toBeNull();
 
       expect(backend.createSession).toHaveBeenCalledTimes(1);
-      expect(vi.mocked(backend.createSession).mock.calls[0][3]).toBe("cline");
+      expect(vi.mocked(backend.createSession).mock.calls[0][3]).toBe("claude-code");
     });
 
     // A daemon too old to read the profile is never sent one, and the
@@ -2094,7 +2094,7 @@ describe("the launching profile", () => {
       "/ws",
       `claude --resume ${shellQuote("u-1")}`,
       "/ws",
-      "cline",
+      "claude-code",
     ]);
   });
 });

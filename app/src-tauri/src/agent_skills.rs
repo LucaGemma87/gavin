@@ -942,6 +942,18 @@ mod tests {
         assert!(status.command.contains("-a cline"), "{}", status.command);
     }
 
+    #[test]
+    fn cline_skills_status_verifies_skills_cli_installation() {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(dir.path().join("skills-lock.json"), LOCK).unwrap();
+        write_skill(dir.path(), "tdd");
+
+        let status = status_for(dir.path(), "cline", false, None);
+
+        assert_eq!(status.state, "verified");
+        assert!(status.output.contains(".agents/skills"));
+    }
+
     /// What the row shows is the install the human would type; the
     /// skills CLI route adds `--prefix` at spawn time (see
     /// `skills_cli_spawn`), not in this string.

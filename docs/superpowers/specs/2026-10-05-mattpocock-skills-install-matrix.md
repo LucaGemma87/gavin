@@ -9,6 +9,11 @@ Machine: macOS, cline `2.1.291`, skills CLI `1.7.0` (`npx skills@latest`),
 Node 22.22.3, gemini-cli `0.35.3`, opencode `1.18.25`, cursor-agent
 `2026.10.01`. No `codex` binary on this machine.
 
+Cline route correction verified 2026-11-02 with Cline CLI `3.0.74`:
+`cline skill list` lists project skills installed by the skills CLI from
+`.agents/skills/`. The `cline` profile does not use Claude Code's plugin
+marketplace.
+
 This replaces `2026-09-01-superpowers-install-matrix.md` as the input to
 `agent_skills.rs`. Same rule as before: a guessed detector lights a green LED
 that is a lie, so every row says what was run, and anything that was not is
@@ -22,107 +27,43 @@ profile**, so it has no row; a Kimi user runs it as `custom`.
 
 | profile | route | gavin installs? | command gavin runs (cwd = workspace root) | detection | verified here |
 |---|---|---|---|---|---|
-| `cline` | plugin | **yes** | `claude plugin install mattpocock-skills --scope project -y` | `claude plugin list --json` in the root: an entry whose package name is `mattpocock-skills` with `enabled: true` | **yes** — install, reinstall, failure, fresh-machine failure, detection |
+| `cline` | skills CLI | **yes** | `npx -y skills@latest add mattpocock/skills --skill '*' -a cline -y` | `skills-lock.json` lists a `source: "mattpocock/skills"` skill whose `.agents/skills/<name>/SKILL.md` exists | **yes** — install + detection; `cline skill list` reads project skills from `.agents/skills/` |
 | `codex` | skills CLI | **yes** | `npx -y skills@latest add mattpocock/skills --skill '*' -a codex -y` | `skills-lock.json` lists a `source: "mattpocock/skills"` skill whose `.agents/skills/<name>/SKILL.md` exists | install + detection **yes**; Codex reading `.agents/skills/` is **docs-only** (no `codex` binary here) |
 | `gemini` | skills CLI | **yes** | `… -a gemini-cli -y` | same, `.agents/skills/` | **yes** — `gemini skills list` lists them from the project's `.agents/skills/` |
 | `cursor` | skills CLI | **yes** | `… -a cursor -y` | same, `.agents/skills/` | install + detection **yes**; Cursor reading `.agents/skills/` per cursor.com/docs/context/skills (read 2026-10-06), not run in Cursor |
 | `opencode` | skills CLI | **yes** | `… -a opencode -y` | same, `.agents/skills/` | **yes** — `opencode debug skill` lists them from the project's `.agents/skills/` |
 | `custom` | manual | no | none — skills.sh instructions + "I've installed it" | machine-local marker, shown as *asserted* | n/a |
 
-Every CLI-route profile lands in the **same** directory: at project scope the
-skills CLI's `codex`, `cursor`, `gemini-cli`, `opencode` (and `kimi-code-cli`)
-entries all have `skillsDir: ".agents/skills"` (read from the CLI's agent
-table, `dist/cli.mjs`). One install serves all five, which is also why
-detection does not need the profile beyond "is this a CLI-route profile".
+The skills CLI's `cline`, `codex`, `cursor`, `gemini-cli`, `opencode` (and
+`kimi-code-cli`) entries use `skillsDir: ".agents/skills"` (read from the
+CLI's agent table, `dist/cli.mjs`). Cline CLI's `cline skill` command is a
+wrapper around this skills CLI, and `cline skill list` in the workspace
+confirmed that it reads the project skills there. One install therefore
+serves every profile on this route, and detection does not need the profile
+beyond "is this a CLI-route profile".
 
-## 1. cline — plugin route
+## 1. cline — skills CLI route
 
 ### Install
 
 ```
-$ claude plugin install mattpocock-skills --scope project -y
-Installing plugin "mattpocock-skills"...✔ Successfully installed plugin: mattpocock-skills@claude-plugins-official (scope: project)
-; exit 0, stderr empty
+$ npx -y skills@latest add mattpocock/skills --skill '*' -a cline -y
 ```
 
-The bare name resolves to `mattpocock-skills@claude-plugins-official`.
-Writes `<root>/.claude/settings.json`:
-
-```json
-{ "enabledPlugins": { "mattpocock-skills@claude-plugins-official": true } }
-```
-
-Idempotent:
-
-```
-Installing plugin "mattpocock-skills"...✔ Plugin "mattpocock-skills@claude-plugins-official" is already installed (scope: project)
-; exit 0
-```
-
-Failure — progress on stdout, reason on **stderr** only (unchanged from the
-Superpowers spike, so the drawer still interleaves both):
-
-```
-stdout: Installing plugin "mattpocock-nosuch"...
-stderr: ✘ Failed to install plugin "mattpocock-nosuch": Plugin "mattpocock-nosuch" not found in any configured marketplace
-; exit 1
-```
-
-**New finding — the marketplace is not always there.** Under a fresh `$HOME`
-(a cline that has never run interactively), `claude plugin list --json`
-is `[]` and the real install fails exactly like the bad name above:
-
-```
-Installing plugin "mattpocock-skills"...✘ Failed to install plugin "mattpocock-skills": Plugin "mattpocock-skills" not found in any configured marketplace
-; exit 1
-```
-
-After `claude plugin marketplace add anthropics/claude-plugins-official` (a
-clone over HTTPS, exit 0) the same install succeeds. On a machine where Claude
-Code has been used, `claude plugin marketplace list` shows
-`claude-plugins-official` (Source: GitHub `anthropics/claude-plugins-official`).
-gavin does not run the `marketplace add` itself; when stderr says *not found in
-any configured marketplace*, the row's detail names that command so the human
-can.
+`cline skill` in the installed Cline CLI forwards to the same skills CLI.
+Gavin invokes `npx skills` directly so it can apply the neutral npm prefix
+and controlled subprocess behavior described in `agent_skills.rs`; both use
+the `cline` agent target and install project skills into `.agents/skills/`.
+No Claude Code plugin or marketplace is involved.
 
 ### Detection
 
-`claude plugin list --json`, cwd = the workspace root, exit 0, no TTY needed.
-Key set across this machine's entries is now
-`enabled, id, installPath, installedAt, lastUpdated, mcpServers, noteDetails,
-notes, projectEnabled, projectPath, scope, version` — `projectEnabled` is new
-since the Superpowers spike. The project-scope entry after the install:
-
-```json
-{
-  "id": "mattpocock-skills@claude-plugins-official",
-  "version": "1.2.3",
-  "scope": "project",
-  "enabled": true,
-  "installPath": "…/.claude/plugins/cache/claude-plugins-official/mattpocock-skills/1.2.3",
-  "installedAt": "2026-10-06T06:58:39.045Z",
-  "lastUpdated": "2026-10-06T06:58:39.045Z",
-  "projectPath": "…/scratchpad/p2",
-  "projectEnabled": true
-}
-```
-
-`enabled` is still answered relative to the cwd. Same fresh `$HOME`, same entry:
-`enabled: true` from the project root `p2`, `enabled: false` from a sibling
-`p3`, and `enabled: false` from the subdirectory `p2/sub` — so the detector
-must run in the root itself, not anywhere under it. A user-scope install makes
-every entry with that id read `enabled: true` from anywhere, which is the right
-answer (it is active in a session started there).
-
-`projectEnabled` is **not** the field to read: it tracks only the cwd's
-project settings, and from `~` it reads `true` because `~/.claude/settings.json`
-is both the user and the "project" file there. `enabled` is the answer.
-
-Detector, unchanged in shape from Superpowers': **any entry whose package name
-(before the `@`) is `mattpocock-skills` and whose `enabled` is `true`.**
-
-"Active for a session started here" = that entry exists with `enabled: true`.
-It only reaches sessions started after the install.
+The shared skills-CLI detector checks the project `skills-lock.json` for
+Matt's source and verifies that at least one referenced
+`.agents/skills/<name>/SKILL.md` exists. The Cline CLI's `cline skill list`
+was run in the workspace and listed the skills installed under that path.
+This keeps a lockfile without files (for example after a fresh clone) from
+appearing installed.
 
 ## 2–5. Codex, Gemini CLI, Cursor, opencode — skills CLI route
 
@@ -332,4 +273,3 @@ marker and reads back as *asserted*.
 6. When Claude's stderr says *not found in any configured marketplace*, name
    `claude plugin marketplace add anthropics/claude-plugins-official` in the
    detail rather than leave the human to decode it.
-

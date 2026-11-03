@@ -42,7 +42,8 @@ vi.mock("$lib/core/layoutState", () => ({
   agentDefaultsStore: writable({ actionPromptOverrides: {} }),
   setAgentDefaults: vi.fn().mockResolvedValue(undefined),
   agentProfilesStore: writable([
-    { id: "cline", label: "cline", models: ["sonnet", "opus"], promptArgs: "" },
+    { id: "cline", label: "Cline CLI", models: [], promptArgs: "--auto-approve false " },
+    { id: "claude-code", label: "Claude Code", models: ["sonnet", "opus"], promptArgs: "" },
     { id: "codex", label: "Codex", models: ["gpt"], promptArgs: "" },
   ]),
   // The launching profile, as the real one names it against a daemon
@@ -51,22 +52,26 @@ vi.mock("$lib/core/layoutState", () => ({
   promptExtrasFor: vi.fn((): string[] => []),
   resolvedAgentFor: vi.fn(() => ({
     profileId: "cline",
-    label: "cline",
-    launchCommand: "claude",
-    promptArgs: "",
+    label: "Cline CLI",
+    launchCommand: "cline",
+    promptArgs: "--auto-approve false ",
     sessionIdArgs: "",
     resumeArgs: "",
     failurePatterns: [],
   })),
-  candidateAgentFor: vi.fn((_ws: string, c: { profileId: string; model: string }) => ({
-    profileId: c.profileId,
-    label: c.profileId === "custom" ? "Custom" : c.profileId,
-    launchCommand: c.model ? `cli --model ${c.model}` : "cli",
-    promptArgs: c.profileId === "custom" ? null : "",
-    sessionIdArgs: "",
-    resumeArgs: "",
-    failurePatterns: ["API Error:"],
-  })),
+  candidateAgentFor: vi.fn((_ws: string, c: { profileId: string; model: string }) => {
+    const command =
+      c.profileId === "cline" ? "cline" : c.profileId === "claude-code" ? "claude" : c.profileId;
+    return {
+      profileId: c.profileId,
+      label: c.profileId === "custom" ? "Custom" : c.profileId,
+      launchCommand: c.model ? `${command} --model ${c.model}` : command,
+      promptArgs: c.profileId === "custom" ? null : c.profileId === "cline" ? "--auto-approve false " : "",
+      sessionIdArgs: "",
+      resumeArgs: "",
+      failurePatterns: ["API Error:"],
+    };
+  }),
   conversationIdForLaunch: vi.fn(() => null),
   createTiledPage: (...args: Parameters<typeof createTiledPage>) => createTiledPage(...args),
   armFailureDetection: vi.fn().mockResolvedValue(undefined),
@@ -188,7 +193,7 @@ describe("requestCardCriticalReview", () => {
       await confirmCriticalReview({
         base: "main",
         reviewers: [
-          { profileId: "cline", model: "sonnet" },
+          { profileId: "claude-code", model: "sonnet" },
           { profileId: "codex", model: "gpt" },
         ],
       })
@@ -244,7 +249,7 @@ describe("confirmCriticalReview", () => {
     const err = await confirmCriticalReview({
       base: "main",
       reviewers: [
-        { profileId: "cline", model: "sonnet" },
+        { profileId: "claude-code", model: "sonnet" },
         { profileId: "codex", model: "gpt" },
       ],
       alsoBuildFindingsRail: false,
@@ -284,14 +289,14 @@ describe("confirmCriticalReview", () => {
     await confirmCriticalReview({
       base: "main",
       reviewers: [
-        { profileId: "cline", model: "sonnet" },
+        { profileId: "claude-code", model: "sonnet" },
         { profileId: "codex", model: "gpt" },
       ],
       alsoBuildFindingsRail: false,
     });
 
     const specs = createTiledPage.mock.calls[0][2];
-    expect(specs.map((s: { profileId?: string }) => s.profileId)).toEqual(["cline", "codex"]);
+    expect(specs.map((s: { profileId?: string }) => s.profileId)).toEqual(["claude-code", "codex"]);
   });
 
   it("launches every reviewer with no profile when there is none to name", async () => {
@@ -301,7 +306,7 @@ describe("confirmCriticalReview", () => {
     const err = await confirmCriticalReview({
       base: "main",
       reviewers: [
-        { profileId: "cline", model: "sonnet" },
+        { profileId: "claude-code", model: "sonnet" },
         { profileId: "codex", model: "gpt" },
       ],
       alsoBuildFindingsRail: false,
@@ -318,8 +323,8 @@ describe("confirmCriticalReview", () => {
     await confirmCriticalReview({
       base: "main",
       reviewers: [
-        { profileId: "cline", model: "sonnet" },
-        { profileId: "cline", model: "opus" },
+        { profileId: "claude-code", model: "sonnet" },
+        { profileId: "claude-code", model: "opus" },
       ],
       alsoBuildFindingsRail: true,
     });
@@ -345,7 +350,7 @@ describe("confirmCriticalReview", () => {
       await confirmCriticalReview({
         base: "main",
         reviewers: [
-          { profileId: "cline", model: "sonnet" },
+          { profileId: "claude-code", model: "sonnet" },
           { profileId: "custom", model: "" },
         ],
       })
@@ -353,4 +358,3 @@ describe("confirmCriticalReview", () => {
     expect(createTiledPage).not.toHaveBeenCalled();
   });
 });
-

@@ -245,6 +245,7 @@ describe("mergeDiscoveredModels", () => {
 });
 
 describe("modelOptions", () => {
+  const cline = { modelFlag: "--model", models: [] as string[] };
   const claude = { modelFlag: "--model", models: ["fable", "opus", "sonnet"] };
   const copilot = { modelFlag: "--model", models: ["auto"] };
   const gemini = { modelFlag: "--model", models: [] };
@@ -271,6 +272,15 @@ describe("modelOptions", () => {
 
   it("offers Custom alone for a profile with no presets", () => {
     expect(modelOptions(gemini, "").map((o) => o.value)).toEqual(["", CUSTOM_MODEL]);
+  });
+
+  it("passes a Cline model chosen from its rotating free-model list as a custom id", () => {
+    const selectedModel = "cline-free-model-from-settings";
+    expect(modelOptions(cline, "").map((o) => o.value)).toEqual(["", CUSTOM_MODEL]);
+    expect(modelIsCustom(false, selectedModel, cline.models)).toBe(true);
+    expect(composeLaunchCommand("cline", cline.modelFlag, selectedModel)).toBe(
+      `cline --model ${selectedModel}`
+    );
   });
 
   it("offers nothing at all for a profile with no flag", () => {
@@ -348,13 +358,15 @@ describe("composeAdvisor", () => {
 
 describe("advisorPresets", () => {
   const profiles = [
-    { id: "cline", models: ["fable", "opus", "sonnet"], advisorFlag: "--advisor" },
+    { id: "cline", models: [], advisorFlag: "" },
+    { id: "claude-code", models: ["fable", "opus", "sonnet"], advisorFlag: "--advisor" },
     { id: "codex", models: ["gpt-5.1"], advisorFlag: "" },
     { id: "gemini", models: ["pro"] },
   ];
 
   it("offers a named profile its own models only when it takes an advisor", () => {
-    expect(advisorPresets(profiles, "cline")).toEqual(["fable", "opus", "sonnet"]);
+    expect(advisorPresets(profiles, "claude-code")).toEqual(["fable", "opus", "sonnet"]);
+    expect(advisorPresets(profiles, "cline")).toEqual([]);
     expect(advisorPresets(profiles, "codex")).toEqual([]);
     expect(advisorPresets(profiles, "gemini")).toEqual([]);
   });

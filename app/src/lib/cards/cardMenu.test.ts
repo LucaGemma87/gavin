@@ -24,8 +24,8 @@ vi.mock("$lib/core/backend", () => ({
 /// `agentForCard` can be the same function object.
 const agentMock = vi.hoisted(() =>
   vi.fn(() => ({
-    profileId: "cline",
-    label: "cline",
+    profileId: "claude-code",
+    label: "Claude Code",
     file: "CLAUDE.md",
     command: "claude",
     launchCommand: "claude",
@@ -605,4 +605,3 @@ describe("Schedule…", () => {
     expect(labels(buildCardMenuEntries(card("note", "To Do"), hooks()))).not.toContain("Schedule…");
   });
 });
-
