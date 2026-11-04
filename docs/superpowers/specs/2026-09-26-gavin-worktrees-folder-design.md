@@ -106,4 +106,4 @@ trashing it.
 - **`git clean -fdx` in the main checkout** skips each worktree ("Would skip
   repository") but deletes `.gavin-worktrees/.gitignore`, so the worktrees
   show as untracked until the next fork writes it back. `git clean -ffdx`
-  deletes the worktrees too, the same as for Claude Code's nested ones.
+  deletes the worktrees too, the same as for cline's nested ones.

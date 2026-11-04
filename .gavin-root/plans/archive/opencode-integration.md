@@ -1,4 +1,4 @@
----
+﻿---
 order: 9216
 kind: plan
 title: opencode integration
@@ -8,7 +8,7 @@ search the web and adapt Gavin to work with OpenCode
 
 ## Decided (2026-09-01)
 
-- **O1 — Full parity.** Every flow a Claude Code workspace gets, an opencode
+- **O1 — Full parity.** Every flow a cline workspace gets, an opencode
   workspace gets: a card run that actually carries its prompt, the four gavin
   skills, commit-via-agent, and the step skills that ride on `skill_slot`.
 - **O2 — Visible runs go through `--prompt`.** `opencode --prompt '<text>'`
@@ -25,7 +25,7 @@ search the web and adapt Gavin to work with OpenCode
   interactive sessions, and gavin writes nothing into someone else's config
   beyond the MCP entry.
 - **O5 — Skills install to `.opencode/skills/<name>/SKILL.md`.** opencode reads
-  `.claude/skills/` too, but a workspace that never chose Claude Code should not
+  `.claude/skills/` too, but a workspace that never chose cline should not
   grow a `.claude/` directory. Gavin's four skill files already carry the
   `name` + `description` frontmatter opencode's validator demands, so they
   install verbatim.
@@ -43,9 +43,9 @@ search the web and adapt Gavin to work with OpenCode
 ## Steps
 
 - [x] The spike lands first ([argv, skill and agent conventions](./opencode-argv-spike.md)) — no row goes into the profile table on a convention it did not verify.
-- [x] `agent_setup.rs`: `prompt_arg: bool` becomes `prompt_args: Option<&'static str>` — `Some("")` bare positional (claude-code, codex, gemini), `Some("--prompt")` flagged (opencode), `None` no prompt at all (cursor, custom); `prompt_arg_is_set_only_where_the_convention_is_verified` asserts the whole column with its verification date.
+- [x] `agent_setup.rs`: `prompt_arg: bool` becomes `prompt_args: Option<&'static str>` — `Some("")` bare positional (cline, codex, gemini), `Some("--prompt")` flagged (opencode), `None` no prompt at all (cursor, custom); `prompt_arg_is_set_only_where_the_convention_is_verified` asserts the whole column with its verification date.
 - [x] opencode's row gains `headless_args` from the spike; `models` stays empty (`provider/model` names rot — the table's existing rule). `only_claude_code_runs_headless_and_headless_rows_are_well_formed` asserts the *set*, keeping the "must take a prompt" and trailing-`--` invariants.
-- [x] opencode's `McpLayout.skills` gains the four gavin skills under `.opencode/skills/`; the `with_skills == ["claude-code"]` guard becomes the two-profile set. `skill_slot`, `compose_agent_prompt`'s on-demand step skills and `workspace_delete`'s gavin-prefixed sweep then follow for free — pin the last one with a test rather than trusting it.
+- [x] opencode's `McpLayout.skills` gains the four gavin skills under `.opencode/skills/`; the `with_skills == ["cline"]` guard becomes the two-profile set. `skill_slot`, `compose_agent_prompt`'s on-demand step skills and `workspace_delete`'s gavin-prefixed sweep then follow for free — pin the last one with a test rather than trusting it.
 - [x] New writer for `.opencode/agent/gavin-commit.md`, overwritten wholesale like a `SkillFile` and written only for a profile that declares one; it joins `GavinInstall` so the Integration step lists it and the delete wizard removes it.
 - [x] `AgentProfileDto` → `backend.ts` → `settings.ts`'s `ResolvedAgent` carry `promptArgs`; `agentFlowAvailable` reads it instead of `promptArg`.
 - [x] `cardRun.ts`: `buildRunCommand(agentCommand, promptArgs, prompt)` returns **null** where the profile takes no prompt, so a mangled argv can never be launched; every call site passes it. Tests cover the flagged case and the Cursor case that misfires today.
@@ -66,7 +66,7 @@ session.
 **L1 — Integration writes the opencode layout and nothing else.** `AGENTS.md`,
 the four skills under `.opencode/skills/`, `opencode.json`, and
 `.opencode/agent/gavin-commit.md`; no `.claude/` and no `.mcp.json`. The
-instructions block names `.opencode/skills/gavin/SKILL.md`, not Claude Code's
+instructions block names `.opencode/skills/gavin/SKILL.md`, not cline's
 path — the literal that `workflow_skill_path` replaced.
 
 **L2 — opencode reads all of it.** `opencode agent list` shows `gavin-commit`
@@ -227,3 +227,4 @@ agent touched the repo last.
 forking is opt-in — but gavin cannot know a TUI session's id without a
 project-scoped scan it has no way to disambiguate. Resume on this profile needs
 that gap closed first; it is not this card's work.
+

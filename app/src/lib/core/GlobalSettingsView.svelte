@@ -843,6 +843,9 @@
         "max agents",
         "concurrent",
         "limit agents",
+        "Paid and unknown routes",
+        "launch cost",
+        "No paid requests",
         "threshold",
         "percent",
       ],
@@ -1579,6 +1582,24 @@
         />
         <span class="unit">blank for no ceiling</span>
       </div>
+      <label class="row">
+        <span>Paid and unknown routes</span>
+        <select
+          aria-label="App-wide launch cost policy"
+          value={launch.costPolicy}
+          onchange={(e) =>
+            editLaunch({
+              costPolicy: e.currentTarget.value === "no_paid_requests" ? "no_paid_requests" : "ask",
+            })}
+        >
+          <option value="ask">Ask before each paid or unknown launch</option>
+          <option value="no_paid_requests">No paid requests</option>
+        </select>
+      </label>
+      <p class="hint">
+        Gavin treats missing or stale cost evidence and unclassifiable commands as unknown.
+        No launch approval is remembered or reused.
+      </p>
       <div class="row">
         <span>Under pressure</span>
         <label class="check">

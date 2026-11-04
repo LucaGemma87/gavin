@@ -46,6 +46,7 @@ function profile(
 }
 
 const PROFILES: AgentProfileInfo[] = [
+  profile({ id: "cline", label: "Cline CLI" }),
   profile({ id: "claude-code", label: "Claude Code", usageProbe: "anthropic-oauth" }),
   profile({ id: "codex", label: "Codex", usageProbe: "codex-rollout" }),
   profile({ id: "work-agent", label: "Work", modelFlag: "--model" }),
@@ -56,6 +57,7 @@ describe("agents hub tabs", () => {
   it("is General plus one tab per agent, locals marked", () => {
     expect(agentsHubTabs(PROFILES).map((t) => t.label)).toEqual([
       "General",
+      "Cline CLI",
       "Claude Code",
       "Codex",
       "Work",
@@ -100,7 +102,9 @@ describe("agentsTabForQuery", () => {
   it("treats custom ids as customs", () => {
     expect(isCustomProfileId("work-agent")).toBe(true);
     expect(isCustomProfileId("local:desk")).toBe(true);
-    expect(isCustomProfileId("claude-code")).toBe(false);
+    for (const id of ["cline", "copilot", "claude-code", "codex", "gemini", "cursor", "opencode", "kimi-code"]) {
+      expect(isCustomProfileId(id)).toBe(false);
+    }
     expect(isCustomProfileId("general")).toBe(false);
   });
 });
@@ -108,6 +112,8 @@ describe("agentsTabForQuery", () => {
 describe("customProfiles CRUD helpers", () => {
   it("slugifies and avoids stock ids", () => {
     expect(slugifyCustomId("My Agent!", [])).toBe("my-agent");
+    expect(slugifyCustomId("cline", [])).toBe("cline-agent");
+    expect(slugifyCustomId("Copilot", [])).toBe("copilot-agent");
     expect(slugifyCustomId("Claude Code", [])).toBe("claude-code-agent");
     expect(slugifyCustomId("custom", ["custom-agent"])).toBe("custom-agent-2");
   });

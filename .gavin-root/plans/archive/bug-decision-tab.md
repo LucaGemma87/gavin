@@ -10,4 +10,5 @@ When going in decision tab, open a card that needs decion, and then move the mou
 When the implementation is done, commit it. Commit only the files you touched — never `git add -A`. Do not push.
 <!-- /gavin:auto-commit -->
 
-- [ ] Human test: After rebuilding and restarting the daemon: in the Decisions tab, open a card whose Claude Code agent is waiting on you, move the mouse over its terminal and scroll it — the row stays in the list and the agent never shows as working
+- [ ] Human test: After rebuilding and restarting the daemon: in the Decisions tab, open a card whose cline agent is waiting on you, move the mouse over its terminal and scroll it — the row stays in the list and the agent never shows as working
+

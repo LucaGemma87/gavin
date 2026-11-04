@@ -32,6 +32,7 @@ import type { AgentUsageReport } from "$lib/agents/agentUsage";
 import {
   dropExpiredWindows,
   loadUsageCache,
+  profilesPastReset,
   pruneUsageCache,
   saveUsageCache,
 } from "$lib/agents/agentUsage";
@@ -296,7 +297,7 @@ function armStaleTimer(nowMs: number = Date.now(), storage?: MaybeStorage): void
   if (nextAt == null) return;
   const delay = Math.max(0, Math.min(nextAt - nowMs + 50, 2_147_483_647));
   staleTimer = setTimeout(() => {
-    pruneCachedUsage(Date.now(), storage);
+    wakeAtReset(Date.now(), storage);
     armStaleTimer(Date.now(), storage);
   }, delay);
 }
@@ -312,6 +313,23 @@ function earliestResetMs(reports: Record<string, AgentUsageReport>): number | nu
     }
   }
   return earliest;
+}
+
+/// What happens the instant a limit window closes: the stale reading
+/// goes, the clock is pushed so every held start is asked again NOW, and
+/// the agents whose window closed are read live. Without the last step the
+/// gate would run on "no reading" until the next poll, and without the
+/// middle one a held rail would wait for the next thirty-second tick.
+///
+/// The probes are the polling window's duty (`whileHoldingAppDuties`);
+/// every other window learns the result through `initUsageSharing`, so
+/// this only reads when the poll is running here.
+function wakeAtReset(nowMs: number, storage?: MaybeStorage): void {
+  const closed = profilesPastReset(get(agentUsageStore), nowMs);
+  pruneCachedUsage(nowMs, storage);
+  nowStore.set(nowMs);
+  if (pollTimer == null) return;
+  for (const profileId of closed) void refreshUsage(profileId, true);
 }
 
 function pruneCachedUsage(nowMs: number, storage?: MaybeStorage): void {

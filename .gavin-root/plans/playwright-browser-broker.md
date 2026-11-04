@@ -13,8 +13,9 @@ Build what the broker section of `docs/superpowers/specs/2026-10-08-playwright-i
 - **`gavin-mcp playwright`:** a subcommand that resolves this session's endpoint through the daemon (`GAVIN_SESSION_ID`) and execs the pinned `@playwright/mcp --cdp-endpoint …`, with stdio passed straight through. With no session id, or with Playwright not installed, it fails with a message that says why.
 - **Tests:** a daemon integration test under a temp `$HOME` (the isolated-daemon pattern; never touch the shared daemon). It launches a browser for a session, receives at least one frame, and confirms the process is gone after the session is killed. Where no Chromium is installed, it skips with a stated reason.
 
-Done = that test and `cargo test --workspace` pass, and `gavin-mcp playwright` drives a page from a real Claude Code session against an isolated daemon.
+Done = that test and `cargo test --workspace` pass, and `gavin-mcp playwright` drives a page from a real cline session against an isolated daemon.
 
 <!-- gavin:auto-commit -->
 When the implementation is done, commit it. Commit only the files you touched — never `git add -A`. Do not push.
 <!-- /gavin:auto-commit -->
+

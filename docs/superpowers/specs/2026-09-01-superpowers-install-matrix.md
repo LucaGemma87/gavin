@@ -1,5 +1,10 @@
 # Superpowers install + detection matrix
 
+> Historical spike, superseded by
+> [2026-10-05-mattpocock-skills-install-matrix.md](./2026-10-05-mattpocock-skills-install-matrix.md).
+> Its Cline row documents the former Claude Code plugin route; the current
+> Cline profile uses the skills CLI route and does not invoke `claude`.
+
 Date: 2026-09-01 (probed 2026-09-02)
 Card: `.gavin-root/plans/feat-superpowers-install-matrix.md`
 Upstream: <https://github.com/obra/superpowers> — README + `.opencode/INSTALL.md`,

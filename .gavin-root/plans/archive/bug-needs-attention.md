@@ -16,14 +16,14 @@ The "Commit changes" tab (page "companion phone", session `97f7acd4`) finished
 its turn normally at 15:20:19 — three commits, clean tree, rail step
 `cp-20-commit` done — yet the registry holds it `waiting_for_input`.
 
-Claude Code sends an idle reminder, `Claude is waiting for your input`
+cline sends an idle reminder, `Claude is waiting for your input`
 (notification type `idle_prompt`), 60 s (`messageIdleNotifThresholdMs`) after
 EVERY turn nobody has answered. Under the `TERM_PROGRAM=ghostty` pty.rs pins,
-that arrives as `ESC ] 777 ; notify ; Claude Code ; Claude is waiting for your
+that arrives as `ESC ] 777 ; notify ; cline ; Claude is waiting for your
 input BEL`, and `status.rs` maps every OSC 777/9/99 notification to
 `WaitingForInput`. So every finished agent reads as "waiting for you" a minute
 later, and the reminder's own bytes also flash a `working` through the output
-heuristic first. It never marks a dialog either: Claude Code withholds it
+heuristic first. It never marks a dialog either: cline withholds it
 while one is on screen, and permission prompts send their own notification.
 
 ## Plan
@@ -36,3 +36,4 @@ while one is on screen, and permission prompts send their own notification.
 
 Lands with the next daemon rebuild + restart (the human's call). Sessions
 already stuck at `waiting_for_input` stay there until answered or marked read.
+

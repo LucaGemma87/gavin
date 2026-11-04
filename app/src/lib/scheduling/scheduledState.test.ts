@@ -17,6 +17,12 @@ const claude = {
   launchCommand: "claude",
   headlessArgs: '-p --allowedTools "Bash(git *)" --',
 };
+const cline = {
+  profileId: "cline",
+  label: "Cline CLI",
+  launchCommand: "cline",
+  headlessArgs: "",
+};
 const agent = { current: claude as typeof claude };
 vi.mock("$lib/core/layoutState", () => ({
   agentForCard: vi.fn(() => agent.current),
@@ -108,6 +114,25 @@ describe("a due fire", () => {
     expect(command).toContain("Check the build.");
     expect(command).toContain("/ws/.gavin-root/scheduled/runs/t/20261021-090900.md");
     expect(backend.recordScheduledLaunch).toHaveBeenCalledWith("ws-1", 7, "s-new", null);
+  });
+
+  it("skips a Cline scheduled run because the profile has no verified headless mode", async () => {
+    agent.current = cline;
+    const reason = "Cline CLI has no headless mode a scheduled run can use";
+    vi.mocked(backend.claimScheduledFire).mockResolvedValue(
+      claim({ skipped: reason, reportPath: null })
+    );
+
+    await tickScheduled("ws-1", now);
+
+    expect(backend.claimScheduledFire).toHaveBeenCalledWith(
+      "ws-1",
+      "/ws/.gavin-root/scheduled/t.md",
+      4,
+      "20261021-090900",
+      reason
+    );
+    expect(backend.createSession).not.toHaveBeenCalled();
   });
 
   it("is not launched when another app won the claim", async () => {

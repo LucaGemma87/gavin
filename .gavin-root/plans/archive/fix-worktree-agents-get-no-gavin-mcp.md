@@ -51,7 +51,7 @@ either machine, with no version skew.
    `"GAVIN_MCP": "${env:GAVIN_MCP}"` to the `JsonServersStdio` env block
    (agent_setup.rs:1483-1487), then regenerate `.cursor/mcp.json` so
    `the_repos_own_committed_configs_name_the_launcher` still passes
-   byte-for-byte. Check whether Gemini, opencode and Claude Code inherit
+   byte-for-byte. Check whether Gemini, opencode and cline inherit
    the agent's environment for their MCP child. If any of them does not,
    it needs the same entry.
 3. Update the launcher comments in scripts/gavin-mcp and
@@ -75,3 +75,4 @@ build explicitly. The launcher comment should say so.
   list the gavin_* tools.
 
 - [ ] Human test: After rebuilding/restarting the daemon: cut a fresh worktree with no target/, open a terminal tab in it, confirm echo $GAVIN_MCP names an existing gavin-mcp beside the daemon, run scripts/gavin-mcp with an initialize request on stdin and confirm it answers, then launch an agent there and confirm it lists the gavin_* tools.
+

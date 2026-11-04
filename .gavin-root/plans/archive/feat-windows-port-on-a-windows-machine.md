@@ -506,7 +506,7 @@ session: `shell::tests` and `pty::tests`, 34 green.
       Terminal.
       **It does.** `[ -t 0 ]` and `[ -t 1 ]` are both true inside a command
       session (`pty::tests::a_command_session_runs_on_a_tty_at_both_ends`),
-      and Claude Code's full-screen TUI draws under it: a probe spawning
+      and cline's full-screen TUI draws under it: a probe spawning
       `claude` through `PtySession::spawn` captured the alternate screen,
       24-bit SGR, absolute cursor addressing, bracketed paste, the kitty
       keyboard protocol, OSC 8 hyperlinks and an interactive
@@ -823,3 +823,4 @@ not.
 
 **Out of scope:** WSL-based operation (a WSL workspace is the Linux app talking
 to a Linux daemon); code signing; the ARM64 Windows target.
+

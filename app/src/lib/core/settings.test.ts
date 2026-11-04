@@ -28,6 +28,8 @@ import {
 
 const BUILT_INS: AgentProfileInfo[] = [
   { id: "claude-code", label: "Claude Code", instructionsFile: "CLAUDE.md", command: "claude", mcpSupported: true, mcpConfigFile: ".mcp.json", promptArgs: "", headlessArgs: "-p --allowedTools \"Bash(git *)\" --", modelFlag: "--model", models: ["fable", "opus", "sonnet"], effortFlag: "--effort", efforts: ["low", "medium", "high", "xhigh", "max"], advisorFlag: "--advisor", failurePatterns: ["API Error:"], failureCauses: [{ pattern: "/login", cause: "auth" }], sessionIdArgs: "--session-id", sessionIdDiscovery: "", resumeArgs: "--resume", usageProbe: "anthropic-oauth" },
+  { id: "cline", label: "Cline CLI", instructionsFile: "AGENTS.md", command: "cline", mcpSupported: false, mcpConfigFile: "", promptArgs: "--auto-approve false ", headlessArgs: "", modelFlag: "--model", models: [], effortFlag: "--thinking", efforts: ["none", "low", "medium", "high", "xhigh"], failurePatterns: [], failureCauses: [], sessionIdArgs: "", sessionIdDiscovery: "", resumeArgs: "", usageProbe: null },
+  { id: "copilot", label: "GitHub Copilot CLI", instructionsFile: "AGENTS.md", command: "copilot", mcpSupported: true, mcpConfigFile: ".github/mcp.json", promptArgs: "-i ", headlessArgs: "", modelFlag: "--model", models: ["auto"], effortFlag: "", efforts: [], failurePatterns: [], failureCauses: [], sessionIdArgs: "", sessionIdDiscovery: "", resumeArgs: "", usageProbe: null },
   { id: "codex", label: "Codex CLI", instructionsFile: "AGENTS.md", command: "codex", mcpSupported: true, mcpConfigFile: ".codex/config.toml", promptArgs: "", headlessArgs: "exec --sandbox workspace-write --ask-for-approval never --", modelFlag: "--model", models: [], effortFlag: "-c model_reasoning_effort=", efforts: ["minimal", "low", "medium", "high", "xhigh"], failurePatterns: [], failureCauses: [], sessionIdArgs: "", sessionIdDiscovery: "", resumeArgs: "", usageProbe: "codex-rollout" },
   // Static row after the AG-07 Cursor fix: --approve-mcps / --force are
   // composed at resolve time from the foreign-server disclosure, not
@@ -67,6 +69,7 @@ const PROFILES = mergeAgentProfiles(BUILT_INS, [CUSTOM_AGENT]);
 const BARE_CUSTOM = mergeAgentProfiles(BUILT_INS, [
   { id: "custom-agent", label: "Custom", command: "", modelFlag: "", resumeArgs: "" },
 ]);
+const CLINE_TEST_MODEL = "cline-test-model";
 
 describe("normalizeColor", () => {
   it("accepts a six-digit hex in either case", () => {
@@ -242,6 +245,12 @@ describe("renameDecision", () => {
 
 describe("withExtraCliArgs", () => {
   const agent = () =>
+    resolveAgentConfig(
+      { profile: "cline", file: null, command: null, model: CLINE_TEST_MODEL },
+      PROFILES,
+      {}
+    );
+  const claude = () =>
     resolveAgentConfig({ profile: "claude-code", file: null, command: null, model: "opus" }, PROFILES, {});
 
   it("leaves the launch command alone when the agent has no extra arguments", () => {
@@ -252,19 +261,19 @@ describe("withExtraCliArgs", () => {
 
   it("appends each argument verbatim, space-separated, after the model and effort flags", () => {
     const base = agent();
-    expect(base.launchCommand).toBe("claude --model opus");
+    expect(base.launchCommand).toBe(`cline --model ${CLINE_TEST_MODEL}`);
     const next = withExtraCliArgs(base, ["--verbose", "  --add-dir ../shared "]);
-    expect(next.launchCommand).toBe("claude --model opus --verbose --add-dir ../shared");
+    expect(next.launchCommand).toBe(`cline --model ${CLINE_TEST_MODEL} --verbose --add-dir ../shared`);
     // Only the launch line changes; the bare command other code reads does not.
     expect(next.command).toBe(base.command);
-    expect(base.launchCommand).toBe("claude --model opus");
+    expect(base.launchCommand).toBe(`cline --model ${CLINE_TEST_MODEL}`);
   });
 
   /// `--add-dir <directories...>` is variadic: written last it would read
   /// the prompt (the final bare word) as one more directory. `--` ends the
   /// options, so a bare-positional agent gets it as its prompt prefix.
   it("ends option parsing before a bare-positional prompt, only when there are extras", () => {
-    const base = agent();
+    const base = claude();
     expect(base.promptArgs).toBe("");
     expect(withExtraCliArgs(base, []).promptArgs).toBe("");
     const next = withExtraCliArgs(base, ["--add-dir ../lib"]);
@@ -315,12 +324,41 @@ describe("resolveAgentConfig", () => {
     });
   });
 
+  it("composes Copilot's Auto model and interactive prompt into the launch command", () => {
+    const copilot = resolveAgentConfig(
+      { profile: "copilot", file: null, command: null, model: "auto" },
+      PROFILES,
+      {}
+    );
+    expect(copilot).toMatchObject({
+      command: "copilot",
+      profileId: "copilot",
+      model: "auto",
+      modelFlag: "--model",
+      launchCommand: "copilot --model auto",
+      promptArgs: "-i ",
+      mcpConfigFile: ".github/mcp.json",
+      headlessArgs: "",
+      effortFlag: "",
+      resumeArgs: "",
+    });
+    expect(buildRunCommand(copilot.launchCommand, copilot.promptArgs, "Read the card")).toBe(
+      "copilot --model auto -i 'Read the card'"
+    );
+  });
+
   it("ignores another built-in's command left behind by a profile switch", () => {
-    // arcadiaRN: `profile = "claude-code"` beside codex's bare binary
-    // launched codex under a Claude Code label, card override or not.
-    const r = resolveAgentConfig({ profile: "claude-code", file: null, command: "codex" }, PROFILES, {});
-    expect(r.command).toBe("claude");
-    expect(r.launchCommand).toBe("claude");
+    // arcadiaRN: `profile = "cline"` beside codex's bare binary
+    // launched codex under a cline label, card override or not.
+    const r = resolveAgentConfig({ profile: "cline", file: null, command: "codex" }, PROFILES, {});
+    expect(r.command).toBe("cline");
+    expect(r.launchCommand).toBe("cline");
+  });
+
+  it("does not keep Claude Code's bare binary under the Cline profile", () => {
+    const r = resolveAgentConfig({ profile: "cline", file: null, command: "claude" }, PROFILES, {});
+    expect(r.profileId).toBe("cline");
+    expect(r.command).toBe("cline");
   });
 
   it("keeps a deliberate command that only resembles another built-in's", () => {
@@ -341,7 +379,8 @@ describe("resolveAgentConfig", () => {
   });
 
   it("falls back to claude-code for a missing or unknown profile", () => {
-    expect(resolveAgentConfig(null, PROFILES, {})).toEqual({
+    const fallback = resolveAgentConfig(null, PROFILES, {});
+    expect(fallback).toEqual({
       profileId: "claude-code", label: "Claude Code", file: "CLAUDE.md", command: "claude",
       mcpSupported: true, mcpConfigFile: ".mcp.json",
       headlessArgs: '-p --allowedTools "Bash(git *)" --', promptArgs: "",
@@ -353,6 +392,9 @@ describe("resolveAgentConfig", () => {
       promptInjection: false,
       untrustedOsc133: false,
     });
+    expect(buildRunCommand(fallback.launchCommand, fallback.promptArgs, "Do it.")).toBe(
+      "claude 'Do it.'"
+    );
     expect(resolveAgentConfig({ profile: "not-a-thing", file: null, command: null }, PROFILES, {}).profileId).toBe(
       "claude-code"
     );
@@ -360,12 +402,12 @@ describe("resolveAgentConfig", () => {
 
   it("prefers the workspace model over the app-wide default", () => {
     const r = resolveAgentConfig(
-      { profile: "claude-code", file: null, command: null, model: "sonnet" },
+      { profile: "cline", file: null, command: null, model: "cline-workspace-test-model" },
       PROFILES,
-      { "claude-code": "opus" }
+      { "cline": "cline-default-test-model" }
     );
-    expect(r.model).toBe("sonnet");
-    expect(r.launchCommand).toBe("claude --model sonnet");
+    expect(r.model).toBe("cline-workspace-test-model");
+    expect(r.launchCommand).toBe("cline --model cline-workspace-test-model");
   });
 
   it("inherits the app-wide default for the RESOLVED profile only", () => {
@@ -391,12 +433,12 @@ describe("resolveAgentConfig", () => {
     // flag folded into it would be persisted and then appended a second
     // time on the next launch.
     const r = resolveAgentConfig(
-      { profile: "claude-code", file: null, command: "claude" },
+      { profile: "cline", file: null, command: "cline" },
       PROFILES,
-      { "claude-code": "opus" }
+      { "cline": "cline-default-test-model" }
     );
-    expect(r.command).toBe("claude");
-    expect(r.launchCommand).toBe("claude --model opus");
+    expect(r.command).toBe("cline");
+    expect(r.launchCommand).toBe("cline --model cline-default-test-model");
   });
 
   it("adds the model for a named custom that carries a flag", () => {
@@ -419,15 +461,22 @@ describe("resolveAgentConfig", () => {
   });
 
   // The profile table is fetched asynchronously and its failure is
-  // swallowed, so an empty one is a state the app really reaches. Every
-  // other field already answers it by falling back to claude-code's
-  // literals; the prompt convention has to fall back WITH the command,
-  // or the resolver hands back `claude` and denies it takes a prompt --
-  // which would block every card run in the app.
+  // swallowed, so an empty one is a state the app really reaches. The
+  // Claude Code fallback must keep its command, file and bare positional
+  // prompt even before Rust's profile table has loaded.
   it("falls back to the bare positional when the table has not loaded", () => {
     const r = resolveAgentConfig(null, [], {});
+    expect(r.profileId).toBe("claude-code");
+    expect(r.file).toBe("CLAUDE.md");
     expect(r.command).toBe("claude");
+    expect(r.launchCommand).toBe("claude");
+    expect(r.label).toBe("Claude Code");
     expect(r.promptArgs).toBe("");
+    expect(r.modelFlag).toBe("--model");
+    expect(r.effortFlag).toBe("--effort");
+    expect(buildRunCommand(r.launchCommand, r.promptArgs, "Do it.")).toBe(
+      "claude 'Do it.'"
+    );
   });
 
   // A row that is THERE and says null keeps its null: the fallback is
@@ -474,16 +523,16 @@ describe("resolveAgentConfig", () => {
       [{ id: "a", label: "A", command: "a", modelFlag: "" }],
       [{ id: "local:b", label: "B", command: "b", modelFlag: "" }]
     ).map((p) => p.id);
-    expect(order).toEqual(["claude-code", "codex", "cursor", "a", "local:b"]);
+    expect(order).toEqual(["claude-code", "cline", "copilot", "codex", "cursor", "a", "local:b"]);
   });
 
-  it("leaves a stock profile's verified resume argv alone", () => {
+  it("does not invent a resume argv for Cline", () => {
     const r = resolveAgentConfig(
-      { profile: "claude-code", file: null, command: null },
+      { profile: "cline", file: null, command: null },
       PROFILES,
       {}
     );
-    expect(r.resumeArgs).toBe("--resume");
+    expect(r.resumeArgs).toBe("");
   });
 
   it("resolves a named custom with no resumeArgs to empty", () => {
@@ -511,7 +560,7 @@ describe("resolveAgentConfig", () => {
 
   it("resolves effort by model's layers: the workspace's own, else the app-wide one", () => {
     const own = resolveAgentConfig(
-      { profile: "claude-code", file: null, command: null, model: "opus", effort: "high" },
+      { profile: "cline", file: null, command: null, model: CLINE_TEST_MODEL, effort: "high" },
       PROFILES,
       {},
       undefined,
@@ -519,8 +568,8 @@ describe("resolveAgentConfig", () => {
       { "claude-code": "low" }
     );
     expect(own.effort).toBe("high");
-    // Model first, then effort -- the order `claude --help` lists them.
-    expect(own.launchCommand).toBe("claude --model opus --effort high");
+    // Model first, then effort.
+    expect(own.launchCommand).toBe(`cline --model ${CLINE_TEST_MODEL} --thinking high`);
     const inherited = resolveAgentConfig(
       { profile: "claude-code", file: null, command: null },
       PROFILES,
@@ -533,14 +582,24 @@ describe("resolveAgentConfig", () => {
     expect(inherited.launchCommand).toBe("claude --effort max");
   });
 
-  it("composes an advisor after model and effort, only on a profile with an advisor flag", () => {
+  it("composes an advisor for Claude Code, not for Cline", () => {
+    // Cline has no advisor flag; the option is tested on Claude Code,
+    // the profile that supports it.
+    const cline = resolveAgentConfig(
+      { profile: "cline", file: null, command: null, advisor: "opus" },
+      PROFILES,
+      {}
+    );
+    expect(cline.profileId).toBe("cline");
+    expect(cline.launchCommand).toBe("cline");
+
     const claude = resolveAgentConfig(
-      { profile: "claude-code", file: null, command: null, model: "sonnet", effort: "high", advisor: "opus" },
+      { profile: "claude-code", file: null, command: null, effort: "high", advisor: "opus" },
       PROFILES,
       {}
     );
     expect(claude.advisor).toBe("opus");
-    expect(claude.launchCommand).toBe("claude --model sonnet --effort high --advisor opus");
+    expect(claude.launchCommand).toBe("claude --effort high --advisor opus");
     // Codex has no advisor flag: the advisor is dropped, never guessed.
     const codex = resolveAgentConfig(
       { profile: "codex", file: null, command: null, advisor: "opus" },
@@ -593,11 +652,11 @@ describe("resolveAgentConfig", () => {
 
   it("lets a workspace flag override the profile table's, on any profile", () => {
     const r = resolveAgentConfig(
-      { profile: "claude-code", file: null, command: null, modelFlag: "--pick", model: "opus" },
+      { profile: "cline", file: null, command: null, modelFlag: "--pick", model: CLINE_TEST_MODEL },
       PROFILES,
       {}
     );
-    expect(r.launchCommand).toBe("claude --pick opus");
+    expect(r.launchCommand).toBe(`cline --pick ${CLINE_TEST_MODEL}`);
   });
 
   it("drops a repo-supplied modelFlag that carries shell syntax", () => {
@@ -679,10 +738,10 @@ describe("resolveAgentConfig", () => {
   // else's agent is garbage in its argv, and its error text on somebody
   // else's screen would paint healthy sessions as broken.
   it("takes the failure and resume argv from the effective profile only", () => {
-    const claude = resolveAgentConfig(null, PROFILES, {});
-    expect(claude.failurePatterns).toEqual(["API Error:"]);
-    expect(claude.sessionIdArgs).toBe("--session-id");
-    expect(claude.resumeArgs).toBe("--resume");
+    const cline = resolveAgentConfig({ profile: "cline", file: null, command: null }, PROFILES, {});
+    expect(cline.failurePatterns).toEqual([]);
+    expect(cline.sessionIdArgs).toBe("");
+    expect(cline.resumeArgs).toBe("");
     const codex = resolveAgentConfig({ profile: "codex", file: null, command: null }, PROFILES, {});
     expect(codex.failurePatterns).toEqual([]);
     expect(codex.resumeArgs).toBe("");
@@ -698,12 +757,12 @@ describe("resolveAgentConfig", () => {
   // failure of the two.
   it("keeps the profile's argv when only the command is overridden", () => {
     const r = resolveAgentConfig(
-      { profile: "claude-code", file: null, command: "/opt/bin/claude" },
+      { profile: "cline", file: null, command: "/opt/bin/cline" },
       PROFILES,
       {}
     );
-    expect(r.failurePatterns).toEqual(["API Error:"]);
-    expect(r.sessionIdArgs).toBe("--session-id");
+    expect(r.failurePatterns).toEqual([]);
+    expect(r.sessionIdArgs).toBe("");
   });
 
   it("gives custom MCP support the moment a config file is named for it", () => {
@@ -771,6 +830,17 @@ describe("resolveAgentConfig", () => {
       [...BUILT_INS, cursor],
       {}
     );
+    expect(r.promptInjection).toBe(false);
+  });
+
+  it("does not apply a custom MCP path to Cline CLI", () => {
+    const r = resolveAgentConfig(
+      { profile: "cline", file: null, command: null, mcpFile: "cline-mcp.json" },
+      PROFILES,
+      {}
+    );
+    expect(r.mcpSupported).toBe(false);
+    expect(r.mcpConfigFile).toBe("");
     expect(r.promptInjection).toBe(false);
   });
 

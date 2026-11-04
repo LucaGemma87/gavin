@@ -84,6 +84,7 @@ function everyKey(id: string, flavour: string): Workspace {
       },
     ],
     actionPromptOverrides: { "action:run-task": `prompt-${flavour}` },
+    launchCostPolicy: flavour === "a" ? "ask" : "no_paid_requests",
   };
 }
 

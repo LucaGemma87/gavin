@@ -18,7 +18,7 @@ constant, reused verbatim by every prompt composer and echoed in
 profile-aware: a profile whose new discovery field is non-empty gets an extra
 instruction appended, telling the agent to run that discovery command and
 pass the result as `gavin_name_session`'s new second argument; a profile
-without one (including Claude Code, which already has a real id via minting)
+without one (including cline, which already has a real id via minting)
 keeps today's wording completely unchanged.
 
 Steps:
@@ -50,3 +50,4 @@ Verify: `cd app && npm test && npm run check && npm run build`.
 <!-- gavin:auto-commit -->
 When the implementation is done, commit it. Commit only the files you touched — never `git add -A`. Do not push.
 <!-- /gavin:auto-commit -->
+

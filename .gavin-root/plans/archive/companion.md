@@ -31,7 +31,7 @@ Tickets are task cards nested under this plan, each with its own status and a `B
 The spec's typing decision (compose field by default, quick replies from the turn verdict, raw mode with a special-key row one tap away) **stands for now**. The owner's pick on a real phone is still outstanding, and this comment gets updated when it arrives. Building the bench showed the decision needs these amendments:
 
 1. Compose sends `term.paste(text)` and then `\r`. xterm adds the bracketed-paste markers only while the program has switched that mode on, which matches the desktop's envelope and keeps cooked-mode prompts (a y/n line) working.
-2. Menu quick replies send bare keys, not lines: the digit for a numbered menu, arrow presses plus Enter for an unnumbered one. (Modelled on Claude Code from memory; check against a real session.)
+2. Menu quick replies send bare keys, not lines: the digit for a numbered menu, arrow presses plus Enter for an unnumbered one. (Modelled on cline from memory; check against a real session.)
 3. The turn verdict decides whether quick replies show at all. The options come from parsing the screen tail. Only free-text questions get canned words (`Yes`, `No`, `Continue`).
 4. `Esc` and `^C` stay pinned in the compose dock; they are the only raw keys someone composing needs.
 5. The Companion must send the PTY resize when the soft keyboard opens and closes. A live prompt redraws wrongly across a dock resize, and rows are scarce (about 31 on an iPhone 17 with no keyboard, roughly 13 with it up, estimated).
@@ -48,3 +48,4 @@ The owner answered the fake agent in Raw, Compose and Both on their own iPhone, 
 Reported problems: only that the Send button's styling is too basic and out of line with the rest of Gavin's UI. No scrolling, selection, keyboard or input-method problem was reported. ADR 0002 has the Companion styled the desktop's way, so build the compose bar from the desktop's components rather than copying the bench's buttons.
 
 Still untested: **Android Chrome**. Only an iPhone was used, so the card's "iPhone Safari and Android Chrome" criterion is half met. The spec's typing point can move from "provisional" to settled for iOS; give the terminals ticket (`companion-26-terminals`) an Android check before it ships there.
+

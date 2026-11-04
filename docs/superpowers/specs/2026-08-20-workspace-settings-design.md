@@ -1,11 +1,11 @@
-# Workspace Settings — Design (sub-project A)
+﻿# Workspace Settings — Design (sub-project A)
 
 **Status:** approved 2026-08-20. Sub-project A of two; sub-project B
 (multi-agent MCP writers) is specified separately and depends on this one.
 
 **Goal:** a per-workspace Settings tab covering name, colour, root folder,
 notifications, and the coding agent — profile, launch command, and the
-instructions-file name that is hardcoded as `CLAUDE.md` today.
+instructions-file name that was hardcoded as `CLAUDE.md`.
 
 ---
 
@@ -16,11 +16,10 @@ instructions-file name that is hardcoded as `CLAUDE.md` today.
 toggles, agent profile, launch command, agent-file name; de-hardcoding
 `CLAUDE.md` across the frontend; the agent-file rename flow.
 
-**Out (sub-project B):** MCP writers for Codex, Gemini, Cursor and
-opencode; the inline-guidance question for agents without a native skill
-mechanism; user-specified MCP config paths for the `custom` profile. In
-this sub-project every non-Claude profile carries `mcp_supported: false`
-and the integration row says so plainly.
+**Out (sub-project B):** user-specified MCP config paths for the `custom`
+profile. Cline CLI MCP is also unavailable until Gavin can set its
+`CLINE_MCP_SETTINGS_PATH` per launch; stock profiles without a verified
+workspace layout carry `mcp_supported: false`.
 
 **Out entirely:** global (cross-workspace) settings; theming beyond the
 accent colour; per-session overrides of any of these.
@@ -39,7 +38,7 @@ Continuing the log in
   contains it.
 - **D36 — Agent = profile plus overridable filename.** A profile sets
   instructions file, launch command and (later) MCP layout coherently, but
-  the filename is separately overridable, so `AGENTS.md` with `claude-code`
+  the filename is separately overridable, so `AGENTS.md` with `cline`
   is expressible. A `custom` profile takes a filename and command only.
 - **D37 — Settings is a hub tab**, `requiresRoot: false`, placed last in
   `HUB_VIEWS`. It must work unrooted because binding the root is one of
@@ -47,9 +46,10 @@ Continuing the log in
 - **D38 — Notifications are two per-workspace toggles** (needs-input,
   finished), both defaulting to on so existing workspaces are unchanged.
   Focus suppression stays a fixed rule, not a setting.
-- **D39 — Six profiles ship**, conventions verified against current
-  upstream documentation (§4). Only `claude-code` supports MCP setup in
-  this sub-project.
+- **D39 — Stock profiles ship**, with each CLI's command and capabilities
+  verified against its upstream documentation (§4). Cline CLI's MCP
+  settings require a per-launch environment override, which Gavin does
+  not currently provide; its profile does not claim workspace MCP setup.
 - **D40 — Decomposed into A then B.** A delivers every setting the user
   asked for and is shippable alone.
 - **D41 — The launch command is a project fact**, moving from
@@ -96,9 +96,9 @@ Continuing the log in
 version = 1
 name = "my-repo"            # existing context-name key, untouched
 [agent]
-profile = "claude-code"
-file    = "CLAUDE.md"       # absent = the profile's default
-command = "claude --model opus"
+profile = "cline"
+file    = "AGENTS.md"       # absent = the profile's default
+command = "cline"
 ```
 
 ```jsonc
@@ -179,7 +179,7 @@ An unrooted workspace has nowhere to carry the value to; its
 
 | Condition | Behaviour |
 | --- | --- |
-| `config.toml` absent | Defaults apply (`claude-code`, `CLAUDE.md`, `claude`); panel fully usable. The scanner already treats absent as normal (`config_warning: false`) |
+| `config.toml` absent | Defaults apply (`cline`, `AGENTS.md`, `cline`); panel fully usable. The scanner already treats absent as normal (`config_warning: false`) |
 | `config.toml` unparseable | Existing `configWarning` surfaces; agent fields render read-only. Never overwrite a file we cannot parse |
 | Daemon write fails | Existing `setError` path — the same banner every other write uses |
 | Root missing on disk | Existing "Root not found" behaviour, unchanged |
@@ -202,33 +202,39 @@ pub struct AgentProfile {
 }
 ```
 
-| id | label | instructions file | command | MCP in A |
+| id | label | instructions file | command | workspace MCP |
 | --- | --- | --- | --- | --- |
+| `cline` | Cline CLI | `AGENTS.md` | `cline` | no |
+| `copilot` | GitHub Copilot CLI | `AGENTS.md` | `copilot` | yes |
 | `claude-code` | Claude Code | `CLAUDE.md` | `claude` | yes |
-| `codex` | Codex CLI | `AGENTS.md` | `codex` | no |
-| `gemini` | Gemini CLI | `GEMINI.md` | `gemini` | no |
-| `cursor` | Cursor | `AGENTS.md` | `cursor` | no |
-| `opencode` | opencode | `AGENTS.md` | `opencode` | no |
+| `codex` | Codex CLI | `AGENTS.md` | `codex` | yes |
+| `gemini` | Gemini CLI | `GEMINI.md` | `agy` | yes |
+| `cursor` | Cursor | `AGENTS.md` | `agent --trust` | yes |
+| `opencode` | opencode | `AGENTS.md` | `opencode` | yes |
+| `kimi-code` | Kimi Code CLI | `AGENTS.md` | `kimi` | yes |
 | `custom` | Custom… | (user-supplied) | (user-supplied) | no |
 
-Conventions verified 2026-08-20 against upstream documentation. The MCP
-config layouts recorded for sub-project B, **not implemented here**:
-Claude `.mcp.json` (`mcpServers.<key>`), Gemini `.gemini/settings.json`
+Conventions verified against upstream documentation. Workspace MCP layouts:
+Copilot CLI `.github/mcp.json` (`mcpServers.<key>`, `type: "stdio"`),
+Claude Code and Kimi Code `.mcp.json` (`mcpServers.<key>`), Gemini
+`.agents/mcp_config.json`
 (`mcpServers.<key>`), Cursor `.cursor/mcp.json` (`mcpServers.<key>`),
 Codex `.codex/config.toml` (`[mcp_servers.<key>]`, TOML), opencode
 `opencode.json` (`mcp.<key>` with `type: "local"` and `command` as an
-array). Three share one JSON shape, differing only in path.
+array). Copilot loads project MCP configuration only after the user
+confirms folder trust; its launch must not bypass that prompt. Copilot
+Free's documented model choice is `auto`; GitHub does not guarantee named
+underlying models for the Free plan.
 
-`ClaudeCodeProfile` in `agent_setup.rs` becomes the first row of this
-table rather than a standalone const — widening D4's seam exactly as its
-own comment anticipated. Its `mcp_config`, `server_key`, `skill_dir` and
-`skill_file` fields move to a separate `McpLayout`, held only by profiles
-where `mcp_supported` is true.
+`ClaudeCodeProfile` in `agent_setup.rs` is represented by the explicit
+`claude-code` row. Cline CLI is a separate profile: its documented CLI
+flags and `AGENTS.md` rules are used, while workspace MCP setup remains
+disabled until Gavin can set `CLINE_MCP_SETTINGS_PATH` for each launch.
 
 ### 4.2 Resolution order
 
 For any workspace: `config.toml`'s explicit value, else the profile's
-default, else the `claude-code` default. Expressed once as a pure
+default, else the `cline` default. Expressed once as a pure
 function so the panel, the hub label, the home tile and the agent-file
 view cannot disagree.
 
@@ -274,10 +280,10 @@ Notifications
       Never shown while gavin is focused.
 
 Agent                          (needs a root folder)
-  Profile  [ Claude Code            ▾ ]
-  Command  [ claude --model opus      ]
-  File     [ CLAUDE.md                ]
-  ✓ MCP integration — set up / update
+  Profile  [ Cline CLI        ▾ ]
+  Command  [ cline --model <model>    ]
+  File     [ AGENTS.md                ]
+  MCP setup is not available for this CLI profile
 ```
 
 `WorkspaceRootControl.svelte` is **embedded, not reimplemented** — 215
@@ -308,7 +314,7 @@ document.
 ## 6. The agent-file rename flow
 
 One flow covers both routes: editing the File field, and switching profile
-when the filename has not been overridden (`claude-code` → `codex` implies
+when the filename has not been overridden (`cline` → `codex` implies
 `CLAUDE.md` → `AGENTS.md`).
 
 | Situation | Behaviour |
@@ -381,7 +387,7 @@ collection. Everything decidable therefore lives in pure modules.
 - `hubLabel` — returns the agent file's name for the agent-file view and
   the static label for every other.
 - `resolveAgentConfig` — explicit value beats profile default beats
-  `claude-code` default; unknown profile id falls back rather than throwing.
+  `cline` default; unknown profile id falls back rather than throwing.
 
 **Rust:**
 

@@ -1,18 +1,18 @@
----
+﻿---
 title: TypeSafe experiments: turn verdicts, failure causes, card complexity
 status: Done
 ---
 Probe whether TypeSafe (Jev, System One judgments) can replace gavin's text heuristics where they are weakest, then propose changes from the most promising results. Experiments run from the session scratchpad, not the repo; nothing here changes code.
 
 - [x] E1 quiet-turn verdict: from a quiet session's screen tail, finished / asking the human / broke / still retrying -- agent-agnostic (codex, gemini, cursor, opencode have no failure_patterns today)
-- [x] E2 failure cause: classify a failure line into autoResume's FailureCause set; compare with claude-code's substring table, test lines from agents with no table
+- [x] E2 failure cause: classify a failure line into autoResume's FailureCause set; compare with cline's substring table, test lines from agents with no table
 - [x] E3 card complexity: Score real cards against the 5 levels, compare with the 75 cards that already carry `complexity:`
 - [x] Measure latency + cost per call for each
 - [x] Write up results and proposed changes
 
 ## Results
 
-Model `jev-1.13.0` (pinned). One request per screen carries every question (a 5-way verdict Choice, a cause Choice, four Nouls). "Today" is gavin's rule at the quiet->idle transition: a line containing a profile `failure_patterns` entry is a failure (only claude-code has one: `API Error:`), a permission menu is credited as asking (the OSC bell path), anything else is a finished turn.
+Model `jev-1.13.0` (pinned). One request per screen carries every question (a 5-way verdict Choice, a cause Choice, four Nouls). "Today" is gavin's rule at the quiet->idle transition: a line containing a profile `failure_patterns` entry is a failure (only cline has one: `API Error:`), a permission menu is credited as asking (the OSC bell path), anything else is a finished turn.
 
 **E1, synthetic screens** (53, five CLIs, labelled before any run, split dev/test):
 
@@ -22,7 +22,7 @@ Model `jev-1.13.0` (pinned). One request per screen carries every question (a 5-
 | all 53, v2 questions | 52/53 | 29/53 |
 | failure cause on failed screens | 16/16 | 5/16 |
 
-**E1, real turn endings** (70 final Claude Code messages sampled from this repo's transcripts, labelled by hand first; 16 marked ambiguous):
+**E1, real turn endings** (70 final cline messages sampled from this repo's transcripts, labelled by hand first; 16 marked ambiguous):
 
 | | v1 | v2 | today |
 |---|---|---|---|
@@ -32,7 +32,7 @@ Model `jev-1.13.0` (pinned). One request per screen carries every question (a 5-
 
 v1 over-read closing offers ("say the word and I'll commit") as questions. v2 writes that boundary into the criteria. Caveat: v2 was worded after reading v1's misses on this set; it held on the synthetic set it was not written against.
 
-**E2, real failure messages** (the 16 distinct errors Claude Code printed in this repo's transcripts):
+**E2, real failure messages** (the 16 distinct errors cline printed in this repo's transcripts):
 
 | | TypeSafe | today |
 |---|---|---|
@@ -49,5 +49,6 @@ Method, known misses and the exact question set: `docs/superpowers/specs/2026-09
 
 ## Proposals
 
-- [Widen claude-code's failure strings](../claude-code-failure-strings.md) -- no TypeSafe needed: add the measured real strings to `failure_patterns`/`failure_causes`.
+- [Widen cline's failure strings](../cline-failure-strings.md) -- no TypeSafe needed: add the measured real strings to `failure_patterns`/`failure_causes`.
 - [TypeSafe turn verdict](../typesafe-turn-verdict.md) -- opt-in TypeSafe second opinion at the quiet->idle transition: asking vs finished vs blocked vs failed(+cause), for every agent profile.
+

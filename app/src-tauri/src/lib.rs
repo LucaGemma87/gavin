@@ -197,6 +197,7 @@ pub fn run() {
             session::get_headroom_default,
             session::set_headroom_default,
             session::set_headroom_workspaces,
+            session::set_launch_policies,
             session::get_headroom_status,
             session::headroom_savings,
             session::headroom_reach,

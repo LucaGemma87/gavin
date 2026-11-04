@@ -6,7 +6,7 @@ status: Done
 priority: medium
 complexity: moderate
 ---
-The compat work's phase-2 leftover. `crates/gavin-mcp/src/main.rs` (`SocketTransport::connect`, the `VersionBand::DaemonNewer` arm) still hard-errors — "the gavin daemon is newer than this gavin-mcp … restart this Claude Code session" — under a comment saying phase 2 replaces it with a self re-exec. Every agent session on the machine loses its `gavin_*` tools the moment the daemon is rebuilt, and gets them back only by restarting the session. Design: `docs/superpowers/specs/2026-08-24-daemon-version-compat-ota-design.md` §3 ("gavin-mcp self re-exec") and Task 3 of `docs/superpowers/plans/2026-08-24-ota-updates.md`. Read both before writing anything; the spec records the options it rejected.
+The compat work's phase-2 leftover. `crates/gavin-mcp/src/main.rs` (`SocketTransport::connect`, the `VersionBand::DaemonNewer` arm) still hard-errors — "the gavin daemon is newer than this gavin-mcp … restart this cline session" — under a comment saying phase 2 replaces it with a self re-exec. Every agent session on the machine loses its `gavin_*` tools the moment the daemon is rebuilt, and gets them back only by restarting the session. Design: `docs/superpowers/specs/2026-08-24-daemon-version-compat-ota-design.md` §3 ("gavin-mcp self re-exec") and Task 3 of `docs/superpowers/plans/2026-08-24-ota-updates.md`. Read both before writing anything; the spec records the options it rejected.
 
 The shape the spec asks for:
 
@@ -16,3 +16,4 @@ The shape the spec asks for:
 4. One line to stderr saying which version re-execed into which, so a session's transcript shows what happened.
 
 Tests: the marker guard (a re-execed process that still sees `DaemonNewer` errors rather than re-execing again), the buffered-stdin case, and the `DaemonTooOld` arm unchanged. `cargo test -p gavin-mcp`. Commit only the files you touched. CLAUDE.md's "gavin-mcp fails closed on version skew" paragraph becomes wrong when this lands — update it in the same commit.
+

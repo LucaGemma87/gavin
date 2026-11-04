@@ -40,8 +40,10 @@ Settled in development (do not re-litigate):
 - [x] Commits, pushes and files — `activity-calendar-git.md` (independent of the one above; run them in parallel)
 - [x] Calendar core and desktop surfaces — `activity-calendar-desktop.md` (needs both above)
 - [x] Companion — `activity-calendar-companion.md` (needs the desktop one)
-- [ ] Human test: In the running app, open the app hub and a workspace's Home: the activity calendar shows the last 12 months, the dropdown re-colours it by kind, clicking a day → hour zooms in, the breadcrumb and ←/→ move back and across, and a card-run row opens its card. Check an ssh workspace contributes at app level.
-- [ ] Human test: On a paired phone, the workspace list's Activity block and a workspace's Activity surface open at Month, zoom out to a Year that fits the width, and zoom in to an hour's list.
+- [x] Human test: In the running app, open the app hub and a workspace's Home: the activity calendar shows the last 12 months, the dropdown re-colours it by kind, clicking a day → hour zooms in, the breadcrumb and ←/→ move back and across, and a card-run row opens its card. Check an ssh workspace contributes at app level.
+  Result (2026-11-02): passed
+- [x] Human test: On a paired phone, the workspace list's Activity block and a workspace's Activity surface open at Month, zoom out to a Year that fits the width, and zoom in to an hour's list.
+  Result (2026-11-02): passed
 
 <!-- gavin:auto-commit -->
 When the implementation is done, commit it. Commit only the files you touched — never `git add -A`. Do not push.

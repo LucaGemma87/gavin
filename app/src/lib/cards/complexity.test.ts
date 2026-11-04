@@ -17,8 +17,17 @@ import {
   recommendedComplexityAction,
   withAgentEffort,
   EMPTY_AGENT_DEFAULTS,
+  effectiveDefaultAgent,
   type ComplexityTable,
 } from "$lib/cards/complexity";
+
+describe("effectiveDefaultAgent", () => {
+  it("uses Claude Code for empty defaults but preserves an explicitly selected supported profile", () => {
+    expect(EMPTY_AGENT_DEFAULTS.defaultAgent).toBe("claude-code");
+    expect(effectiveDefaultAgent({ ...EMPTY_AGENT_DEFAULTS, defaultAgent: "" })).toBe("claude-code");
+    expect(effectiveDefaultAgent({ ...EMPTY_AGENT_DEFAULTS, defaultAgent: "cline" })).toBe("cline");
+  });
+});
 
 describe("parseComplexity", () => {
   it("accepts every level, however it was typed", () => {
@@ -58,7 +67,7 @@ describe("parseComplexity", () => {
 describe("isAttributed", () => {
   it("counts a row that names either half, and no other", () => {
     expect(isAttributed({ profile: "codex", model: "" })).toBe(true);
-    expect(isAttributed({ profile: "", model: "opus" })).toBe(true);
+    expect(isAttributed({ profile: "", model: "cline-test-model" })).toBe(true);
     expect(isAttributed({ profile: "  ", model: "  " })).toBe(false);
     // An effort alone is a whole row: the workspace's agent, harder.
     expect(isAttributed({ profile: "", model: "", effort: "max" })).toBe(true);
@@ -73,13 +82,13 @@ describe("isAttributed", () => {
 
 describe("complexityEntryFor", () => {
   const table: ComplexityTable = {
-    trivial: { profile: "", model: "haiku" },
+    trivial: { profile: "", model: "cline-test-model" },
     intricate: { profile: "claude-code", model: "opus" },
   };
 
   it("reads the level's row from the one table it is given", () => {
     expect(complexityEntryFor("intricate", table)).toEqual({ profile: "claude-code", model: "opus" });
-    expect(complexityEntryFor("trivial", table)).toEqual({ profile: "", model: "haiku" });
+    expect(complexityEntryFor("trivial", table)).toEqual({ profile: "", model: "cline-test-model" });
   });
 
   it("treats an empty row as nothing attributed", () => {
@@ -197,8 +206,8 @@ describe("per-primary complexity tables", () => {
     ).toBe(false);
     expect(
       sameComplexityTable(
-        { complex: { profile: "", model: "sonnet" } },
-        { complex: { profile: "", model: "sonnet", advisor: "opus" } }
+        { complex: { profile: "claude-code", model: "sonnet" } },
+        { complex: { profile: "claude-code", model: "sonnet", advisor: "opus" } }
       )
     ).toBe(false);
   });
@@ -282,7 +291,8 @@ describe("agentConfigWithAttribution", () => {
 });
 
 describe("complexitySummary", () => {
-  const label = (id: string) => (id === "codex" ? "Codex CLI" : id);
+  const label = (id: string) =>
+    id === "codex" ? "Codex CLI" : id === "claude-code" ? "Claude Code" : id;
 
   it("says what the level will actually run", () => {
     expect(complexitySummary("intricate", { profile: "codex", model: "gpt-5.1" }, label)).toBe(
@@ -291,8 +301,8 @@ describe("complexitySummary", () => {
     expect(complexitySummary("simple", { profile: "codex", model: "" }, label)).toBe(
       "Simple — runs Codex CLI."
     );
-    expect(complexitySummary("trivial", { profile: "", model: "haiku" }, label)).toBe(
-      "Trivial — runs this workspace's agent on haiku."
+    expect(complexitySummary("trivial", { profile: "", model: "cline-test-model" }, label)).toBe(
+      "Trivial — runs this workspace's agent on cline-test-model."
     );
   });
 
@@ -307,8 +317,12 @@ describe("complexitySummary", () => {
 
   it("names the advisor after the effort", () => {
     expect(
-      complexitySummary("intricate", { profile: "", model: "sonnet", effort: "high", advisor: "opus" }, label)
-    ).toBe("Intricate — runs this workspace's agent on sonnet, at high effort, advised by opus.");
+      complexitySummary(
+        "intricate",
+        { profile: "claude-code", model: "sonnet", effort: "high", advisor: "opus" },
+        label
+      )
+    ).toBe("Intricate — runs Claude Code on sonnet, at high effort, advised by opus.");
   });
 
   it("says so when a level is rated but attributed to nothing", () => {
@@ -334,18 +348,18 @@ describe("withAgentEffort", () => {
 describe("realignComplexityTable", () => {
   const table: ComplexityTable = {
     trivial: { profile: "claude-code", model: "haiku" },
-    simple: { profile: "", model: "sonnet" },
+    simple: { profile: "", model: "cline-test-model" },
     intricate: { profile: "codex", model: "gpt-5.1" },
   };
 
   it("keep leaves every row alone", () => {
-    expect(realignComplexityTable(table, "keep", "claude-code", "cursor")).toEqual(table);
+    expect(realignComplexityTable(table, "keep", "cline", "cursor")).toEqual(table);
   });
 
   it("remap retargets rows that named the old profile and leaves the rest", () => {
     expect(realignComplexityTable(table, "remap", "claude-code", "cursor")).toEqual({
       trivial: { profile: "cursor", model: "" },
-      simple: { profile: "", model: "sonnet" },
+      simple: { profile: "", model: "cline-test-model" },
       intricate: { profile: "codex", model: "gpt-5.1" },
     });
   });
@@ -390,8 +404,8 @@ describe("recommendedComplexityAction", () => {
     ).toBe("keep");
     expect(
       recommendedComplexityAction(
-        { simple: { profile: "", model: "sonnet" }, intricate: { profile: "codex", model: "" } },
-        "claude-code"
+        { simple: { profile: "", model: "cline-test-model" }, intricate: { profile: "codex", model: "" } },
+        "cline"
       )
     ).toBe("keep");
   });

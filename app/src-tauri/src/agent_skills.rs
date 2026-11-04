@@ -16,10 +16,9 @@
 //!    zero into a state gavin does not read. The row is whatever the check
 //!    that follows the install finds.
 //!
-//! Two routes. Claude Code takes the plugin from its official marketplace,
-//! a managed bundle that updates itself; the other known agents take the
-//! skills CLI's copy into the repo's `.agents/skills/`, which all four read.
-//! A custom agent gets neither: gavin does not know its skills CLI id.
+//! Claude Code takes the plugin from its official marketplace, a managed
+//! bundle that updates itself; other known agents, including Cline, take
+//! the skills CLI's copy into the repo's `.agents/skills/`.
 //!
 //! Subprocesses follow `git/run.rs`'s shape: an argv array (never a shell
 //! string), an explicit timeout, and both pipes drained on threads so a
@@ -50,8 +49,7 @@ const SKILLS_SOURCE: &str = "mattpocock/skills";
 /// their `skillsDir` in the CLI's own table.
 const SKILLS_DIR: &str = ".agents/skills";
 
-/// What Claude Code says when the official marketplace was never added --
-/// a Claude Code that has not run interactively on this machine.
+/// What Claude Code says when the official marketplace was never added.
 const NO_MARKETPLACE: &str = "not found in any configured marketplace";
 const ADD_MARKETPLACE: &str = "claude plugin marketplace add anthropics/claude-plugins-official";
 
@@ -146,6 +144,7 @@ enum Route {
 
 fn route(profile_id: &str) -> Route {
     match profile_id {
+        "cline" => Route::SkillsCli("cline"),
         "claude-code" => Route::Plugin,
         "codex" => Route::SkillsCli("codex"),
         // Prefer antigravity-cli whenever Antigravity is on PATH (or
@@ -528,7 +527,7 @@ fn detect(
 /// travels with a clone whose `.agents/skills/` may be gitignored -- that
 /// is absent, and `npx skills experimental_install` restores it. And a
 /// `.agents/skills/` with no lock entry is someone else's skills: gavin
-/// installs its own there for Codex.
+/// installs its own there for agents using this skills-CLI route.
 fn detect_skills_cli(root: &Path) -> Detected {
     let lock = root.join("skills-lock.json");
     let Ok(body) = std::fs::read_to_string(&lock) else {
@@ -925,6 +924,7 @@ mod tests {
 
     #[test]
     fn every_known_profile_has_an_install_route_and_custom_has_none() {
+        assert_eq!(route("cline"), Route::SkillsCli("cline"));
         assert_eq!(route("claude-code"), Route::Plugin);
         assert_eq!(route("codex"), Route::SkillsCli("codex"));
         // PATH-dependent: Antigravity when agy/antigravity is present (or
@@ -943,6 +943,27 @@ mod tests {
         assert_eq!(route("custom-agent"), Route::Manual);
     }
 
+    #[test]
+    fn cline_skills_status_uses_the_skills_cli_route() {
+        let dir = tempfile::tempdir().unwrap();
+        let status = status_for(dir.path(), "cline", false, None);
+        assert_eq!(status.state, "absent");
+        assert!(status.installable);
+        assert!(status.command.contains("-a cline"), "{}", status.command);
+    }
+
+    #[test]
+    fn cline_skills_status_verifies_skills_cli_installation() {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(dir.path().join("skills-lock.json"), LOCK).unwrap();
+        write_skill(dir.path(), "tdd");
+
+        let status = status_for(dir.path(), "cline", false, None);
+
+        assert_eq!(status.state, "verified");
+        assert!(status.output.contains(".agents/skills"));
+    }
+
     /// What the row shows is the install the human would type; the
     /// skills CLI route adds `--prefix` at spawn time (see
     /// `skills_cli_spawn`), not in this string.
@@ -956,6 +977,10 @@ mod tests {
             .iter().map(|a| if *a == "*" { "'*'".to_string() } else { a.to_string() }).collect();
         assert_eq!(command_for("gemini"), format!("npx {}", quoted.join(" ")));
         assert_eq!(command_for("claude-code"), "claude plugin install mattpocock-skills --scope project -y");
+        assert_eq!(
+            command_for("cline"),
+            "npx -y skills@latest add mattpocock/skills --skill '*' -a cline -y"
+        );
         assert_eq!(command_for("custom"), "npx skills@latest add mattpocock/skills");
     }
 
@@ -1050,7 +1075,11 @@ mod tests {
     #[test]
     fn a_known_agent_ignores_the_humans_word() {
         assert_eq!(resolve("codex", Some(false), "", true).0, State::Absent);
-        assert_eq!(resolve("claude-code", None, "claude was not found on PATH", true).0, State::Unavailable);
+        assert_eq!(resolve("cline", Some(false), "", true).0, State::Absent);
+        assert_eq!(
+            resolve("claude-code", None, "claude was not found on PATH", true).0,
+            State::Unavailable
+        );
     }
 
     #[test]

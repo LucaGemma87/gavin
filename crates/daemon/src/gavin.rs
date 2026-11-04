@@ -3679,7 +3679,7 @@ pub fn read_workspace_file(root: &Path, path: &str) -> anyhow::Result<(Option<St
 /// cannot redirect the write (the desktop's LocalFiles writers do the
 /// same for a local root).
 pub fn write_workspace_file(root: &Path, path: &str, content: &str) -> anyhow::Result<()> {
-    use std::io::Write;
+    
     let resolved = confined(root, path)?;
     if let Some(parent) = resolved.parent() {
         std::fs::create_dir_all(parent)?;

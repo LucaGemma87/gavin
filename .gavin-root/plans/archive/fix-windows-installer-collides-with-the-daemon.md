@@ -1,4 +1,4 @@
----
+﻿---
 order: 8192
 title: [fix] The Windows installer installs into the daemon's state directory, and never stops the daemon
 labels: windows
@@ -252,7 +252,7 @@ installer did.
       **And `.mcp.json` is not the only one. jarvis is a second instance
       the launcher does not cover.** `C:\Users\calfr\coding\jarvis` is the
       other registered workspace (`config.json`; both are `profile =
-      "claude-code"`, so both write `.mcp.json`). Its committed config names
+      "cline"`, so both write `.mcp.json`). Its committed config names
       `C:\Users\calfr\coding\gavin\target\debug\gavin-mcp.exe` — a file that
       does exist, built 2026-09-10, which is worse than a missing one: it
       connects and then fails every call. Driven directly today,

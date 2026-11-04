@@ -194,7 +194,7 @@ struct Carried;
 impl Carried {
     fn begin() -> Option<Self> {
         CARRIED_NOW
-            .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |n| {
+            .try_update(Ordering::SeqCst, Ordering::SeqCst, |n| {
                 (n < CARRIED).then_some(n + 1)
             })
             .ok()

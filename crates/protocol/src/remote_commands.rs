@@ -94,6 +94,9 @@ const REMOTE_COMMAND_TABLE: &[(&str, RemoteAllowance)] = &[
     // duties -- which a Device never is. A Device moves the switch itself
     // through `set_workspace_settings`.
     ("set_headroom_workspaces", RemoteAllowance::Refused), // meaningless away from the desk
+    // The cost policy is the desk's decision about what a launch may
+    // spend; a Device changing it would change what the desk asks about.
+    ("set_launch_policies", RemoteAllowance::Refused),
     ("get_headroom_status", RemoteAllowance::Allowed),
     // Adopted memories (v60). The status is a read; the ensure is what
     // Adopt calls after writing `### Learned`, which a Device can press.

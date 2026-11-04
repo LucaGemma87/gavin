@@ -66,7 +66,7 @@ export interface AgentProfileInfo {
   /// The effort levels the CLI documents, lowest first.
   efforts?: string[];
   /// The flag that names a model this agent consults as its advisor
-  /// (`--advisor`, claude-code only). Empty or absent hides the advisor
+  /// (`--advisor`, Claude Code only). Empty or absent hides the advisor
   /// control a complexity row offers. Optional because a host built
   /// before the advisor does not send it.
   advisorFlag?: string;
@@ -519,6 +519,12 @@ export function isLeftoverCommand(
 /// no configured profile AND the app-wide default agent (`AgentDefaults.
 /// defaultAgent`) is empty or names nothing installed.
 export const FALLBACK_PROFILE = "claude-code";
+const FALLBACK_COMMAND = "claude";
+const FALLBACK_LABEL = "Claude Code";
+const FALLBACK_MODEL_FLAG = "--model";
+const FALLBACK_EFFORT_FLAG = "--effort";
+const FALLBACK_PROMPT_ARGS = "";
+const FALLBACK_INSTRUCTIONS_FILE = "CLAUDE.md";
 
 /// Explicit config beats the profile default beats the app-wide default
 /// agent (empty → claude-code; spec §4.2). Expressed once so the panel,
@@ -560,17 +566,18 @@ export function resolveAgentConfig(
   const defaultId = nonEmpty(appDefaultProfile) ?? FALLBACK_PROFILE;
   const requested = nonEmpty(config?.profile) ?? defaultId;
   const configured = nonEmpty(config?.mcpFile);
-  const customMcpFile = configured && !validateMcpConfigPath(configured) ? configured : null;
   const profile = profiles.find((p) => p.id === requested);
   const fallback = profiles.find((p) => p.id === defaultId) ?? profiles.find((p) => p.id === FALLBACK_PROFILE);
   const effective = profile ?? fallback;
   const profileId = effective?.id ?? defaultId;
+  const customMcpFile =
+    effective?.custom === true && configured && !validateMcpConfigPath(configured) ? configured : null;
   const explicitCommand = nonEmpty(config?.command);
   const command =
     (explicitCommand && !isLeftoverCommand(explicitCommand, effective, profiles) ? explicitCommand : null) ??
     nonEmpty(effective?.command) ??
     nonEmpty(fallback?.command) ??
-    "claude";
+    FALLBACK_COMMAND;
   // Keyed by the RESOLVED profile, not the requested one: a config
   // naming a profile that no longer exists runs claude-code, so it must
   // inherit claude-code's default rather than a dead row's.
@@ -581,19 +588,19 @@ export function resolveAgentConfig(
   const modelFlag =
     nonEmpty(config?.modelFlag) ??
     nonEmpty(effective?.modelFlag) ??
-    "";
+    (effective ? "" : FALLBACK_MODEL_FLAG);
   const effort = nonEmpty(config?.effort) ?? nonEmpty(globalEfforts[profileId]) ?? "";
   const effortFlag =
     nonEmpty(config?.effortFlag) ??
     nonEmpty(effective?.effortFlag) ??
-    "";
+    (effective ? "" : FALLBACK_EFFORT_FLAG);
   // No fallback chain: the flag describes the BINARY, the posture
   // `headlessArgs` takes, so a custom agent never inherits claude's.
   const advisor = nonEmpty(config?.advisor) ?? "";
   const advisorFlag = effective?.advisorFlag ?? "";
   const resolved: ResolvedAgent = {
     profileId,
-    label: effective?.label ?? profileId,
+    label: effective?.label ?? (profileId === FALLBACK_PROFILE ? FALLBACK_LABEL : profileId),
     model,
     modelFlag,
     effort,
@@ -613,7 +620,7 @@ export function resolveAgentConfig(
       nonEmpty(config?.file) ??
       nonEmpty(effective?.instructionsFile) ??
       nonEmpty(fallback?.instructionsFile) ??
-      "CLAUDE.md",
+      FALLBACK_INSTRUCTIONS_FILE,
     command,
     // A named custom has no row in the built-in table to carry a layout,
     // so its support follows from whether someone has named a USABLE
@@ -637,11 +644,9 @@ export function resolveAgentConfig(
     // But an ABSENT table is a different case, and it has to answer the
     // way `command` two fields up already answered it: the table is
     // fetched asynchronously and its failure is swallowed, so an empty
-    // one is a state the app really reaches -- and there `command` falls
-    // back to the literal "claude". Handing back claude's command while
-    // denying that claude takes a prompt would block every card run in
-    // the app with a sentence naming an agent nobody chose.
-    promptArgs: effective ? effective.promptArgs : "",
+    // one is a state the app really reaches. Keep the bare positional
+    // prompt (Claude Code's) available in that state too.
+    promptArgs: effective ? effective.promptArgs : FALLBACK_PROMPT_ARGS,
     // A built-in says for itself (kimi-code's row). A named custom has
     // no verified prompt argv, but once the workspace names a usable MCP
     // file -- the one gavin writes its own server into -- its agent

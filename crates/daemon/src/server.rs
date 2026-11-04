@@ -8,7 +8,7 @@ use crate::screen::SessionScreen;
 use crate::status::{StatusEvent, StatusScanner, HEURISTIC_QUIET_PERIOD};
 use notify_debouncer_mini::Debouncer;
 use std::collections::{HashMap, HashSet};
-use std::io::{BufReader, Read, Write};
+use std::io::{BufReader, Read};
 use protocol::transport::{Listener, Stream};
 use std::net::Shutdown;
 use std::sync::atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering};
@@ -781,6 +781,8 @@ fn headroom_reason() -> String {
 /// and Kimi Code's) is listed, pinned by
 /// `headroom_not_blamed_markers_cover_every_non_network_cause` there.
 pub const NOT_HEADROOMS_MARKERS: &[&str] = &[
+    "Daily free model limit reached",
+    "today's free usage limit for this model",
     "/login",
     "OAuth token has expired",
     "disabled Claude subscription access",
@@ -1764,6 +1766,9 @@ pub struct SessionManager {
     /// "Headroom is absent", which is a statement about a machine this
     /// manager never looked at.
     headroom: std::sync::OnceLock<crate::headroom::Headroom>,
+    /// The app's current launch cost policy. Like Headroom's switch, this
+    /// survives daemon restarts and is replaced by the app's whole list.
+    launch_policy: std::sync::OnceLock<crate::launch_policy::Switch>,
     /// Adopted-memory indexes (v60, `memory_index.rs`).
     memories: std::sync::OnceLock<crate::memory_index::Memories>,
     /// A headless browser per agent session (v65, `browser/`). Set by
@@ -2282,6 +2287,7 @@ impl SessionManager {
             daemon_token: std::sync::OnceLock::new(),
             trust: std::sync::OnceLock::new(),
             headroom: std::sync::OnceLock::new(),
+            launch_policy: std::sync::OnceLock::new(),
             memories: std::sync::OnceLock::new(),
             browsers: std::sync::OnceLock::new(),
             device_connections: Mutex::new(HashMap::new()),
@@ -2461,6 +2467,39 @@ impl SessionManager {
     /// socket accepts anything; idempotent, like `set_trust_store`.
     pub fn set_headroom(&self, headroom: crate::headroom::Headroom) {
         let _ = self.headroom.set(headroom);
+    }
+
+    pub fn set_launch_policy(&self, launch_policy: crate::launch_policy::Switch) {
+        let _ = self.launch_policy.set(launch_policy);
+    }
+
+    fn authorize_launch(&self, workspace_path: &str, approved_once: bool) -> anyhow::Result<()> {
+        self.authorize_launch_as(workspace_path, approved_once, crate::launch_policy::Entitlement::Unknown)
+    }
+
+    /// `authorize_launch` for a route the caller has already placed. The
+    /// entitlement comes from `launch_policy::classify` and nowhere else;
+    /// a route nobody placed is `Unknown`.
+    fn authorize_launch_as(
+        &self,
+        workspace_path: &str,
+        approved_once: bool,
+        entitlement: crate::launch_policy::Entitlement,
+    ) -> anyhow::Result<()> {
+        let policy = self
+            .launch_policy
+            .get()
+            .map(|switch| switch.policy_for(workspace_path))
+            .unwrap_or_default();
+        match crate::launch_policy::verdict(policy, entitlement, approved_once) {
+            crate::launch_policy::Verdict::Allow => Ok(()),
+            crate::launch_policy::Verdict::ApprovalRequired => anyhow::bail!(
+                "launch blocked: Gavin cannot verify the route's cost; this launch needs fresh human approval"
+            ),
+            crate::launch_policy::Verdict::BlockedPaid => anyhow::bail!(
+                "launch blocked: the effective policy is No paid requests and this route is known Paid"
+            ),
+        }
     }
 
     /// This daemon's Headroom, or the error every Headroom request
@@ -4404,14 +4443,25 @@ impl SessionManager {
         let watcher = self
             .find_watcher_by_root(root_path)
             .ok_or_else(|| anyhow::anyhow!("workspace not open in gavin"))?;
+        // A spawn has no interactive approver (it comes through MCP), so
+        // refuse it before changing trust state or creating a session.
+        self.authorize_launch(root_path, false).map_err(|error| {
+            anyhow::anyhow!("{error}; an agent-requested spawn has no approver, so start this session from the app")
+        })?;
         // The one kimi launch the app's `create_session` never sees, so
         // its folder-trust grant is made here, by the same rule.
         crate::kimi_trust::prepare_spawn(root_path, cwd, command);
         // Nobody's word for what this is, so the command line speaks for
         // itself: compressed when its first token is an agent gavin has
         // a recipe for, exactly like a launch from the app.
-        let created =
-            self.create_session_as(root_path, cwd, Some(command), Launch::Command(command), false)?;
+        let created = self.create_session_as(
+            root_path,
+            cwd,
+            Some(command),
+            Launch::Command(command),
+            false,
+            false,
+        )?;
         watcher.push_response(&Response::AgentSessionSpawned {
             workspace_id: watcher.workspace_id.clone(),
             session_id: created.id.clone(),
@@ -4493,7 +4543,8 @@ impl SessionManager {
         command: Option<&str>,
         launch: Launch,
     ) -> anyhow::Result<String> {
-        self.create_session_as(workspace_path, cwd, command, launch, false).map(|created| created.id)
+        self.create_session_as(workspace_path, cwd, command, launch, false, false)
+            .map(|created| created.id)
     }
 
     /// `create_session`, with auto-resume's override for a relaunch of a
@@ -4506,7 +4557,11 @@ impl SessionManager {
         command: Option<&str>,
         launch: Launch,
         without_headroom: bool,
+        approved_once: bool,
     ) -> anyhow::Result<Created> {
+        if launch != Launch::Shell {
+            self.authorize_launch(workspace_path, approved_once)?;
+        }
         if !std::path::Path::new(cwd).is_dir() {
             anyhow::bail!("cwd does not exist or is not a directory: {cwd}");
         }
@@ -7138,26 +7193,80 @@ pub fn handle_request(manager: &SessionManager, req: Request) -> Response {
             profile_id,
             api_family,
             without_headroom,
-        } => manager
-            .create_session_as(
-                &workspace_path,
-                &cwd,
-                command.as_deref(),
-                // The app's word for what it launched. None is a shell
-                // tab, a command tool or a setup script -- and an agent
-                // launched by an app older than v47, which has no switch
-                // to have turned on. The API family is the custom
-                // agent's, and only its (v48).
-                Launch::requested(profile_id.as_deref(), api_family.as_deref()),
-                // Auto-resume's relaunch of a session that broke on
-                // Headroom (v50).
-                without_headroom,
-            )
-            .map(|created| Response::SessionCreated {
-                id: created.id,
-                compressed: created.compressed,
-                uncompressed_reason: created.uncompressed_reason,
-            }),
+        } => {
+            let launch = Launch::requested(profile_id.as_deref(), api_family.as_deref());
+            let authorization = if profile_id.is_none() && command.is_some() {
+                manager.authorize_launch(&workspace_path, false)
+            } else {
+                Ok(())
+            };
+            authorization.and_then(|()| {
+                manager.create_session_as(
+                    &workspace_path,
+                    &cwd,
+                    command.as_deref(),
+                    launch,
+                    without_headroom,
+                    false,
+                )
+            }).map(|created| Response::SessionCreated {
+                    id: created.id,
+                    compressed: created.compressed,
+                    uncompressed_reason: created.uncompressed_reason,
+                })
+        }
+        Request::CreateAuthorizedSession {
+            workspace_path,
+            cwd,
+            command,
+            profile_id,
+            api_family,
+            without_headroom,
+            approved_once,
+            evidence,
+        } => {
+            let launch = Launch::requested(profile_id.as_deref(), api_family.as_deref());
+            // Evidence places a stock profile's route, never an arbitrary
+            // command: a quota reading says nothing about what `command`
+            // will run when no profile owns it.
+            let entitlement = match (&profile_id, &evidence) {
+                (Some(_), Some(_)) => {
+                    let now = std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .map(|elapsed| elapsed.as_secs())
+                        .unwrap_or(0);
+                    crate::launch_policy::classify(evidence.as_ref(), now)
+                }
+                _ => crate::launch_policy::Entitlement::Unknown,
+            };
+            let placed = matches!(
+                entitlement,
+                crate::launch_policy::Entitlement::FreeAllowance
+                    | crate::launch_policy::Entitlement::IncludedQuota
+            );
+            let authorization = if profile_id.is_some() || command.is_some() {
+                manager.authorize_launch_as(&workspace_path, approved_once, entitlement)
+            } else {
+                Ok(())
+            };
+            authorization.and_then(|()| {
+                manager.create_session_as(
+                    &workspace_path,
+                    &cwd,
+                    command.as_deref(),
+                    launch,
+                    without_headroom,
+                    // Already decided above. A placed route is cleared by
+                    // its evidence, so the Unknown check inside must not
+                    // ask for an approval nobody was shown.
+                    approved_once || placed,
+                )
+            }).map(|created| Response::SessionCreated {
+                    id: created.id,
+                    compressed: created.compressed,
+                    uncompressed_reason: created.uncompressed_reason,
+                })
+        }
         Request::ListSessions => manager
             .list_sessions()
             .map(|sessions| Response::SessionList { sessions }),
@@ -7807,6 +7916,16 @@ pub fn handle_request(manager: &SessionManager, req: Request) -> Response {
         Request::SetHeadroomWorkspaces { workspaces } => manager
             .headroom_or_err()
             .map(|h| Response::Headroom { status: h.set_workspaces(&workspaces) }),
+        Request::SetLaunchPolicies { app_policy, workspaces } => {
+            manager.launch_policy.get().map_or_else(
+                || Err(anyhow::anyhow!("gavin-daemon: launch policy switch is unavailable")),
+                |switch| {
+                    switch
+                        .replace(app_policy, &workspaces)
+                        .map(|()| Response::Ok)
+                },
+            )
+        }
         Request::GetBoardByRoot { root_path } => manager
             .board_by_root(&root_path)
             .map(|board| Response::Board { columns: board.columns, labels: board.labels, card_sessions: board.card_sessions }),
@@ -8188,6 +8307,7 @@ fn agent_allows(id: &ClientIdentity, req: &Request) -> bool {
         // (§6). Listed exhaustively so a new Request variant cannot be
         // added without a decision here.
         Request::CreateSession { .. }
+        | Request::CreateAuthorizedSession { .. }
         | Request::ListSessions
         | Request::SessionProcesses
         | Request::EndOrphan { .. }
@@ -8337,6 +8457,9 @@ fn agent_allows(id: &ClientIdentity, req: &Request) -> bool {
         // successors' model traffic passes through. A remote changes the
         // setting through the desk, which pushes the result.
         | Request::SetHeadroomWorkspaces { .. }
+        // Launch policy is the desktop's decision. An agent cannot
+        // self-authorize a launch or weaken the daemon's policy.
+        | Request::SetLaunchPolicies { .. }
         // What Headroom has seen of a session (v50). The app asks it of
         // sessions it hosts; an agent asking it of another session would
         // be reading that session's traffic, however coarsely.
@@ -8488,10 +8611,12 @@ fn is_privileged(req: &Request) -> bool {
     matches!(
         req,
         Request::CreateSession { .. }
+            | Request::CreateAuthorizedSession { .. }
             | Request::SpawnAgentSession { .. }
             | Request::Shutdown
             | Request::EndOrphan { .. }
             | Request::SetRootConfigField { .. }
+            | Request::SetLaunchPolicies { .. }
             // Writes the MCP config that decides what the next agent
             // runs, which is the same reach `SetRootConfigField` has.
             | Request::WriteWorkspaceFile { .. }
@@ -8553,6 +8678,38 @@ fn is_privileged(req: &Request) -> bool {
             | Request::PlaywrightEndpoint { .. }
             | Request::InstallPlaywrightBrowser
     )
+}
+
+#[cfg(test)]
+mod launch_policy_privilege_tests {
+    use super::*;
+
+    #[test]
+    fn authorized_launch_and_policy_updates_require_the_local_token() {
+        let local = ClientIdentity::local();
+        let requests = [
+            Request::CreateAuthorizedSession {
+                workspace_path: "/ws".into(),
+                cwd: "/ws".into(),
+                command: None,
+                profile_id: Some("cline".into()),
+                api_family: None,
+                without_headroom: false,
+                approved_once: true,
+                evidence: None,
+            },
+            Request::SetLaunchPolicies {
+                app_policy: protocol::LaunchCostPolicy::NoPaidRequests,
+                workspaces: vec![],
+            },
+        ];
+
+        for request in &requests {
+            assert!(is_privileged(request));
+            assert!(authorize(&local, request, false).is_ok());
+            assert!(authorize(&local, request, true).is_err());
+        }
+    }
 }
 
 /// The one gate, keyed on the connection's role, run in `handle_connection`
@@ -9413,6 +9570,137 @@ mod tests {
         let registry = Registry::open(&dir.path().join("registry.sqlite")).unwrap();
         let kanban = KanbanStore::open(&dir.path().join("kanban.sqlite")).unwrap();
         Arc::new(SessionManager::new(registry, kanban, test_orchestration_store()))
+    }
+
+    #[test]
+    fn placed_routes_launch_without_approval_and_unplaced_ones_still_ask() {
+        use crate::launch_policy::Entitlement;
+        let dir = tempfile::tempdir().unwrap();
+        let manager = test_manager(&dir);
+        manager.set_launch_policy(crate::launch_policy::Switch::open(
+            dir.path(),
+            protocol::BuildProfile::Release,
+        ));
+        let workspace = dir.path().to_string_lossy().into_owned();
+
+        // A route the evidence placed needs no approval under either policy;
+        // one nobody placed asks, exactly as before.
+        assert!(manager
+            .authorize_launch_as(&workspace, false, Entitlement::IncludedQuota)
+            .is_ok());
+        assert!(manager
+            .authorize_launch_as(&workspace, false, Entitlement::Unknown)
+            .is_err());
+
+        // Evidence that is stale, or that rides a launch with no profile,
+        // never reaches the placed branch: the request is refused whole.
+        let stale = protocol::LaunchEvidence {
+            entitlement: protocol::EvidencedEntitlement::IncludedQuota,
+            source: "claude-code usage windows".into(),
+            observed_at: 1,
+        };
+        let fresh = protocol::LaunchEvidence {
+            observed_at: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
+            ..stale.clone()
+        };
+        for (profile_id, evidence) in [
+            (Some("claude-code".to_string()), stale),
+            (None, fresh),
+        ] {
+            match handle_request(
+                &manager,
+                Request::CreateAuthorizedSession {
+                    workspace_path: workspace.clone(),
+                    cwd: workspace.clone(),
+                    command: Some("custom-agent --run".into()),
+                    profile_id,
+                    api_family: None,
+                    without_headroom: false,
+                    approved_once: false,
+                    evidence: Some(evidence),
+                },
+            ) {
+                Response::Error { message } => {
+                    assert!(message.contains("fresh human approval"), "{message}");
+                }
+                other => panic!("expected launch policy refusal, got {other:?}"),
+            }
+        }
+        assert!(manager.sessions.lock().unwrap().is_empty());
+    }
+
+    #[test]
+    fn unknown_agent_launches_do_not_create_sessions_without_one_launch_approval() {
+        let dir = tempfile::tempdir().unwrap();
+        let manager = test_manager(&dir);
+        manager.set_launch_policy(crate::launch_policy::Switch::open(
+            dir.path(),
+            protocol::BuildProfile::Release,
+        ));
+        let workspace = dir.path().to_string_lossy().into_owned();
+
+        for request in [
+            Request::CreateSession {
+                workspace_path: workspace.clone(),
+                cwd: workspace.clone(),
+                command: Some("custom-agent --run".into()),
+                profile_id: None,
+                api_family: None,
+                without_headroom: false,
+            },
+            Request::CreateAuthorizedSession {
+                workspace_path: workspace.clone(),
+                cwd: workspace.clone(),
+                command: None,
+                profile_id: Some("cline".into()),
+                api_family: None,
+                without_headroom: false,
+                approved_once: false,
+                evidence: None,
+            },
+        ] {
+            match handle_request(&manager, request) {
+                Response::Error { message } => {
+                    assert!(message.contains("fresh human approval"), "{message}");
+                }
+                other => panic!("expected launch policy refusal, got {other:?}"),
+            }
+            assert!(
+                manager.sessions.lock().unwrap().is_empty(),
+                "a refused launch must not create a session"
+            );
+        }
+
+        let plans = dir.path().join(".gavin-root").join("plans");
+        std::fs::create_dir_all(&plans).unwrap();
+        let (writer, _reader) = Stream::pair().unwrap();
+        SessionManager::watch_gavin_root(
+            &manager,
+            "workspace",
+            &workspace,
+            Arc::new(Mutex::new(writer)),
+        );
+        match handle_request(
+            &manager,
+            Request::SpawnAgentSession {
+                root_path: workspace.clone(),
+                cwd: workspace,
+                command: "custom-agent --run".into(),
+            },
+        ) {
+            Response::Error { message } => {
+                assert!(message.contains("fresh human approval"), "{message}");
+            }
+            other => panic!("expected MCP launch refusal, got {other:?}"),
+        }
+        assert!(
+            manager.sessions.lock().unwrap().is_empty(),
+            "an unapproved MCP spawn must not create a session"
+        );
+        manager.unwatch_gavin_root("workspace");
     }
 
     fn orch_rail(rail_id: &str, step_id: &str) -> protocol::Rail {
@@ -10685,6 +10973,20 @@ mod tests {
             Request::SearchMemories { root_path: "/x".into(), query: "q".into(), topics: vec![], limit: None },
             Request::SearchCards { root_path: "/x".into(), query: "q".into(), limit: None },
             Request::CreateSession { workspace_path: "/x".into(), cwd: "/x".into(), command: None, profile_id: None, api_family: None, without_headroom: false },
+            Request::CreateAuthorizedSession {
+                workspace_path: "/x".into(),
+                cwd: "/x".into(),
+                command: Some("custom-agent".into()),
+                profile_id: None,
+                api_family: None,
+                without_headroom: false,
+                approved_once: false,
+                evidence: None,
+            },
+            Request::SetLaunchPolicies {
+                app_policy: protocol::LaunchCostPolicy::Ask,
+                workspaces: vec![],
+            },
             Request::ListSessions,
             Request::SessionProcesses,
             Request::EndOrphan { id: "s".into() },
@@ -12115,6 +12417,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "MCP spawns are refused under every launch-cost policy until they have an approval path (ADR 0013)"]
     fn spawn_replies_session_id_and_pushes_on_the_watching_connection() {
         let (socket_path, _dir) = start_test_server();
         let ws_dir = tempfile::tempdir().unwrap();
@@ -12213,13 +12516,15 @@ mod tests {
 
         let resp = request(
             &mut cmd,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         let session_id = match resp {
@@ -12344,13 +12649,15 @@ mod tests {
 
         let resp = request(
             &mut cmd,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         let session_id = match resp {
@@ -12429,13 +12736,15 @@ mod tests {
 
         let resp = request(
             &mut cmd,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         let session_id = match resp {
@@ -12837,13 +13146,15 @@ mod tests {
 
         let created = request(
             &mut stream,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp/ws".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         let id = match created {
@@ -13131,13 +13442,15 @@ mod tests {
         let mut first = Stream::connect(&socket_path).unwrap();
         let id = match request(
             &mut first,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp/ws".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         ) {
             Response::SessionCreated { id, .. } => id,
@@ -13179,13 +13492,15 @@ mod tests {
         let mut stream = Stream::connect(&socket_path).unwrap();
         let id = match request(
             &mut stream,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp/ws".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         ) {
             Response::SessionCreated { id, .. } => id,
@@ -13385,13 +13700,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -13423,13 +13740,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -13470,13 +13789,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -13521,13 +13842,15 @@ mod tests {
 
         let resp = request(
             &mut stream,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp/ws".to_string(),
                 cwd: "/tmp/definitely-does-not-exist-xyz".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         assert!(matches!(resp, Response::Error { .. }));
@@ -17219,13 +17542,15 @@ mod tests {
         let mut stream = Stream::connect(socket_path).unwrap();
         let created = request(
             &mut stream,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp/ws".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         let id = match created {
@@ -17591,13 +17916,15 @@ mod tests {
 
         let created = request(
             &mut stream,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp/ws".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         let id = match created {
@@ -17629,13 +17956,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -17666,13 +17995,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -17707,13 +18038,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -17834,13 +18167,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: repo_path.clone(),
                     cwd: repo_path.clone(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -17902,13 +18237,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -17951,13 +18288,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -18000,13 +18339,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -18050,13 +18391,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -18113,13 +18456,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -18209,13 +18554,15 @@ mod tests {
         let mut stream = Stream::connect(socket_path).unwrap();
         let created = request(
             &mut stream,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp/ws".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some(command.to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         match created {
@@ -18815,13 +19162,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -18891,13 +19240,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -18951,13 +19302,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19000,13 +19353,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19080,13 +19435,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19181,13 +19538,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19245,13 +19604,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19305,13 +19666,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19361,13 +19724,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: repo_path.clone(),
                     cwd: repo_path.clone(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19682,8 +20047,9 @@ mod tests {
         let manager = test_manager(&dir);
 
         let id = manager
-            .create_session("/tmp", "/tmp", Some("sleep 30"), Launch::Profile("claude-code"))
-            .unwrap();
+            .create_session_as("/tmp", "/tmp", Some("sleep 30"), Launch::Profile("claude-code"), false, true)
+            .unwrap()
+            .id;
 
         let summary = manager.list_sessions().unwrap().into_iter().find(|s| s.id == id).unwrap();
         assert!(!summary.compressed);
@@ -20688,13 +21054,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: plain_path.clone(),
                     cwd: plain_path.clone(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -20950,13 +21318,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: cwd.to_string(),
                     cwd: cwd.to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -21822,13 +22192,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             match request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             ) {
                 Response::SessionCreated { id, .. } => id,
@@ -21918,13 +22290,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             match request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             ) {
                 Response::SessionCreated { id, .. } => id,

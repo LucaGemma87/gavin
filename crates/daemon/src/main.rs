@@ -12,6 +12,7 @@ mod headroom;
 mod input;
 mod kanban;
 mod kimi_trust;
+mod launch_policy;
 mod memory_index;
 mod orchestration;
 mod osc;
@@ -163,6 +164,7 @@ fn serve() -> anyhow::Result<()> {
     let headroom = headroom::Headroom::open(&dir);
     headroom.resume();
     manager.set_headroom(headroom);
+    manager.set_launch_policy(launch_policy::Switch::open(&dir, protocol::BuildProfile::current()));
     // Opens nothing yet: the model loads on the first search or the
     // Memory setup step, and an index on the first root that has one.
     manager.set_memories(memory_index::Memories::open(&dir));

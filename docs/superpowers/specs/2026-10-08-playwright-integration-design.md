@@ -622,17 +622,19 @@ app re-offering events (`forwarding::emit` → `OfferDesktopEvent` →
 - **install-wizard: the entry.**
   - Server key `playwright`. The command is exactly gavin's own entry's
     command (the binary or the launcher) with `args: ["playwright"]`.
-  - For Cursor, the same `${env:…}` block as gavin's own entry, because the
-    shim needs `GAVIN_SESSION_ID`, `GAVIN_SESSION_TOKEN` and
-    `GAVIN_SESSION_SOCKET`.
+  - For Cursor, no `env` block: its CLI strips inherited variables and
+    hashes resolved MCP env into approvals. Session identity reaches
+    gavin-mcp through the daemon's PPID passthrough file.
   - The stock profiles with an MCP layout, read from `agent_setup.rs` on
     2026-10-08:
     - claude-code — `.mcp.json`
     - codex — `.codex/config.toml`
-    - gemini — `.gemini/settings.json`
+    - gemini — `.agents/mcp_config.json`
     - cursor — `.cursor/mcp.json`
     - opencode — `opencode.json`
     - kimi-code — `.mcp.json`
+  - Cline CLI has no verified workspace MCP layout; its user-level MCP
+    settings are not written by this workspace integration.
   - Recognise the entry as gavin's by key plus command plus
     `args[0] == "playwright"`. An existing `playwright` key with any other
     command is foreign: report it, and do not overwrite it silently.

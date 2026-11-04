@@ -1,4 +1,4 @@
----
+﻿---
 complexity: complex
 order: 4608
 kind: plan
@@ -50,7 +50,7 @@ Defaults · Customs · Complexity · Fallback · Pause layout. Agreed design:
   then workspace locals, locals marked), in both App Settings and Workspace
   Settings, on desk and Companion.
 - **General tab**: default agent picker (a NEW app-wide setting; today a
-  profile-less workspace silently falls back to claude-code), the fallback
+  profile-less workspace silently falls back to cline), the fallback
   chain of the selected default agent (switching the default agent switches
   the chain shown), complexity routing, pause.
 - **Per-agent tabs**: that agent's own fields — command, model/effort flags,

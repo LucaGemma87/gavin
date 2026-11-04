@@ -4,6 +4,7 @@ import {
   type UsageWindow,
   USAGE_CACHE_KEY,
   barPercent,
+  profilesPastReset,
   displayPercent,
   dropExpiredWindows,
   formatDuration,
@@ -371,5 +372,38 @@ describe("the persisted usage cache", () => {
         NOW_MS
       )
     ).toEqual({});
+  });
+});
+
+describe("profilesPastReset", () => {
+  const NOW = 2_000_000;
+  const report = (resetsAt: number | null): AgentUsageReport => ({
+    state: "ready",
+    windows: [{ id: "five_hour", label: "5h", usedPercent: 96, resetsAt }],
+    plan: null,
+    observedAt: NOW,
+    cached: false,
+  });
+
+  it("names the profiles whose window has closed, sorted", () => {
+    expect(
+      profilesPastReset(
+        { "claude-code": report(NOW - 1), codex: report(NOW), gemini: report(NOW + 1) },
+        NOW * 1000
+      )
+    ).toEqual(["claude-code", "codex"]);
+  });
+
+  it("ignores windows with no reset and readings that are not ready", () => {
+    expect(
+      profilesPastReset(
+        {
+          cursor: report(null),
+          kimi: { state: "unsupported" },
+          codex: { state: "unavailable", reason: "x", retryAfter: null },
+        },
+        NOW * 1000
+      )
+    ).toEqual([]);
   });
 });

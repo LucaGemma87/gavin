@@ -1,4 +1,4 @@
----
+﻿---
 order: 7264
 kind: task
 title: Headroom 03: Codex, opencode and Custom
@@ -7,7 +7,7 @@ labels: ready-for-agent
 parent: headroom.md
 complexity: complex
 ---
-Blocked by: headroom-02-compressed-launches-claude-code.md
+Blocked by: headroom-02-compressed-launches-cline.md
 
 Part of `headroom.md`. Read the spec (section "The recipes") first.
 
@@ -51,7 +51,7 @@ Every check in CLAUDE.md that this change can reach is green on the committed tr
 2. **App-wide only.** The picker sits beside the app-wide custom command and model flag. A workspace that overrides the custom command in `config.toml` still gets the app-wide family. There is no per-workspace override yet.
 3. **The registry keeps the original line.** `card_sessions` copies it for re-launch, and the rewritten line names this session's tag and this Headroom's port.
 4. **The human's own `OPENCODE_CONFIG_CONTENT` is kept**, the same way 02 keeps their headers: ours is merged over it, and an earlier Headroom plugin in it is replaced so the transport is not loaded twice.
-5. **A daemon started from a compressed Codex, opencode or custom session** does not pass that routing to the tabs it opens. 02 already did this for Claude Code. The new recipes are recognised by the launcher's tag on the `/p/` path or the plugin's `project`, and the human's own routing is left alone.
+5. **A daemon started from a compressed Codex, opencode or custom session** does not pass that routing to the tabs it opens. 02 already did this for cline. The new recipes are recognised by the launcher's tag on the `/p/` path or the plugin's `project`, and the human's own routing is left alone.
 
 ### How to run the human test
 
@@ -74,3 +74,4 @@ Same setup as 02's (rebuild and restart so app and daemon both speak **v48**, in
 <!-- gavin:auto-commit -->
 When the implementation is done, commit it. Commit only the files you touched — never `git add -A`. Do not push.
 <!-- /gavin:auto-commit -->
+

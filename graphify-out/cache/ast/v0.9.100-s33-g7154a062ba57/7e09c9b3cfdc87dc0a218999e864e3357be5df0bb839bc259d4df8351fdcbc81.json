@@ -1,0 +1,1 @@
+{"nodes": [{"id": "$graphify-root$_gavin_root_plans_archive_fs_sync_md", "label": "fs-sync.md", "file_type": "document", "node_kind": "page", "source_file": ".gavin-root/plans/archive/fs-sync.md", "source_location": "L1", "frontmatter": {"kind": "task", "title": "FS sync", "status": "Done"}}], "edges": [], "raw_calls": [], "input_tokens": 0, "output_tokens": 0}

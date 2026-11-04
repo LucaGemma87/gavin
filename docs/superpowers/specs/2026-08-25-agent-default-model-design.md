@@ -1,6 +1,13 @@
-# Agent Default Model — Design
+﻿# Agent Default Model — Design
 
 **Status:** approved 2026-08-25.
+
+**Implementation update (2026-11-02):** Cline CLI is now the default agent.
+Its model picker intentionally has no static presets: choose a model ID
+available to the Cline provider, including a current free promotion, from
+Cline's own settings. Claude Code remains available as the separate
+`claude-code` profile and owns the stable Claude aliases in the table below.
+The free list and account quota are not queried or inferred by Gavin.
 
 **Goal:** a default model for the coding agent, settable globally and per
 workspace, with popular picks offered where they exist and free text
@@ -20,6 +27,27 @@ split; the compat gate.
 **Out:** per-session model overrides; a model picker in the init wizard;
 anything else in the global panel; discovering a CLI's model catalogue at
 runtime.
+
+## 9. Cline free-model monitoring extension (2026-11-01)
+
+This extension does not change the default-model decisions above. The
+installed Cline CLI's free-model list is served by an internal endpoint
+that is not documented as a stable API; its response does not provide
+verified capability tiers for choosing a model by task. No supported
+interface for querying remaining account quota was found.
+
+- Gavin keeps Cline account usage `Unsupported`; session token counts,
+  when available, are not account quota.
+- Gavin may recognize the Cline CLI's explicit daily free-model-limit
+  message as a `usage-limit` failure. This prevents auto-resume and
+  compressed-session recovery from retrying a model whose daily limit is
+  already exhausted.
+- Gavin does not automatically choose or switch Cline models. A model's
+  free status, task suitability, and remaining quota are not inferred
+  from its name, order, or a private endpoint.
+- An ended promotion is not a quota reset and must not trigger an
+  automatic model switch. The user chooses another model explicitly.
+- No fallback to a paid model is allowed.
 
 ## 2. Decisions
 
@@ -98,7 +126,7 @@ if key == "model" && value.trim().is_empty() {
 ```jsonc
 {
   "theme": "dark",
-  "agentModels": { "claude-code": "opus", "gemini": "gemini-flash-latest" }
+  "agentModels": { "claude-code": "opus" }
 }
 ```
 
@@ -123,7 +151,8 @@ the entry.
 
 | profile | `model_flag` | `models` | why |
 |---|---|---|---|
-| `claude-code` | `--model` | `fable`, `opus`, `sonnet` | aliases named by its own `--help` |
+| `cline` | `--model` | — | free-model promotions rotate; no documented stable catalogue |
+| `claude-code` | `--model` | `fable`, `opus`, `sonnet`, `haiku`, `opusplan`, `best`, `sonnet[1m]`, `opus[1m]` | stable aliases documented by Claude Code |
 | `codex` | `--model` | — | dated ids only |
 | `gemini` | `--model` | — | dated ids only; `-m/--model` verified from `--help` |
 | `cursor` | — | — | the command is the IDE launcher; its positionals are paths |
@@ -178,8 +207,10 @@ which stops being disabled. Two sections:
 
 **Workspace Settings ▸ Agent** gains a **Model** row directly under
 Command, using the same picker, whose inherit row reads `Default (opus)` —
-naming the value it inherits, so the panel never shows an empty box that
-is secretly doing something. Profiles with no flag get the hint instead.
+for example, naming the value it inherits so the panel never shows an
+empty box that is secretly doing something. The inherited value is
+profile-specific (for Cline, the model ID chosen from Cline's own list);
+profiles with no flag get the hint instead.
 
 ## 7. Compatibility
 

@@ -775,6 +775,17 @@ export const FEATURE_MIN_VERSION = {
   // step only against a v80 daemon; the board's Run, which puts such a
   // plan on a rail of its own; and the Children control on the card.
   orchestratedPlans: 80,
+  // Paid/Unknown authorization is enforced by the daemon. New launches
+  // use CreateAuthorizedSession and MCP spawning is refused by older
+  // daemons rather than silently bypassing the policy.
+  launchPolicy: 81,
+  // A launch may carry the usage-window reading that places its route
+  // (`CreateAuthorizedSession.evidence`). The request type is unchanged,
+  // so `min_version_for` cannot see it; an older daemon drops the field
+  // and asks for an approval the desk had decided was not needed.
+  //
+  // Consumers: `launchEvidenceFor`, which sends no evidence below it.
+  launchEvidence: 82,
 } as const;
 
 export type Feature = keyof typeof FEATURE_MIN_VERSION;

@@ -1,4 +1,4 @@
----
+﻿---
 order: 7328
 kind: task
 title: Headroom 05: savings
@@ -7,7 +7,7 @@ labels: ready-for-agent
 parent: headroom.md
 complexity: complex
 ---
-Blocked by: headroom-02-compressed-launches-claude-code.md
+Blocked by: headroom-02-compressed-launches-cline.md
 
 Part of `headroom.md`. Read the spec (section "Savings") first.
 

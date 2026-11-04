@@ -23,6 +23,7 @@ describe("the argv a scheduled run launches with", () => {
   });
 
   it("refuses a profile with no headless mode, or only the commit agent's", () => {
+    expect(scheduledRunArgs("cline", "")).toBeNull();
     expect(scheduledRunArgs("custom", "")).toBeNull();
     expect(scheduledRunArgs("opencode", "run --agent gavin-commit --auto --")).toBeNull();
     expect(scheduledRunBlocker({ profileId: "opencode", label: "opencode", headlessArgs: "run --" })).toBe(

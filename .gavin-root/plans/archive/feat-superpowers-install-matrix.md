@@ -41,8 +41,9 @@ output. Write no app code; this card ends at the document.
 
 `docs/superpowers/specs/2026-09-01-superpowers-install-matrix.md`.
 
-Verified end to end here: Claude Code (install, reinstall, failure, uninstall,
+Verified end to end here: cline (install, reinstall, failure, uninstall,
 detection) and Gemini CLI (install, list, uninstall). UNVERIFIED, with the step
 that would verify each named in the doc: Codex CLI (its shim has no binary on
 this machine) and Cursor (not on PATH). opencode is verified as far as the file
 shape goes and no further.
+

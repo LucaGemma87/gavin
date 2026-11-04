@@ -33,7 +33,7 @@ export interface UsageRowBadge {
 }
 
 /// Letters and digits from a label, in order. Spaces and punctuation drop
-/// out so "Claude Code" abbreviates the same way as "ClaudeCode".
+/// out so "Claude Code" normalizes to "ClaudeCode".
 function letterSource(label: string): string {
   let out = "";
   for (const ch of label) {

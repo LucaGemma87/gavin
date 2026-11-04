@@ -2616,6 +2616,7 @@ describe("createPage", () => {
   it("starts every pane on the workspace's agent when asked for one", async () => {
     setState([ws("ws-1", [], null, "/repos/gavin")], "ws-1", null);
     seedAgentConfig("ws-1", { profile: "claude-code", file: null, command: "claude --model opus" });
+    agentProfilesStore.set([agentProfile("claude-code", [])]);
     vi.mocked(backend.createSession).mockResolvedValueOnce("a").mockResolvedValueOnce("b");
 
     await createPage("ws-1", ([x, y]) => ({ type: "split", direction: "row", children: [leaf([x]), leaf([y])], sizes: [0.5, 0.5] }), 2, "Page 1", { withAgent: true });
@@ -3758,12 +3759,14 @@ describe("adopting another writer's workspace settings", () => {
   it("reads the app-wide settings again when another writer changed one", async () => {
     const handlers = await bootstrapWith([ws("ws-1", [])]);
     await vi.waitFor(() => expect(backend.getAgentModelDefaults).toHaveBeenCalled());
-    vi.mocked(backend.getAgentModelDefaults).mockResolvedValue({ "claude-code": "opus" });
+    vi.mocked(backend.getAgentModelDefaults).mockResolvedValue({ "cline": "cline-default-test-model" });
     vi.mocked(backend.getAutoCommit).mockResolvedValue(true);
 
     handlers.get("app-settings-synced")!({ payload: { origin: "companion" } });
 
-    await vi.waitFor(() => expect(get(agentModelDefaultsStore)).toEqual({ "claude-code": "opus" }));
+    await vi.waitFor(() =>
+      expect(get(agentModelDefaultsStore)).toEqual({ "cline": "cline-default-test-model" })
+    );
     await vi.waitFor(() => expect(get(autoCommitDefault)).toBe(true));
   });
 
@@ -4292,7 +4295,7 @@ describe("per-agent settings in a workspace", () => {
     // An own empty list is an explicit "nothing extra".
     layoutState.update((st) => ({
       ...st,
-      workspaces: st.workspaces.map((w) => (w.id === "w1" ? { ...w, extraCliArgs: { "claude-code": [] } } : w)),
+      workspaces: st.workspaces.map((w) => (      w.id === "w1" ? { ...w, extraCliArgs: { "claude-code": [] } } : w)),
     }));
     expect(resolvedAgentFor("w1").launchCommand).toBe("claude");
   });
@@ -4863,8 +4866,11 @@ describe("workspace settings go through their own command", () => {
     ],
     [
       "setWorkspaceComplexityTable",
-      () => setWorkspaceComplexityTable("ws-1", "claude-code", { complex: { profile: "", model: "opus" } }),
-      { complexityTables: { "claude-code": { complex: { profile: "", model: "opus" } } } },
+      () =>
+        setWorkspaceComplexityTable("ws-1", "cline", {
+          complex: { profile: "", model: "cline-test-model" },
+        }),
+      { complexityTables: { "cline": { complex: { profile: "", model: "cline-test-model" } } } },
     ],
     // An own-but-empty table is a real answer ("no routing for this agent
     // here"), so it is kept; only null hands the primary back to the app.
@@ -4948,6 +4954,7 @@ describe("main agent session", () => {
   it("startMainAgent spawns at the root with the configured command and persists", async () => {
     setState([{ ...ws("ws-1", []), rootPath: "/tmp/ws" }], "ws-1", null);
     seedAgentConfig("ws-1", { profile: "claude-code", file: null, command: "claude --model opus" });
+    agentProfilesStore.set([agentProfile("claude-code", [])]);
     vi.mocked(backend.createSession).mockResolvedValue("agent-1");
 
     await startMainAgent("ws-1");
@@ -4962,7 +4969,7 @@ describe("main agent session", () => {
     expect(backend.setWorkspacesState).toHaveBeenCalled();
   });
 
-  it("startMainAgent falls back to claude and refuses without a root or when one runs", async () => {
+  it("startMainAgent falls back to Claude Code and refuses without a root or when one runs", async () => {
     setState([{ ...ws("ws-1", []), rootPath: "/tmp/ws" }], "ws-1", null);
     vi.mocked(backend.createSession).mockResolvedValue("agent-1");
     await startMainAgent("ws-1");
@@ -4991,6 +4998,7 @@ describe("main agent session", () => {
   it("startMainAgentWithPrompt spawns with the composed prompt and records the session", async () => {
     setState([{ ...ws("ws-1", []), rootPath: "/tmp/ws" }], "ws-1", null);
     seedAgentConfig("ws-1", { profile: "claude-code", file: null, command: "claude" });
+    agentProfilesStore.set([agentProfile("claude-code", [])]);
     vi.mocked(backend.createSession).mockResolvedValue("agent-1");
 
     await startMainAgentWithPrompt("ws-1", "Use the gavin-write-prd skill.");

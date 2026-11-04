@@ -1,4 +1,4 @@
----
+﻿---
 order: 3072
 kind: task
 title: Data model: default-agent + per-primary fallback
@@ -9,7 +9,7 @@ status: Done
 Add the app-wide default-agent setting and per-primary fallback chains.
 
 ## Shape
-- `AgentDefaults.defaultAgent` / Rust `default_agent`: empty means `claude-code`
+- `AgentDefaults.defaultAgent` / Rust `default_agent`: empty means `cline`
   (today’s silent fallback). `resolveAgentConfig` uses it when the workspace
   has no profile.
 - Replace the single `agentFallback: string[]` with

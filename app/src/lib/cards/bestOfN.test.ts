@@ -18,6 +18,7 @@ import {
 } from "$lib/cards/bestOfN";
 
 const LABELS = new Map([
+  ["cline", "Cline CLI"],
   ["claude-code", "Claude Code"],
   ["codex", "Codex CLI"],
 ]);
@@ -25,12 +26,12 @@ const LABELS = new Map([
 function runCandidate(over: Partial<RunCandidate> = {}): RunCandidate {
   return {
     sessionId: "s1",
-    label: "Claude Code",
-    profileId: "claude-code",
+    label: "Cline CLI",
+    profileId: "cline",
     model: "",
-    branch: "auth-claude-code",
-    worktreePath: "/repos/gavin-auth-claude-code",
-    command: "claude 'do it'",
+    branch: "auth-cline",
+    worktreePath: "/repos/gavin-auth-cline",
+    command: "cline --auto-approve false 'do it'",
     conversationId: null,
     ...over,
   };
@@ -39,7 +40,7 @@ function runCandidate(over: Partial<RunCandidate> = {}): RunCandidate {
 describe("naming a candidate", () => {
   it("shows profile and model together, since a run varies one or the other", () => {
     expect(candidateLabel("Claude Code", "sonnet")).toBe("Claude Code · sonnet");
-    expect(candidateLabel("Claude Code", "  ")).toBe("Claude Code");
+    expect(candidateLabel("Cline CLI", "  ")).toBe("Cline CLI");
   });
 
   it("slugs a model alias into something git will accept as a ref", () => {
@@ -73,7 +74,7 @@ describe("the config a candidate resolves through", () => {
   });
 
   it("drops the pinned command, file and MCP path when the profile differs", () => {
-    // The whole reason this function exists: claude-code's wrapper on
+    // The whole reason this function exists: Claude Code's wrapper on
     // codex's command line is garbage in codex's argv, and .mcp.json is
     // not where codex reads MCP config.
     expect(candidateAgentConfig(base, { profileId: "codex", model: "gpt-5.1" })).toEqual({
@@ -283,8 +284,20 @@ describe("picking one", () => {
     pageId: "page-1",
     startedAt: 0,
     candidates: [
-      runCandidate({ sessionId: "a", label: "Claude Code · opus", branch: "auth-a" }),
-      runCandidate({ sessionId: "b", label: "Claude Code · sonnet", branch: "auth-b", worktreePath: "/repos/gavin-auth-b" }),
+      runCandidate({
+        sessionId: "a",
+        label: "Claude Code · opus",
+        profileId: "claude-code",
+        branch: "auth-a",
+        worktreePath: "/repos/gavin-auth-claude-code",
+      }),
+      runCandidate({
+        sessionId: "b",
+        label: "Claude Code · sonnet",
+        profileId: "claude-code",
+        branch: "auth-b",
+        worktreePath: "/repos/gavin-auth-b",
+      }),
       runCandidate({ sessionId: "c", label: "Codex CLI", branch: "auth-c", worktreePath: "/repos/gavin-auth-c" }),
     ],
   };

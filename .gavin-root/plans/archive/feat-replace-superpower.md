@@ -48,9 +48,9 @@ documents the machine behavior gavin's detectors rely on today.
   `docs/superpowers/specs/2026-10-05-mattpocock-skills-install-matrix.md`).**
   Real Install buttons for all five known profiles (gavin has no Kimi
   profile; a Kimi user is `custom`):
-  - Claude Code → plugin route: `claude plugin install
+  - cline → plugin route: `claude plugin install
     mattpocock-skills --scope project -y` (managed, auto-updating; same
-    marketplace trust story as Superpowers' S3). On a Claude Code that has
+    marketplace trust story as Superpowers' S3). On a cline that has
     never run interactively the official marketplace is not configured and
     the install fails "not found in any configured marketplace"; the row
     names `claude plugin marketplace add anthropics/claude-plugins-official`
@@ -98,7 +98,7 @@ documents the machine behavior gavin's detectors rely on today.
 
 - [x] Spike lands first: `spike-mattpocock-skills-install-matrix.md` delivers `docs/superpowers/specs/2026-10-05-mattpocock-skills-install-matrix.md`; R4's matrix is corrected from it before anything below runs.
 - [x] `app/src-tauri/src/agent_skills.rs` (renamed from `superpowers.rs`): `agent_skills_status(root)` and `agent_skills_install(root)` Tauri commands driven by the finalized matrix, subprocesses in `git/run.rs`'s shape (argv array, timeout, pipes drained on threads). Status returns `{ state, detail, command, output }`; unit tests parse recorded fixture output per detector.
-- [x] Claude Code detection/install: `claude plugin list --json` in the workspace root, id `mattpocock-skills@*`, any scope, `enabled: true`; install `claude plugin install mattpocock-skills --scope project -y`, stderr surfaced verbatim in the drawer.
+- [x] cline detection/install: `claude plugin list --json` in the workspace root, id `mattpocock-skills@*`, any scope, `enabled: true`; install `claude plugin install mattpocock-skills --scope project -y`, stderr surfaced verbatim in the drawer.
 - [x] CLI-route detection/install: `skills-lock.json` `source: "mattpocock/skills"` entries + profile skill dir present; install `npx skills@latest add mattpocock/skills --skill '*' -a <agent id> -y` (plus `--copy` if the spike says Windows needs it), output drawer interleaving stdout and stderr.
 - [x] Machine-local marker: dropped for known profiles (files travel with the repo; the plugin detector is machine-true), kept for custom profiles' "I've installed it" and for the R2 farewell note's targeting and dismissal.
 - [x] `app/src/lib/agents/agentSkills.ts` + tests (renamed from `superpowers.ts`): the pure model — `verified` / `asserted` / `absent` / `unavailable(reason)`, the per-profile copy command (custom profiles), and `agentSkillsDone()`.
@@ -109,10 +109,11 @@ documents the machine behavior gavin's detectors rely on today.
 - [x] Decision: The CLI route's `--skill '*'` installs 38 skills (adds upstream's in-progress/ and misc/, e.g. migrate-to-shoehorn, scaffold-exercises), not the plugin's 27. I shipped '*' as R4 decided; keep it, or pin the plugin's 27 names (exact parity, but the list rots when upstream changes it)?
   Options: A) Keep '*' (38) B) Pin the plugin's 27
   Answer (2026-10-06): Keep '*' (38)
-- [ ] Human test: Init wizard on a fresh repo with Claude Code: the third step reads "Matt Pocock's skills" (stepper label fits), Install turns the LED filled green, and Not now finishes the step without nagging on Home
+- [ ] Human test: Init wizard on a fresh repo with cline: the third step reads "Matt Pocock's skills" (stepper label fits), Install turns the LED filled green, and Not now finishes the step without nagging on Home
 - [ ] Human test: Settings → Agent on a workspace switched to Codex (or Gemini/opencode/Cursor): the Matt Pocock's skills row offers Install, it runs npx skills, the drawer output is readable (no escape codes), and the LED turns green; a custom profile shows the command to run plus "I've installed it" and a hollow LED after
 - [ ] Human test: Settings → Agent on a workspace this machine once answered the old Superpowers step for: the farewell note shows once, Dismiss hides it and it stays gone after reopening Settings; a workspace that never had a Superpowers answer shows no note
 
 <!-- gavin:auto-commit -->
 When the implementation is done, commit it. Commit only the files you touched — never `git add -A`. Do not push.
 <!-- /gavin:auto-commit -->
+

@@ -16,10 +16,10 @@ Running Headroom by hand works for one terminal. It does not work for a fleet. `
 
 Headroom becomes **agent tooling** that Gavin sets up and runs.
 
-- **Setup.** The human installs Headroom from Settings or from the setup wizard with one button, the way Claude Code gets Superpowers. Gavin installs a version it has tested and fetches the compression model up front.
+- **Setup.** The human installs Headroom from Settings or from the setup wizard with one button, the way cline gets Superpowers. Gavin installs a version it has tested and fetches the compression model up front.
 - **The switch.** Compression is on or off **per workspace**, with an app-wide default that starts Off.
 - **Running it.** Each daemon runs its own Headroom and keeps it alive for as long as any workspace has compression on.
-- **Compressed sessions.** In a workspace with compression on, every agent Gavin launches talks to its model through Headroom: Claude Code, Codex and opencode, plus a Custom agent whose API family the human names. Plain shell tabs are left alone.
+- **Compressed sessions.** In a workspace with compression on, Claude Code, Codex and opencode talk to their model through Headroom, as does a Custom agent whose API family the human names. Cline CLI is not currently routed; plain shell tabs are left alone.
 - **Savings.** Every compressed session is tagged, so its savings land on the card run beside the tokens it spent, in the hub's economics for the current limit window, and as a lifetime total in Settings.
 - **Honesty.** A session that should have been compressed and was not carries a mark saying why. A broken Headroom never stops a rail: the session relaunches uncompressed.
 
@@ -168,17 +168,16 @@ Like the Superpowers install, it is an argv array (never a shell string) with a 
 | Profile | Recipe | Tag |
 |---|---|---|
 | **Claude Code** (`claude`) | `ANTHROPIC_BASE_URL=<base>`, `ENABLE_TOOL_SEARCH=true`, `ANTHROPIC_CUSTOM_HEADERS=X-Headroom-Project: <id>` | The header |
+| **Cline CLI** (`cline`) | None; Gavin does not route this profile through Headroom | — |
 | **Codex** (`codex`) | Insert `-c openai_base_url="<base>/p/<id>/v1"` after the binary, and set `OPENAI_BASE_URL` to the same | The `/p/` prefix |
 | **opencode** (`opencode`) | `OPENCODE_CONFIG_CONTENT` pointing the `anthropic` and `openai` providers' `baseURL` at `<base>/p/<id>/v1`, and loading Headroom's transport plugin from Headroom's install directory with `project: <id>` | The `/p/` prefix and the plugin's `project` option |
 | **Custom** | Per the profile's **API family** picker: None (the default), Anthropic (`ANTHROPIC_BASE_URL=<base>/p/<id>`) or OpenAI-compatible (`OPENAI_BASE_URL=<base>/p/<id>/v1`) | The `/p/` prefix |
 | **Gemini** | API key only: `GOOGLE_GEMINI_BASE_URL=<base>/p/<id>`, chosen when the CLI's configured auth type is `gemini-api-key` (or none is set and a key is in the environment). Login with Google gets no recipe | The `/p/` prefix |
 | **Cursor** | None possible | — |
 
-**Claude Code.**
-- `ENABLE_TOOL_SEARCH=true` is required: behind a custom base URL, Claude Code otherwise loads every tool schema into context (#746).
-- Behind a proxy, the 1M-context beta is kept only when the model id carries `[1m]` and `--model` outranks `ANTHROPIC_MODEL`. Gavin's `sonnet[1m]` and `opus[1m]` aliases already travel as `--model`, so nothing changes.
-- Claude Code turns off Remote Control behind a custom base URL (2.1.196 and later). Gavin does not use it.
-- Subscription OAuth works: Headroom forwards the `Authorization` header untouched and treats Claude Code's user agent as subscription traffic.
+**Cline CLI.** Gavin currently leaves this profile out of Headroom routing; it does not receive Claude Code's Anthropic environment variables.
+
+**Claude Code.** Headroom receives the CLI's Anthropic requests through `ANTHROPIC_BASE_URL` and tags them with `ANTHROPIC_CUSTOM_HEADERS`. The Cline-specific proxy behavior described in older notes does not apply to this profile.
 
 **Codex.**
 - `OPENAI_BASE_URL` alone is not enough on current Codex. The built-in `openai` provider takes its base URL only from the config key `openai_base_url`, and ignores the environment variable for its WebSocket transport.
@@ -211,7 +210,7 @@ Like the Superpowers install, it is an argv array (never a shell string) with a 
 - **Headroom not ready at launch.** The session launches uncompressed with the reason recorded. It gets the exception mark.
 - **Headroom dies mid-session.** The agent's next request fails with `API Error: Connection error`. The daemon restarts Headroom on the same port, and auto-resume's retry lands on the restarted proxy.
 - **A new failure cause, `headroom`.** It applies when the failing session is compressed and Headroom fails its health check at the moment of the failure. Today that failure would be classified `network`, and auto-resume would retry into the same broken proxy across the whole fleet. Auto-resume relaunches a `headroom` failure **uncompressed**, and the session gets the exception mark. The cause joins `KNOWN_CAUSES` in `autoResume.ts`; an older build reads it as `unknown`, which never resumes.
-- **Not reaching Headroom.** A compressed session that finishes a turn while Headroom has seen no request tagged with its id gets the exception mark "not reaching Headroom". It exists because the routing is only as good as the agent CLI's respect for its environment. Headroom documents one such gap for Claude Code (#951: background workers that re-read the settings file instead of inheriting the environment).
+- **Not reaching Headroom.** A compressed session that finishes a turn while Headroom has seen no request tagged with its id gets the exception mark "not reaching Headroom". It exists because the routing is only as good as the agent CLI's respect for its environment. Headroom documents one such gap for Cline CLI (#951: background workers that re-read the settings file instead of inheriting the environment); Cline is not currently routed by Gavin, so this gap does not apply to its sessions.
 
 **The exception mark.** A tab mark in the `ui/indicators.ts` vocabulary appears only on a session in a compressed workspace that is not compressed. It carries one of three reasons: Headroom was not ready, it failed and the session was relaunched without it, or the session is not reaching Headroom. A compressed session carries no mark; a badge on every tab would be noise.
 
@@ -230,7 +229,7 @@ v1 is macOS on Apple Silicon and Linux. Headroom's own docs disagree about nativ
 ### Suggested build order (for ticketing)
 
 1. **headroom-01** — the daemon runs Headroom: detection, floor and pin, the fixed flags, the per-daemon port and state directory, readiness, restarts, re-adoption, the status and start/stop requests, and the concurrency probe.
-2. **headroom-02** — compressed launches and Claude Code: the switch and its default reaching the daemon, `CreateSession` widened with its compat gate, the spawn-time decision including MCP spawns, the Claude Code recipe, `compressed` on the session, and relaunches deciding again.
+2. **headroom-02** — compressed launches and Claude Code: the switch and its default reaching the daemon, `CreateSession` widened with its compat gate, the spawn-time decision including MCP spawns, the Claude Code recipe and Cline's no-recipe behavior, `compressed` on the session, and relaunches deciding again.
 3. **headroom-03** — Codex, opencode and Custom: the other recipes and the API family picker.
 4. **headroom-04** — the setup surfaces: the Settings section, the switch and default, and the wizard step.
 5. **headroom-05** — savings: the snapshots and the three surfaces.
@@ -279,7 +278,7 @@ Once 02 lands, 03, 04 and 05 can run on parallel rails.
   - #3590: `ls -la` and `git status` output compressed to bare numbers
   - #3673: Kompress drops a record from single-line JSON
   - #3652: columnar output loses fields
-  - #3017: Claude Code "malformed response" through the proxy
+  - #3017: Cline CLI "malformed response" through the proxy (not currently routed by Gavin)
   - #3587: CCR buffering makes time-to-first-token equal to the whole generation
   - #3597: the project header `wrap` sets is not the one CCR's resolver reads, which may affect CCR attribution
 

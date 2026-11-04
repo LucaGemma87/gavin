@@ -1,0 +1,380 @@
+{
+  ".gavin-root/plans/activity-calendar-companion.md": {
+    "mtime": 1793397926.9448092,
+    "seen": 1793543913.1574092,
+    "ast_hash": "fc8eca52c62e1cb77a9e0d3a25d788fe",
+    "semantic_hash": "fc8eca52c62e1cb77a9e0d3a25d788fe"
+  },
+  ".gavin-root/plans/activity-calendar-desktop.md": {
+    "mtime": 1793397926.946572,
+    "seen": 1793543913.157426,
+    "ast_hash": "2db1c0f18e5065097813c4c987f68bcd",
+    "semantic_hash": "2db1c0f18e5065097813c4c987f68bcd"
+  },
+  ".gavin-root/plans/activity-calendar-git.md": {
+    "mtime": 1793397926.9476604,
+    "seen": 1793543913.1574323,
+    "ast_hash": "512a95b545476e868b4025da08175e56",
+    "semantic_hash": "512a95b545476e868b4025da08175e56"
+  },
+  ".gavin-root/plans/activity-calendar-runs.md": {
+    "mtime": 1793397926.9491901,
+    "seen": 1793543913.157436,
+    "ast_hash": "e0ba1d50077e3ecdd25cf56af8f3e210",
+    "semantic_hash": "e0ba1d50077e3ecdd25cf56af8f3e210"
+  },
+  ".gavin-root/plans/bug-fallback-limits-ignored-after-restart.md": {
+    "mtime": 1793431777.513729,
+    "seen": 1793543913.1574397,
+    "ast_hash": "a228a0a84897630f402438000c5df98a",
+    "semantic_hash": "a228a0a84897630f402438000c5df98a"
+  },
+  ".gavin-root/plans/bug-windows-gavin-mcp-tools-list-hang.md": {
+    "mtime": 1793397927.6518931,
+    "seen": 1793543913.157443,
+    "ast_hash": "f8d54a36edbec44729c4ae840273ac39",
+    "semantic_hash": "f8d54a36edbec44729c4ae840273ac39"
+  },
+  ".gavin-root/plans/companion-ios-push-is-not-wired-end-to-end.md": {
+    "mtime": 1793397927.6518931,
+    "seen": 1793543913.1574469,
+    "ast_hash": "c1689c08cd711db80f78610a5e832263",
+    "semantic_hash": "c1689c08cd711db80f78610a5e832263"
+  },
+  ".gavin-root/plans/companion-iphone-smoke-tests.md": {
+    "mtime": 1793397927.6539047,
+    "seen": 1793543913.1574497,
+    "ast_hash": "af9d1cc2ad57e0cac4418c73ddcbf236",
+    "semantic_hash": "af9d1cc2ad57e0cac4418c73ddcbf236"
+  },
+  ".gavin-root/plans/companion-rerun-airplane-mode-test-from-control-center.md": {
+    "mtime": 1793397927.6539047,
+    "seen": 1793543913.157453,
+    "ast_hash": "1f8663904de7da7f84aec618ff0909a1",
+    "semantic_hash": "1f8663904de7da7f84aec618ff0909a1"
+  },
+  ".gavin-root/plans/done/bug-auto-model.md": {
+    "mtime": 1793431778.7110813,
+    "seen": 1793543913.1574564,
+    "ast_hash": "964471fabd82a50a507790e29925aac0",
+    "semantic_hash": "964471fabd82a50a507790e29925aac0"
+  },
+  ".gavin-root/plans/done/bug-cursor-usage-summary-stale.md": {
+    "mtime": 1793397927.657928,
+    "seen": 1793543913.1574593,
+    "ast_hash": "0a2a72c24c51e8d06783bf1651abc79e",
+    "semantic_hash": "0a2a72c24c51e8d06783bf1651abc79e"
+  },
+  ".gavin-root/plans/done/bug-hidden-session-after-decision.md": {
+    "mtime": 1793397927.6599383,
+    "seen": 1793543913.1574638,
+    "ast_hash": "f725f9d5be4e96285fb61e46378504b1",
+    "semantic_hash": "f725f9d5be4e96285fb61e46378504b1"
+  },
+  ".gavin-root/plans/done/bug-mcp-card-generation-not-working.md": {
+    "mtime": 1793431521.8225164,
+    "seen": 1793543913.1574667,
+    "ast_hash": "c59e67864d7a185c4b26f20cf42896c0",
+    "semantic_hash": "c59e67864d7a185c4b26f20cf42896c0"
+  },
+  ".gavin-root/plans/done/feat-gitignore-git-exclude-cards.md": {
+    "mtime": 1793397927.6609485,
+    "seen": 1793543913.1574697,
+    "ast_hash": "502bc3b36e36862ce38ca091a5a00ade",
+    "semantic_hash": "502bc3b36e36862ce38ca091a5a00ade"
+  },
+  ".gavin-root/plans/done/perf-companion-request-pipelining.md": {
+    "mtime": 1793397927.6622264,
+    "seen": 1793543913.1574726,
+    "ast_hash": "6245512cb4d7c6ee9ee20cacdf4143d1",
+    "semantic_hash": "6245512cb4d7c6ee9ee20cacdf4143d1"
+  },
+  ".gavin-root/plans/done/perf-companion-workspace-sync.md": {
+    "mtime": 1793397927.6634774,
+    "seen": 1793543913.1574755,
+    "ast_hash": "91dc33b0b993accb9e1646e8ff2013dd",
+    "semantic_hash": "91dc33b0b993accb9e1646e8ff2013dd"
+  },
+  ".gavin-root/plans/done/perf-main-thread-command-audit.md": {
+    "mtime": 1793397927.6634774,
+    "seen": 1793543913.1574786,
+    "ast_hash": "70c9597c7eda29cbca9418a19f7239b9",
+    "semantic_hash": "70c9597c7eda29cbca9418a19f7239b9"
+  },
+  ".gavin-root/plans/done/ui-diff-tab.md": {
+    "mtime": 1793397927.6654904,
+    "seen": 1793543913.1574812,
+    "ast_hash": "4bc405139413633ae949f13ca0f0e449",
+    "semantic_hash": "4bc405139413633ae949f13ca0f0e449"
+  },
+  ".gavin-root/plans/done/ui-git-tab.md": {
+    "mtime": 1793397927.6654904,
+    "seen": 1793543913.1574843,
+    "ast_hash": "b1660fadb7b2477489c3787a97c7701f",
+    "semantic_hash": "b1660fadb7b2477489c3787a97c7701f"
+  },
+  ".gavin-root/plans/done/ui-orchestration-layout.md": {
+    "mtime": 1793397927.6654904,
+    "seen": 1793543913.157487,
+    "ast_hash": "1cef639f039884343901dfdfa46149c1",
+    "semantic_hash": "1cef639f039884343901dfdfa46149c1"
+  },
+  ".gavin-root/plans/feat-backlog.md": {
+    "mtime": 1793397927.6675026,
+    "seen": 1793543913.1574898,
+    "ast_hash": "1bf1cf97b504ff66d8fc0ed698cc8047",
+    "semantic_hash": "1bf1cf97b504ff66d8fc0ed698cc8047"
+  },
+  ".gavin-root/plans/feat-codemirror-autocomplete-and-light-formatting.md": {
+    "mtime": 1793397927.6675026,
+    "seen": 1793543913.1574926,
+    "ast_hash": "0fb96a8b8a422fc7cf9f2bab93485f71",
+    "semantic_hash": "0fb96a8b8a422fc7cf9f2bab93485f71"
+  },
+  ".gavin-root/plans/feat-linux-port-on-a-linux-machine.md": {
+    "mtime": 1793397927.6695158,
+    "seen": 1793543913.1574984,
+    "ast_hash": "02dab326008fda4605ba0b9a52be45ad",
+    "semantic_hash": "02dab326008fda4605ba0b9a52be45ad"
+  },
+  ".gavin-root/plans/feat-plan-orchestrates-nested-tasks.md": {
+    "mtime": 1793397927.6695158,
+    "seen": 1793543913.157501,
+    "ast_hash": "017b819ab2613282ac347fcebe8395ab",
+    "semantic_hash": "017b819ab2613282ac347fcebe8395ab"
+  },
+  ".gavin-root/plans/feat-scheduled-tasks-plans.md": {
+    "mtime": 1793431521.8874483,
+    "seen": 1793543913.1575131,
+    "ast_hash": "506650e6ab7a7d7b471a72369ef823ae",
+    "semantic_hash": "506650e6ab7a7d7b471a72369ef823ae"
+  },
+  ".gavin-root/plans/feat-ssh-support.md": {
+    "mtime": 1793397927.672642,
+    "seen": 1793543913.1575167,
+    "ast_hash": "f8c86c1bea812a517bb2f4b4ed8ac688",
+    "semantic_hash": "f8c86c1bea812a517bb2f4b4ed8ac688"
+  },
+  ".gavin-root/plans/feat-tbdeveloped-playwright-integration.md": {
+    "mtime": 1793397927.672642,
+    "seen": 1793543913.1575198,
+    "ast_hash": "c42a31caec8c82e1386c20ac87f3cb5d",
+    "semantic_hash": "c42a31caec8c82e1386c20ac87f3cb5d"
+  },
+  ".gavin-root/plans/headroom-08-windows-and-intel-mac.md": {
+    "mtime": 1793397927.6746526,
+    "seen": 1793543913.1575227,
+    "ast_hash": "e1e751b1aa13abd6095cf1159eab5457",
+    "semantic_hash": "e1e751b1aa13abd6095cf1159eab5457"
+  },
+  ".gavin-root/plans/headroom.md": {
+    "mtime": 1793431777.5377517,
+    "seen": 1793543913.1575265,
+    "ast_hash": "c8f2417cede715b39ea7a99066934636",
+    "semantic_hash": "c8f2417cede715b39ea7a99066934636"
+  },
+  ".gavin-root/plans/memory-app-tests-kill-the-daemon.md": {
+    "mtime": 1793397927.6756668,
+    "seen": 1793543913.157529,
+    "ast_hash": "6ce14c938ebc9c7865f34d9edd70d3a8",
+    "semantic_hash": "6ce14c938ebc9c7865f34d9edd70d3a8"
+  },
+  ".gavin-root/plans/memory-codesign-entitlements-xml.md": {
+    "mtime": 1793397927.677682,
+    "seen": 1793543913.157532,
+    "ast_hash": "7737e3eebf9bf689643770ae2088323a",
+    "semantic_hash": "7737e3eebf9bf689643770ae2088323a"
+  },
+  ".gavin-root/plans/memory-daemon-git-watch-is-ssh-only.md": {
+    "mtime": 1793397927.677682,
+    "seen": 1793543913.1575348,
+    "ast_hash": "547162111fbc2a7f7cba617e274d78d2",
+    "semantic_hash": "547162111fbc2a7f7cba617e274d78d2"
+  },
+  ".gavin-root/plans/memory-device-commands-need-a-desk-window.md": {
+    "mtime": 1793397927.679695,
+    "seen": 1793543913.1575372,
+    "ast_hash": "7dda4f43054ee6d78ca1c871d284c2f9",
+    "semantic_hash": "7dda4f43054ee6d78ca1c871d284c2f9"
+  },
+  ".gavin-root/plans/memory-enter-is-cr-in-a-daemon-pty-test.md": {
+    "mtime": 1793397927.679695,
+    "seen": 1793543913.15754,
+    "ast_hash": "a2ca3d7924d605bee455037ec812c785",
+    "semantic_hash": "a2ca3d7924d605bee455037ec812c785"
+  },
+  ".gavin-root/plans/memory-isolated-daemon-short-home.md": {
+    "mtime": 1793397927.6817083,
+    "seen": 1793543913.1575425,
+    "ast_hash": "743c553ebf17992e4d6ab233ce3c2b2b",
+    "semantic_hash": "743c553ebf17992e4d6ab233ce3c2b2b"
+  },
+  ".gavin-root/plans/memory-kimi-hooks-shared-across-builds.md": {
+    "mtime": 1793397927.6817083,
+    "seen": 1793543913.1575453,
+    "ast_hash": "740e26276e9098a6daf706be28f21272",
+    "semantic_hash": "740e26276e9098a6daf706be28f21272"
+  },
+  ".gavin-root/plans/memory-phone-floor-overrides-flex-minimum.md": {
+    "mtime": 1793397927.6837194,
+    "seen": 1793543913.1575477,
+    "ast_hash": "91ddabd8fa61b6127315dfa747bc4e77",
+    "semantic_hash": "91ddabd8fa61b6127315dfa747bc4e77"
+  },
+  ".gavin-root/plans/memory-serde-rename-all-enum-fields.md": {
+    "mtime": 1793397927.6849842,
+    "seen": 1793543913.1575506,
+    "ast_hash": "884c8ff1c91931adab2a92e10ac7f2db",
+    "semantic_hash": "884c8ff1c91931adab2a92e10ac7f2db"
+  },
+  ".gavin-root/plans/memory-window-label-gates-the-rails.md": {
+    "mtime": 1793397927.6849842,
+    "seen": 1793543913.1575534,
+    "ast_hash": "f2bda4bd96a0fcb85989aa02b62206bc",
+    "semantic_hash": "f2bda4bd96a0fcb85989aa02b62206bc"
+  },
+  ".gavin-root/plans/orch-nested-01-daemon.md": {
+    "mtime": 1793397927.6869998,
+    "seen": 1793543913.1575565,
+    "ast_hash": "cbec3783fc69860aa027f4742fdcc0d0",
+    "semantic_hash": "cbec3783fc69860aa027f4742fdcc0d0"
+  },
+  ".gavin-root/plans/orch-nested-02-scheduler.md": {
+    "mtime": 1793397927.6869998,
+    "seen": 1793543913.1575594,
+    "ast_hash": "35ee7cc2a40fd751f9027ca693e44d1f",
+    "semantic_hash": "35ee7cc2a40fd751f9027ca693e44d1f"
+  },
+  ".gavin-root/plans/orch-nested-03-desk-ui.md": {
+    "mtime": 1793397927.689499,
+    "seen": 1793543913.1575618,
+    "ast_hash": "1c65c2d8e4dcf8429c8f0c7f272f4a05",
+    "semantic_hash": "1c65c2d8e4dcf8429c8f0c7f272f4a05"
+  },
+  ".gavin-root/plans/orch-nested-04-companion.md": {
+    "mtime": 1793397927.689499,
+    "seen": 1793543913.1575654,
+    "ast_hash": "ce8cf4a6ac1bd2c23ac600c07c5d168c",
+    "semantic_hash": "ce8cf4a6ac1bd2c23ac600c07c5d168c"
+  },
+  ".gavin-root/plans/orch-nested-05-skills.md": {
+    "mtime": 1793397927.6915114,
+    "seen": 1793543913.1575718,
+    "ast_hash": "f10ceb674382a830c08354d750590870",
+    "semantic_hash": "f10ceb674382a830c08354d750590870"
+  },
+  ".gavin-root/plans/playwright-browser-broker.md": {
+    "mtime": 1793431521.9428992,
+    "seen": 1793543913.1575744,
+    "ast_hash": "5e9cbc83a77ccd7b7af33e86373337b0",
+    "semantic_hash": "5e9cbc83a77ccd7b7af33e86373337b0"
+  },
+  ".gavin-root/plans/playwright-companion-view.md": {
+    "mtime": 1793397927.693661,
+    "seen": 1793543913.1575773,
+    "ast_hash": "f34a3b5bed6d85269c0a2a131b174d9c",
+    "semantic_hash": "f34a3b5bed6d85269c0a2a131b174d9c"
+  },
+  ".gavin-root/plans/playwright-install-wizard.md": {
+    "mtime": 1793397927.6947896,
+    "seen": 1793543913.1575804,
+    "ast_hash": "b5ba26bade235e1ef199ce2b6c0c8a1a",
+    "semantic_hash": "b5ba26bade235e1ef199ce2b6c0c8a1a"
+  },
+  ".gavin-root/plans/playwright-live-pane.md": {
+    "mtime": 1793397927.6947896,
+    "seen": 1793543913.157583,
+    "ast_hash": "18c2f41c29d5244f249cb19e871232a3",
+    "semantic_hash": "18c2f41c29d5244f249cb19e871232a3"
+  },
+  ".gavin-root/plans/playwright-phone-view-ssh-sessions.md": {
+    "mtime": 1793397927.6968064,
+    "seen": 1793543913.1575863,
+    "ast_hash": "6c01c448d20b4316d9d272bbc2870690",
+    "semantic_hash": "6c01c448d20b4316d9d272bbc2870690"
+  },
+  ".gavin-root/plans/playwright-spike.md": {
+    "mtime": 1793397927.6968064,
+    "seen": 1793543913.157589,
+    "ast_hash": "fe712aff519d04eb51664af5030c25df",
+    "semantic_hash": "fe712aff519d04eb51664af5030c25df"
+  },
+  ".gavin-root/plans/done/review-cline-default-and-copilot-free.md": {
+    "mtime": 1793542500.9987946,
+    "seen": 1793543913.1575918,
+    "ast_hash": "00f6c378ca0ab7b5143ad324eb3bcf8d",
+    "semantic_hash": "00f6c378ca0ab7b5143ad324eb3bcf8d"
+  },
+  ".gavin-root/plans/review-hub-savings-credited-to-workspace-default-agent.md": {
+    "mtime": 1793431777.5671232,
+    "seen": 1793543913.1575947,
+    "ast_hash": "a2c32cc4475e8ddabc5920568bddce54",
+    "semantic_hash": "a2c32cc4475e8ddabc5920568bddce54"
+  },
+  ".gavin-root/plans/scheduled-01-daemon-protocol.md": {
+    "mtime": 1793397927.7000604,
+    "seen": 1793543913.157597,
+    "ast_hash": "52fad1a69ccab2bb79591ad9207969f2",
+    "semantic_hash": "52fad1a69ccab2bb79591ad9207969f2"
+  },
+  ".gavin-root/plans/scheduled-02-app-scheduler.md": {
+    "mtime": 1793397927.7000604,
+    "seen": 1793543913.1576,
+    "ast_hash": "47e37b8804ec68c3282337a701113170",
+    "semantic_hash": "47e37b8804ec68c3282337a701113170"
+  },
+  ".gavin-root/plans/scheduled-03-hub-tab.md": {
+    "mtime": 1793397927.7015374,
+    "seen": 1793543913.1576028,
+    "ast_hash": "888555121772021b7d6ea75bbbc41a03",
+    "semantic_hash": "888555121772021b7d6ea75bbbc41a03"
+  },
+  ".gavin-root/plans/scheduled-04-companion.md": {
+    "mtime": 1793397927.7030506,
+    "seen": 1793543913.1576056,
+    "ast_hash": "2e9899f9cd8250a32e69e7bae2041ea7",
+    "semantic_hash": "2e9899f9cd8250a32e69e7bae2041ea7"
+  },
+  ".gavin-root/plans/tbd-feat-activity-calendar.md": {
+    "mtime": 1793397927.7042105,
+    "seen": 1793543913.1576087,
+    "ast_hash": "22e78b6ebaa2e083cf0da3500894e3dd",
+    "semantic_hash": "22e78b6ebaa2e083cf0da3500894e3dd"
+  },
+  ".gavin-root/plans/theme-text-on-fills-and-literal-colours-contrast.md": {
+    "mtime": 1793397927.7057233,
+    "seen": 1793543913.1576118,
+    "ast_hash": "907d2fffdd7e129bb240a7ea162a9dee",
+    "semantic_hash": "907d2fffdd7e129bb240a7ea162a9dee"
+  },
+  ".gavin-root/plans/verify-from-macos-against-a-linux-host-and-a-windows-host-fold-what-breaks-back-into-the-spec.md": {
+    "mtime": 1793397927.7057233,
+    "seen": 1793543913.1576152,
+    "ast_hash": "29bbb8880b5b527457d0ffdc0694ba38",
+    "semantic_hash": "29bbb8880b5b527457d0ffdc0694ba38"
+  },
+  ".gavin-root/plans/windows-desktop-pass.md": {
+    "mtime": 1793397927.7077353,
+    "seen": 1793543913.1576183,
+    "ast_hash": "fea0901d7f82cb2f28026965bc7143c2",
+    "semantic_hash": "fea0901d7f82cb2f28026965bc7143c2"
+  },
+  ".gavin-root/plans/workspace-log-git.md": {
+    "mtime": 1793397927.7077353,
+    "seen": 1793543913.1576211,
+    "ast_hash": "82808b3acffa1613096c440e9dbceffe",
+    "semantic_hash": "82808b3acffa1613096c440e9dbceffe"
+  },
+  ".gavin-root/plans/workspace-log-journal.md": {
+    "mtime": 1793397927.7097487,
+    "seen": 1793543913.1576242,
+    "ast_hash": "ff1a94f478409e604c2223f685416060",
+    "semantic_hash": "ff1a94f478409e604c2223f685416060"
+  },
+  ".gavin-root/plans/workspace-log-tab.md": {
+    "mtime": 1793397927.7097487,
+    "seen": 1793543913.1576273,
+    "ast_hash": "17f006a475d30011f9bdf6129d15bba1",
+    "semantic_hash": "17f006a475d30011f9bdf6129d15bba1"
+  }
+}

@@ -27,6 +27,7 @@
     headroomDefault,
     setWorkspaceHeadroom,
     markHeadroomAsked,
+    setWorkspaceLaunchCostPolicy,
   } from "$lib/core/layoutState";
   import AgentPrimaryPanel from "$lib/agents/AgentPrimaryPanel.svelte";
   import {
@@ -132,6 +133,7 @@
   } from "$lib/agents/headroomSetup";
   import { ensureHeadroomReading, headroomReading } from "$lib/agents/headroomState";
   import { UNFILED_WORKSPACE_ID } from "$lib/core/workspace";
+  import type { LaunchCostPolicy } from "$lib/agents/launchPolicy";
   import HubTabsModal from "$lib/hub/HubTabsModal.svelte";
   import {
     hiddenHubViewCount,
@@ -983,6 +985,27 @@
         tab={agentsTab}
         onTab={(t) => (agentsTab = t)}
       />
+      <div class="row">
+        <span>Paid and unknown routes</span>
+        <select
+          aria-label="Workspace launch cost policy"
+          value={ws?.launchCostPolicy ?? ""}
+          onchange={(e) => {
+            const value = e.currentTarget.value;
+            const policy: LaunchCostPolicy | null =
+              value === "ask" || value === "no_paid_requests" ? value : null;
+            void setWorkspaceLaunchCostPolicy(workspaceId, policy);
+          }}
+        >
+          <option value="">Use app-wide policy</option>
+          <option value="ask">Ask before each paid or unknown launch</option>
+          <option value="no_paid_requests">No paid requests</option>
+        </select>
+      </div>
+      <p class="hint">
+        This workspace overrides the app-wide choice. Unknown routes, including custom commands,
+        need approval for each launch; approvals are never reused.
+      </p>
 
       {#if agentsTab === GENERAL_TAB}
       <!-- Above the Command field it gates: the field shows the RESOLVED

@@ -11,7 +11,7 @@ files) before touching anything.
 
 **The gap.** `card_sessions.conversation_id` is today only ever written by
 gavin *minting* a uuid at launch (`AgentProfile::session_id_args`), which only
-Claude Code supports. Agents that generate their own session id (codex,
+cline supports. Agents that generate their own session id (codex,
 gemini, opencode) have no way to hand it back, so `conversation_id` stays
 null for them and resume falls back to a written reconstruction instead of
 the real conversation.
@@ -69,3 +69,4 @@ regression from this change).
 <!-- gavin:auto-commit -->
 When the implementation is done, commit it. Commit only the files you touched — never `git add -A`. Do not push.
 <!-- /gavin:auto-commit -->
+

@@ -1,4 +1,4 @@
----
+﻿---
 order: 7168
 title: [feat] agent session name mcp
 status: Done
@@ -10,7 +10,7 @@ With current implementation, when starting a new agent session both via card or 
 
 **The gap.** `gavin_name_session` and the `card_sessions` link already exist
 (`plans/archive/tab-naming-and-link-build.md`). Real conversation resume also
-already exists, but only for Claude Code: gavin *mints* the id itself at
+already exists, but only for cline: gavin *mints* the id itself at
 launch (`AgentProfile::session_id_args`, `--session-id <uuid>`) and stores it
 in `card_sessions.conversation_id`, then `buildResumeCommand` replays it with
 `resume_args`. Every other profile — codex, gemini, opencode, cursor — has
@@ -27,7 +27,7 @@ generate their own id and can be resumed by it once known:
 
 **The fix.** The agent self-reports that id over MCP once it exists, gavin
 stores it in the same `card_sessions.conversation_id` column, and resume uses
-it exactly as it already does for Claude Code — `cardRunActions.ts` and
+it exactly as it already does for cline — `cardRunActions.ts` and
 `orchestrationState.ts` already prefer `buildResumeCommand` over the base
 prompt whenever a `conversationId` is present, for every resume trigger
 (manual, rail auto-resume, daemon-crash recovery), falling back to
@@ -50,7 +50,7 @@ two land with.
 - [x] [Agent self-reports its own session id over MCP](./agent-session-id-self-report.md)
 - [x] [Resume vocabulary per agent profile, plus a configurable custom resume flag](./agent-resume-vocabulary-and-custom-config.md)
 - [x] [Wire session self-report into the naming skill and card prompts](./agent-session-report-prompt-wiring.md)
-- [x] Confirm live: at least one non-Claude-Code profile (codex, gemini or
+- [x] Confirm live: at least one non-cline profile (codex, gemini or
       opencode) actually reopens its real conversation on Resume — not just
       green tests, the way the original naming feature was confirmed end to
       end in `tab-naming-and-link-build.md`.
@@ -89,3 +89,4 @@ The human checked their live sessions afterward and confirmed nothing
 was actually broken, but this is the reason the opencode check above
 went through the bare CLI directly instead of a hand-rolled isolated
 daemon a second time.
+

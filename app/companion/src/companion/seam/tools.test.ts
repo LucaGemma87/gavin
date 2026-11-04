@@ -6,7 +6,11 @@
 // command line for the tool, the run filed with the daemon, the tab
 // named -- and nothing that places the session or saves the desk's
 // layout, which is the desk's to do (companion-16).
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+const { authorizeLaunch } = vi.hoisted(() => ({ authorizeLaunch: vi.fn(async () => true) }));
+vi.mock("$lib/agents/launchAuthorization", () => ({ authorizeLaunch }));
+
 import { get } from "svelte/store";
 import { layoutState } from "$lib/core/layoutState";
 import { toolRunsStore } from "$lib/orchestration/toolRunsState";
@@ -119,6 +123,7 @@ describe("running a command or a script tool", () => {
     expect(String(create?.args.command)).toContain("./scripts/deploy.sh staging release/2");
     expect(String(create?.args.command)).toContain("bash -c");
     expect(create?.args.profileId).toBeUndefined();
+    expect(create?.args.approvedOnce).toBe(true);
     const sessionId = String(demo.state.toolRuns.at(-1)?.sessionId);
     expect(sent.find((s) => s.cmd === "start_tool_run")?.args).toMatchObject({
       workspaceId: DEMO.atlas,
@@ -170,6 +175,7 @@ describe("running an agent tool", () => {
     const create = sentSince(demo, from).find((s) => s.cmd === "create_session");
     expect(String(create?.args.command)).toContain("Read the commits since v2.0.0");
     expect(create?.args.profileId).toBe("claude-code");
+    expect(create?.args.approvedOnce).toBe(true);
     const sessionId = String(demo.state.toolRuns.at(-1)?.sessionId);
     expect(get(view)).toMatchObject({ workspaceId: DEMO.atlas, sessionId });
   });

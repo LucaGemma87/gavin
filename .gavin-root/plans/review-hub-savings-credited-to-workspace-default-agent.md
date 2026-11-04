@@ -1,4 +1,4 @@
----
+﻿---
 order: 9216
 kind: note
 title: The hub credits Headroom savings to the workspace's default agent, not the agent that ran
@@ -16,3 +16,4 @@ Branch `feat/headroom` (headroom-05, d946dd95). For the human to judge: the attr
 **If you want it exact.** The daemon already receives `CreateSession.profile_id` for every agent launch. Record it on the registry row or the card run, and return it in `RunSavings`; then `savingsByProfile` keys by the run's own profile and falls back to the workspace's only for rows written before that. It widens a reply, so it needs a protocol bump; it is not a new request type. The alternative is to keep the approximation and say in the row's tooltip that savings are attributed by workspace.
 
 A cheaper signal already exists. Run history does not attribute by workspace: `agentLabel` (`app/src/lib/cards/runHistory.ts:155`) reads the agent off the run's recorded `command` (the original line; the registry keeps it un-rewritten). Carrying that command, or the agent it names, in `RunSavings` would let the hub key savings the way run history already labels runs. Either way it widens the reply.
+

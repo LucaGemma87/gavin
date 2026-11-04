@@ -77,6 +77,7 @@ pub const SETTINGS_KEYS: &[&str] = &[
     "requireReview",
     "requireReviewAsked",
     "headroom",
+    "launchCostPolicy",
     "headroomAsked",
     "playwrightPaneOpen",
     "customResumeArgs",
@@ -414,6 +415,11 @@ mod tests {
             reviewed_cards: Some(HashMap::from([(s("/card"), s("digest"))])),
             require_review: Some(flavour == "a"),
             headroom: Some(flavour == "a"),
+            launch_cost_policy: Some(if flavour == "a" {
+                protocol::LaunchCostPolicy::NoPaidRequests
+            } else {
+                protocol::LaunchCostPolicy::Ask
+            }),
             require_review_asked: flavour == "a",
             headroom_asked: flavour == "a",
             playwright_pane_open: Some(if flavour == "a" { "auto" } else { "chip" }.to_string()),
@@ -740,7 +746,7 @@ mod tests {
               "lastActiveAt": 1700000000002,
               "pauseCycles": { "claude-code": { "enabled": true, "periodMinutes": 300, "pauseMinutes": 10, "anchorMs": 1700000000003, "limitPercent": 95.0, "limitEnabled": true } },
               "pinnedAt": 1700000000004,
-              "complexityTables": { "claude-code": { "complex": { "profile": "claude-code", "model": "opus" } } },
+              "complexityTables": { "cline": { "complex": { "profile": "claude-code", "model": "opus" } } },
               "gitTrackingAsked": true,
               "trustedConfigHash": "abc123",
               "mcpForeignServersChoice": { "hash": "def456", "action": "keep" },
@@ -784,7 +790,7 @@ mod tests {
           "board_tabs": {},
           "card_tabs": {},
           "theme": "dark",
-          "agent_models": { "claude-code": "opus" },
+          "agent_models": { "cline": "cline-test-model" },
           "terminal_font_size": 13,
           "auto_commit": false,
           "removed_workspaces": [{ "id": "ws-old", "name": "Old", "rootPath": "/Users/me/old", "removedAt": 1690000000000 }],

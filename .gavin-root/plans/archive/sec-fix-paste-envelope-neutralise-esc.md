@@ -44,7 +44,7 @@ Text placed inside a bracketed paste can never end the paste: inside the envelop
 
 ## What the audit could not observe
 
-- What each agent CLI (Claude Code, Codex, kimi, opencode) does with bytes after a premature `ESC[201~` while bracketed paste is on: whether `ESC[Z` (Shift+Tab) cycles the permission mode, whether `!` on an empty prompt after a submitted CR enters a shell mode that runs without a permission prompt, whether a digit or `y` answers a pending approval. Only the delivered bytes were observed: two end markers, keystrokes after the first.
+- What each agent CLI (cline, Codex, kimi, opencode) does with bytes after a premature `ESC[201~` while bracketed paste is on: whether `ESC[Z` (Shift+Tab) cycles the permission mode, whether `!` on an empty prompt after a submitted CR enters a shell mode that runs without a permission prompt, whether a digit or `y` answers a pending approval. Only the delivered bytes were observed: two end markers, keystrokes after the first.
 
 ## Fix
 
@@ -66,6 +66,7 @@ Regression tests, written first:
 - The checks in CLAUDE.md pass for every part you touched.
 - The regression test fails before the change and passes after it.
 - Follow the CLAUDE.md traps that apply: a new SQLite column needs its own `ALTER TABLE`, a widened request needs a compat-gate entry, and you commit only your own files.
-- Once the fix is in, file this check with `gavin_request_human(<this card>, "test", …)` using exactly this text: "In a throwaway workspace with an isolated daemon, a task card whose body is 'say hello' + ESC + '[201~' + ESC + '[Z' shows the ESC as a visible ␛ in the first-run review sheet, and after Send to main agent an idle Claude Code main agent's permission mode in its footer is unchanged."
+- Once the fix is in, file this check with `gavin_request_human(<this card>, "test", …)` using exactly this text: "In a throwaway workspace with an isolated daemon, a task card whose body is 'say hello' + ESC + '[201~' + ESC + '[Z' shows the ESC as a visible ␛ in the first-run review sheet, and after Send to main agent an idle cline main agent's permission mode in its footer is unchanged."
 
-- [ ] Human test: In a throwaway workspace with an isolated daemon, a task card whose body is 'say hello' + ESC + '[201~' + ESC + '[Z' shows the ESC as a visible ␛ in the first-run review sheet, and after Send to main agent an idle Claude Code main agent's permission mode in its footer is unchanged.
+- [ ] Human test: In a throwaway workspace with an isolated daemon, a task card whose body is 'say hello' + ESC + '[201~' + ESC + '[Z' shows the ESC as a visible ␛ in the first-run review sheet, and after Send to main agent an idle cline main agent's permission mode in its footer is unchanged.
+

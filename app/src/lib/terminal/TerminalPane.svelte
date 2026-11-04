@@ -145,7 +145,7 @@
 </script>
 
 <div class="pane" class:inactive={!visible}>
-  <div class="term" bind:this={mountPoint}></div>
+  <div class="term" data-terminal-session-id={sessionId} bind:this={mountPoint}></div>
   {#if lock}
     <div class="lock-dim" aria-hidden="true"></div>
     {#if lockBar}

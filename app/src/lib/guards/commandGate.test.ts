@@ -217,6 +217,9 @@ const CLASSIFICATION: Record<string, [Bucket, string?]> = {
   get_headroom_default: ["ordinary"],
   set_headroom_default: ["ordinary"],
   set_headroom_workspaces: ["ordinary"],
+  // The launch-cost policy (ADR 0013): either setting still asks before
+  // every unknown launch, so neither choice can let a launch through.
+  set_launch_policies: ["ordinary"],
   // Headroom's setup surfaces. The status and Check again/Locate… read
   // and look. The install writes a uv tool into the human's home and
   // fetches a model; as Update it also restarts the proxy on its port,

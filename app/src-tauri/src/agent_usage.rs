@@ -3,7 +3,7 @@
 //!
 //! Which agents can be asked at all, and by what route, is the profile
 //! table's answer (`agent_setup::UsageProbe`); this module only carries
-//! the routes out. Custom is the only profile with no route, and the
+//! the routes out. Custom profiles and Copilot have no verified route, and the
 //! honest report there is `Unsupported`, never an invented bar. A stock
 //! CLI whose route could not answer (no login, no Go subscription, a
 //! consumer Gemini account) is `Unavailable` -- a different sentence.
@@ -40,7 +40,7 @@ use tauri::Manager;
 
 use crate::agent_setup::{stock_profile_by_id, UsageProbe};
 
-/// Anthropic's own usage endpoint, which every Claude Code client reads.
+/// Anthropic's own usage endpoint for the Claude Code OAuth profile.
 const ANTHROPIC_USAGE_URL: &str = "https://api.anthropic.com/api/oauth/usage";
 
 /// The beta gate the endpoint requires; without it the request is
@@ -307,7 +307,7 @@ impl UsageReport {
     }
 }
 
-// ---- Claude Code ------------------------------------------------------------
+// ---- Anthropic OAuth --------------------------------------------------
 
 /// The CLI's own version, for the user-agent the endpoint wants. Best
 /// effort: a plausible fallback beats no header at all, since it is the
@@ -2199,8 +2199,8 @@ mod tests {
         assert!(matches!(codex_usage(&dir), UsageReport::Unavailable { .. }));
     }
 
-    /// The profile table decides who can be asked: every stock CLI has a
-    /// verified route, even if that route often answers Unavailable
+    /// The profile table decides who can be asked: every stock CLI with a
+    /// verified usage route is listed here, even if that route often answers Unavailable
     /// (Gemini consumer OAuth, OpenCode without Go). A named custom --
     /// the migrated `custom-agent`, a user slug, a workspace `local:` id
     /// -- carries no probe at all: the command answers Unsupported
@@ -2213,7 +2213,7 @@ mod tests {
         for id in ["claude-code", "codex", "gemini", "cursor", "opencode", "kimi-code"] {
             assert!(usage_probe_for(id).is_some(), "{id} has no probe");
         }
-        for id in ["custom", "custom-agent", "my-bot", "local:desk"] {
+        for id in ["cline", "copilot", "custom", "custom-agent", "my-bot", "local:desk"] {
             assert!(usage_probe_for(id).is_none(), "{id} took claude's probe");
         }
     }

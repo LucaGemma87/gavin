@@ -221,7 +221,7 @@ function remembered(record: CardSessionRecord): void {
 
 /// The default profile: verified failure patterns, and NO conversation
 /// resume -- which is what codex, gemini and opencode look like, and
-/// what claude-code looks like against a daemon too old to persist the
+/// what Claude Code looks like against a daemon too old to persist the
 /// id. The tests that want resume opt in.
 const NO_RESUME_AGENT = {
   profileId: "claude-code",

@@ -41,6 +41,7 @@ pub const REGISTERED_COMMANDS: &[&str] = &[
     "get_headroom_default",
     "set_headroom_default",
     "set_headroom_workspaces",
+    "set_launch_policies",
     "get_headroom_status",
     "headroom_savings",
     "headroom_reach",

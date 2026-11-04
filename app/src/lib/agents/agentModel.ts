@@ -214,9 +214,9 @@ export function modelOptions(
 /// The profile table with each row's runtime catalogue folded in.
 ///
 /// Ordering is the whole design. A profile's own `models` are the stable
-/// aliases gavin verified -- `sonnet` stays sonnet, `pro` stays pro --
-/// so they lead; discovered names, which are dated ids the host read back
-/// from the agent a moment ago, follow in the order that agent listed
+/// aliases gavin verified, so they lead; discovered names, which are dated
+/// ids the host read back from the agent a moment ago, follow in the order
+/// that agent listed
 /// them. Nobody is dropped and nobody is renamed: opencode's 450 rows are
 /// long, but a picker that quietly omitted the provider a user actually
 /// configured would be worse than a long one.

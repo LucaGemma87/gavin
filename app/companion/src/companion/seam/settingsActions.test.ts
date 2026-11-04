@@ -100,7 +100,12 @@ describe("reading the settings", () => {
       ...demo.state.settings.agentDefaults,
       pauseCycles: { "claude-code": CYCLE },
     };
-    demo.state.settings.launch = { maxInFlight: 2, holdOnPressure: false, reclaimDoneSessions: true };
+    demo.state.settings.launch = {
+      maxInFlight: 2,
+      holdOnPressure: false,
+      reclaimDoneSessions: true,
+      costPolicy: "ask",
+    };
     await connected(demo);
     const from = mark(demo);
 
@@ -128,7 +133,12 @@ describe("reading the settings", () => {
     expect(get(agentModelDefaultsStore)).toEqual({ "claude-code": "opus" });
     // The cycles ride the agent defaults, per agent: no command of their own.
     expect(get(agentPauseStore)).toEqual({ "claude-code": CYCLE });
-    expect(get(launchConfigStore)).toEqual({ maxInFlight: 2, holdOnPressure: false, reclaimDoneSessions: true });
+    expect(get(launchConfigStore)).toEqual({
+      maxInFlight: 2,
+      holdOnPressure: false,
+      reclaimDoneSessions: true,
+      costPolicy: "ask",
+    });
     expect(get(agentProfilesStore).map((p) => [p.id, p.models])).toEqual([
       ["claude-code", ["opus", "sonnet", "haiku"]],
       // The catalogue folded in, as the desk folds it in.
@@ -193,9 +203,22 @@ describe("changing an app-wide setting", () => {
     ],
     [
       "the memory wall",
-      () => saveLaunchConfig({ maxInFlight: null, holdOnPressure: true, reclaimDoneSessions: false }),
+      () =>
+        saveLaunchConfig({
+          maxInFlight: null,
+          holdOnPressure: true,
+          reclaimDoneSessions: false,
+          costPolicy: "ask",
+        }),
       "set_launch_config",
-      { launch: { maxInFlight: null, holdOnPressure: true, reclaimDoneSessions: false } },
+      {
+        launch: {
+          maxInFlight: null,
+          holdOnPressure: true,
+          reclaimDoneSessions: false,
+          costPolicy: "ask",
+        },
+      },
     ],
   ];
 
@@ -214,7 +237,14 @@ describe("changing an app-wide setting", () => {
     const demo = await connected();
     await saveSetting(() => setAutoCommitDefault(true));
     await saveSetting(() => setAgentModelDefault("claude-code", "sonnet"));
-    await saveSetting(() => saveLaunchConfig({ maxInFlight: 6, holdOnPressure: true, reclaimDoneSessions: true }));
+    await saveSetting(() =>
+      saveLaunchConfig({
+        maxInFlight: 6,
+        holdOnPressure: true,
+        reclaimDoneSessions: true,
+        costPolicy: "ask",
+      })
+    );
 
     expect(demo.state.settings.autoCommit).toBe(true);
     expect(demo.state.settings.agentModels).toEqual({ "claude-code": "sonnet" });
@@ -426,7 +456,14 @@ describe("everything the settings screens send", () => {
     await saveSetting(() => setAgentModelDefault("codex", "gpt-5"));
     await saveSetting(() => setAgentDefaults({ ...get(agentDefaultsStore), fallbackChains: { "claude-code": ["codex"] } }));
     await saveSetting(() => saveAgentPauseFor("claude-code", CYCLE));
-    await saveSetting(() => saveLaunchConfig({ maxInFlight: 3, holdOnPressure: true, reclaimDoneSessions: true }));
+    await saveSetting(() =>
+      saveLaunchConfig({
+        maxInFlight: 3,
+        holdOnPressure: true,
+        reclaimDoneSessions: true,
+        costPolicy: "ask",
+      })
+    );
     await saveSetting(() => renameWorkspace(DEMO.notes, "notes"));
     await saveSetting(() => setWorkspaceColor(DEMO.notes, "#60a5fa"));
     await saveSetting(() => setWorkspaceFontSize(DEMO.notes, 12));
