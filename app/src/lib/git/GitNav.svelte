@@ -355,7 +355,7 @@
     user-select: none;
   }
   .row:hover {
-    background: var(--surface-sunken);
+    background: var(--hover-wash);
   }
   .row.current {
     color: var(--text);
@@ -388,12 +388,20 @@
     color: var(--text-subtle);
     font-size: 0.9em;
   }
+  /* Laid out even while hidden (zero wide, invisible) so a hovered row
+     keeps its height instead of growing to the buttons' and shifting the
+     rows under it. */
   .acts {
-    display: none;
+    display: inline-flex;
     gap: 3px;
+    width: 0;
+    overflow: hidden;
+    visibility: hidden;
   }
   .row:hover .acts {
-    display: inline-flex;
+    width: auto;
+    overflow: visible;
+    visibility: visible;
   }
   .acts button {
     background: transparent;
@@ -409,7 +417,7 @@
     cursor: pointer;
   }
   .acts button:hover:not(:disabled) {
-    border-color: var(--border-strong);
+    background: var(--hover-wash);
     color: var(--text);
   }
   .acts button:disabled {

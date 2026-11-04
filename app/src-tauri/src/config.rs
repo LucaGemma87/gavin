@@ -764,6 +764,13 @@ pub struct LaunchConfig {
     pub reclaim_done_sessions: bool,
     #[serde(default)]
     pub cost_policy: protocol::LaunchCostPolicy,
+    /// The share of RAM in use (1-99) at which memory counts as under
+    /// pressure; `None` follows macOS's own pressure signal, the shipped
+    /// behaviour. `memory.ts`'s `pressureOf` owns what it means -- the
+    /// kernel's `critical` still holds either way. Skipped when absent so
+    /// a config.json that never set it keeps the shape it had.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hold_at_percent: Option<u32>,
 }
 
 /// Four agents, the pressure hold on, and finished cards' idle agents
@@ -783,6 +790,7 @@ impl Default for LaunchConfig {
             hold_on_pressure: true,
             reclaim_done_sessions: true,
             cost_policy: protocol::LaunchCostPolicy::Ask,
+            hold_at_percent: None,
         }
     }
 }

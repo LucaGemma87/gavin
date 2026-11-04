@@ -937,6 +937,7 @@ mod workspaces_data_tests {
             hold_on_pressure: false,
             reclaim_done_sessions: false,
             cost_policy: protocol::LaunchCostPolicy::NoPaidRequests,
+            hold_at_percent: Some(85),
         };
         persist_workspaces(
             dir.path(),
@@ -975,6 +976,7 @@ mod workspaces_data_tests {
             hold_on_pressure: true,
             reclaim_done_sessions: true,
             cost_policy: protocol::LaunchCostPolicy::Ask,
+            hold_at_percent: None,
         };
         persist_workspaces(
             dir.path(),
@@ -1016,6 +1018,21 @@ mod workspaces_data_tests {
         // And the wire name is the one launchGate.ts reads.
         let json = serde_json::to_value(crate::config::LaunchConfig::default()).unwrap();
         assert_eq!(json["reclaimDoneSessions"], serde_json::Value::Bool(true));
+        // A config written before the pressure threshold existed follows
+        // macOS, and the default never writes the key at all.
+        assert_eq!(launch.hold_at_percent, None);
+        assert!(json.get("holdAtPercent").is_none());
+    }
+
+    /// The threshold's wire name is the one `launchGate.ts` writes, and a
+    /// set one survives a parse.
+    #[test]
+    fn launch_config_reads_the_pressure_threshold() {
+        let launch: crate::config::LaunchConfig = serde_json::from_str(
+            r#"{"maxInFlight":4,"holdOnPressure":true,"reclaimDoneSessions":true,"holdAtPercent":85}"#,
+        )
+        .unwrap();
+        assert_eq!(launch.hold_at_percent, Some(85));
     }
 
     #[test]

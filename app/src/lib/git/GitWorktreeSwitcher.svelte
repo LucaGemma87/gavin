@@ -367,7 +367,7 @@
     max-width: 320px;
   }
   .current:hover {
-    border-color: var(--border-strong);
+    background: var(--hover-wash);
   }
   .name {
     overflow: hidden;
@@ -393,7 +393,7 @@
     border-radius: 6px;
   }
   .row:hover {
-    background: var(--surface-raised);
+    background: var(--hover-wash);
   }
   .row.active .lbl {
     color: var(--text);
@@ -437,13 +437,21 @@
     padding-right: 4px;
     flex: 0 0 auto;
   }
+  /* Laid out even while hidden (zero wide, invisible) so a hovered row
+     keeps its height instead of growing to the buttons' and shifting the
+     rows under it. */
   .acts {
-    display: none;
+    display: inline-flex;
     gap: 3px;
     padding-right: 4px;
+    width: 0;
+    overflow: hidden;
+    visibility: hidden;
   }
   .row:hover .acts {
-    display: inline-flex;
+    width: auto;
+    overflow: visible;
+    visibility: visible;
   }
   .foot button {
     background: transparent;
@@ -459,7 +467,7 @@
     cursor: pointer;
   }
   .foot button:hover:not(:disabled) {
-    border-color: var(--border-strong);
+    background: var(--hover-wash);
     color: var(--text);
   }
   .foot button:disabled {
