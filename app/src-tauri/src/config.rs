@@ -515,6 +515,10 @@ pub struct Workspace {
     /// app.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub headroom: Option<bool>,
+    /// Cost policy override for this workspace. Absence inherits the
+    /// app-wide policy, whose default is Ask.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub launch_cost_policy: Option<protocol::LaunchCostPolicy>,
     /// Whether the human has been ASKED whether this workspace requires
     /// the first-Run review. Not the answer -- `require_review` (or its
     /// absence) is that. Same shape and reason as `git_tracking_asked`:
@@ -767,6 +771,8 @@ pub struct LaunchConfig {
     /// the shipped answer rather than as a refusal.
     #[serde(default = "default_true")]
     pub reclaim_done_sessions: bool,
+    #[serde(default)]
+    pub cost_policy: protocol::LaunchCostPolicy,
 }
 
 /// Four agents, the pressure hold on, and finished cards' idle agents
@@ -781,7 +787,12 @@ pub struct LaunchConfig {
 /// and the cost of closing them is a transcript the card can re-launch.
 impl Default for LaunchConfig {
     fn default() -> Self {
-        Self { max_in_flight: Some(4), hold_on_pressure: true, reclaim_done_sessions: true }
+        Self {
+            max_in_flight: Some(4),
+            hold_on_pressure: true,
+            reclaim_done_sessions: true,
+            cost_policy: protocol::LaunchCostPolicy::Ask,
+        }
     }
 }
 
@@ -2008,6 +2019,7 @@ mod tests {
             reviewed_cards: None,
             require_review: None,
             headroom: None,
+            launch_cost_policy: None,
             require_review_asked: false,
             headroom_asked: false,
             playwright_pane_open: None,

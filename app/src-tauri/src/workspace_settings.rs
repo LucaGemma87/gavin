@@ -77,6 +77,7 @@ pub const SETTINGS_KEYS: &[&str] = &[
     "requireReview",
     "requireReviewAsked",
     "headroom",
+    "launchCostPolicy",
     "headroomAsked",
     "playwrightPaneOpen",
     "customResumeArgs",
@@ -414,6 +415,11 @@ mod tests {
             reviewed_cards: Some(HashMap::from([(s("/card"), s("digest"))])),
             require_review: Some(flavour == "a"),
             headroom: Some(flavour == "a"),
+            launch_cost_policy: Some(if flavour == "a" {
+                protocol::LaunchCostPolicy::NoPaidRequests
+            } else {
+                protocol::LaunchCostPolicy::Ask
+            }),
             require_review_asked: flavour == "a",
             headroom_asked: flavour == "a",
             playwright_pane_open: Some(if flavour == "a" { "auto" } else { "chip" }.to_string()),

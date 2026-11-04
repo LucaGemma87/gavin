@@ -1,4 +1,5 @@
 import type { PauseCycle } from "$lib/agents/agentPause";
+import type { LaunchCostPolicy } from "$lib/agents/launchPolicy";
 import type { ComplexityTable, CustomProfile } from "$lib/cards/complexity";
 import type { CommitDetailSplit } from "$lib/git/gitCommitSplit";
 import type { LayoutNode } from "$lib/panes/layout";
@@ -306,6 +307,8 @@ export interface Workspace {
   /// run: one where it misbehaves can opt out without turning it off
   /// everywhere.
   headroom?: boolean;
+  /// Workspace-specific override for the app-wide launch cost policy.
+  launchCostPolicy?: LaunchCostPolicy;
   /// Whether the human has been ASKED whether this workspace compresses
   /// its agents -- in the setup wizard's Headroom step, or by moving the
   /// switch on the Settings tab. Not the answer -- `headroom` (or its

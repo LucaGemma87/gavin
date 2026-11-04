@@ -1,6 +1,8 @@
 ﻿import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn(() => Promise.resolve("s1")) }));
+const { authorizeLaunch } = vi.hoisted(() => ({ authorizeLaunch: vi.fn(async () => true) }));
+vi.mock("$lib/agents/launchAuthorization", () => ({ authorizeLaunch }));
 
 import { invoke } from "@tauri-apps/api/core";
 import { createSession, headroomReach } from "$lib/core/backend";
@@ -8,6 +10,8 @@ import { withoutHeadroom } from "$lib/agents/compression";
 
 beforeEach(() => {
   vi.mocked(invoke).mockClear();
+  authorizeLaunch.mockClear();
+  authorizeLaunch.mockResolvedValue(true);
 });
 
 // What reaches the host is what reaches the daemon. Every launch but one
@@ -21,7 +25,15 @@ describe("createSession", () => {
       command: "claude 'go'",
       workspaceRoot: "/ws",
       profileId: "claude-code",
+      approvedOnce: true,
     });
+    expect(authorizeLaunch).toHaveBeenCalledWith(
+      "/ws",
+      "claude 'go'",
+      "claude-code",
+      undefined,
+      undefined
+    );
   });
 
   it("sends the override beside the profile for a relaunch without Headroom", async () => {
@@ -32,6 +44,7 @@ describe("createSession", () => {
       workspaceRoot: "/ws",
       profileId: "claude-code",
       withoutHeadroom: true,
+      approvedOnce: true,
     });
   });
 
@@ -45,6 +58,7 @@ describe("createSession", () => {
       command: "claude --resume u-1",
       workspaceRoot: "/ws",
       profileId: undefined,
+      approvedOnce: true,
     });
   });
 });
@@ -54,9 +68,17 @@ describe("createSession", () => {
 describe("createSession from a Companion", () => {
   it("names the workspace beside the launch, and only when asked", async () => {
     await createSession(undefined, undefined, undefined, undefined, false, "w-scratch");
-    expect(vi.mocked(invoke).mock.calls[0]).toEqual(["create_session", { workspaceId: "w-scratch" }]);
+    expect(vi.mocked(invoke).mock.calls[0][0]).toBe("create_session");
+    expect(vi.mocked(invoke).mock.calls[0][1]).toMatchObject({
+      approvedOnce: false,
+      workspaceId: "w-scratch",
+    });
     await createSession("/ws", "claude", "/ws", "claude-code", true, "w1");
-    expect(vi.mocked(invoke).mock.calls[1][1]).toMatchObject({ workspaceAgent: true, workspaceId: "w1" });
+    expect(vi.mocked(invoke).mock.calls[1][1]).toMatchObject({
+      approvedOnce: true,
+      workspaceAgent: true,
+      workspaceId: "w1",
+    });
     await createSession("/ws", "claude", "/ws", "claude-code");
     expect(vi.mocked(invoke).mock.calls[2][1]).not.toHaveProperty("workspaceId");
   });

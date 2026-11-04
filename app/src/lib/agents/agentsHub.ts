@@ -99,6 +99,9 @@ export const AGENTS_SECTION_KEYWORDS: readonly string[] = [
   "MCP config",
   "MCP format",
   "Matt Pocock's skills",
+  "Paid and unknown routes",
+  "launch cost",
+  "No paid requests",
 ];
 
 export const AGENTS_SECTION: SettingsSection = {

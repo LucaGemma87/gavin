@@ -1,0 +1,3 @@
+# Paid and unknown launches require per-run authorization
+
+Provider/model names do not prove current entitlement, and an arbitrary command may launch a paid CLI; therefore Gavin's app-wide default is `Ask`, and app or workspace settings may choose `Ask` or `No paid requests` (a workspace choice overrides the app choice). `Ask` requires approval before every paid or unknown launch; `No paid requests` blocks known paid routes but still asks before each unknown launch, including an unclassifiable command. Approval applies to that launch only and never changes or establishes the route's entitlement.

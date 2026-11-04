@@ -22,6 +22,36 @@ _Avoid_: proxy (on its own), the compressor, token saver
 A session whose agent sends its model traffic through Headroom. Whether a session is compressed is settled when its agent launches.
 _Avoid_: routed session, proxied session, headroom session
 
+### Agent economics
+
+**Provider free allowance**:
+Inference covered by a provider's free quota, with that quota's limits and scope. It is not proof of continuous availability.
+_Avoid_: free model
+
+**Included subscription quota**:
+Inference covered by an account's subscription allowance rather than a per-request cash charge. The allowance can be shared or limited.
+_Avoid_: free quota
+
+**Paid route**:
+A provider/model path that can incur a cash charge for inference.
+_Avoid_: metered model (unless the provider specifically meters by model)
+
+**Unknown entitlement**:
+A route whose current cost class Gavin cannot verify from authoritative evidence. Missing, stale, unsupported, or failed evidence remains unknown.
+_Avoid_: free by default
+
+**Entitlement evidence**:
+The authoritative provider source and time Gavin checked that support a route's cost class. A model name alone is not evidence.
+_Avoid_: model metadata
+
+**Launch cost policy**:
+The rule applied before an agent launch based on its verified cost class. The app-wide default asks before every paid or unknown launch; app and workspace settings can choose `Ask` or `No paid requests`, with a workspace choice overriding the app choice. `No paid requests` blocks known paid routes and still asks before each unknown launch.
+_Avoid_: model preference
+
+**One-run authorization**:
+A human approval to proceed with one paid or unknown launch. It is not remembered for later launches and does not change the route's entitlement.
+_Avoid_: free entitlement
+
 ### Board
 
 **Nested task**:

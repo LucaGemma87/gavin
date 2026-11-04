@@ -5,6 +5,10 @@
 // it as a tab, jump the window -- is the phone's instead: the run's
 // terminal opens here, and the phone only notes that it started it.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+const { authorizeLaunch } = vi.hoisted(() => ({ authorizeLaunch: vi.fn(async () => true) }));
+vi.mock("$lib/agents/launchAuthorization", () => ({ authorizeLaunch }));
+
 import { get } from "svelte/store";
 import { answerDialog, dialogRequest } from "$lib/core/dialog";
 import { REVIEW_CONFIRM_LABEL } from "$lib/cards/cardReview";

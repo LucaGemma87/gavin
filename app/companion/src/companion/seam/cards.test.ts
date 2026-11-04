@@ -6,7 +6,11 @@
 // Device does to a desk. What the phone then shows is the tree and the
 // board the Workstation pushes back, read through the desktop's own
 // stores.
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+const { authorizeLaunch } = vi.hoisted(() => ({ authorizeLaunch: vi.fn(async () => true) }));
+vi.mock("$lib/agents/launchAuthorization", () => ({ authorizeLaunch }));
+
 import { get } from "svelte/store";
 import { cardSessionState } from "$lib/board/columnRunAction";
 import { kanbanState } from "$lib/board/kanbanState";
@@ -392,7 +396,12 @@ describe("running a card", () => {
     ]);
     const sent = sentSince(demo, at);
     const created = sent.find((s) => s.cmd === "create_session")!.args;
-    expect(created).toMatchObject({ cwd: DEMO.atlasRoot, workspaceRoot: DEMO.atlasRoot, profileId: "cline" });
+    expect(created).toMatchObject({
+      cwd: DEMO.atlasRoot,
+      workspaceRoot: DEMO.atlasRoot,
+      profileId: "cline",
+      approvedOnce: true,
+    });
     expect(String(created.command)).toContain(`${ATLAS_PLANS}/flaky-expiry-test.md`);
 
     const binding = get(kanbanState)[DEMO.atlas].cardSessions.find((cs) => cs.path === task.id)!;

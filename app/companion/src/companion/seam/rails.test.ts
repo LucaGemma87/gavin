@@ -11,6 +11,9 @@
 // two doors are watched for the whole of every test below, and never
 // opened.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+const { authorizeLaunch } = vi.hoisted(() => ({ authorizeLaunch: vi.fn(async () => true) }));
+vi.mock("$lib/agents/launchAuthorization", () => ({ authorizeLaunch }));
+
 import { get } from "svelte/store";
 import { answerDialog, dialogRequest } from "$lib/core/dialog";
 import { kanbanState } from "$lib/board/kanbanState";
@@ -398,7 +401,11 @@ describe("organizing with an agent from the phone", () => {
 
     const sent = wroteSince(demo, at);
     const created = sent.find((s) => s.cmd === "create_session")!;
-    expect(created.args).toMatchObject({ cwd: DEMO.atlasRoot, workspaceRoot: DEMO.atlasRoot });
+    expect(created.args).toMatchObject({
+      cwd: DEMO.atlasRoot,
+      workspaceRoot: DEMO.atlasRoot,
+      approvedOnce: true,
+    });
     expect(String(created.args.command)).toContain("UNPLACED cards on rails");
     const sessionId = run()?.sessionId;
     expect(run()).toEqual({ sessionId, label: "Organize", railId: null });

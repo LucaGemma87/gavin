@@ -1,6 +1,10 @@
 ﻿// Opening, ending and landing on sessions from the phone, against the
 // Demo Workstation and read at the wire.
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+const { authorizeLaunch } = vi.hoisted(() => ({ authorizeLaunch: vi.fn(async () => true) }));
+vi.mock("$lib/agents/launchAuthorization", () => ({ authorizeLaunch }));
+
 import { get } from "svelte/store";
 import { layoutState } from "$lib/core/layoutState";
 import { allSessionIds } from "$lib/panes/layout";
@@ -145,7 +149,12 @@ describe("opening a session", () => {
     await settle();
 
     expect(argsOf(demo, "create_session")).toEqual([
-      { cwd: DEMO.atlasRoot, workspaceRoot: DEMO.atlasRoot, workspaceId: DEMO.atlas },
+      {
+        cwd: DEMO.atlasRoot,
+        workspaceRoot: DEMO.atlasRoot,
+        workspaceId: DEMO.atlas,
+        approvedOnce: false,
+      },
     ]);
     expect(get(startedHere)).toEqual({ [id]: DEMO.atlas });
     expect(get(layoutState).sessionStatusById[id]).toBe("idle");
@@ -159,7 +168,9 @@ describe("opening a session", () => {
     const { demo } = await visit();
     const id = await startSession(DEMO.scratch, "terminal");
     await settle();
-    expect(argsOf(demo, "create_session")).toEqual([{ workspaceId: DEMO.scratch }]);
+    expect(argsOf(demo, "create_session")).toEqual([
+      { workspaceId: DEMO.scratch, approvedOnce: false },
+    ]);
     const scratch = get(layoutState).workspaces.find((w) => w.id === DEMO.scratch)!;
     expect(allSessionIds(scratch.pages.find((p) => p.name === "Agents")!.layout)).toEqual([id]);
   });
@@ -179,6 +190,7 @@ describe("opening a session", () => {
       workspaceRoot: DEMO.atlasRoot,
       workspaceId: DEMO.atlas,
       profileId: "cline",
+      approvedOnce: true,
     });
     expect(String(launched.command)).toMatch(/^claude\b/);
   });
@@ -207,7 +219,12 @@ describe("starting the workspace agent", () => {
     await settle();
 
     const [launched] = argsOf(demo, "create_session");
-    expect(launched).toMatchObject({ cwd: DEMO.atlasRoot, workspaceRoot: DEMO.atlasRoot, workspaceAgent: true });
+    expect(launched).toMatchObject({
+      cwd: DEMO.atlasRoot,
+      workspaceRoot: DEMO.atlasRoot,
+      workspaceAgent: true,
+      approvedOnce: true,
+    });
     expect(String(launched.command)).toMatch(/^claude\b/);
     expect(get(agentStartedHere)).toEqual({ [DEMO.atlas]: id });
     const atlas = get(layoutState).workspaces.find((w) => w.id === DEMO.atlas)!;

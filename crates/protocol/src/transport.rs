@@ -1664,7 +1664,7 @@ mod tests {
             use std::sync::{Arc, Barrier};
             use std::time::{Duration, Instant};
 
-            let (reader, mut writer) = Stream::pair().unwrap();
+            let (mut reader, mut writer) = Stream::pair().unwrap();
             let reader_for_shutdown = reader.try_clone().unwrap();
             let gate = Arc::new(Barrier::new(2));
             let gate_r = Arc::clone(&gate);

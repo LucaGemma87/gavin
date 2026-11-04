@@ -73,7 +73,7 @@ describe("the ceiling", () => {
   // Blank is a real answer -- somebody with memory to spare -- and must
   // behave exactly as gavin did before the wall existed.
   it("never holds when the ceiling is blank", () => {
-    const cfg = { maxInFlight: null, holdOnPressure: true, reclaimDoneSessions: true };
+    const cfg = { maxInFlight: null, holdOnPressure: true, reclaimDoneSessions: true, costPolicy: "ask" as const };
     expect(launchVerdict(input({ config: cfg, inFlight: 40 })).allowed).toBe(true);
   });
 
@@ -116,7 +116,7 @@ describe("the pressure hold", () => {
   });
 
   it("does not hold when the human has turned the pressure guard off", () => {
-    const cfg = { maxInFlight: 4, holdOnPressure: false, reclaimDoneSessions: true };
+    const cfg = { maxInFlight: 4, holdOnPressure: false, reclaimDoneSessions: true, costPolicy: "ask" as const };
     expect(launchVerdict(input({ config: cfg, pressure: "critical" })).allowed).toBe(true);
   });
 });
@@ -145,7 +145,7 @@ describe("hysteresis", () => {
   });
 
   it("does not apply the window when the pressure guard is off", () => {
-    const cfg = { maxInFlight: 4, holdOnPressure: false, reclaimDoneSessions: true };
+    const cfg = { maxInFlight: 4, holdOnPressure: false, reclaimDoneSessions: true, costPolicy: "ask" as const };
     expect(
       launchVerdict(input({ config: cfg, pressure: "normal", pressureSinceMs: NOW - 1_000 }))
         .allowed

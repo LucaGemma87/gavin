@@ -1061,7 +1061,7 @@ pub const RUN_GIT_CAPPED_MIN_VERSION: u32 = 58;
 /// is untouched -- the gate that matters is the app's
 /// FEATURE_MIN_VERSION.groups, because a v14 daemon parses the request
 /// fine and then drops both fields on the floor.
-pub const PROTOCOL_VERSION: u32 = 80;
+pub const PROTOCOL_VERSION: u32 = 81;
 
 /// The first version that keeps the Workspace log and pushes
 /// `WorkspaceLogAppended` (v79). The daemon compares the watching app's
@@ -1264,6 +1264,21 @@ pub enum Request {
         /// the request a v49 daemon parses.
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         without_headroom: bool,
+    },
+    /// Creates an agent or command session after the caller received
+    /// one-launch human approval for its Paid or Unknown route (v81).
+    /// Approval is carried only on this request; it is never stored or
+    /// inherited by a retry, resume, fallback, or Best-of-N candidate.
+    CreateAuthorizedSession {
+        workspace_path: String,
+        cwd: String,
+        command: Option<String>,
+        profile_id: Option<String>,
+        api_family: Option<String>,
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        without_headroom: bool,
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        approved_once: bool,
     },
     ListSessions,
     /// What every live session is costing right now: one sample of the
@@ -2642,6 +2657,13 @@ pub enum Request {
     SetHeadroomWorkspaces {
         workspaces: Vec<HeadroomWorkspace>,
     },
+    /// Replaces the app's cost policy and workspace overrides held by the
+    /// daemon. The daemon owns the copy because launches from MCP and rails
+    /// do not pass through the desktop's per-launch confirmation.
+    SetLaunchPolicies {
+        app_policy: LaunchCostPolicy,
+        workspaces: Vec<LaunchPolicyWorkspace>,
+    },
     /// Every card run with a savings snapshot that ended at or after
     /// `since`, epoch seconds (v49): what the hub sums into each limit
     /// window. Across every card and workspace this daemon hosts, because
@@ -2831,7 +2853,6 @@ pub fn min_version_for(req: &Request) -> u32 {
         | Request::ScanGavinRoot { .. }
         | Request::SetBoard { .. }
         | Request::SetPlanFrontmatterField { .. }
-        | Request::SpawnAgentSession { .. }
         | Request::UnwatchGavinRoot { .. }
         | Request::WatchGavinRoot { .. }
         | Request::WriteInput { .. } => 1,
@@ -2874,6 +2895,13 @@ pub fn min_version_for(req: &Request) -> u32 {
         Request::TickChecklistLink { .. }
         | Request::SetNestedRun { .. }
         | Request::ClearNestedRuns { .. } => 80,
+
+        // The authorization-bearing session launch and the daemon's
+        // policy sync are v81. SpawnAgentSession is also gated here even
+        // though its shape is unchanged: older MCP clients otherwise
+        // bypass the daemon's new default-deny rule.
+        Request::CreateAuthorizedSession { .. } | Request::SetLaunchPolicies { .. } => 81,
+        Request::SpawnAgentSession { .. } => 81,
 
         // One binding, command included (v43), now the board read leaves
         // the command out. A new request TYPE, so this is the whole wire
@@ -4373,6 +4401,30 @@ pub struct HeadroomInstall {
 pub struct HeadroomWorkspace {
     pub workspace_path: String,
     pub enabled: bool,
+}
+
+/// The rule applied before a route is launched. Missing configuration
+/// resolves to `Ask`; an approval is never an entitlement.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum LaunchCostPolicy {
+    Ask,
+    NoPaidRequests,
+}
+
+impl Default for LaunchCostPolicy {
+    fn default() -> Self {
+        Self::Ask
+    }
+}
+
+/// One workspace's optional policy override. `None` inherits the app
+/// policy.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct LaunchPolicyWorkspace {
+    pub workspace_path: String,
+    pub policy: Option<LaunchCostPolicy>,
 }
 
 /// One card run's savings snapshot, for the hub's window sums (v49).
@@ -8861,7 +8913,9 @@ mod tests {
         // Orchestrated plan. Three new TYPES; PlanFileInfo.children and
         // Orchestration.nested_runs widen behind
         // FEATURE_MIN_VERSION.orchestratedPlans.
-        assert_eq!(PROTOCOL_VERSION, 80);
+        // v81: authorization-bearing session launches and launch-policy
+        // synchronization, plus the MCP spawn gate.
+        assert_eq!(PROTOCOL_VERSION, 81);
     }
 
     #[test]
@@ -9157,6 +9211,15 @@ mod tests {
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+            },
+            Request::CreateAuthorizedSession {
+                workspace_path: "w".into(),
+                cwd: "c".into(),
+                command: Some("custom-agent".into()),
+                profile_id: None,
+                api_family: None,
+                without_headroom: false,
+                approved_once: false,
             },
             Request::ListSessions,
             Request::WriteInput { id: "s".into(), data: "d".into() },
@@ -9505,6 +9568,10 @@ mod tests {
             Request::InstallHeadroom,
             // v47's copy of the compression switch.
             Request::SetHeadroomWorkspaces { workspaces: vec![] },
+            Request::SetLaunchPolicies {
+                app_policy: LaunchCostPolicy::Ask,
+                workspaces: vec![],
+            },
             // v49's savings in a window.
             Request::HeadroomSavings { since: 0 },
             Request::HeadroomReach { session_id: "s".into() },
@@ -9549,7 +9616,7 @@ mod tests {
     /// requests and HeadroomSavings), v50=1 (HeadroomReach), v53=1
     /// (RemoveThisDevice), v54=5 (forwarding desktop commands), v55=2 (the
     /// attention request), v67=1 (SetThisDeviceSendPermission), v68=2
-    /// (session ownership), plus Unknown.
+    /// (session ownership), v81=3 (authorized launches and policy sync), plus Unknown.
     #[test]
     fn variant_counts_per_version_band_are_pinned_to_catch_a_missed_bump() {
         use std::collections::HashMap;
@@ -9671,6 +9738,8 @@ mod tests {
         // TickChecklistLink, SetNestedRun, ClearNestedRuns -- the
         // Orchestrated plan.
         expected.insert(80, 3);
+        // CreateAuthorizedSession, SetLaunchPolicies, and the gated MCP spawn.
+        expected.insert(81, 3);
         expected.insert(u32::MAX, 1); // Request::Unknown
 
         assert_eq!(
@@ -10821,4 +10890,3 @@ mod tests {
         assert!(err.contains("XDG_DATA_HOME"), "{err}");
     }
 }
-

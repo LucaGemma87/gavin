@@ -25,6 +25,7 @@
 
 import type { MemoryPressure } from "$lib/agents/memory";
 import { formatGbPair } from "$lib/agents/memory";
+import type { LaunchCostPolicy } from "$lib/agents/launchPolicy";
 
 /// The app-wide launch wall, as `config.json` stores it.
 ///
@@ -40,6 +41,7 @@ export interface LaunchConfig {
   /// `holdOnPressure`, because holding a start costs nothing and closing
   /// a finished agent costs its transcript.
   reclaimDoneSessions: boolean;
+  costPolicy: LaunchCostPolicy;
 }
 
 /// Four agents, the pressure hold on, and finished cards' idle agents
@@ -50,6 +52,7 @@ export const DEFAULT_LAUNCH: LaunchConfig = {
   maxInFlight: 4,
   holdOnPressure: true,
   reclaimDoneSessions: true,
+  costPolicy: "ask",
 };
 
 /// The ceiling a settings field's text stands for. A blank field means NO

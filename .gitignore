@@ -12,3 +12,7 @@ registry.sqlite
 
 # Scheduled tasks' Run reports and saved terminals (ADR 0010).
 .gavin-root/scheduled/runs/
+
+# Installer backups and replaced skill copies.
+*.graphify-bak
+*.replaced

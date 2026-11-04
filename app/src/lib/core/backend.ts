@@ -2,6 +2,7 @@ import type { AgentDefaults } from "$lib/cards/complexity";
 import type { AgentUsageReport } from "$lib/agents/agentUsage";
 import type { GavinMemorySample, SystemMemorySample, WatchmanSample } from "$lib/agents/memory";
 import type { LaunchConfig } from "$lib/agents/launchGate";
+import type { LaunchCostPolicy, LaunchPolicyWorkspace } from "$lib/agents/launchPolicy";
 import type { PrReport } from "$lib/git/pullRequest";
 import type { CardRun, TokenReport } from "$lib/cards/runHistory";
 import type {
@@ -78,7 +79,7 @@ import { keyedQueue } from "$lib/core/keyedQueue";
 /// host's command reads neither; the daemon reads them off the forwarded
 /// arguments into the Device's presence, and the desk decides
 /// (`devicePresence.ts`).
-export function createSession(
+export async function createSession(
   cwd?: string,
   command?: string,
   workspaceRoot?: string,
@@ -87,11 +88,29 @@ export function createSession(
   workspaceId?: string
 ): Promise<string> {
   const ask = { ...(workspaceAgent ? { workspaceAgent: true } : {}), ...(workspaceId ? { workspaceId } : {}) };
+  const isPotentialAgentLaunch = Boolean(profileId || command || workspaceAgent);
+  const approvedOnce = isPotentialAgentLaunch
+    ? await (await import("$lib/agents/launchAuthorization")).authorizeLaunch(
+        workspaceRoot,
+        command,
+        profileId,
+        workspaceAgent,
+        workspaceId
+      )
+    : false;
   if (typeof profileId === "object") {
     const { profileId: id, withoutHeadroom } = profileId;
-    return invoke("create_session", { cwd, command, workspaceRoot, profileId: id, withoutHeadroom, ...ask });
+    return invoke("create_session", {
+      cwd,
+      command,
+      workspaceRoot,
+      profileId: id,
+      withoutHeadroom,
+      approvedOnce,
+      ...ask,
+    });
   }
-  return invoke("create_session", { cwd, command, workspaceRoot, profileId, ...ask });
+  return invoke("create_session", { cwd, command, workspaceRoot, profileId, approvedOnce, ...ask });
 }
 
 
@@ -533,6 +552,13 @@ export function setHeadroomDefault(enabled: boolean | null): Promise<void> {
 /// AFTER the list was taken. See `compressionDriver.ts`, its one caller.
 export function setHeadroomWorkspaces(workspaces: HeadroomWorkspace[]): Promise<HeadroomStatus> {
   return invoke("set_headroom_workspaces", { workspaces });
+}
+
+export function setLaunchPolicies(
+  appPolicy: LaunchCostPolicy,
+  workspaces: LaunchPolicyWorkspace[]
+): Promise<void> {
+  return invoke("set_launch_policies", { appPolicy, workspaces });
 }
 
 /// Where a root's adopted-memory index stands: the model on this

@@ -304,6 +304,7 @@ export const daemonCompat = hotState<Writable<DaemonCompat | null>>(
   () => writable(null),
   hotBag
 );
+export const launchPolicyReady = writable(false);
 
 /// The last request the daemon refused on the streaming connection, or
 /// null once nothing is outstanding.
@@ -1542,6 +1543,8 @@ export async function bootstrap(): Promise<void> {
   );
   unlisteners.push(await initCompression());
   unlisteners.push(whileHoldingAppDuties(startCompressionSwitch));
+  const { startLaunchPolicySwitch } = await import("$lib/agents/launchPolicyDriver");
+  unlisteners.push(whileHoldingAppDuties(startLaunchPolicySwitch));
   // The adopted-memory index: a workspace opened with memories the index
   // does not match is brought up without anyone opening the wizard. One
   // window, so two do not race the same model download. Dynamically
@@ -3350,6 +3353,13 @@ export async function setWorkspaceHeadroom(
   enabled: boolean | null
 ): Promise<void> {
   await saveWorkspaceSettings(workspaceId, { headroom: enabled });
+}
+
+export async function setWorkspaceLaunchCostPolicy(
+  workspaceId: string,
+  policy: import("$lib/agents/launchPolicy").LaunchCostPolicy | null
+): Promise<void> {
+  await saveWorkspaceSettings(workspaceId, { launchCostPolicy: policy });
 }
 
 /// Records that this workspace's human has answered the git question --

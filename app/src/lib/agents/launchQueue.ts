@@ -215,11 +215,20 @@ export function deviceLaunchRefusal(): string | null {
 /// Assembled here rather than in each dialog because every input is a
 /// live store this module already holds -- and because three surfaces
 /// computing the same projection three ways is the shape that drifts.
-export function estimateFor(workspaceId: string | null, count: number): LaunchEstimate {
+export function estimateFor(
+  workspaceId: string | null,
+  count: number,
+  profileId?: string | null
+): LaunchEstimate {
   const fleet = get(fleetMemory);
   return launchEstimate({
     count,
-    profileId: workspaceId ? resolvedAgentFor(workspaceId).profileId || null : null,
+    profileId:
+      profileId === undefined
+        ? workspaceId
+          ? resolvedAgentFor(workspaceId).profileId || null
+          : null
+        : profileId,
     means: fleet.meanByProfile,
     storedMeans: get(storedMeans),
     // How many agents the mean was actually taken from, which is what

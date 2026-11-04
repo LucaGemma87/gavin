@@ -936,6 +936,7 @@ mod workspaces_data_tests {
             max_in_flight: Some(2),
             hold_on_pressure: false,
             reclaim_done_sessions: false,
+            cost_policy: protocol::LaunchCostPolicy::NoPaidRequests,
         };
         persist_workspaces(
             dir.path(),
@@ -973,6 +974,7 @@ mod workspaces_data_tests {
             max_in_flight: None,
             hold_on_pressure: true,
             reclaim_done_sessions: true,
+            cost_policy: protocol::LaunchCostPolicy::Ask,
         };
         persist_workspaces(
             dir.path(),
@@ -1190,6 +1192,7 @@ mod workspaces_data_tests {
             reviewed_cards: None,
             require_review: None,
             headroom: None,
+            launch_cost_policy: None,
             require_review_asked: false,
             headroom_asked: false,
             playwright_pane_open: None,
@@ -1460,6 +1463,7 @@ mod workspace_migration_tests {
             reviewed_cards: None,
             require_review: None,
             headroom: None,
+            launch_cost_policy: None,
             require_review_asked: false,
             headroom_asked: false,
             playwright_pane_open: None,
@@ -4840,6 +4844,7 @@ mod resolve_workspaces_tests {
             reviewed_cards: None,
             require_review: None,
             headroom: None,
+            launch_cost_policy: None,
             require_review_asked: false,
             headroom_asked: false,
             playwright_pane_open: None,
@@ -5134,6 +5139,7 @@ mod resolve_workspaces_tests {
             None,
             None,
             false,
+            false,
             "/home/t",
         ))
         .unwrap_err();
@@ -5176,8 +5182,11 @@ mod resolve_workspaces_tests {
 
         let requests = captured.lock().unwrap();
         match &requests[0] {
-            Request::CreateSession { command, .. } => assert_eq!(command, &Some("npm test".to_string())),
-            other => panic!("expected CreateSession, got {other:?}"),
+            Request::CreateAuthorizedSession { command, approved_once, .. } => {
+                assert_eq!(command, &Some("npm test".to_string()));
+                assert!(!approved_once);
+            }
+            other => panic!("expected CreateAuthorizedSession, got {other:?}"),
         }
     }
 
@@ -5243,8 +5252,9 @@ mod resolve_workspaces_tests {
 
     fn the_profile_sent(captured: &Arc<Mutex<Vec<Request>>>, index: usize) -> Option<String> {
         match &captured.lock().unwrap()[index] {
-            Request::CreateSession { profile_id, .. } => profile_id.clone(),
-            other => panic!("expected CreateSession, got {other:?}"),
+            Request::CreateSession { profile_id, .. }
+            | Request::CreateAuthorizedSession { profile_id, .. } => profile_id.clone(),
+            other => panic!("expected a session creation request, got {other:?}"),
         }
     }
 
@@ -5271,17 +5281,15 @@ mod resolve_workspaces_tests {
         assert_eq!(the_profile_sent(&captured, 0).as_deref(), Some("cline"));
     }
 
-    /// The widening is invisible to `min_version_for`, so the lane's own
-    /// gate lets the request through to any daemon. A v46 one would
-    /// parse it, drop the profile and launch the agent uncompressed with
-    /// nothing to say why -- so it is never sent one, whoever asked.
+    /// The new authorization-bearing request is gated by type, so an
+    /// older daemon never receives an agent launch it cannot guard.
     #[test]
     fn an_older_daemon_is_never_sent_the_launching_profile() {
         let (client, captured, _dir) =
             fake_daemon_capturing_requests(vec![Response::SessionCreated { id: "s1".to_string(), compressed: false, uncompressed_reason: None }]);
-        let conn = lanes_at(client, compat_at(protocol::COMPRESSED_LAUNCH_MIN_VERSION - 1));
+        let conn = lanes_at(client, compat_at(protocol::PROTOCOL_VERSION - 1));
 
-        let id = block_on(create_fresh_session(
+        let error = block_on(create_fresh_session(
             &conn,
             Some("/tmp"),
             Some("/tmp"),
@@ -5290,14 +5298,9 @@ mod resolve_workspaces_tests {
             None,
             "/home/t",
         ))
-        .unwrap();
-
-        // The launch itself goes ahead: compression never stops a run.
-        assert_eq!(id, "s1");
-        assert_eq!(the_profile_sent(&captured, 0), None);
-        // And what reached the wire is the request as it always was.
-        let sent = serde_json::to_value(&captured.lock().unwrap()[0]).unwrap();
-        assert!(sent.get("profile_id").is_none(), "{sent}");
+        .unwrap_err();
+        assert!(error.to_string().contains("restart the daemon"), "{error}");
+        assert!(captured.lock().unwrap().is_empty(), "old daemons must not receive the launch");
     }
 
     #[test]
@@ -5312,35 +5315,46 @@ mod resolve_workspaces_tests {
         assert_eq!(profile_for_daemon(at, Some("   ")), None);
     }
 
-    /// The fallback is a plain shell in $HOME, not that workspace's
-    /// session: the workspace is dropped, and the profile with it.
+    /// A fallback is another launch. It must not inherit the original
+    /// approval, and the daemon's refusal must reach the caller.
     #[test]
-    fn the_home_fallback_drops_the_profile_along_with_the_workspace() {
+    fn the_home_fallback_drops_the_profile_and_requires_fresh_approval() {
         let (client, captured, _dir) = fake_daemon_capturing_requests(vec![
             Response::Error { message: "cwd does not exist or is not a directory".to_string() },
-            Response::SessionCreated { id: "s2".to_string(), compressed: false, uncompressed_reason: None },
+            Response::Error { message: "this launch needs fresh human approval".to_string() },
         ]);
         let conn = lanes_over(client);
 
-        block_on(create_fresh_session(
+        let error = block_on(create_agent_session(
             &conn,
             Some("/definitely/does/not/exist/anywhere"),
             Some("/Users/alice/project"),
             Some("claude 'Read the card'"),
             Some("cline"),
             None,
+            false,
+            true,
             "/home/t",
         ))
-        .unwrap();
+        .unwrap_err();
 
+        assert!(error.to_string().contains("fresh human approval"), "{error}");
         assert_eq!(the_profile_sent(&captured, 0).as_deref(), Some("cline"));
         assert_eq!(the_profile_sent(&captured, 1), None);
+        match &captured.lock().unwrap()[1] {
+            Request::CreateAuthorizedSession { approved_once, command, .. } => {
+                assert!(!approved_once);
+                assert!(command.is_some());
+            }
+            other => panic!("expected a separately gated fallback, got {other:?}"),
+        };
     }
 
     fn the_family_sent(captured: &Arc<Mutex<Vec<Request>>>, index: usize) -> Option<String> {
         match &captured.lock().unwrap()[index] {
-            Request::CreateSession { api_family, .. } => api_family.clone(),
-            other => panic!("expected CreateSession, got {other:?}"),
+            Request::CreateSession { api_family, .. }
+            | Request::CreateAuthorizedSession { api_family, .. } => api_family.clone(),
+            other => panic!("expected a session creation request, got {other:?}"),
         }
     }
 
@@ -5416,32 +5430,40 @@ mod resolve_workspaces_tests {
     /// The fallback shell belongs to no workspace and runs no agent, so
     /// it names neither.
     #[test]
-    fn the_home_fallback_drops_the_api_family_along_with_the_profile() {
+    fn the_home_fallback_drops_the_api_family_and_does_not_reuse_approval() {
         let (client, captured, _dir) = fake_daemon_capturing_requests(vec![
             Response::Error { message: "cwd does not exist or is not a directory".to_string() },
-            Response::SessionCreated { id: "s2".to_string(), compressed: false, uncompressed_reason: None },
+            Response::Error { message: "this launch needs fresh human approval".to_string() },
         ]);
         let conn = lanes_over(client);
 
-        block_on(create_fresh_session(
+        let error = block_on(create_agent_session(
             &conn,
             Some("/definitely/does/not/exist/anywhere"),
             Some("/Users/alice/project"),
             Some("my-agent 'Read the card'"),
             Some("custom"),
             Some("openai"),
+            false,
+            true,
             "/home/t",
         ))
-        .unwrap();
+        .unwrap_err();
 
+        assert!(error.to_string().contains("fresh human approval"), "{error}");
         assert_eq!(the_family_sent(&captured, 0).as_deref(), Some("openai"));
         assert_eq!(the_family_sent(&captured, 1), None);
+        match &captured.lock().unwrap()[1] {
+            Request::CreateAuthorizedSession { approved_once, .. } => assert!(!approved_once),
+            other => panic!("expected a separately gated fallback, got {other:?}"),
+        };
     }
 
     fn the_override_sent(captured: &Arc<Mutex<Vec<Request>>>, index: usize) -> bool {
         match &captured.lock().unwrap()[index] {
-            Request::CreateSession { without_headroom, .. } => *without_headroom,
-            other => panic!("expected CreateSession, got {other:?}"),
+            Request::CreateSession { without_headroom, .. }
+            | Request::CreateAuthorizedSession { without_headroom, .. } => *without_headroom,
+            other => panic!("expected a session creation request, got {other:?}"),
         }
     }
 
@@ -5465,6 +5487,7 @@ mod resolve_workspaces_tests {
             Some("cline"),
             None,
             true,
+            false,
             "/home/t",
         ))
         .unwrap();
@@ -5508,6 +5531,7 @@ mod resolve_workspaces_tests {
             Some("cline"),
             None,
             true,
+            false,
             "/home/t",
         ))
         .unwrap();
@@ -5533,6 +5557,7 @@ mod resolve_workspaces_tests {
             Some("cline"),
             None,
             true,
+            false,
             "/home/t",
         ))
         .unwrap();
@@ -6288,6 +6313,7 @@ pub fn bootstrap(app_handle: AppHandle) -> anyhow::Result<()> {
                 reviewed_cards: None,
                 require_review: None,
                 headroom: None,
+                launch_cost_policy: None,
                 require_review_asked: false,
                 headroom_asked: false,
                 playwright_pane_open: None,
@@ -6729,7 +6755,7 @@ pub(crate) async fn create_fresh_session(
     api_family: Option<&str>,
     home: &str,
 ) -> anyhow::Result<String> {
-    create_agent_session(lanes, cwd, workspace_root, command, profile_id, api_family, false, home)
+    create_agent_session(lanes, cwd, workspace_root, command, profile_id, api_family, false, false, home)
         .await
         .map(|created| created.id)
 }
@@ -6746,6 +6772,7 @@ pub(crate) async fn create_agent_session(
     profile_id: Option<&str>,
     api_family: Option<&str>,
     without_headroom: bool,
+    approved_once: bool,
     home: &str,
 ) -> anyhow::Result<CreatedSession> {
     let home = home.to_string();
@@ -6757,16 +6784,27 @@ pub(crate) async fn create_agent_session(
     let profile_id = profile_for_daemon(daemon_version, profile_id);
     let without_headroom = without_headroom_for_daemon(daemon_version, without_headroom);
 
-    let resp = lanes
-        .request(Request::CreateSession {
+    let request = if profile_id.is_some() || command.is_some() {
+        Request::CreateAuthorizedSession {
             workspace_path: workspace,
             cwd: target.clone(),
             command: command.clone(),
             profile_id,
             api_family,
             without_headroom,
-        })
-        .await?;
+            approved_once,
+        }
+    } else {
+        Request::CreateSession {
+            workspace_path: workspace,
+            cwd: target.clone(),
+            command: command.clone(),
+            profile_id,
+            api_family,
+            without_headroom,
+        }
+    };
+    let resp = lanes.request(request).await?;
     match resp {
         Response::SessionCreated { id, compressed, uncompressed_reason } => {
             return Ok(CreatedSession { id, compressed, uncompressed_reason })
@@ -6793,16 +6831,27 @@ pub(crate) async fn create_agent_session(
     // The profile goes with them, and its API family. Compression is a
     // property of the workspace a session belongs to, and this one
     // belongs to none.
-    let resp = lanes
-        .request(Request::CreateSession {
+    let fallback = if command.is_some() {
+        Request::CreateAuthorizedSession {
             workspace_path: home.clone(),
             cwd: home.clone(),
             command,
             profile_id: None,
             api_family: None,
             without_headroom: false,
-        })
-        .await?;
+            approved_once: false,
+        }
+    } else {
+        Request::CreateSession {
+            workspace_path: home.clone(),
+            cwd: home.clone(),
+            command: None,
+            profile_id: None,
+            api_family: None,
+            without_headroom: false,
+        }
+    };
+    let resp = lanes.request(fallback).await?;
     match resp {
         // A plain shell in $HOME: nothing was asked of Headroom, and
         // there is nothing to mark.
@@ -6845,6 +6894,7 @@ pub async fn create_session(
     command: Option<String>,
     profile_id: Option<String>,
     without_headroom: Option<bool>,
+    approved_once: Option<bool>,
     app_handle: AppHandle,
     command_state: State<'_, CommandConnection>,
     daemon_state: State<'_, DaemonConnection>,
@@ -6856,6 +6906,7 @@ pub async fn create_session(
         crate::config::api_family_for_profile(&defaults, &[], profile_id.as_deref())
     };
     let without_headroom = without_headroom.unwrap_or(false);
+    let approved_once = approved_once.unwrap_or(false);
     if let crate::remote::Route::Remote(link) =
         crate::remote::route_for_root(&app_handle, workspace_root.as_deref())?
     {
@@ -6867,6 +6918,7 @@ pub async fn create_session(
             profile_id.as_deref(),
             api_family.as_deref(),
             without_headroom,
+            approved_once,
             &link.home,
         )
         .await
@@ -6900,6 +6952,7 @@ pub async fn create_session(
         profile_id.as_deref(),
         api_family.as_deref(),
         without_headroom,
+        approved_once,
         &local_home(),
     )
     .await
@@ -6966,6 +7019,56 @@ pub async fn set_headroom_workspaces(
         .await
         .map_err(|e| e.to_string())?;
     headroom_status(resp)
+}
+
+/// Replaces the daemon's app-wide launch policy and workspace overrides.
+/// The daemon needs this copy for launches that originate in MCP or rails
+/// rather than in the desktop confirmation path.
+#[tauri::command]
+pub async fn set_launch_policies(
+    app_handle: AppHandle,
+    app_policy: protocol::LaunchCostPolicy,
+    workspaces: Vec<protocol::LaunchPolicyWorkspace>,
+    state: State<'_, CommandConnection>,
+    compat: State<'_, DaemonCompatState>,
+) -> Result<(), String> {
+    let response = state
+        .lanes(current_compat(&compat))
+        .request(Request::SetLaunchPolicies {
+            app_policy,
+            workspaces: workspaces.clone(),
+        })
+        .await
+        .map_err(|e| e.to_string())?;
+    match response {
+        Response::Ok => {}
+        Response::Error { message } => return Err(message),
+        other => return Err(format!("expected Ok, got {other:?}")),
+    }
+
+    for link in crate::remote::every_link(&app_handle) {
+        let host = link.host.clone();
+        let response = link
+            .lanes()
+            .request(Request::SetLaunchPolicies {
+                app_policy,
+                workspaces: workspaces.clone(),
+            })
+            .await
+            .map_err(|error| format!("could not sync launch policy with ssh host {host}: {error}"))?;
+        match response {
+            Response::Ok => {}
+            Response::Error { message } => {
+                return Err(format!("could not sync launch policy with ssh host {host}: {message}"));
+            }
+            other => {
+                return Err(format!(
+                    "could not sync launch policy with ssh host {host}: expected Ok, got {other:?}"
+                ));
+            }
+        }
+    }
+    Ok(())
 }
 
 /// Headroom on this machine, as the LOCAL daemon -- the one that has to
@@ -8706,6 +8809,7 @@ mod main_session_tests {
             reviewed_cards: None,
             require_review: None,
             headroom: None,
+            launch_cost_policy: None,
             require_review_asked: false,
             headroom_asked: false,
             playwright_pane_open: None,
@@ -9890,6 +9994,7 @@ mod attach_target_tests {
             reviewed_cards: None,
             require_review: None,
             headroom: None,
+            launch_cost_policy: None,
             require_review_asked: false,
             headroom_asked: false,
             playwright_pane_open: None,

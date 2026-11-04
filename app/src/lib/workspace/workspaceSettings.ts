@@ -68,6 +68,7 @@ export const WORKSPACE_SETTINGS_KEYS = [
   "requireReview",
   "requireReviewAsked",
   "headroom",
+  "launchCostPolicy",
   "headroomAsked",
   "playwrightPaneOpen",
   "customResumeArgs",
