@@ -123,6 +123,13 @@ jobs:
         # another for weeks -- every binary reports, then the step fails.
         run: "cargo test --workspace --locked --no-fail-fast -- --skip gavin::"
 
+      # `sanitizeMarkdown.test.ts` globs the Companion's sources, and
+      # transforming one reads app/companion/tsconfig.json, which extends
+      # a file only `svelte-kit sync` writes. A fresh checkout has none.
+      - name: svelte-kit sync (companion)
+        working-directory: app/companion
+        run: npx svelte-kit sync
+
       - name: npm test
         working-directory: app
         run: npm test
@@ -286,6 +293,13 @@ jobs:
       # There is no longer a failure here this job did not cause, which
       # is the condition the old comment set for promoting it, so a red
       # here is a real regression in the app.
+      # `sanitizeMarkdown.test.ts` globs the Companion's sources, and
+      # transforming one reads app/companion/tsconfig.json, which extends
+      # a file only `svelte-kit sync` writes. A fresh checkout has none.
+      - name: svelte-kit sync (companion)
+        working-directory: app/companion
+        run: npx svelte-kit sync
+
       - name: npm test
         working-directory: app
         run: npm test
