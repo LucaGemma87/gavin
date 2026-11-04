@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { DEFAULT_CYCLE } from "$lib/agents/agentPause";
 import type { AgentProfileInfo } from "$lib/core/settings";
 import { folderLine, inheritedPauseLine, workspaceAgentView } from "$companion/surfaces/phoneSettings";
@@ -27,8 +27,8 @@ describe("where a workspace works", () => {
 
 describe("a workspace's agent, for its pickers", () => {
   const CLAUDE = {
-    id: "cline",
-    label: "cline",
+    id: "claude-code",
+    label: "Claude Code",
     modelFlag: "--model",
     models: ["opus", "sonnet"],
     effortFlag: "--effort",
@@ -37,14 +37,14 @@ describe("a workspace's agent, for its pickers", () => {
 
   it("tells what the workspace set of its own from what it inherits", () => {
     const view = workspaceAgentView({
-      resolved: { profileId: "cline", modelFlag: "--model", effortFlag: "--effort" },
-      own: { profile: "cline", file: null, command: null, model: "sonnet", effort: null },
+      resolved: { profileId: "claude-code", modelFlag: "--model", effortFlag: "--effort" },
+      own: { profile: "claude-code", file: null, command: null, model: "sonnet", effort: null },
       profiles: [CLAUDE],
-      modelDefaults: { "cline": "opus" },
-      effortDefaults: { "cline": "high" },
+      modelDefaults: { "claude-code": "opus" },
+      effortDefaults: { "claude-code": "high" },
     });
     expect(view).toEqual({
-      profileLabel: "cline",
+      profileLabel: "Claude Code",
       modelFlag: "--model",
       models: ["opus", "sonnet"],
       ownModel: "sonnet",
@@ -67,4 +67,3 @@ describe("a workspace's agent, for its pickers", () => {
     expect(view).toMatchObject({ profileLabel: "custom", models: [], ownModel: "", inheritedEffort: "" });
   });
 });
-

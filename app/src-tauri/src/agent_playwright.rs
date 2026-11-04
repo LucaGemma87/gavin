@@ -1,4 +1,4 @@
-﻿//! Playwright for gavin's agents -- the real browser an agent drives
+//! Playwright for gavin's agents -- the real browser an agent drives
 //! through Microsoft's `@playwright/mcp` -- installed per workspace, for
 //! every stock agent profile.
 //!
@@ -583,7 +583,7 @@ fn status_for(machine: &dyn Machine, root: &Path, profile_id: &str) -> Status {
 
 /// Every stock profile that has an MCP layout, so Install does not leave
 /// Cursor (or any other row) without `browser_*` when the workspace's
-/// own agent was the one the wizard named. cline and kimi-code
+/// own agent was the one the wizard named. claude-code and kimi-code
 /// share `.mcp.json`; writing twice is the same merge.
 fn stock_mcp_layouts<'a>(
     fs: &'a dyn WorkspaceFiles,
@@ -609,7 +609,7 @@ fn stock_mcp_layouts<'a>(
 ///
 /// The entry is written for **every** stock profile with an MCP layout,
 /// not only `profile_id`: complexity routing and a manual Cursor tab
-/// read `.cursor/mcp.json` while the workspace agent may be cline.
+/// read `.cursor/mcp.json` while the workspace agent may be claude-code.
 /// Status is still reported for the profile that was asked about.
 ///
 /// A non-zero exit is not an `Err`, for `agent_skills::install`'s reason:
@@ -722,7 +722,7 @@ fn machine_for(app: &tauri::AppHandle, root_path: &str) -> Result<Box<dyn Machin
 }
 
 /// The profile named, else the one the root's launches resolve to --
-/// `[agent] profile`, then the app's default agent, then cline,
+/// `[agent] profile`, then the app's default agent, then claude-code,
 /// as `setup_agent_integration` resolves it.
 fn profile_id_for(app: &tauri::AppHandle, fs: &dyn WorkspaceFiles, root: &Path, named: Option<&str>) -> String {
     if let Some(named) = named.map(str::trim).filter(|s| !s.is_empty()) {
@@ -924,6 +924,11 @@ mod tests {
                     serde_json::json!({ "command": BINARY, "args": ["playwright"] }),
                     "{profile}"
                 );
+            }
+            "copilot" => {
+                let entry = &json(&p.join(".github/mcp.json"))["mcpServers"]["playwright"];
+                assert_eq!(entry["command"], BINARY);
+                assert_eq!(entry["args"], serde_json::json!(["playwright"]));
             }
             "cursor" => {
                 let entry = &json(&p.join(".cursor/mcp.json"))["mcpServers"]["playwright"];
@@ -1277,8 +1282,8 @@ mod tests {
     #[ignore = "reads this machine's PATH and Playwright cache"]
     fn live_checks_on_this_machine() {
         let root = tempfile::tempdir().unwrap();
-        rooted(root.path(), "cline");
-        let status = status_for(&ThisMachine, root.path(), "cline");
+        rooted(root.path(), "claude-code");
+        let status = status_for(&ThisMachine, root.path(), "claude-code");
         for check in &status.checks {
             eprintln!("{}: {:?} — {}", check.id, check.ok, check.line);
         }

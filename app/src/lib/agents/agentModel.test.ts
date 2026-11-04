@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   advisorPresets,
   commandSpecifiesEffort,
@@ -321,7 +321,7 @@ describe("modelIsCustom", () => {
 
 describe("effortPresets", () => {
   const profiles = [
-    { id: "cline", efforts: ["low", "medium", "high", "xhigh", "max"] },
+    { id: "claude-code", efforts: ["low", "medium", "high", "xhigh", "max"] },
     { id: "codex", efforts: ["minimal", "low", "medium", "high", "xhigh"] },
     { id: "gemini", efforts: [] },
   ];

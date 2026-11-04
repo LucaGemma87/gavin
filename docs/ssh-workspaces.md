@@ -48,7 +48,7 @@ every request goes through the same gate.
   either default works.
 - The workspace's root is written the way every path crosses gavin's wire:
   forward slashes, `C:/Users/me/repo`.
-- Agents run on the host, so the agent CLI (cline, codex, …) and
+- Agents run on the host, so the agent CLI (Claude Code, codex, …) and
   `gavin-mcp` must be installed **there**, on the PATH the ssh session sees.
 
 ### Linux hosts
@@ -123,4 +123,3 @@ outside the workspace root and the host refuses paths outside it.
   host's daemon from the app's commit.
 - The link drops: the app reports `remote-link-lost` for that host and only
   that host's workspaces are affected. Reconnect from the workspace.
-

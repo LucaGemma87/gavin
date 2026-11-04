@@ -1,4 +1,4 @@
-﻿//! Whether a session about to be spawned is compressed, and what makes
+//! Whether a session about to be spawned is compressed, and what makes
 //! it so.
 //!
 //! The decision is the daemon's, made at spawn (spec, "Compressed
@@ -36,7 +36,7 @@ const PROJECT_HEADER: &str = "X-Headroom-Project";
 /// id into a key that subagents share.
 const SESSION_HEADER: &str = "x-headroom-session-id";
 
-/// The variable cline reads extra request headers from, one
+/// The variable Claude Code reads extra request headers from, one
 /// `Name: Value` per line.
 pub const CLAUDE_HEADERS: &str = "ANTHROPIC_CUSTOM_HEADERS";
 
@@ -450,16 +450,16 @@ fn unroutable(agent: Agent) -> Option<Reason> {
 /// The recipe for an agent, on a Headroom answering on `port`, or
 /// `None` when this launch gives it nothing to apply to.
 ///
-/// Every agent but cline is tagged with a `/p/<id>` prefix on the
+/// Every agent but Claude Code is tagged with a `/p/<id>` prefix on the
 /// URL it is given, which Headroom strips and files the request under
 /// (`project_policy.split_project_path`); what opencode's plugin
 /// reroutes is tagged by the plugin, with the same id.
 ///
-/// **cline.** `ENABLE_TOOL_SEARCH=true` is not decoration: behind
-/// a custom base URL cline otherwise loads every tool schema into
+/// **Claude Code.** `ENABLE_TOOL_SEARCH=true` is not decoration: behind
+/// a custom base URL Claude Code otherwise loads every tool schema into
 /// context (Headroom #746), which spends more than compression saves.
 /// The session is tagged through a header rather than a `/p/` prefix
-/// because the header is what cline can be given without changing
+/// because the header is what Claude Code can be given without changing
 /// the URL its OAuth login is checked against.
 ///
 /// **Codex.** `OPENAI_BASE_URL` alone does not route current Codex: its
@@ -997,7 +997,7 @@ fn remove_headroom_plugins(config: &mut Map<String, Value>) {
     }
 }
 
-/// The headers a compressed cline sends: the human's own, then
+/// The headers a compressed Claude Code sends: the human's own, then
 /// the tag.
 ///
 /// Setting the variable replaces what the session would have inherited,
@@ -1055,7 +1055,7 @@ fn own_headers(inherited: Option<&str>) -> Vec<String> {
 /// is recognisable: its project tag is the session id, which the same
 /// environment carries as `GAVIN_SESSION_ID`. The two agreeing is a
 /// compressed gavin session's environment and nothing else. Each recipe
-/// carries the tag in its own place -- cline's in a header, the
+/// carries the tag in its own place -- Claude Code's in a header, the
 /// others' on a `/p/<id>` path, opencode's also as its plugin's
 /// `project` -- so each is looked for there.
 ///
@@ -1072,7 +1072,7 @@ pub fn inherited_routing(
     let launcher = launcher.trim();
     let mut removed = Vec::new();
 
-    // cline's, tagged by its header.
+    // Claude Code's, tagged by its header.
     let headers = inherited(CLAUDE_HEADERS);
     let tagged_as_the_launcher = headers.as_deref().unwrap_or_default().lines().any(|line| {
         let (name, value) = header(line);
@@ -1314,7 +1314,7 @@ mod tests {
             let decision = decide(spawned(line));
 
             assert!(decision.compressed(), "{line}");
-            assert_eq!(decision.command(), None, "cline is routed by environment alone");
+            assert_eq!(decision.command(), None, "Claude Code is routed by environment alone");
         }
     }
 
@@ -1715,7 +1715,7 @@ oauth_host = "https://auth.kimi.ai"
         );
     }
 
-    /// The base URL is the bare origin. cline appends its own
+    /// The base URL is the bare origin. Claude Code appends its own
     /// path, and a `/p/<id>` prefix is the other agents' tag, not this
     /// one's.
     #[test]

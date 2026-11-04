@@ -36,7 +36,7 @@ export function commandSpecifiesModel(command: string, flag: string): boolean {
 /// The launch command goes to `/bin/sh -c`, so a name carrying any of
 /// these has to be quoted or it is not the name that arrives.
 ///
-/// Not hypothetical: cline's 1M-context aliases are spelled
+/// Not hypothetical: Claude Code's 1M-context aliases are spelled
 /// `sonnet[1m]` and `opus[1m]`, and `[1m]` is a glob character class. In
 /// a checkout that happens to contain a file called `sonnetm`, `sh`
 /// expands `--model sonnet[1m]` to `--model sonnetm` and the agent

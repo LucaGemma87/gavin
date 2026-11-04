@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { sessionCompressionById } from "$lib/agents/headroomMarkState";
 import { FEATURE_MIN_VERSION } from "$lib/core/daemonCompat";
 import { get } from "svelte/store";
@@ -4350,7 +4350,7 @@ describe("per-agent settings in a workspace", () => {
         w.id === "w1"
           ? {
               ...w,
-              fallbackChains: { "local:bot": ["codex"], "cline": ["local:bot"] },
+              fallbackChains: { "local:bot": ["codex"], "claude-code": ["local:bot"] },
               pauseCycles: { "local:bot": { enabled: true, periodMinutes: 300, pauseMinutes: 10, anchorMs: 1, limitPercent: 95, limitEnabled: true } },
               promptExtras: { "local:bot": ["x"] },
             }
@@ -4363,7 +4363,7 @@ describe("per-agent settings in a workspace", () => {
 
     expect(backend.setWorkspaceSettings).toHaveBeenCalledTimes(1);
     expect(backend.setWorkspaceSettings).toHaveBeenCalledWith("w1", {
-      fallbackChains: { "cline": [] },
+      fallbackChains: { "claude-code": [] },
       pauseCycles: null,
       promptExtras: null,
     });
@@ -4384,7 +4384,7 @@ describe("per-agent settings in a workspace", () => {
         w.id === "w1"
           ? { ...w, pauseCycles: { "my-bot": cycle } }
           : w.id === "w2"
-            ? { ...w, complexityTables: { "cline": { intricate: { profile: "my-bot", model: "" } } } }
+            ? { ...w, complexityTables: { "claude-code": { intricate: { profile: "my-bot", model: "" } } } }
             : w
       ),
     }));
@@ -4395,7 +4395,7 @@ describe("per-agent settings in a workspace", () => {
     const calls = vi.mocked(backend.setWorkspaceSettings).mock.calls;
     expect(calls).toEqual([
       ["w1", { pauseCycles: null }],
-      ["w2", { complexityTables: { "cline": {} } }],
+      ["w2", { complexityTables: { "claude-code": {} } }],
     ]);
   });
 });
@@ -4586,7 +4586,7 @@ describe("workspace settings", () => {
     expect(get(layoutState).workspaces[0].trustedConfigHash).toBeUndefined();
   });
 
-  // Grimoria: `profile = "cline"` beside Cursor's `model = "auto"`,
+  // Grimoria: `profile = "claude-code"` beside Cursor's `model = "auto"`,
   // left by a switch that rewrote profile/command/file and nothing else,
   // launched `claude --model auto` and failed on start every time.
   it("switchWorkspaceAgentProfile clears the old agent's model, effort and flags", async () => {
@@ -4814,10 +4814,10 @@ describe("workspace settings go through their own command", () => {
     ["setWorkspaceFlag", () => setWorkspaceFlag("ws-1", "notifyFinished", false), { notifyFinished: false }],
     [
       "setWorkspacePause",
-      () => setWorkspacePause("ws-1", "cline", pause),
-      { pauseCycles: { "cline": pause } },
+      () => setWorkspacePause("ws-1", "claude-code", pause),
+      { pauseCycles: { "claude-code": pause } },
     ],
-    ["setWorkspacePause(null)", () => setWorkspacePause("ws-1", "cline", null), { pauseCycles: null }],
+    ["setWorkspacePause(null)", () => setWorkspacePause("ws-1", "claude-code", null), { pauseCycles: null }],
     [
       "setWorkspacePromptParams",
       () => setWorkspacePromptParams("ws-1", "codex", "promptExtras", ["Be brief."]),
@@ -4833,8 +4833,8 @@ describe("workspace settings go through their own command", () => {
       () => setWorkspacePromptParams("ws-1", "codex", "promptExtras", null),
       { promptExtras: null },
     ],
-    ["setWorkspaceFallback", () => setWorkspaceFallback("ws-1", "cline", ["codex"]), { fallbackChains: { "cline": ["codex"] } }],
-    ["setWorkspaceFallback(null)", () => setWorkspaceFallback("ws-1", "cline", null), { fallbackChains: null }],
+    ["setWorkspaceFallback", () => setWorkspaceFallback("ws-1", "claude-code", ["codex"]), { fallbackChains: { "claude-code": ["codex"] } }],
+    ["setWorkspaceFallback(null)", () => setWorkspaceFallback("ws-1", "claude-code", null), { fallbackChains: null }],
     [
       "markAgentArmed",
       () => markAgentArmed("ws-1", "codex"),
@@ -4876,12 +4876,12 @@ describe("workspace settings go through their own command", () => {
     // here"), so it is kept; only null hands the primary back to the app.
     [
       "setWorkspaceComplexityTable({})",
-      () => setWorkspaceComplexityTable("ws-1", "cline", {}),
-      { complexityTables: { "cline": {} } },
+      () => setWorkspaceComplexityTable("ws-1", "claude-code", {}),
+      { complexityTables: { "claude-code": {} } },
     ],
     [
       "setWorkspaceComplexityTable(null)",
-      () => setWorkspaceComplexityTable("ws-1", "cline", null),
+      () => setWorkspaceComplexityTable("ws-1", "claude-code", null),
       { complexityTables: null },
     ],
     [
@@ -4969,11 +4969,11 @@ describe("main agent session", () => {
     expect(backend.setWorkspacesState).toHaveBeenCalled();
   });
 
-  it("startMainAgent falls back to Cline and refuses without a root or when one runs", async () => {
+  it("startMainAgent falls back to Claude Code and refuses without a root or when one runs", async () => {
     setState([{ ...ws("ws-1", []), rootPath: "/tmp/ws" }], "ws-1", null);
     vi.mocked(backend.createSession).mockResolvedValue("agent-1");
     await startMainAgent("ws-1");
-    expect(backend.createSession).toHaveBeenCalledWith("/tmp/ws", "cline", "/tmp/ws", "cline");
+    expect(backend.createSession).toHaveBeenCalledWith("/tmp/ws", "claude", "/tmp/ws", "claude-code");
 
     // Already running: no second spawn.
     await startMainAgent("ws-1");

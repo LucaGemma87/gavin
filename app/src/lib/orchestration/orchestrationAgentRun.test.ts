@@ -1,4 +1,4 @@
-﻿// The EFFECT half of the Orchestration tab's agent requests: Organize and
+// The EFFECT half of the Orchestration tab's agent requests: Organize and
 // a rail's Reorganize each spawn a dedicated session, record it in the
 // workspace's one slot, and release that slot when the run is over. The
 // decisions themselves are orchestrationAgent.test.ts's.

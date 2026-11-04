@@ -1,4 +1,4 @@
-﻿# TypeSafe turn verdict: experiment record and question set
+# TypeSafe turn verdict: experiment record and question set
 
 Date: 2026-09-21. Model: `jev-1.13.0` (TypeSafe System One), pinned.
 Cards: `.gavin-root/plans/typesafe-experiments.md` (results),
@@ -8,7 +8,7 @@ Cards: `.gavin-root/plans/typesafe-experiments.md` (results),
 
 When an agent session goes quiet, gavin decides the turn ended. It has two
 signals: the OSC/BEL notification (which catches permission menus) and a
-substring from the profile's `failure_patterns` (only cline has one,
+substring from the profile's `failure_patterns` (only claude-code has one,
 `API Error:`). A question asked in prose, a turn the agent gave up on, and
 every failure of an agent with no patterns all read as a finished turn. The
 experiment asked whether one TypeSafe request over the screen tail can tell
@@ -19,15 +19,15 @@ those apart reliably enough to act on.
 - One request per screen. State is `{"agent_cli": <profile id>, "screen":
   <rendered tail>}`; every question below rides the same request, so they
   cost one ~1.4-1.8k-token call (~$0.00007) at ~0.7s p50.
-- **Synthetic screens (53)**: five CLIs (cline, codex, gemini,
+- **Synthetic screens (53)**: five CLIs (claude-code, codex, gemini,
   opencode, cursor) across finished / asking / blocked / failed / working.
-  cline error strings came from gavin's measured ones (server.rs,
+  Claude Code error strings came from gavin's measured ones (server.rs,
   agent_setup.rs); the rest are modelled on each TUI's style, not
   captured. Labelled before any run and split dev/test by alternation;
   the confidence policy was frozen on dev before test ran.
 - **Real turn endings (70)**: final assistant messages sampled (seeded)
-  from this repo's cline transcripts, secret-screened, wrapped in
-  cline's screen chrome. Hand-labelled before any run; 16 marked
+  from this repo's Claude Code transcripts, secret-screened, wrapped in
+  Claude Code's screen chrome. Hand-labelled before any run; 16 marked
   ambiguous (mostly "finished, plus an offer").
 - **Real failures (16)**: every distinct `isApiErrorMessage` text in the
   same transcripts.
@@ -148,4 +148,3 @@ option; the real-failure run added it, and it is kept here.
   }
 }
 ```
-

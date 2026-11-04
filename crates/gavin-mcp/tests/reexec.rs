@@ -98,7 +98,7 @@ fn a_newer_daemon_hands_the_session_to_the_binary_at_our_own_path() {
     for reply in &replies {
         let text = reply.pointer("/result/content/0/text").unwrap().as_str().unwrap();
         assert!(text.contains("newer than this gavin-mcp"), "{text}");
-        assert!(text.contains("restart this cline session"), "{text}");
+        assert!(text.contains("restart this Claude Code session"), "{text}");
     }
 
     assert!(
@@ -115,4 +115,3 @@ fn a_newer_daemon_hands_the_session_to_the_binary_at_our_own_path() {
         out.status
     );
 }
-

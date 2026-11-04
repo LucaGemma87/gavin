@@ -11,7 +11,7 @@ Gavin ships three binaries with independent process lifetimes:
 |---|---|---|
 | `Gavin.app` | user opens/closes the window | the updater |
 | `gavin-daemon` | outlives the app, owns every PTY | itself |
-| `gavin-mcp` | one process per cline session | cline |
+| `gavin-mcp` | one process per Claude Code session | Claude Code |
 
 Today the app and `gavin-mcp` both demand an exact protocol match
 (`app/src-tauri/src/session.rs:562`, `crates/gavin-mcp/src/main.rs:33`).
@@ -351,4 +351,3 @@ The overlay at `+page.svelte:102` splits by band:
 4. **v11 is uncommitted.** `HEAD` is at v10; the v11 bump lives in this
    worktree's in-flight orchestration merge. The plan assumes v11 lands
    first, since it renumbers what this work calls v12.
-

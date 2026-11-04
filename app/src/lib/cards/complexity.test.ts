@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   agentConfigWithAttribution,
   COMPLEXITY_LABELS,
@@ -22,10 +22,10 @@ import {
 } from "$lib/cards/complexity";
 
 describe("effectiveDefaultAgent", () => {
-  it("uses Cline for empty defaults but preserves an explicitly selected supported profile", () => {
-    expect(EMPTY_AGENT_DEFAULTS.defaultAgent).toBe("cline");
-    expect(effectiveDefaultAgent({ ...EMPTY_AGENT_DEFAULTS, defaultAgent: "" })).toBe("cline");
-    expect(effectiveDefaultAgent({ ...EMPTY_AGENT_DEFAULTS, defaultAgent: "claude-code" })).toBe("claude-code");
+  it("uses Claude Code for empty defaults but preserves an explicitly selected supported profile", () => {
+    expect(EMPTY_AGENT_DEFAULTS.defaultAgent).toBe("claude-code");
+    expect(effectiveDefaultAgent({ ...EMPTY_AGENT_DEFAULTS, defaultAgent: "" })).toBe("claude-code");
+    expect(effectiveDefaultAgent({ ...EMPTY_AGENT_DEFAULTS, defaultAgent: "cline" })).toBe("cline");
   });
 });
 
@@ -149,10 +149,10 @@ describe("complexityAttributionForProfile", () => {
 describe("per-primary complexity tables", () => {
   const claude: ComplexityTable = { intricate: { profile: "codex", model: "gpt-5.1" } };
   const codex: ComplexityTable = { trivial: { profile: "", model: "mini" } };
-  const app = { "cline": claude, codex };
+  const app = { "claude-code": claude, codex };
 
   it("reads one primary's app-wide table, empty when it has none", () => {
-    expect(complexityTableForPrimary(app, "cline")).toBe(claude);
+    expect(complexityTableForPrimary(app, "claude-code")).toBe(claude);
     expect(complexityTableForPrimary(app, "gemini")).toEqual({});
     expect(complexityTableForPrimary(app, "  ")).toEqual({});
     expect(complexityTableForPrimary(null, "codex")).toEqual({});
@@ -163,15 +163,15 @@ describe("per-primary complexity tables", () => {
   /// through to the app's row for that level.
   it("lets a workspace's own table replace the app's whole, per primary", () => {
     const own: ComplexityTable = { trivial: { profile: "", model: "nano" } };
-    const ws = { "cline": own };
-    expect(effectiveComplexityTable(ws, app, "cline")).toBe(own);
-    expect(effectiveComplexityTable(ws, app, "cline").intricate).toBeUndefined();
+    const ws = { "claude-code": own };
+    expect(effectiveComplexityTable(ws, app, "claude-code")).toBe(own);
+    expect(effectiveComplexityTable(ws, app, "claude-code").intricate).toBeUndefined();
     // Another primary has no key in the workspace map: it inherits.
     expect(effectiveComplexityTable(ws, app, "codex")).toBe(codex);
   });
 
   it("reads an own-but-empty workspace table as 'no routing', not as inherit", () => {
-    expect(effectiveComplexityTable({ "cline": {} }, app, "cline")).toEqual({});
+    expect(effectiveComplexityTable({ "claude-code": {} }, app, "claude-code")).toEqual({});
   });
 
   it("inherits when the workspace has no map at all", () => {
@@ -182,7 +182,7 @@ describe("per-primary complexity tables", () => {
 
   it("sets and removes one primary's table without touching the others", () => {
     const next = withComplexityTableForPrimary(app, "codex", { moderate: { profile: "", model: "m" } });
-    expect(next["cline"]).toBe(claude);
+    expect(next["claude-code"]).toBe(claude);
     expect(next.codex).toEqual({ moderate: { profile: "", model: "m" } });
     expect(withComplexityTableForPrimary(app, "codex", null).codex).toBeUndefined();
     // The caller's map is never mutated.
@@ -335,10 +335,10 @@ describe("complexitySummary", () => {
 
 describe("withAgentEffort", () => {
   it("sets one profile's default and clears it on a blank", () => {
-    const set = withAgentEffort(EMPTY_AGENT_DEFAULTS, "cline", " high ");
-    expect(set.agentEfforts).toEqual({ "cline": "high" });
+    const set = withAgentEffort(EMPTY_AGENT_DEFAULTS, "claude-code", " high ");
+    expect(set.agentEfforts).toEqual({ "claude-code": "high" });
     expect(EMPTY_AGENT_DEFAULTS.agentEfforts).toBeUndefined();
-    const cleared = withAgentEffort(set, "cline", "");
+    const cleared = withAgentEffort(set, "claude-code", "");
     expect(cleared.agentEfforts).toEqual({});
     // Everything else rides through untouched: this is a wholesale save.
     expect({ ...cleared, agentEfforts: undefined }).toEqual({ ...EMPTY_AGENT_DEFAULTS, agentEfforts: undefined });
@@ -370,8 +370,8 @@ describe("realignComplexityTable", () => {
       complex: { profile: "cursor", model: "auto" },
       intricate: { profile: "claude-code", model: "opus", effort: "max", advisor: "fable" },
     };
-    expect(realignComplexityTable(pinned, "remap", "cursor", "cline").complex).toEqual({
-      profile: "cline",
+    expect(realignComplexityTable(pinned, "remap", "cursor", "claude-code").complex).toEqual({
+      profile: "claude-code",
       model: "",
     });
     expect(realignComplexityTable(pinned, "remap", "claude-code", "codex").intricate).toEqual({
@@ -381,13 +381,13 @@ describe("realignComplexityTable", () => {
   });
 
   it("clear drops every workspace override", () => {
-    expect(realignComplexityTable(table, "clear", "cline", "cursor")).toEqual({});
+    expect(realignComplexityTable(table, "clear", "claude-code", "cursor")).toEqual({});
   });
 
   it("does not mutate the table it was handed", () => {
     const copy = structuredClone(table);
-    realignComplexityTable(table, "remap", "cline", "cursor");
-    realignComplexityTable(table, "clear", "cline", "cursor");
+    realignComplexityTable(table, "remap", "claude-code", "cursor");
+    realignComplexityTable(table, "clear", "claude-code", "cursor");
     expect(table).toEqual(copy);
   });
 });
@@ -398,9 +398,9 @@ describe("recommendedComplexityAction", () => {
   /// deliberate cross-agent route. Rewriting or dropping is the human's
   /// choice, never the default.
   it("recommends keeping, whatever the table says", () => {
-    expect(recommendedComplexityAction({}, "cline")).toBe("keep");
+    expect(recommendedComplexityAction({}, "claude-code")).toBe("keep");
     expect(
-      recommendedComplexityAction({ trivial: { profile: "cline", model: "" } }, "cline")
+      recommendedComplexityAction({ trivial: { profile: "claude-code", model: "" } }, "claude-code")
     ).toBe("keep");
     expect(
       recommendedComplexityAction(

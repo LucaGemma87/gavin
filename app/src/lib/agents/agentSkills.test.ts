@@ -94,7 +94,7 @@ describe("showsInstallButton", () => {
     }
   });
 
-  // Every skills-CLI agent is installable, not only cline.
+  // Every skills-CLI agent is installable, not only Claude Code.
   it("offers it for a skills CLI agent too", () => {
     expect(
       showsInstallButton(
@@ -186,4 +186,3 @@ describe("UNKNOWN_STATUS", () => {
     expect(agentSkillsDone(UNKNOWN_STATUS, undefined)).toBe(false);
   });
 });
-

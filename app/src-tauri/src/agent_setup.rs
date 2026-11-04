@@ -1060,72 +1060,6 @@ pub struct FailureCausePattern {
 
 pub const AGENT_PROFILES: &[AgentProfile] = &[
     AgentProfile {
-        id: "cline",
-        model_flag: "--model",
-        models: &[],
-        model_catalog: None,
-        effort_flag: "--thinking",
-        efforts: &["none", "low", "medium", "high", "xhigh"],
-        advisor_flag: "",
-        label: "Cline CLI",
-        instructions_file: "AGENTS.md",
-        command: "cline",
-        prompt_args: Some("--auto-approve false "),
-        prompt_injection: false,
-        untrusted_osc133: false,
-        headless_args: "",
-        failure_patterns: &[
-            "Daily free model limit reached",
-            "today's free usage limit for this model",
-        ],
-        failure_causes: &[
-            FailureCausePattern { pattern: "Daily free model limit reached", cause: "usage-limit" },
-            FailureCausePattern {
-                pattern: "today's free usage limit for this model",
-                cause: "usage-limit",
-            },
-        ],
-        session_id_args: "",
-        session_id_discovery: "",
-        resume_args: "",
-        usage_probe: None,
-        token_log: None,
-        folder_trust: None,
-        agent_file: None,
-        mcp: None,
-    },
-    AgentProfile {
-        id: "copilot",
-        model_flag: "--model",
-        models: &["auto"],
-        model_catalog: None,
-        effort_flag: "",
-        efforts: &[],
-        advisor_flag: "",
-        label: "GitHub Copilot CLI",
-        instructions_file: "AGENTS.md",
-        command: "copilot",
-        prompt_args: Some("-i "),
-        prompt_injection: false,
-        untrusted_osc133: false,
-        headless_args: "",
-        failure_patterns: &[],
-        failure_causes: &[],
-        session_id_args: "",
-        session_id_discovery: "",
-        resume_args: "",
-        usage_probe: None,
-        token_log: None,
-        folder_trust: None,
-        agent_file: None,
-        mcp: Some(McpLayout {
-            config_file: ".github/mcp.json",
-            server_key: "gavin",
-            format: McpFormat::JsonServersStdio,
-            skills: &[],
-        }),
-    },
-    AgentProfile {
         id: "claude-code",
         model_flag: "--model",
         models: &[
@@ -1195,7 +1129,7 @@ pub const AGENT_PROFILES: &[AgentProfile] = &[
         //    continue or switch models with /model."
         //   "Login expired · Please run /login"
         //   "Your organization has disabled Claude subscription access for
-        //    cline · Use an Anthropic API key instead, ..."
+        //    Claude Code · Use an Anthropic API key instead, ..."
         //   "Request timed out"
         //
         // `Request timed out` is the whole line, so it has no longer
@@ -1310,6 +1244,72 @@ pub const AGENT_PROFILES: &[AgentProfile] = &[
         }),
     },
     AgentProfile {
+        id: "cline",
+        model_flag: "--model",
+        models: &[],
+        model_catalog: None,
+        effort_flag: "--thinking",
+        efforts: &["none", "low", "medium", "high", "xhigh"],
+        advisor_flag: "",
+        label: "Cline CLI",
+        instructions_file: "AGENTS.md",
+        command: "cline",
+        prompt_args: Some("--auto-approve false "),
+        prompt_injection: false,
+        untrusted_osc133: false,
+        headless_args: "",
+        failure_patterns: &[
+            "Daily free model limit reached",
+            "today's free usage limit for this model",
+        ],
+        failure_causes: &[
+            FailureCausePattern { pattern: "Daily free model limit reached", cause: "usage-limit" },
+            FailureCausePattern {
+                pattern: "today's free usage limit for this model",
+                cause: "usage-limit",
+            },
+        ],
+        session_id_args: "",
+        session_id_discovery: "",
+        resume_args: "",
+        usage_probe: None,
+        token_log: None,
+        folder_trust: None,
+        agent_file: None,
+        mcp: None,
+    },
+    AgentProfile {
+        id: "copilot",
+        model_flag: "--model",
+        models: &["auto"],
+        model_catalog: None,
+        effort_flag: "",
+        efforts: &[],
+        advisor_flag: "",
+        label: "GitHub Copilot CLI",
+        instructions_file: "AGENTS.md",
+        command: "copilot",
+        prompt_args: Some("-i "),
+        prompt_injection: false,
+        untrusted_osc133: false,
+        headless_args: "",
+        failure_patterns: &[],
+        failure_causes: &[],
+        session_id_args: "",
+        session_id_discovery: "",
+        resume_args: "",
+        usage_probe: None,
+        token_log: None,
+        folder_trust: None,
+        agent_file: None,
+        mcp: Some(McpLayout {
+            config_file: ".github/mcp.json",
+            server_key: "gavin",
+            format: McpFormat::JsonServersStdio,
+            skills: &[],
+        }),
+    },
+    AgentProfile {
         id: "codex",
         model_flag: "--model",
         models: &[],
@@ -1391,7 +1391,7 @@ pub const AGENT_PROFILES: &[AgentProfile] = &[
     // resolving. The preferred binary is Antigravity CLI (`agy`); see
     // `resolved_google_cli_profile` and `detect_google_cli`. Verified
     // 2026-10-16 against local `agy --help`, antigravity.google docs
-    // (migration, headless), and the Gemini?Antigravity announcement.
+    // (migration, headless), and the Gemini→Antigravity announcement.
     AgentProfile {
         id: "gemini",
         model_flag: "--model",
@@ -1903,7 +1903,7 @@ pub fn profile_by_id(id: &str) -> &'static AgentProfile {
 
 /// The stock row for an id, or None for anything else. Read paths that
 /// attribute machine state BY profile (the usage probe, the token log)
-/// take this rather than `profile_by_id`: the cline fallback there
+/// take this rather than `profile_by_id`: the claude-code fallback there
 /// serves reads of shipped defaults, and a named custom is not claude --
 /// probing claude under a custom's id would cache claude's usage as the
 /// custom's, reading the custom as spent whenever claude is.
@@ -1947,7 +1947,7 @@ static CUSTOM_WRITE_PROFILE: AgentProfile = AgentProfile {
 };
 
 /// The profile a WRITE through the workspace's files resolves to. Unlike
-/// `profile_by_id` -- whose cline fallback serves READS of shipped
+/// `profile_by_id` -- whose claude-code fallback serves READS of shipped
 /// defaults -- a write must never put claude's skill file or MCP layout
 /// down for someone's own binary: a named custom (or a config still
 /// naming the retired `custom` id) gets the custom-like row above.
@@ -1959,7 +1959,7 @@ pub(crate) fn profile_for_writes(id: &str) -> &'static AgentProfile {
     }
 }
 
-/// The profile id recorded in config.toml, defaulting to cline.
+/// The profile id recorded in config.toml, defaulting to claude-code.
 /// Read directly rather than routed through the daemon: this is a
 /// one-shot read on a user-initiated action, and agent_setup already
 /// touches the root's files directly.
@@ -1969,12 +1969,12 @@ pub fn read_profile_id(root: &Path) -> String {
 
 /// `read_profile_id`, on whichever disk the workspace is.
 pub fn read_profile_id_in(fs: &dyn WorkspaceFiles, root: &Path) -> String {
-    root_agent_key_in(fs, root, "profile").unwrap_or_else(|| "cline".to_string())
+    root_agent_key_in(fs, root, "profile").unwrap_or_else(|| "claude-code".to_string())
 }
 
 /// The profile id a profile-less workspace resolves to: config.toml's
 /// `[agent] profile` when it names one, else the app-wide default agent
-/// (config.json's `agentDefaults.defaultAgent`), else cline -- the
+/// (config.json's `agentDefaults.defaultAgent`), else claude-code -- the
 /// same order the frontend's `resolveAgentConfig` answers with, so what
 /// an integration or a prompt composer writes FOR is the agent the
 /// launch will actually run.
@@ -1985,7 +1985,7 @@ pub(crate) fn resolved_profile_id_in(fs: &dyn WorkspaceFiles, root: &Path, defau
             default_agent
                 .map(str::trim)
                 .filter(|s| !s.is_empty())
-                .unwrap_or("cline")
+                .unwrap_or("claude-code")
                 .to_string()
         })
 }
@@ -2990,7 +2990,7 @@ fn try_grant_folder_trust(
 // of the live screen, so scrolling the terminal up to read earlier output
 // takes the input out of view, and typing snaps the view back down. Its
 // "fullscreen" mode draws on the alternate screen, owns scrolling and
-// keeps the prompt pinned -- the same arrangement cline's fullscreen
+// keeps the prompt pinned -- the same arrangement Claude Code's fullscreen
 // mode has. Only the file switches it: `KIMI_CODE_TUI_FULL_SCREEN` appears
 // in the binary but does not override a `tui_mode = "regular"` line
 // (checked against kimi 2.1.1, 2026-10-08). The file is the user's own
@@ -4623,7 +4623,7 @@ mod tests {
         assert_eq!(
             count,
             8,
-            "cline, copilot, claude-code, codex, gemini, cursor, opencode, kimi-code"
+            "claude-code, cline, copilot, codex, gemini, cursor, opencode, kimi-code"
         );
         assert!(
             AGENT_PROFILES.iter().all(|p| crate::config::is_stock_profile_id(p.id))
@@ -4646,7 +4646,7 @@ mod tests {
         assert!(rows.iter().all(|r| r.id != "custom"));
         assert_eq!(
             rows.iter().map(|r| r.id.as_str()).collect::<Vec<_>>(),
-            ["cline", "copilot", "claude-code", "codex", "gemini", "cursor", "opencode", "kimi-code"]
+            ["claude-code", "cline", "copilot", "codex", "gemini", "cursor", "opencode", "kimi-code"]
         );
         let claude = rows.iter().find(|r| r.id == "claude-code").unwrap();
         assert!(claude.found);
@@ -4680,8 +4680,8 @@ mod tests {
         assert_eq!(
             layouts,
             [
-                ("copilot", ".github/mcp.json", McpFormat::JsonServersStdio),
                 ("claude-code", ".mcp.json", McpFormat::JsonServers),
+                ("copilot", ".github/mcp.json", McpFormat::JsonServersStdio),
                 ("codex", ".codex/config.toml", McpFormat::TomlServers),
                 ("gemini", ".agents/mcp_config.json", McpFormat::JsonServers),
                 ("cursor", ".cursor/mcp.json", McpFormat::JsonServersStdio),
@@ -4702,7 +4702,7 @@ mod tests {
     /// wizard). This is what instructions_block_for and compose_agent_prompt
     /// both key on. Antigravity (id `gemini`) and Codex share
     /// `.agents/skills/` — the path Antigravity migrated to. Other roots
-    /// stay distinct so a workspace that never chose cline does
+    /// stay distinct so a workspace that never chose Claude Code does
     /// not grow a `.claude/` directory.
     #[test]
     fn skill_slots_are_the_verified_set_and_do_not_share_a_root() {
@@ -4863,9 +4863,9 @@ mod tests {
         assert_eq!(
             column,
             [
+                ("claude-code", false),
                 ("cline", false),
                 ("copilot", false),
-                ("claude-code", false),
                 ("codex", false),
                 ("gemini", false),
                 ("cursor", false),
@@ -4928,7 +4928,7 @@ mod tests {
             .filter(|p| !p.failure_patterns.is_empty())
             .map(|p| p.id)
             .collect();
-        assert_eq!(detecting, ["cline", "claude-code", "kimi-code"]);
+        assert_eq!(detecting, ["claude-code", "cline", "kimi-code"]);
         for p in AGENT_PROFILES {
             for pattern in p.failure_patterns {
                 assert!(!pattern.trim().is_empty(), "{} carries a blank pattern", p.id);
@@ -4972,7 +4972,7 @@ mod tests {
             .filter(|p| !p.failure_causes.is_empty())
             .map(|p| p.id)
             .collect();
-        assert_eq!(classifying, ["cline", "claude-code", "kimi-code"]);
+        assert_eq!(classifying, ["claude-code", "cline", "kimi-code"]);
 
         for p in AGENT_PROFILES {
             assert_eq!(
@@ -5096,7 +5096,7 @@ mod tests {
         ("You've hit your session limit \u{b7} resets 6:50pm (Europe/Rome)", "usage-limit"),
         ("You've reached your Fable 5 limit. Run /usage-credits to continue or switch models with /model.", "usage-limit"),
         ("Login expired \u{b7} Please run /login", "auth"),
-        ("Your organization has disabled Claude subscription access for cline \u{b7} Use an Anthropic API key instead, or ask your admin to enable access", "auth"),
+        ("Your organization has disabled Claude subscription access for Claude Code \u{b7} Use an Anthropic API key instead, or ask your admin to enable access", "auth"),
         ("Request timed out", "network"),
         ("API Error: Connection closed mid-response. The response above may be incomplete.", "network"),
         ("API Error: Connection lost mid-response. The response above may be incomplete.", "network"),
@@ -5169,7 +5169,7 @@ mod tests {
     #[test]
     fn profile_by_id_falls_back_to_claude_code_for_an_unknown_id() {
         assert_eq!(profile_by_id("codex").id, "codex");
-        assert_eq!(profile_by_id("not-a-thing").id, "cline");
+        assert_eq!(profile_by_id("not-a-thing").id, "claude-code");
     }
 
     #[test]
@@ -5499,7 +5499,7 @@ mod tests {
     #[test]
     fn integration_can_arm_a_profile_other_than_the_workspace_agent() {
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "cline");
+        rooted_with_profile(dir.path(), "claude-code");
 
         let result = run_integration(&LocalFiles, dir.path(), fake_binary(), None, None, Some("codex"), None, None).unwrap();
 
@@ -5510,7 +5510,7 @@ mod tests {
         assert!(result.written.iter().any(|w| w.ends_with("AGENTS.md")));
         assert!(result.written.iter().any(|w| w.ends_with(".codex/config.toml")));
         let cfg = std::fs::read_to_string(dir.path().join(".gavin-root/config.toml")).unwrap();
-        assert!(cfg.contains("profile = \"cline\""));
+        assert!(cfg.contains("profile = \"claude-code\""));
         assert!(!cfg.contains("profile = \"codex\""));
     }
 
@@ -5697,10 +5697,10 @@ mod tests {
     #[test]
     fn integration_writes_the_instructions_file_the_caller_named() {
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "cline");
+        rooted_with_profile(dir.path(), "claude-code");
         std::fs::write(
             dir.path().join(".gavin-root").join("config.toml"),
-            "[agent]\nprofile = \"cline\"\nfile = \"REPO_CHOSE_THIS.md\"\n",
+            "[agent]\nprofile = \"claude-code\"\nfile = \"REPO_CHOSE_THIS.md\"\n",
         )
         .unwrap();
 
@@ -5713,10 +5713,10 @@ mod tests {
         // None still reads the root, which is what an older frontend
         // does -- and what `validate_agent_file_path` still contains.
         let other = tempfile::tempdir().unwrap();
-        rooted_with_profile(other.path(), "cline");
+        rooted_with_profile(other.path(), "claude-code");
         std::fs::write(
             other.path().join(".gavin-root").join("config.toml"),
-            "[agent]\nprofile = \"cline\"\nfile = \"REPO_CHOSE_THIS.md\"\n",
+            "[agent]\nprofile = \"claude-code\"\nfile = \"REPO_CHOSE_THIS.md\"\n",
         )
         .unwrap();
         run_integration(&LocalFiles, other.path(), fake_binary(), None, None, None, None, None).unwrap();
@@ -5955,10 +5955,10 @@ mod tests {
     #[test]
     fn a_prd_key_pointing_outside_the_root_falls_back_to_the_default() {
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "cline");
+        rooted_with_profile(dir.path(), "claude-code");
         std::fs::write(
             dir.path().join(".gavin-root/config.toml"),
-            "prd = \"../elsewhere/PRD.md\"\n\n[agent]\nprofile = \"cline\"\n",
+            "prd = \"../elsewhere/PRD.md\"\n\n[agent]\nprofile = \"claude-code\"\n",
         )
         .unwrap();
         // Same verdict the daemon reaches: both go through
@@ -5999,7 +5999,7 @@ mod tests {
         std::fs::create_dir_all(&g).unwrap();
         std::fs::write(
             g.join("config.toml"),
-            "[agent]\nprofile = \"cline\"\nfile = \"NOTES.md\"\n",
+            "[agent]\nprofile = \"claude-code\"\nfile = \"NOTES.md\"\n",
         )
         .unwrap();
 
@@ -6012,7 +6012,7 @@ mod tests {
     #[test]
     fn compose_prompt_rejects_an_unknown_flow() {
         let dir = tempfile::tempdir().unwrap();
-        let root = rooted_with_profile(dir.path(), "cline");
+        let root = rooted_with_profile(dir.path(), "claude-code");
         assert!(compose_agent_prompt_for(&root, "not-a-flow", None, &[]).is_err());
     }
 
@@ -6037,9 +6037,9 @@ mod tests {
         assert_eq!(
             column,
             [
+                ("claude-code", Some("")),
                 ("cline", Some("--auto-approve false ")),
                 ("copilot", Some("-i ")),
-                ("claude-code", Some("")),
                 ("codex", Some("")),
                 ("gemini", Some("--prompt-interactive=")),
                 ("cursor", Some("")),
@@ -6159,7 +6159,7 @@ mod tests {
         );
         // Nothing was skipped: this profile has both capabilities now.
         assert!(result.skipped.is_empty(), "{:?}", result.skipped);
-        // And nothing was written into a cline workspace's shape.
+        // And nothing was written into a Claude Code workspace's shape.
         assert!(!dir.path().join(".claude").exists(), "opencode must not grow a .claude/");
         assert!(!dir.path().join(".mcp.json").exists());
     }
@@ -6496,161 +6496,6 @@ mod tests {
         }
     }
 
-    /// The launch-time grant this file exists for: a session spawned in a
-    /// context folder BELOW the root used to stop at kimi's trust screen
-    /// (a trusted parent does not cover a child), losing the queued card
-    /// prompt. The grant writes the child its own record, never touches
-    /// the root's, and repeats as a no-op.
-    #[test]
-    fn a_launch_below_the_root_gets_its_own_trust_record() {
-        let dir = tempfile::tempdir().unwrap();
-        let home = tempfile::tempdir().unwrap();
-        let own = "/apps/gavin-mcp";
-        std::fs::write(
-            dir.path().join(".mcp.json"),
-            r#"{"mcpServers":{"gavin":{"command":"/apps/gavin-mcp","args":[]}}}"#,
-        )
-        .unwrap();
-        let sub = dir.path().join("packages").join("app");
-        std::fs::create_dir_all(&sub).unwrap();
-        let fs = HomedFiles { home: home.path().to_path_buf() };
-
-        let grant = grant_kimi_launch_trust(&fs, &sub, dir.path(), Some(own));
-
-        let record = record_path(home.path(), &physical(&sub));
-        assert!(matches!(grant, Some(TrustGrant::Written(_))), "{grant:?}");
-        let body: serde_json::Value =
-            serde_json::from_str(&std::fs::read_to_string(&record).unwrap()).unwrap();
-        assert_eq!(body["root"], physical(&sub).as_str(), "the launch cwd, physical");
-        assert_eq!(trust_records(home.path()).len(), 1, "the root got no record");
-
-        // The next launch in the same folder reads the record and leaves
-        // it alone.
-        let again = grant_kimi_launch_trust(&fs, &sub, dir.path(), Some(own));
-        assert!(matches!(again, Some(TrustGrant::Present)), "{again:?}");
-        assert_eq!(trust_records(home.path()).len(), 1);
-    }
-
-    /// Every way the launch grant must refuse: at the root itself (the
-    /// integration's or the human's decision stands), outside the root,
-    /// a server declaration in a folder between the cwd and the root,
-    /// and foreign servers at the root -- the root file may only ever
-    /// declare what gavin manages.
-    #[test]
-    fn a_launch_trust_is_withheld_by_shape_and_by_policy() {
-        let foreign = r#"{"mcpServers":{"other":{"command":"/bin/other"}}}"#;
-        let gavin_only = r#"{"mcpServers":{"gavin":{"command":"/apps/gavin-mcp","args":[]}}}"#;
-        let own = Some("/apps/gavin-mcp");
-        for (label, root_body, between, cwd_name, granted) in [
-            ("at the root", gavin_only, None, "", false),
-            ("outside the root", gavin_only, None, "../elsewhere", false),
-            ("a subfolder declares servers", gavin_only, Some(foreign), "sub", false),
-            ("a foreign server at the root", foreign, None, "sub", false),
-            ("an unreadable root mcp file", "{not json", None, "sub", false),
-            ("the roots own kimi mcp file declares", gavin_only, Some("KIMI_MCP"), "sub", false),
-            ("a clean gavin-only root", gavin_only, None, "sub", true),
-            ("no root mcp file at all", "", None, "sub", true),
-        ] {
-            let dir = tempfile::tempdir().unwrap();
-            let home = tempfile::tempdir().unwrap();
-            if !root_body.is_empty() {
-                std::fs::write(dir.path().join(".mcp.json"), root_body).unwrap();
-            }
-            let sub = if cwd_name == "../elsewhere" {
-                let outside = dir.path().parent().unwrap().join("elsewhere-twin");
-                std::fs::create_dir_all(&outside).unwrap();
-                outside
-            } else {
-                let sub = dir.path().join(cwd_name);
-                std::fs::create_dir_all(&sub).unwrap();
-                sub
-            };
-            if let Some(body) = between {
-                if body == "KIMI_MCP" {
-                    std::fs::create_dir_all(sub.join(".kimi-code")).unwrap();
-                    std::fs::write(sub.join(".kimi-code").join("mcp.json"), foreign).unwrap();
-                } else {
-                    std::fs::write(sub.join(".mcp.json"), body).unwrap();
-                }
-            }
-            let fs = HomedFiles { home: home.path().to_path_buf() };
-
-            let grant = grant_kimi_launch_trust(&fs, &sub, dir.path(), own);
-
-            assert_eq!(grant.is_some(), granted, "{label}: {grant:?}");
-            assert_eq!(trust_records(home.path()).len(), usize::from(granted), "{label}");
-        }
-    }
-
-    /// The Playwright step's entry beside gavin's is still only what gavin
-    /// manages -- but only as gavin writes it, and only when gavin knows
-    /// its own command. Installing Playwright must not cost a kimi
-    /// workspace its launch grant.
-    #[test]
-    fn a_launch_trust_counts_the_playwright_entry_as_gavins() {
-        let with_playwright = |command: &str| {
-            format!(
-                r#"{{"mcpServers":{{"gavin":{{"command":"/apps/gavin-mcp"}},
-                   "playwright":{{"command":"{command}","args":["playwright"]}}}}}}"#
-            )
-        };
-        for (label, body, own, granted) in [
-            ("gavin's entry, gavin's command", with_playwright("/apps/gavin-mcp"), Some("/apps/gavin-mcp"), true),
-            ("gavin's command unknown", with_playwright("/apps/gavin-mcp"), None, false),
-            ("another command under the name", with_playwright("/bin/other"), Some("/apps/gavin-mcp"), false),
-        ] {
-            let dir = tempfile::tempdir().unwrap();
-            let home = tempfile::tempdir().unwrap();
-            std::fs::write(dir.path().join(".mcp.json"), body).unwrap();
-            let sub = dir.path().join("sub");
-            std::fs::create_dir_all(&sub).unwrap();
-            let fs = HomedFiles { home: home.path().to_path_buf() };
-
-            let grant = grant_kimi_launch_trust(&fs, &sub, dir.path(), own);
-
-            assert_eq!(grant.is_some(), granted, "{label}: {grant:?}");
-        }
-    }
-
-    /// Decision A (feat-kimi-integration, 2026-10-06): a rail or Best-of-N
-    /// run in a `.gavin-worktrees` checkout of a repo that commits gavin's
-    /// `.mcp.json` -- this repo does, so every worktree has one at its
-    /// root -- is granted. The worktree's own copy is vetted the way the
-    /// root's is rather than refused as a declaration in between, and a
-    /// branch whose copy adds a foreign server withholds.
-    #[test]
-    fn a_launch_in_a_gavin_worktree_vets_the_worktrees_own_mcp_file() {
-        let gavin_only = r#"{"mcpServers":{"gavin":{"command":"/apps/gavin-mcp","args":[]}}}"#;
-        let foreign = r#"{"mcpServers":{"gavin":{"command":"/apps/gavin-mcp"},"other":{"command":"/bin/other"}}}"#;
-        let hostile = r#"{"mcpServers":{"gavin":{"command":"/bin/sh","args":["-c","echo V21"]}}}"#;
-        let relative = r#"{"mcpServers":{"gavin":{"command":"scripts/gavin-mcp","args":[]}}}"#;
-        let own = Some("/apps/gavin-mcp");
-        for (label, worktree_body, granted) in [
-            ("gavin only", gavin_only, true),
-            ("a foreign server", foreign, false),
-            // Audit 2026-10-15: a `gavin` key is not enough -- the command
-            // must be gavin's own absolute gavin-mcp.
-            ("hostile command under gavin", hostile, false),
-            ("relative launcher under gavin", relative, false),
-        ] {
-            let dir = tempfile::tempdir().unwrap();
-            let home = tempfile::tempdir().unwrap();
-            std::fs::write(dir.path().join(".mcp.json"), gavin_only).unwrap();
-            let worktree = dir.path().join(crate::git::commands::WORKTREES_DIR).join("feat-x");
-            std::fs::create_dir_all(&worktree).unwrap();
-            // A linked checkout: git writes `.git` as a file pointing home.
-            std::fs::write(worktree.join(".git"), "gitdir: /elsewhere/.git/worktrees/feat-x\n").unwrap();
-            std::fs::write(worktree.join(".mcp.json"), worktree_body).unwrap();
-            let fs = HomedFiles { home: home.path().to_path_buf() };
-
-            let grant = grant_kimi_launch_trust(&fs, &worktree, dir.path(), own);
-
-            assert_eq!(grant.is_some(), granted, "{label}: {grant:?}");
-            let want = if granted { vec![record_path(home.path(), &physical(&worktree))] } else { Vec::new() };
-            assert_eq!(trust_records(home.path()), want, "{label}");
-        }
-    }
-
     /// The exception covers a worktree's own root and nothing else: a
     /// plain subfolder with an `.mcp.json` between it and the root still
     /// withholds, and so does a folder below the worktree's root with one.
@@ -6701,74 +6546,6 @@ mod tests {
         assert_eq!(fs.files.lock().unwrap().len(), 3, "nothing written");
     }
 
-    /// `default_permission_mode` and the attention hooks are written
-    /// only where the human has not chosen them: absent means gavin's
-    /// defaults go in (the key ahead of the first table header, the
-    /// hooks appended at the end). A permission key the human set --
-    /// even `manual` -- keeps its value while the hooks still land;
-    /// invalid TOML stays untouched entirely, the file being kimi's
-    /// to fix, not gavin's to rewrite.
-    #[test]
-    fn the_launch_config_is_written_only_where_absent() {
-        let want = "default_permission_mode = \"yolo\"";
-        for (label, before, yolo, hooks) in [
-            ("absent", "", true, true),
-            ("tables below", "[providers.\"managed:kimi-code\"]\ntype = \"kimi\"\n", true, true),
-            ("the humans manual", "default_permission_mode = \"manual\"\n", false, true),
-            ("broken toml", "not toml [", false, false),
-        ] {
-            let dir = tempfile::tempdir().unwrap();
-            let home = dir.path().join("home");
-            std::fs::create_dir_all(&home).unwrap();
-            let config = home.join(".kimi-code").join("config.toml");
-            if !before.is_empty() {
-                std::fs::create_dir_all(config.parent().unwrap()).unwrap();
-                std::fs::write(&config, before).unwrap();
-            }
-            let fs = HomedFiles { home: home.clone() };
-
-            ensure_kimi_launch_config(&fs, &home);
-
-            let text = std::fs::read_to_string(&config).unwrap();
-            if yolo {
-                assert!(text.contains(want), "{label}: {text}");
-                assert!(toml::from_str::<toml::Value>(&text).is_ok(), "{label}: {text}");
-                if before.starts_with('[') {
-                    assert!(text.find(want).unwrap() < text.find('[').unwrap(), "{label}: the key precedes the tables: {text}");
-                }
-            } else if !before.is_empty() {
-                assert!(text.starts_with(before.trim_end()), "{label}: the human's text leads: {text}");
-            }
-            assert_eq!(text.contains(want), yolo, "{label}: the yolo default iff absent: {text}");
-            assert_eq!(text.contains("gavin-attention"), hooks, "{label}: hooks iff parseable: {text}");
-            if hooks {
-                let script = home.join(".kimi-code").join(GAVIN_HOOK_SCRIPT_FILE);
-                assert!(script.is_file(), "{label}: the hook script was written");
-                let shell_writes = home.join(".kimi-code").join(GAVIN_SHELL_WRITES_SCRIPT_FILE);
-                assert!(shell_writes.is_file(), "{label}: the shell-write script was written");
-                let doc = toml::from_str::<toml::Value>(&text).unwrap();
-                let hook_list = doc.get("hooks").and_then(toml::Value::as_array).cloned().unwrap_or_default();
-                assert_eq!(
-                    hook_list.len(),
-                    GAVIN_ATTENTION_HOOKS.len() + GAVIN_SHELL_WRITE_HOOKS.len(),
-                    "{label}: one rule per event and script: {text}"
-                );
-                let rule = |event: &str| {
-                    hook_list
-                        .iter()
-                        .find(|h| h.get("event").and_then(toml::Value::as_str) == Some(event))
-                        .and_then(|h| h.get("command").and_then(toml::Value::as_str))
-                        .map(str::to_string)
-                        .unwrap()
-                };
-                let shell_writes = shell_writes.display();
-                assert_eq!(rule("PreToolUse"), format!("sh '{shell_writes}' pre"), "{label}");
-                assert_eq!(rule("PostToolUse"), format!("sh '{shell_writes}' post"), "{label}");
-                assert_eq!(rule("PostToolUseFailure"), format!("sh '{shell_writes}' post"), "{label}");
-            }
-        }
-    }
-
     /// A second launch changes nothing: every event already has its
     /// rule and the permission key exists, so the file comes back byte
     /// for byte. A human's own hook -- even one gavin would not have
@@ -6801,26 +6578,6 @@ mod tests {
         );
         assert!(after.contains("matcher = \"^Edit$\""), "the hand-tuned matcher is not rewritten");
         assert_eq!(after.matches("event = \"PermissionRequest\"").count(), 1, "one PermissionRequest rule");
-    }
-
-    /// `KIMI_CODE_HOME` relocates the whole store, the hooks with it.
-    #[test]
-    fn the_launch_config_follows_kimi_code_home() {
-        let fs = MemoryFiles {
-            home: Some(PathBuf::from("/home/ada")),
-            env: vec![("KIMI_CODE_HOME".to_string(), "/opt/kimi".into())],
-            ..Default::default()
-        };
-
-        ensure_kimi_launch_config(&fs, Path::new("/home/ada"));
-
-        let files = fs.files.lock().unwrap();
-        let config = files.get(Path::new("/opt/kimi/config.toml")).map(|b| String::from_utf8_lossy(b).into_owned()).expect("config written");
-        assert!(config.contains("default_permission_mode = \"yolo\""), "{config}");
-        assert!(config.contains("gavin-attention"), "{config}");
-        assert!(files.contains_key(Path::new("/opt/kimi/gavin-attention")), "the script follows too");
-        assert!(files.contains_key(Path::new("/opt/kimi/gavin-shell-writes")), "and the shell-write one");
-        assert!(!files.contains_key(Path::new("/home/ada/.kimi-code/config.toml")));
     }
 
     /// The script is gavin's, so a stale copy -- the one from before the
@@ -7023,13 +6780,13 @@ mod tests {
         assert!(!files.keys().any(|p| p.starts_with("/home/ada")), "nothing under the default home");
     }
 
-    /// Only a profile with a gate writes a record: cline's run
+    /// Only a profile with a gate writes a record: claude-code's run
     /// leaves the home untouched and says nothing about trust.
     #[test]
     fn a_profile_without_a_trust_gate_never_touches_the_home() {
         let dir = tempfile::tempdir().unwrap();
         let home = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "cline");
+        rooted_with_profile(dir.path(), "claude-code");
         let fs = HomedFiles { home: home.path().to_path_buf() };
 
         let result = run_integration(&fs, dir.path(), fake_binary(), None, None, None, None, None).unwrap();
@@ -7171,7 +6928,7 @@ mod tests {
     }
 
     /// A step skill lands beside the profile's OWN skills, not in
-    /// cline's directory. This is `skill_slot` doing its job for a
+    /// Claude Code's directory. This is `skill_slot` doing its job for a
     /// second profile for the first time.
     #[test]
     fn a_step_skill_lands_under_the_opencode_skill_root() {
@@ -7196,7 +6953,7 @@ mod tests {
         assert_eq!(install.agent_file.unwrap(), dir.path().join(".opencode/agent/gavin-commit.md"));
         assert_eq!(install.skill_root.unwrap(), dir.path().join(".opencode/skills"));
 
-        rooted_with_profile(dir.path(), "cline");
+        rooted_with_profile(dir.path(), "claude-code");
         assert!(gavin_install(dir.path(), None).agent_file.is_none());
     }
 
@@ -7224,31 +6981,31 @@ mod tests {
         std::fs::create_dir_all(&g).unwrap();
         std::fs::write(
             g.join("config.toml"),
-            "[agent]\nprofile = \"cline\"\nfile = \"/tmp/outside.md\"\n",
+            "[agent]\nprofile = \"claude-code\"\nfile = \"/tmp/outside.md\"\n",
         )
         .unwrap();
 
         let install = gavin_install(dir.path(), None);
 
-        assert_eq!(install.instructions, dir.path().join("AGENTS.md"));
+        assert_eq!(install.instructions, dir.path().join("CLAUDE.md"));
     }
 
     #[test]
     fn read_profile_id_defaults_to_cline_without_a_config() {
         let dir = tempfile::tempdir().unwrap();
-        assert_eq!(read_profile_id(dir.path()), "cline");
+        assert_eq!(read_profile_id(dir.path()), "claude-code");
     }
 
     #[test]
     fn mcp_config_merges_preserving_other_servers_and_replacing_stale_gavin() {
         let dir = tempfile::tempdir().unwrap();
         let binary = Path::new("/apps/gavin-mcp");
-        // Absent ? created.
+        // Absent → created.
         let p = write_mcp_config(&LocalFiles, dir.path(), &claude_layout(), binary).unwrap();
         let v: serde_json::Value =
             serde_json::from_str(&std::fs::read_to_string(&p).unwrap()).unwrap();
         assert_eq!(v.pointer("/mcpServers/gavin/command").unwrap(), "/apps/gavin-mcp");
-        // Existing with another server + stale gavin ? both handled.
+        // Existing with another server + stale gavin → both handled.
         std::fs::write(
             &p,
             r#"{ "mcpServers": { "other": { "command": "/bin/other" }, "gavin": { "command": "/old" } }, "unrelated": true }"#,
@@ -7260,7 +7017,7 @@ mod tests {
         assert_eq!(v.pointer("/mcpServers/other/command").unwrap(), "/bin/other");
         assert_eq!(v.pointer("/mcpServers/gavin/command").unwrap(), "/apps/gavin-mcp");
         assert_eq!(v.pointer("/unrelated").unwrap(), true);
-        // Unparseable ? error, file untouched.
+        // Unparseable → error, file untouched.
         std::fs::write(&p, "{not json").unwrap();
         assert!(write_mcp_config(&LocalFiles, dir.path(), &claude_layout(), binary).is_err());
         assert_eq!(std::fs::read_to_string(&p).unwrap(), "{not json");
@@ -7623,7 +7380,7 @@ mod tests {
     fn remove_mcp_entry_refuses_a_symlinked_leaf() {
         let dir = tempfile::tempdir().unwrap();
         let outside = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "cline");
+        rooted_with_profile(dir.path(), "claude-code");
         let outside_mcp = outside.path().join(".mcp.json");
         std::fs::write(
             &outside_mcp,
@@ -7651,7 +7408,7 @@ mod tests {
     fn setup_writers_refuse_symlinked_leaves_pointing_outside() {
         let dir = tempfile::tempdir().unwrap();
         let outside = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "cline");
+        rooted_with_profile(dir.path(), "claude-code");
 
         let outside_bashrc = outside.path().join("bashrc");
         std::fs::write(&outside_bashrc, "export PATH=/bin\n").unwrap();
@@ -7707,7 +7464,7 @@ mod tests {
     #[test]
     fn setup_allows_an_in_root_symlink_alias() {
         let dir = tempfile::tempdir().unwrap();
-        rooted_with_profile(dir.path(), "cline");
+        rooted_with_profile(dir.path(), "claude-code");
         std::fs::write(dir.path().join("AGENTS.md"), "# agents\n").unwrap();
         std::os::unix::fs::symlink("AGENTS.md", dir.path().join("CLAUDE.md")).unwrap();
 
@@ -7760,7 +7517,7 @@ mod tests {
 
     /// The delete flow resolves the profile the write path used: a
     /// custom-profile root's entry lives in its `[agent] mcp_file`, and
-    /// removing it must edit THAT file -- resolving cline here
+    /// removing it must edit THAT file -- resolving claude-code here
     /// (the `profile_by_id` fallback) would leave the real entry behind
     /// while poking at a `.mcp.json` nobody wrote.
     #[test]
@@ -7791,14 +7548,14 @@ mod tests {
         assert!(result.written.iter().any(|w| w.contains(".codex/config.toml")), "{:?}", result.written);
 
         // An explicit overlay still wins over the default, and no default
-        // configured is cline, as before the setting existed.
+        // configured is claude-code, as before the setting existed.
         let other = tempfile::tempdir().unwrap();
         rooted_with_profile(other.path(), "claude-code");
         run_integration(&LocalFiles, other.path(), fake_binary(), None, None, None, Some("codex"), None).unwrap();
         assert!(other.path().join("CLAUDE.md").is_file(), "config.toml's profile wins");
         let plain = tempfile::tempdir().unwrap();
         run_integration(&LocalFiles, plain.path(), fake_binary(), None, None, None, None, None).unwrap();
-        assert!(plain.path().join("AGENTS.md").is_file(), "no default configured is Cline CLI");
+        assert!(plain.path().join("CLAUDE.md").is_file(), "no default configured is claude-code");
     }
 
     /// The composer resolves the same way: a profile-less root's step
@@ -7942,7 +7699,7 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let binary = Path::new("/apps/gavin-mcp");
 
-        // Absent ? created, with .codex/ made on the way.
+        // Absent → created, with .codex/ made on the way.
         let p = write_mcp_config(&LocalFiles, dir.path(), &layout("codex"), binary).unwrap();
         assert!(p.ends_with(".codex/config.toml"), "{p:?}");
         let parsed = std::fs::read_to_string(&p).unwrap().parse::<toml::Table>().unwrap();
@@ -7971,7 +7728,7 @@ mod tests {
         assert_eq!(gavin["command"].as_str().unwrap(), "/apps/gavin-mcp");
         assert!(gavin["args"].as_array().unwrap().is_empty(), "the stale args are replaced");
 
-        // Unparseable ? error, file untouched.
+        // Unparseable → error, file untouched.
         std::fs::write(&p, "[[[not toml").unwrap();
         assert!(write_mcp_config(&LocalFiles, dir.path(), &layout("codex"), binary).is_err());
         assert_eq!(std::fs::read_to_string(&p).unwrap(), "[[[not toml");
@@ -8056,7 +7813,7 @@ mod tests {
                 args: vec!["-c".to_string(), "touch /tmp/x".to_string()],
             }]
         );
-        // Absent file ? empty, not an error (nothing to disclose).
+        // Absent file → empty, not an error (nothing to disclose).
         let empty = tempfile::tempdir().unwrap();
         assert!(scan_foreign_mcp_servers_in(
             &LocalFiles,
@@ -8072,17 +7829,17 @@ mod tests {
     #[test]
     fn instructions_block_appends_replaces_and_never_touches_the_rest() {
         let dir = tempfile::tempdir().unwrap();
-        // Absent ? created with just the block.
+        // Absent → created with just the block.
         let p = write_instructions_block(&LocalFiles, dir.path(), "CLAUDE.md", BLOCK_WITH_SKILL).unwrap();
         let first = std::fs::read_to_string(&p).unwrap();
         assert!(first.starts_with(MARKER_START));
-        // Existing content ? appended after it.
+        // Existing content → appended after it.
         std::fs::write(&p, "# My rules\n\nKeep tests green.\n").unwrap();
         write_instructions_block(&LocalFiles, dir.path(), "CLAUDE.md", BLOCK_WITH_SKILL).unwrap();
         let appended = std::fs::read_to_string(&p).unwrap();
         assert!(appended.starts_with("# My rules"));
         assert!(appended.contains(MARKER_START));
-        // Re-run ? block replaced in place, custom content above AND below intact.
+        // Re-run → block replaced in place, custom content above AND below intact.
         let with_tail = format!("{appended}## After\n\ntail text\n");
         std::fs::write(&p, &with_tail).unwrap();
         write_instructions_block(&LocalFiles, dir.path(), "CLAUDE.md", BLOCK_WITH_SKILL).unwrap();
@@ -8271,8 +8028,11 @@ mod tests {
             }
         }
 
-        // `.claude/` is compared because Claude Code remains an explicit
-        // profile with committed skill templates; it is not the default.
+        // Only `.claude/` is compared: this workspace is configured for
+        // Claude Code (`.gavin-root/config.toml`), so that is the set the
+        // repo commits and the set a setup run here would clobber. An
+        // `.opencode/` tree in this checkout would be a local artifact of
+        // someone switching profiles, not something the repo ships.
         let mut checked: Vec<&str> = Vec::new();
         for (rel, contents) in installs.iter().filter(|(rel, _)| rel.starts_with(".claude/")) {
             let Ok(shipped) = std::fs::read_to_string(repo.join(rel)) else { continue };

@@ -1,6 +1,6 @@
 version = 1
 
 [agent]
-profile = "cline"
-command = "cline"
-file = "AGENTS.md"
+profile = "claude-code"
+command = "claude"
+file = "CLAUDE.md"

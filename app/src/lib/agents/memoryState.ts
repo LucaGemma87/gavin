@@ -1,4 +1,4 @@
-﻿// The live side of the memory wall: one poller, app-wide, and the three
+// The live side of the memory wall: one poller, app-wide, and the three
 // stores everything downstream reads.
 //
 // `memory.ts` holds every judgement and every format; nothing here
@@ -75,7 +75,7 @@ export const fleetMemory: Readable<FleetMemory> = derived(agentSessions, (sessio
 /// The estimate's second source, and the one that carries the FIRST
 /// launch after a restart: nothing is running then, so there is no
 /// sample to average, and without this every estimate would fall back to
-/// the floor -- which understates a cline tree by two thirds.
+/// the floor -- which understates a Claude Code tree by two thirds.
 export const storedMeans = writable<Record<string, number>>({});
 
 /// The machine's pressure in one word, recomputed as samples land.
@@ -125,7 +125,7 @@ let polling = false;
 ///
 /// By the workspace that HOLDS the session, not by parsing its command:
 /// the command is a shell line with a prompt in it, and matching profile
-/// names against that would attribute an opencode run to cline the
+/// names against that would attribute an opencode run to claude-code the
 /// first time somebody's prompt mentioned claude. A session no open
 /// workspace holds resolves to null, and `perAgentEstimate` reads that
 /// as "use the floor".
@@ -306,4 +306,3 @@ export function __resetMemoryForTesting(): void {
   agentSessions.set({});
   storedMeans.set({});
 }
-

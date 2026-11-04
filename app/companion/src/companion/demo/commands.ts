@@ -1,4 +1,4 @@
-﻿// What the Demo Workstation answers, command by command.
+// What the Demo Workstation answers, command by command.
 //
 // Keyed by the desktop's own command names, because that is what arrives:
 // the bundle runs the desktop's `backend.ts`, and a real Workstation would
@@ -174,8 +174,8 @@ const WORK: Record<string, DemoCommand> = {
 // reviewer. desktopBootstrap.test.ts holds this list to the real thing.
 
 const CLAUDE_CODE: Answer<"agentProfiles">[number] = {
-  id: "cline",
-  label: "cline",
+  id: "claude-code",
+  label: "Claude Code",
   instructionsFile: "CLAUDE.md",
   command: "claude",
   mcpSupported: true,
@@ -293,4 +293,3 @@ export const COMMANDS: Record<string, DemoCommand> = {
   ...BROWSER_COMMANDS,
   ...OWNER_COMMANDS,
 };
-

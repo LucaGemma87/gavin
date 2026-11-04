@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import type { Workspace } from "$lib/core/workspace";
 import {
   WORKSPACE_LAYOUT_KEYS,
@@ -47,7 +47,7 @@ function everyKey(id: string, flavour: string): Workspace {
     gitView: { navWidth: flavour === "a" ? 100 : 200 },
     lastActiveAt: flavour === "a" ? 1 : 2,
     pauseCycles: {
-      "cline": {
+      "claude-code": {
         enabled: true,
         periodMinutes: 300,
         pauseMinutes: 10,
@@ -57,11 +57,11 @@ function everyKey(id: string, flavour: string): Workspace {
       },
     },
     complexityTables: {
-      "cline": { complex: { profile: `p-${flavour}`, model: `m-${flavour}` } },
+      "claude-code": { complex: { profile: `p-${flavour}`, model: `m-${flavour}` } },
     },
-    promptExtras: { "cline": [`line-${flavour}`] },
-    extraCliArgs: { "cline": [`--flag-${flavour}`] },
-    fallbackChains: { "cline": [`fb-${flavour}`] },
+    promptExtras: { "claude-code": [`line-${flavour}`] },
+    extraCliArgs: { "claude-code": [`--flag-${flavour}`] },
+    fallbackChains: { "claude-code": [`fb-${flavour}`] },
     armedAgents: [`armed-${flavour}`],
     declinedAgents: [`declined-${flavour}`],
     pinnedAt: flavour === "a" ? 10 : 20,
@@ -84,6 +84,7 @@ function everyKey(id: string, flavour: string): Workspace {
       },
     ],
     actionPromptOverrides: { "action:run-task": `prompt-${flavour}` },
+    launchCostPolicy: flavour === "a" ? "ask" : "no_paid_requests",
   };
 }
 

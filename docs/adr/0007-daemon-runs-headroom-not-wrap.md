@@ -4,7 +4,7 @@ Headroom compresses what an agent sends to its model, and ships its own launcher
 
 `wrap` writes files to route an agent:
 
-- **cline:** the repo's `.claude/settings.local.json` plus a SessionStart hook, the Serena MCP server at user scope in `~/.claude.json`, and a `.serena/` folder in the checkout.
+- **Claude Code:** the repo's `.claude/settings.local.json` plus a SessionStart hook, the Serena MCP server at user scope in `~/.claude.json`, and a `.serena/` folder in the checkout.
 - **Codex:** `$CODEX_HOME/config.toml`.
 - **opencode:** `~/.config/opencode/opencode.json`.
 
@@ -24,4 +24,3 @@ In a checkout shared by many agents and worktrees, those writes collide with eac
 - Gavin depends on Headroom's CLI flags, environment names, HTTP endpoints and URL conventions, so it pins a tested version and enforces a version floor.
 - A recipe exists only where the agent CLI can be routed without writing a file. Cursor cannot be routed at all, and Gemini waits on a spike.
 - Routing by environment reaches whatever the agent itself runs (its tests, for instance), exactly as `wrap` does. Plain shell tabs are not given the variables.
-

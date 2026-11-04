@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { UsageProjection } from "$lib/agents/usageProjection";
 import {
   agentAvatarLabels,
@@ -12,26 +12,26 @@ describe("agentAvatarLabels", () => {
   it("takes the first letter when names do not collide", () => {
     expect(
       agentAvatarLabels([
-        { id: "cline", label: "cline" },
+        { id: "claude-code", label: "Claude Code" },
         { id: "gemini", label: "Gemini" },
       ])
-    ).toEqual({ "cline": "C", gemini: "G" });
+    ).toEqual({ "claude-code": "C", gemini: "G" });
   });
 
-  it("grows colliding prefixes — cline and Codex become Cl and Co", () => {
+  it("grows colliding prefixes — Claude Code and Codex become Cl and Co", () => {
     expect(
       agentAvatarLabels([
-        { id: "cline", label: "cline" },
+        { id: "claude-code", label: "Claude Code" },
         { id: "codex", label: "Codex" },
       ])
-    ).toEqual({ "cline": "Cl", codex: "Co" });
+    ).toEqual({ "claude-code": "Cl", codex: "Co" });
   });
 
   it("keeps growing until every avatar is unique", () => {
     expect(
       agentAvatarLabels([
         { id: "a", label: "Cursor" },
-        { id: "b", label: "cline" },
+        { id: "b", label: "Claude Code" },
         { id: "c", label: "Codex" },
       ])
     ).toEqual({ a: "Cu", b: "Cl", c: "Co" });
@@ -80,13 +80,13 @@ describe("runningAgentProfiles", () => {
   it("collects profiles with a working session and ignores the rest", () => {
     expect(
       runningAgentProfiles([
-        { profileId: "cline", status: "working" },
+        { profileId: "claude-code", status: "working" },
         { profileId: "codex", status: "idle" },
         { profileId: "gemini", status: "waiting_for_input" },
         { profileId: null, status: "working" },
-        { profileId: "cline", status: "working" },
+        { profileId: "claude-code", status: "working" },
       ])
-    ).toEqual(new Set(["cline"]));
+    ).toEqual(new Set(["claude-code"]));
   });
 });
 
@@ -113,21 +113,21 @@ describe("usageRowBadges", () => {
   it("builds one badge per agent with avatar, tone and running flag", () => {
     const badges = usageRowBadges({
       agents: [
-        { id: "cline", label: "cline" },
+        { id: "claude-code", label: "Claude Code" },
         { id: "codex", label: "Codex" },
       ],
       projections: [
-        projection({ profileId: "cline", band: "clear" }),
+        projection({ profileId: "claude-code", band: "clear" }),
         projection({ profileId: "codex", band: "over", usedPercent: 95 }),
       ],
       runningProfileIds: new Set(["codex"]),
       nowMs: 1_700_000_000_000,
     });
     expect(badges.map((b) => [b.profileId, b.avatar, b.tone, b.running])).toEqual([
-      ["cline", "Cl", "success", false],
+      ["claude-code", "Cl", "success", false],
       ["codex", "Co", "danger", true],
     ]);
-    expect(badges[0].tip).toContain("cline");
+    expect(badges[0].tip).toContain("Claude Code");
     expect(badges[1].tip).toMatch(/^Usage ·/);
   });
 

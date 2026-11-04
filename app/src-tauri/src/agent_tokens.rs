@@ -1,4 +1,4 @@
-﻿//! What ONE run of a card cost, in tokens, read out of the agent CLI's
+//! What ONE run of a card cost, in tokens, read out of the agent CLI's
 //! own transcript.
 //!
 //! The sibling of `agent_usage`, and deliberately not part of it. That
@@ -35,9 +35,9 @@ use crate::agent_setup::{stock_profile_by_id, TokenLog};
 
 /// The transcript layout a profile id's conversations are read through.
 /// Named customs answer None even though `profile_by_id` would fall back
-/// to Cline: a custom is not Claude Code, and reading under Claude Code's
-/// log root would attribute Claude Code's conversations (and their token
-/// costs) to it.
+/// to claude-code: a custom is not Claude Code, and reading under Claude
+/// Code's log root would attribute Claude Code's conversations (and their
+/// token costs) to it.
 fn token_log_for(profile_id: &str) -> Option<TokenLog> {
     stock_profile_by_id(profile_id).and_then(|p| p.token_log)
 }
@@ -87,7 +87,7 @@ pub enum TokenReport {
     Ready {
         totals: TokenTotals,
         /// The models the run actually used, in first-seen order.
-        /// Plural because a single cline run genuinely spans more
+        /// Plural because a single Claude Code run genuinely spans more
         /// than one.
         models: Vec<String>,
     },
@@ -436,7 +436,7 @@ pub(crate) fn kimi_session_wires(wire: &Path) -> Vec<PathBuf> {
     if files.is_empty() { vec![wire.to_path_buf()] } else { files }
 }
 
-/// Sum a cline transcript, ONE COUNT PER MESSAGE.
+/// Sum a Claude Code transcript, ONE COUNT PER MESSAGE.
 ///
 /// This is the whole subtlety of the route. An assistant message is
 /// written to the transcript once per content block -- text, each tool
@@ -453,7 +453,7 @@ pub(crate) fn kimi_session_wires(wire: &Path) -> Vec<PathBuf> {
 /// Most of a transcript's bytes are what the sum never reads: tool
 /// results in user records, and the content blocks of assistant ones.
 /// So a line that does not carry `"assistant"` anywhere is passed over
-/// before any parse -- cline writes JSON with its ASCII unescaped,
+/// before any parse -- Claude Code writes JSON with its ASCII unescaped,
 /// so an assistant record always carries those bytes -- and the rest are
 /// read into `ClaudeRecord`, which skips the content blocks without
 /// building them. Measured on this machine's four largest transcripts
@@ -654,7 +654,7 @@ mod tests {
     /// a user slug, a workspace `local:` id -- have no transcript layout
     /// of gavin's own:
     /// the read paths answer Unknown/Unsupported through `token_log_for`
-    /// (`stock_profile_by_id`), never `profile_by_id`'s cline
+    /// (`stock_profile_by_id`), never `profile_by_id`'s claude-code
     /// fallback, which would read claude's conversations and token costs
     /// as the custom's.
     #[test]
@@ -740,7 +740,7 @@ mod tests {
         assert!(matches!(claude_totals(text), TokenReport::Unavailable { .. }));
     }
 
-    /// The shape cline actually writes: `message` BEFORE `type`,
+    /// The shape Claude Code actually writes: `message` BEFORE `type`,
     /// content blocks the sum never reads, and records of other types that
     /// mention "assistant" in their text. Only the parts the sum reads may
     /// decide it -- a line is neither dropped for the bulk it carries nor
@@ -878,6 +878,33 @@ mod tests {
         assert_eq!(claude_transcript(projects, "conv-2"), None);
     }
 
+    /// Claude Code has no index to consult: the file NAME is the whole
+    /// key. So a neighbour that merely resembles the id -- longer, with a
+    /// prefix, a directory wearing the file's name, a copy left at the
+    /// root instead of in a project directory -- is never the
+    /// conversation, and the real one is still found beside them.
+    #[test]
+    fn a_claude_transcript_is_matched_by_exact_file_name_only() {
+        let dir = tempfile::tempdir().unwrap();
+        let projects = dir.path();
+        let decoys = projects.join("project-a");
+        std::fs::create_dir_all(&decoys).unwrap();
+        std::fs::write(decoys.join("conv-10.jsonl"), "{}").unwrap();
+        std::fs::write(decoys.join("other-conv-1.jsonl"), "{}").unwrap();
+        std::fs::create_dir_all(decoys.join("conv-1.jsonl")).unwrap();
+        std::fs::write(projects.join("conv-1.jsonl"), "{}").unwrap();
+        assert_eq!(claude_transcript(projects, "conv-1"), None);
+
+        let real = projects.join("project-b");
+        std::fs::create_dir_all(&real).unwrap();
+        std::fs::write(real.join("conv-1.jsonl"), "{}").unwrap();
+        assert_eq!(claude_transcript(projects, "conv-1"), Some(real.join("conv-1.jsonl")));
+        assert_eq!(
+            conversation_log_under(TokenLog::ClaudeSessionJsonl, Some(projects), "conv-1"),
+            ConversationLog::Present
+        );
+    }
+
     /// The verdict a resume turns on, and the boundary that decides it.
     /// A root gavin cannot see says nothing about the conversation; a
     /// root it CAN see that does not hold the file says the agent never
@@ -932,47 +959,6 @@ mod tests {
             Some(day.join("rollout-2026-09-03T10-00-00-conv-1.jsonl"))
         );
         assert_eq!(codex_rollout(dir.path(), "conv-9"), None);
-    }
-
-    /// The index is the only map from conversation id to session
-    /// directory, and main's wire is the transcript the existence check
-    /// answers about.
-    #[test]
-    fn a_kimi_conversation_resolves_through_the_session_index() {
-        let dir = tempfile::tempdir().unwrap();
-        let root = dir.path();
-        let session = root.join("sessions/wd_proj_0123456789ab/session_abc");
-        std::fs::create_dir_all(session.join("agents/main")).unwrap();
-        std::fs::create_dir_all(session.join("agents/agent-0")).unwrap();
-        std::fs::write(session.join("agents/agent-0/wire.jsonl"), "{}").unwrap();
-        let main = session.join("agents/main/wire.jsonl");
-        std::fs::write(&main, "{}").unwrap();
-        std::fs::write(
-            root.join("session_index.jsonl"),
-            format!(
-                "{{\"sessionId\":\"session_other\",\"sessionDir\":\"{0}\",\"workDir\":\"/w\"}}\n\
-                 {{\"sessionId\":\"session_abc\",\"sessionDir\":\"{0}\",\"workDir\":\"/w\"}}\n\
-                 not json\n",
-                session.display()
-            ),
-        )
-        .unwrap();
-
-        assert_eq!(transcript_path(TokenLog::KimiWireJsonl, root, "session_abc"), Some(main));
-        assert_eq!(conversation_log_under(TokenLog::KimiWireJsonl, Some(root), "session_abc"), ConversationLog::Present);
-
-        // An id the index does not name, an index naming a directory that
-        // is gone, and no index at all all resolve to nothing.
-        assert_eq!(transcript_path(TokenLog::KimiWireJsonl, root, "session_absent"), None);
-        assert_eq!(conversation_log_under(TokenLog::KimiWireJsonl, Some(root), "session_absent"), ConversationLog::Missing);
-        std::fs::write(
-            root.join("session_index.jsonl"),
-            format!("{{\"sessionId\":\"session_abc\",\"sessionDir\":\"{}\",\"workDir\":\"/w\"}}\n", root.join("gone").display()),
-        )
-        .unwrap();
-        assert_eq!(transcript_path(TokenLog::KimiWireJsonl, root, "session_abc"), None);
-        let bare = tempfile::tempdir().unwrap();
-        assert_eq!(transcript_path(TokenLog::KimiWireJsonl, bare.path(), "session_abc"), None);
     }
 
     /// A run's cost is main's wire AND its subagents' wires -- they bill

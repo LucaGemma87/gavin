@@ -892,7 +892,7 @@ mod tests {
             ("CLAUDE_PID", "4242"),
             ("CLAUDE_CODE_MESSAGING_SOCKET", r"\\.\pipe\LOCAL\cc-msg-x"),
             ("CLAUDE_CODE_MESSAGING_TOKEN", "launcher-secret"),
-            ("AI_AGENT", "cline_0-0-0_agent"),
+            ("AI_AGENT", "claude-code_0-0-0_agent"),
             ("CLAUDE_EFFORT", "xhigh"),
         ];
         for (key, value) in leaked {

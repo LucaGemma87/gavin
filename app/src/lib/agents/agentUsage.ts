@@ -272,6 +272,27 @@ export function dropExpiredWindows(
   return { ...report, windows };
 }
 
+/// Which profiles have a window whose reset has just passed.
+///
+/// This is the moment a held start can go: the window the pause gate was
+/// waiting on closed, so the old reading is no longer the truth and the
+/// next one is a different epoch. The desk drops the stale windows
+/// (`pruneUsageCache`) and uses this to ask the agent for a live reading
+/// right then, rather than leaving the answer to the next three-minute
+/// poll. Sorted, so two callers agree on the order they ask in.
+export function profilesPastReset(
+  reports: Record<string, AgentUsageReport>,
+  nowMs: number
+): string[] {
+  const nowS = nowSecs(nowMs);
+  const due: string[] = [];
+  for (const [id, report] of Object.entries(reports)) {
+    if (report.state !== "ready") continue;
+    if (report.windows.some((w) => w.resetsAt != null && w.resetsAt <= nowS)) due.push(id);
+  }
+  return due.sort();
+}
+
 /// Prune every profile. Same object when nothing expired.
 export function pruneUsageCache(
   reports: Record<string, AgentUsageReport>,

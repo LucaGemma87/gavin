@@ -173,7 +173,7 @@ export interface AgentDefaults {
   /// The app-wide default agent: the profile a workspace with no
   /// `[agent] profile` of its own resolves to. The stored Option is
   /// resolved at the boundary (`EMPTY_AGENT_DEFAULTS` spreads in
-  /// "cline", the new default fallback), so
+  /// "claude-code", the hard-coded fallback every older build used), so
   /// this is always a usable id here.
   defaultAgent: string;
   /// Legacy single-custom fields — kept optional so older fixtures and
@@ -218,7 +218,7 @@ export interface AgentDefaults {
 
 export const EMPTY_AGENT_DEFAULTS: AgentDefaults = {
   customProfiles: [],
-  defaultAgent: "cline",
+  defaultAgent: "claude-code",
   complexityTables: {},
   pauseCycles: {},
   promptExtras: {},
@@ -229,10 +229,10 @@ export const EMPTY_AGENT_DEFAULTS: AgentDefaults = {
 };
 
 /// The profile id a profile-less workspace resolves to: the configured
-/// default agent, or "cline" while it is empty.
+/// default agent, or "claude-code" while it is empty.
 export function effectiveDefaultAgent(defaults: AgentDefaults | null | undefined): string {
   const id = (defaults?.defaultAgent ?? "").trim();
-  return id || "cline";
+  return id || "claude-code";
 }
 
 /// The app-wide defaults with one profile's default effort set, or

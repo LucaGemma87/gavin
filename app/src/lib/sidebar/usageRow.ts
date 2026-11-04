@@ -4,7 +4,7 @@
 // agent's letter avatar and coloured by its own usage semaphore — not the
 // fleet-worst hourglass the row used to carry alone. The avatar is a
 // progressive prefix of the display name so two agents that share a first
-// letter (Cline, Codex) become Cl and Co rather than a pair of C's.
+// letter (Claude Code, Codex) become Cl and Co rather than a pair of C's.
 //
 // Pure: StatusBadge and the Svelte row only render what this module decides.
 

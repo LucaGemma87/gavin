@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { writable } from "svelte/store";
 
 // The tab row's menu delegates to the REAL buildTabMenuEntries, so this
@@ -18,7 +18,7 @@ vi.mock("$lib/core/layoutState", () => ({
     complexity: {},
     fallbackChains: {},
   }),
-  resolvedAgentFor: vi.fn(() => ({ profileId: "cline" })),
+  resolvedAgentFor: vi.fn(() => ({ profileId: "claude-code" })),
   closeWorkspace: vi.fn().mockResolvedValue(undefined),
   closePage: vi.fn().mockResolvedValue(undefined),
   movePageAction: vi.fn().mockResolvedValue(undefined),

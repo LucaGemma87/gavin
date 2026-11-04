@@ -15,7 +15,7 @@ const FINISHED: TurnVerdictEntry = { state: "read", reading: { kind: "finished" 
 const PENDING: TurnVerdictEntry = { state: "pending" };
 const NO_OPINION: TurnVerdictEntry = { state: "read", reading: null };
 
-/// cline's permission prompt, as it sits at the bottom of a screen.
+/// Claude Code's permission prompt, as it sits at the bottom of a screen.
 const PERMISSION = [
   "⏺ Bash(rm -rf .cache/sync-journal)",
   "  ⎿  Waiting for permission…",
@@ -177,4 +177,3 @@ describe("a terminal's rows, as lines", () => {
     expect(logicalRows([{ text: "tail of a line  ", wrapped: true }])).toEqual(["tail of a line"]);
   });
 });
-

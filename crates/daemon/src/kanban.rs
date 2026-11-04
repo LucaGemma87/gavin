@@ -22,7 +22,7 @@ pub(crate) fn now_secs() -> i64 {
 
 /// How long a shell call's record is kept (`shell_writes`). Long past the
 /// point it can still be read: it only means anything beside the run's
-/// transcript, and cline deletes those after 30 days unless told
+/// transcript, and Claude Code deletes those after 30 days unless told
 /// otherwise. Without a bound the table would grow by a row per shell
 /// call for as long as gavin is installed.
 const SHELL_WRITES_KEPT_SECS: i64 = 90 * 24 * 60 * 60;
@@ -972,7 +972,7 @@ impl KanbanStore {
 
     /// An agent self-reporting its own CLI's conversation id after the
     /// fact (`gavin_name_session`'s second argument), for a profile that
-    /// cannot have one minted at launch the way cline's is
+    /// cannot have one minted at launch the way Claude Code's is
     /// (codex/gemini/opencode -- `agent-session-id-self-report.md`).
     /// Keyed by `session_id` alone: the caller only knows its own gavin
     /// tab/PTY session id, never the (workspace_id, path) pair, and a
@@ -2484,4 +2484,3 @@ mod tests {
         assert_eq!(reopened.scheduled_fires("/t.md", 20).unwrap().len(), 1);
     }
 }
-

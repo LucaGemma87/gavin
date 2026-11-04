@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import { svelteSources, tsSources } from "$lib/sources";
 
 // A card's own `agent:`/`model:` is one field pair expressed on four
@@ -106,7 +106,7 @@ describe("the launch", () => {
 
   it("gives components a reactive resolver, not the one-shot one", () => {
     // The profile table is fetched asynchronously at bootstrap, so a
-    // modal derived from `agentForCard` would show cline's answer
+    // modal derived from `agentForCard` would show claude-code's answer
     // for the life of the modal.
     expect(source(LAYOUT)).toContain("export const cardAgents = derived(");
   });

@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   reviewersError,
   criticalReviewPageName,
@@ -30,10 +30,10 @@ const BASE = {
 
 describe("reviewersError", () => {
   it("refuses a single reviewer — that is Review with agent", () => {
-    expect(reviewersError([{ profileId: "cline", model: "" }])).toMatch(
+    expect(reviewersError([{ profileId: "claude-code", model: "" }])).toMatch(
       /at least two reviewers/
     );
-    expect(reviewersError([{ profileId: "cline", model: "" }])).toMatch(
+    expect(reviewersError([{ profileId: "claude-code", model: "" }])).toMatch(
       /Review with agent/
     );
   });
@@ -226,8 +226,8 @@ describe("subject labels", () => {
 
 describe("rail-step params", () => {
   it("parses profile and profile:model lines", () => {
-    expect(parseReviewersParam("cline\ncodex:gpt-5\n\n")).toEqual([
-      { profileId: "cline", model: "" },
+    expect(parseReviewersParam("claude-code\ncodex:gpt-5\n\n")).toEqual([
+      { profileId: "claude-code", model: "" },
       { profileId: "codex", model: "gpt-5" },
     ]);
     expect(parseReviewersParam("  ")).toEqual([]);

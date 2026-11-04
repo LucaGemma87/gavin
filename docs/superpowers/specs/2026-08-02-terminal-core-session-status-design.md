@@ -105,7 +105,7 @@ currently using.
 *outside* any OSC escape sequence. This is a deliberate departure from
 the original spec's sketch of prompt-text pattern-matching (`"(y/n)"`,
 `"Continue?"`): research during this milestone's brainstorm found that
-cline and many other CLI tools already ring the terminal bell
+Claude Code and many other CLI tools already ring the terminal bell
 specifically to signal "waiting for your approval/input" — a real,
 intentional, long-standing terminal convention, not something requiring
 per-tool text-pattern heuristics that would need constant upkeep as tools
@@ -285,4 +285,3 @@ from `handleSessionStatusChanged` before the map is overwritten:
   verified manually per this project's consistently-documented limitation
   — no synthetic input/notification observation available in the
   automated verification environment.
-

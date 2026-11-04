@@ -170,7 +170,7 @@ export interface AgentSample {
 /// Mean tree RSS per profile, floored.
 ///
 /// Per PROFILE rather than one number for the fleet because the profiles
-/// genuinely differ -- a cline tree with three MCP servers is not
+/// genuinely differ -- a Claude Code tree with three MCP servers is not
 /// an opencode one -- and because the estimate is always about a
 /// specific next launch, which has a profile.
 ///
@@ -241,7 +241,7 @@ export function fleetMemory(samples: AgentSample[]): FleetMemory {
 // Persisting at all matters for one case: the FIRST launch after a
 // restart. Nothing is running, so there is no sample to average, and
 // without a remembered mean every estimate would fall back to the floor
-// -- which understates a cline tree by two thirds and is exactly
+// -- which understates a Claude Code tree by two thirds and is exactly
 // the reading that would wave a burst through.
 
 export const MEAN_RSS_KEY = "gavin.agentMeanRss";
@@ -377,4 +377,3 @@ export function pressureBannerLine(input: {
       : "gavin is running no agents";
   return `Memory is critical: ${held}. New launches are held.`;
 }
-

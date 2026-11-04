@@ -1,4 +1,4 @@
-﻿# Agent failure detection and conversation resume
+# Agent failure detection and conversation resume
 
 An agent session's `idle` is two seconds of silence. `create_session` spawns
 `/bin/sh -c "<agent> '<prompt>'"`, a non-interactive shell that emits no
@@ -15,7 +15,7 @@ healthy sessions as broken and pauses rails for nothing.
 
 ## The family, as measured
 
-cline v2.1.258, driven in a real PTY against a fake API on localhost
+Claude Code v2.1.258, driven in a real PTY against a fake API on localhost
 (`ANTHROPIC_BASE_URL`), one prompt per run, watched until the screen went quiet
 for twenty seconds. "Rendered screen" is the vt100 model's `contents()`, which
 is what the daemon matches against.
@@ -130,7 +130,7 @@ were against cleanly-completed turns. See "Left open" below.
   re-baselines it on Attach. `PROTOCOL_VERSION` 21.
 - **Profiles.** `failure_patterns`, `session_id_args` and `resume_args` join
   `headless_args` on `AGENT_PROFILES`, under the same verified-rows-only posture:
-  only cline carries any. A profile with no patterns gets NO failure
+  only claude-code carries any. A profile with no patterns gets NO failure
   detection — never "nothing failed" — and one with no resume argv keeps the
   written reconstruction (`composeResumeTaskPrompt`). opencode's equivalents
   belong in the opencode argv spike.
@@ -183,7 +183,6 @@ the suite.
   is no check that the transcript still exists.
 - **Hook-captured session ids** (cmux's `ClaudeHookSessionStoreFile`), the route
   for an agent that will not accept a caller-supplied id. Not needed while
-  cline is the only verified row.
+  claude-code is the only verified row.
 - **Unattended auto-resume** — `.gavin-root/plans/feat-auto-resume.md`, which is
   downstream of this and depends on the failure REASON landing.
-

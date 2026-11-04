@@ -1457,7 +1457,7 @@
       </p>
       <p class="hint">
         <strong>Turn verdict.</strong> When an agent goes quiet, gavin decides its turn ended from two seconds of silence and one
-        error string — which only cline has. An agent that asks you something in a sentence
+        error string — which only Claude Code has. An agent that asks you something in a sentence
         rings no bell, so a rail walks past the question; an agent of any other CLI that breaks
         reads as one that finished. Switching this on takes a second opinion.
       </p>

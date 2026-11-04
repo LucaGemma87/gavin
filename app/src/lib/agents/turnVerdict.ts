@@ -1,8 +1,8 @@
-﻿// A SECOND OPINION on what an agent's quiet turn came to.
+// A SECOND OPINION on what an agent's quiet turn came to.
 //
 // Today gavin decides "the turn ended" from two seconds of silence plus
 // one substring, and the substring exists for exactly one profile
-// (`API Error:`, cline). Measured on this repository's own
+// (`API Error:`, claude-code). Measured on this repository's own
 // transcripts, that rule caught 0 of 16 turns where the agent had asked
 // the human a question in PROSE -- no bell, no menu, just a sentence
 // ending in a question mark -- and every broken turn of codex, gemini,
@@ -459,7 +459,7 @@ function isChrome(line: string): boolean {
 ///
 /// The stripping is the rule the daemon applies to a matched failure line
 /// (`server.rs`'s `strip_tui_decoration`): everything from the first
-/// alphanumeric character on. cline prefixes its lines with
+/// alphanumeric character on. Claude Code prefixes its lines with
 /// `⏺ ` and `✻ `, codex and gemini with their own marks, and a
 /// reason that opens with a bullet reads as a rendering artefact in every
 /// surface that shows it.
@@ -621,4 +621,3 @@ export function verdictStallReason(entry: TurnVerdictEntry | null | undefined): 
   if (reading?.kind === "blocked") return blockedStepReason(reading.said);
   return null;
 }
-

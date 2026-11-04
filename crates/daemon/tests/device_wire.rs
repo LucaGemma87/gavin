@@ -1,4 +1,4 @@
-﻿//! Seam 1, the Device wire: a test Device, built natively from the
+//! Seam 1, the Device wire: a test Device, built natively from the
 //! Companion core, drives a real daemon through a real local Relay
 //! (`docs/superpowers/specs/2026-09-27-companion-design.md`, "Testing
 //! Decisions").
@@ -1381,7 +1381,7 @@ fn presence_pushes_reflect_what_two_devices_are_doing_at_once() {
             "cwd": "/work/phone",
             "workspaceRoot": "/work/phone",
             "command": "claude",
-            "profileId": "cline",
+            "profileId": "claude-code",
         }),
     );
     assert_eq!(started, Some(serde_json::json!("started-in-/work/phone")));

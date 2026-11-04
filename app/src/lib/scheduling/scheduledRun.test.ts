@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { DEFAULT_RUN_SCHEDULED } from "$lib/agents/actionPromptDefaults";
 import { actionPromptById } from "$lib/agents/actionPrompts";
 import { placeholdersIn } from "$lib/orchestration/orchestrationTools";

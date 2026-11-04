@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
   // Choosing the candidates for a best-of-N run, and showing what will
   // exist on disk if the human agrees to it.
   //
@@ -65,7 +65,7 @@
   $effect(() => {
     // Once, and only once the profile table has arrived: it is fetched
     // asynchronously at bootstrap, so seeding from an empty table would
-    // pin cline's answer for the life of the dialog.
+    // pin claude-code's answer for the life of the dialog.
     if (seeded || profiles.length === 0) return;
     seeded = true;
     rows = seedCandidates(profiles, workspaceAgent.profileId, workspaceAgent.model).map((c) => ({

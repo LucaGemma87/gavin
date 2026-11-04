@@ -1,4 +1,4 @@
-﻿// What gavin may do about a broken agent WITHOUT being asked.
+// What gavin may do about a broken agent WITHOUT being asked.
 //
 // The failure-detection work (v21) made a broken agent visible and gave
 // the human one press to resume its conversation. This module is the
@@ -98,7 +98,7 @@ const KNOWN_CAUSES: readonly FailureCause[] = [
 ///
 /// The two prefixes first -- the suspend's and Headroom's -- because they
 /// are gavin's own sentences and can never be in a profile's table. Then the profile's rows in order, FIRST
-/// MATCH WINS -- cline's expired-token line carries the generic
+/// MATCH WINS -- Claude Code's expired-token line carries the generic
 /// `API Error:` marker as well as `/login`, so an unordered scan would
 /// classify an auth failure as a network one and resume into a login
 /// prompt. The ordering guarantee lives with the table, in
@@ -178,7 +178,7 @@ export function autoResumePolicy(cause: FailureCause): AutoResumePolicy {
       // pause gate in `fire`, which defers instead of spending the one
       // attempt against a wall. What was true when this was written --
       // "the boundary is a clock gavin cannot read" -- is no longer true
-      // for `cline` and `codex`, and is still true for the rest.
+      // for `claude-code` and `codex`, and is still true for the rest.
       return {
         kind: "hold",
         why: "the usage limit has to reset before another attempt can get anywhere",
@@ -445,4 +445,3 @@ export function resumeNoteFor(
 export function resumeSkippedBody(label: string, why: string): string {
   return `${label} stopped and was not resumed — ${why}`;
 }
-

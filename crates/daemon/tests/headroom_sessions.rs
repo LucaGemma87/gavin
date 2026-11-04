@@ -1,4 +1,4 @@
-﻿//! Out-of-process coverage for compressed sessions.
+//! Out-of-process coverage for compressed sessions.
 //!
 //! The decision and the recipe are pure and unit-tested where they live
 //! (`headroom/compress.rs`). What is tested here is that they REACH the
@@ -164,13 +164,15 @@ fn launch_line(
     profile: Option<&str>,
     api_family: Option<&str>,
 ) -> Launched {
-    let id = created(daemon.ask(Request::CreateSession {
+    let id = created(daemon.ask(Request::CreateAuthorizedSession {
         workspace_path: root.to_string(),
         cwd: cwd.to_string(),
         command: Some(line.to_string()),
         profile_id: profile.map(str::to_string),
         api_family: api_family.map(str::to_string),
         without_headroom: false,
+        approved_once: true,
+        evidence: None,
     }));
     reported(machine, daemon, id)
 }
@@ -568,6 +570,7 @@ fn a_session_that_is_not_compressed_keeps_the_routing_the_human_gave_it() {
 /// A session another agent spawns over MCP never passes through the
 /// app, so there is no profile: the command line speaks for itself.
 #[test]
+#[ignore = "MCP spawns are refused under every launch-cost policy until they have an approval path (ADR 0013)"]
 fn an_mcp_spawn_of_an_agent_is_compressed_and_one_of_anything_else_is_not() {
     if unavailable_here() {
         return;
@@ -807,13 +810,15 @@ fn a_list_naming_no_workspace_turns_compression_off_everywhere() {
 const HELD: &str = r#"while [ ! -e "$HOME/go-$GAVIN_SESSION_ID" ]; do sleep 0.05; done"#;
 
 fn held(daemon: &Daemon, root: &str, profile: Option<&str>) -> String {
-    created(daemon.ask(Request::CreateSession {
+    created(daemon.ask(Request::CreateAuthorizedSession {
         workspace_path: root.to_string(),
         cwd: root.to_string(),
         command: Some(HELD.to_string()),
         profile_id: profile.map(str::to_string),
         api_family: None,
         without_headroom: false,
+        approved_once: true,
+        evidence: None,
     }))
 }
 
@@ -995,13 +1000,15 @@ fn a_compressed_card_run_whose_tab_was_closed_keeps_what_headroom_saved_it() {
 /// A launch as auto-resume makes it, with the override when it relaunches
 /// a session that broke on Headroom, and the daemon's whole reply.
 fn create(daemon: &Daemon, root: &str, line: &str, profile: Option<&str>, without_headroom: bool) -> Response {
-    daemon.ask(Request::CreateSession {
+    daemon.ask(Request::CreateAuthorizedSession {
         workspace_path: root.to_string(),
         cwd: root.to_string(),
         command: Some(line.to_string()),
         profile_id: profile.map(str::to_string),
         api_family: None,
         without_headroom,
+        approved_once: true,
+        evidence: None,
     })
 }
 

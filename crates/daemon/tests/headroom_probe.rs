@@ -278,7 +278,7 @@ fn request(who: &str, calls: &[Call]) -> String {
     .to_string()
 }
 
-/// Sends one request the way cline on a subscription login does,
+/// Sends one request the way Claude Code on a subscription login does,
 /// tagged the way gavin tags a compressed session. Returns the size of
 /// what was sent.
 fn send(port: u16, who: &str, calls: &[Call]) -> usize {
@@ -493,4 +493,3 @@ fn concurrent_compressions_do_not_leak_into_each_other() {
     );
     daemon.headroom(Request::StopHeadroom);
 }
-

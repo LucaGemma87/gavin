@@ -26,8 +26,8 @@ use std::path::{Path, PathBuf};
 /// some agent's own installer puts its binary without touching any
 /// system `PATH`:
 ///
-/// - `.local/bin` -- cline's native installer, Cursor Agent, uv
-/// - `.claude/local` -- cline's older per-user install
+/// - `.local/bin` -- Claude Code's native installer, Cursor Agent, uv
+/// - `.claude/local` -- Claude Code's older per-user install
 /// - `.kimi-code/bin` -- Kimi Code
 /// - `.opencode/bin` -- opencode
 /// - `.bun/bin`, `.cargo/bin` -- `bun add -g`, `cargo install`
@@ -191,4 +191,3 @@ mod tests {
         );
     }
 }
-

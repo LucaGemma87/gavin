@@ -1,4 +1,4 @@
-﻿//! Agent skills -- Matt Pocock's skills -- status and install, per agent
+//! Agent skills -- Matt Pocock's skills -- status and install, per agent
 //! profile.
 //!
 //! Driven by `docs/superpowers/specs/2026-10-05-mattpocock-skills-install-matrix.md`,
@@ -1098,8 +1098,8 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         assert_eq!(overlay_profile_id(dir.path(), Some("codex")), "codex");
         assert_eq!(overlay_profile_id(dir.path(), Some("  gemini  ")), "gemini");
-        assert_eq!(overlay_profile_id(dir.path(), Some("")), "cline");
-        assert_eq!(overlay_profile_id(dir.path(), None), "cline");
+        assert_eq!(overlay_profile_id(dir.path(), Some("")), "claude-code");
+        assert_eq!(overlay_profile_id(dir.path(), None), "claude-code");
         let status = status_for(dir.path(), "codex", false, None);
         assert!(status.installable);
         assert_eq!(status.state, "absent");

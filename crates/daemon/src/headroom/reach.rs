@@ -2,7 +2,7 @@
 //!
 //! A session is compressed by environment, and environment is only as
 //! good as the agent CLI's respect for it: Headroom documents one gap
-//! for cline already (#951, background workers that re-read the
+//! for Claude Code already (#951, background workers that re-read the
 //! settings file instead of inheriting the environment), and any CLI
 //! can stop honouring a base URL in its next release. Such a session
 //! is marked compressed, reaches its model directly, and nothing about
@@ -133,4 +133,3 @@ mod tests {
         assert_eq!(Reach::Unknown.id(), "unknown");
     }
 }
-

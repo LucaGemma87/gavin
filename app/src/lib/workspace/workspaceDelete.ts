@@ -24,7 +24,7 @@ export interface GavinFootprint {
   /// `.gavin-root/` and what is in it, or null when there is none.
   gavinRoot: GavinRootFootprint | null;
   /// Installed gavin skill directories, under whichever root the
-  /// workspace's profile uses (`.claude/skills/gavin*` for cline,
+  /// workspace's profile uses (`.claude/skills/gavin*` for Claude Code,
   /// `.opencode/skills/gavin*` for opencode).
   skills: string[];
   /// The gavin-owned agent definition, where the profile installs one --

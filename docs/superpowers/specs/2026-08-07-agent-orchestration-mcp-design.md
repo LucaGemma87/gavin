@@ -3,7 +3,7 @@
 Sub-project **3 of 6** of the agent-orchestration phase. Phase decisions live in
 `docs/superpowers/brainstorms/2026-08-06-agent-orchestration-brainstorm.md`; this
 sub-project is governed by **D1** (inject the full workflow), **D3** (MCP from day
-one, daemon-hosted engine), **D4** (cline behind a profile seam), and its own
+one, daemon-hosted engine), **D4** (Claude Code behind a profile seam), and its own
 **D18–D22**. Foundations and sub-2 provide ready handler bodies:
 `init_gavin_root`, `create_gavin_context`, `scan_root`, `set_plan_field`, session
 creation, and the watch registry mapping roots ↔ open workspaces.
@@ -13,7 +13,7 @@ tools — including spawning visible gavin terminal sessions — plus an injecte
 skill teaching the workflow; and the app⇄daemon protocol gains a version
 handshake so stale-daemon mismatches fail with an actionable message.
 
-**Out of scope:** additional agent profiles beyond cline (the seam stays),
+**Out of scope:** additional agent profiles beyond Claude Code (the seam stays),
 per-request tolerant protocol envelopes (the handshake prevents the mismatch
 class up front), plan-body editing UI (sub-4/5), home tiles (sub-6).
 
@@ -29,7 +29,7 @@ dependencies (serde/serde_json only):
   tools-only capability set), the `notifications/initialized` notification
   (ignored), `tools/list`, `tools/call`, `ping`. Anything else → JSON-RPC
   method-not-found. **stdout is protocol-only; all diagnostics to stderr.**
-- **Root resolution:** cline launches project-scope MCP servers with the
+- **Root resolution:** Claude Code launches project-scope MCP servers with the
   project directory as cwd. The shim walks up from its cwd to the nearest
   directory containing `.gavin-root` — that is the gavin root injected into
   every tool call. No `.gavin-root` above cwd → every tool (except
@@ -160,7 +160,7 @@ Vitest, no component tests; manual smoke for rendered UI and real-agent flows).
   (including the kill-if-unplaceable race rule); setup-writer merge matrix as
   tempdir Rust tests (`.mcp.json` absent / other servers / stale gavin entry /
   unparseable; `CLAUDE.md` replace / append / create; skill overwrite).
-- **Manual smoke:** in a set-up workspace, a real cline session's `/mcp`
+- **Manual smoke:** in a set-up workspace, a real Claude Code session's `/mcp`
   lists gavin; each tool answers; a spawn lands on the Agents page attached and
   scrolling; a deliberately stale daemon produces the friendly version error at
   app startup and as a tool error.
@@ -173,4 +173,3 @@ independently testable over the socket and via the shim's own tests), then
 sub-projects consume: the skill/setup writer patterns for additional agent
 profiles (D4), `ScanGavinRoot` for any future headless consumer, and the
 Agents page as sub-6's fleet-monitor tile source.
-

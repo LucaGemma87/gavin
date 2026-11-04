@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { get } from "svelte/store";
 import type { SessionStatus } from "$lib/core/notifications";
 
@@ -21,7 +21,7 @@ vi.mock("$lib/core/layoutState", async () => {
   const { writable: w } = await import("svelte/store");
   return {
     daemonCompat: w(null),
-    resolvedAgentFor: vi.fn(() => ({ profileId: "cline" })),
+    resolvedAgentFor: vi.fn(() => ({ profileId: "claude-code" })),
     agentForCard: vi.fn(() => ({ profileId: "codex" })),
     setSessionStatusHook: vi.fn((hook) => {
       captured.hook = hook;
@@ -99,7 +99,7 @@ import { workspaceWindows } from "$lib/shell/appWindowState";
 
 const CARD = "/ws/.gavin-root/plans/a.md";
 
-// What the daemon renders for a cline turn that ended on a prose
+// What the daemon renders for a Claude Code turn that ended on a prose
 // question, right-trimmed and with no padding rows -- so it survives
 // `screenTail` unchanged and the assertion below can name it exactly.
 const SCREEN = ["⏺ Which do you want?", "", "╭──╮", "│ > │", "╰──╯"].join("\n");
@@ -340,7 +340,7 @@ describe("a quiet transition", () => {
     noteQuietTransition("s1");
     await flush();
     expect(backend.typesafeAsk).toHaveBeenCalledWith(
-      expect.objectContaining({ state: { agent_cli: "cline", screen: SCREEN } })
+      expect.objectContaining({ state: { agent_cli: "claude-code", screen: SCREEN } })
     );
   });
 
@@ -537,4 +537,3 @@ describe("one ask per workspace window", () => {
     expect(backend.typesafeAsk).not.toHaveBeenCalled();
   });
 });
-

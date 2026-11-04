@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { get, writable } from "svelte/store";
 
 // The driver's one entry point is a hook it hands to layoutState, so the
@@ -22,7 +22,7 @@ vi.mock("$lib/core/layoutState", async () => {
     }),
     daemonCompat: w({ daemonVersion: 22, appVersion: 22, degraded: false }),
     resolvedAgentFor: vi.fn(() => ({
-      profileId: "cline",
+      profileId: "claude-code",
       failureCauses: [
         { pattern: "/login", cause: "auth" },
         { pattern: "exceeded your usage limit", cause: "usage-limit" },
@@ -281,7 +281,7 @@ describe("a standalone card run", () => {
   // decision that was mine". Without it, nothing happens AND nothing is
   // said -- a workspace that never asked must not be nagged about a
   // choice it never made.
-  // The profiles with no failure table -- and the cline lines the
+  // The profiles with no failure table -- and the Claude Code lines the
   // table has never seen. Their failure is `unknown` to the table, and
   // the turn verdict is what can name it; but the verdict lands a second
   // after the failure does, and this hook fires on the failure.
@@ -888,4 +888,3 @@ describe("one resume per workspace window", () => {
     expect(resumeCard).not.toHaveBeenCalled();
   });
 });
-

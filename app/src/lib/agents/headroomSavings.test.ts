@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   savedInWindow,
   savingsByProfile,
@@ -148,21 +148,21 @@ describe("savingsByProfile", () => {
       saving({ sessionId: "s-codex", workspaceId: "ws-b", tokensSaved: 7_000 }),
     ];
     const rows = [
-      { profileId: "cline", worst: fiveHour() },
+      { profileId: "claude-code", worst: fiveHour() },
       { profileId: "codex", worst: weekly() },
       { profileId: "gemini", worst: null },
     ];
-    const byWorkspace = { "ws-a": "cline", "ws-b": "codex", "ws-c": null };
+    const byWorkspace = { "ws-a": "claude-code", "ws-b": "codex", "ws-c": null };
 
     const out = savingsByProfile(rows, byWorkspace, runs);
 
-    expect(out["cline"]).toEqual({ tokens: 1_000, requests: 4, runs: 1 });
+    expect(out["claude-code"]).toEqual({ tokens: 1_000, requests: 4, runs: 1 });
     expect(out["codex"]).toEqual({ tokens: 7_000, requests: 4, runs: 1 });
     expect(out["gemini"]).toBeNull();
   });
 
   it("is unknown for every row until the snapshots have been read", () => {
-    const out = savingsByProfile([{ profileId: "cline", worst: fiveHour() }], { "ws-a": "cline" }, null);
-    expect(out["cline"]).toBeNull();
+    const out = savingsByProfile([{ profileId: "claude-code", worst: fiveHour() }], { "ws-a": "claude-code" }, null);
+    expect(out["claude-code"]).toBeNull();
   });
 });

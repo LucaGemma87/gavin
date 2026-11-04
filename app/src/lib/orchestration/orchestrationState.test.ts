@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { isAwaitingFirstSubmit } from "$lib/agents/headroomMarkState";
 import { get, writable, type Writable } from "svelte/store";
 
@@ -47,8 +47,8 @@ const agentMock = vi.hoisted(() =>
     command: "claude",
     launchCommand: "claude",
     file: "CLAUDE.md",
-    profile: "cline",
-    profileId: "cline",
+    profile: "claude-code",
+    profileId: "claude-code",
     model: "sonnet",
     failurePatterns: ["API Error:"],
     failureCauses: [
@@ -57,7 +57,7 @@ const agentMock = vi.hoisted(() =>
     ],
     sessionIdArgs: "",
     resumeArgs: "",
-    label: "cline",
+    label: "Claude Code",
     promptArgs: "",
   }))
 );
@@ -101,8 +101,8 @@ vi.mock("$lib/core/layoutState", () => ({
   agentForProfile: agentMock,
   agentProfilesStore: writable([
     {
-      id: "cline",
-      label: "cline",
+      id: "claude-code",
+      label: "Claude Code",
       models: ["sonnet", "opus"],
       promptArgs: "",
     },
@@ -997,7 +997,7 @@ describe("rail controls", () => {
   it("Resume step relaunches without Headroom when auto-resume says the step broke on it", async () => {
     setRailPageLive();
     vi.mocked(layoutStateModule.resolvedAgentFor).mockReturnValue({
-      profileId: "cline",
+      profileId: "claude-code",
       launchCommand: "claude",
       promptArgs: "",
       resumeArgs: "--resume",
@@ -1016,7 +1016,7 @@ describe("rail controls", () => {
       "p1",
       "/x/wt",
       `claude --resume ${shellQuote("conv-1")}`,
-      { profileId: "cline", withoutHeadroom: true }
+      { profileId: "claude-code", withoutHeadroom: true }
     );
     expect(isAwaitingFirstSubmit("sess-2")).toBe(true);
   });
@@ -1024,7 +1024,7 @@ describe("rail controls", () => {
   it("Resume step names the bare profile on every other resume", async () => {
     setRailPageLive();
     vi.mocked(layoutStateModule.resolvedAgentFor).mockReturnValue({
-      profileId: "cline",
+      profileId: "claude-code",
       launchCommand: "claude",
       promptArgs: "",
       resumeArgs: "--resume",
@@ -1042,7 +1042,7 @@ describe("rail controls", () => {
       "p1",
       "/x/wt",
       `claude --resume ${shellQuote("conv-1")}`,
-      "cline"
+      "claude-code"
     );
   });
 
@@ -1112,7 +1112,7 @@ describe("rail controls", () => {
   it("Resume step refuses a conversation the agent never wrote", async () => {
     setRailPageLive();
     vi.mocked(layoutStateModule.resolvedAgentFor).mockReturnValue({
-      profileId: "cline",
+      profileId: "claude-code",
       launchCommand: "claude",
       promptArgs: "",
       resumeArgs: "--resume",
@@ -1128,7 +1128,7 @@ describe("rail controls", () => {
 
     expect(err).toMatch(/before it wrote a line/);
     expect(err).toMatch(/Retry/);
-    expect(backend.conversationLog).toHaveBeenCalledWith("cline", "conv-1");
+    expect(backend.conversationLog).toHaveBeenCalledWith("claude-code", "conv-1");
     expect(layoutStateModule.createSessionOnPage).not.toHaveBeenCalled();
     // Nothing launched, so nothing written: the step stays stalled where
     // it was, with its reason.
@@ -1302,7 +1302,7 @@ describe("a rail gets its page at its first launch (spec O16)", () => {
   // tab -- so nothing blank is opened to have something to put on it.
   // ...and, for an agent, under the profile launching it. `null` is a
   // launch that names none: a command tool is a shell.
-  const pageArgs = (command: unknown = expect.any(String), profileId: string | null = "cline") => [
+  const pageArgs = (command: unknown = expect.any(String), profileId: string | null = "claude-code") => [
     "ws-1",
     "backend",
     "/x/wt",
@@ -1391,7 +1391,7 @@ describe("a rail gets its page at its first launch (spec O16)", () => {
       "pg-rail",
       "/x/wt",
       expect.any(String),
-      "cline"
+      "claude-code"
     );
   });
 
@@ -1431,7 +1431,7 @@ describe("a rail gets its page at its first launch (spec O16)", () => {
       "pg-rail",
       "/x/wt",
       expect.any(String),
-      "cline"
+      "claude-code"
     );
   });
 
@@ -1446,7 +1446,7 @@ describe("a rail gets its page at its first launch (spec O16)", () => {
       null,
       "/x/wt",
       expect.any(String),
-      "cline"
+      "claude-code"
     );
     expect(backend.setStepRun).toHaveBeenCalledWith("t1", "running", "sess-9", null, null, "/x/wt", 0, "ws-1");
     expect(backend.setRailRun).not.toHaveBeenCalled();
@@ -1743,7 +1743,7 @@ describe("a rail gets its page at its first launch (spec O16)", () => {
 
   it("resuming a stalled step reopens it on the rail's page too", async () => {
     vi.mocked(layoutStateModule.resolvedAgentFor).mockReturnValueOnce({
-      profileId: "cline",
+      profileId: "claude-code",
       launchCommand: "claude",
       promptArgs: "",
       resumeArgs: "--resume",
@@ -2323,7 +2323,7 @@ describe("executeActions", () => {
       "p1",
       "/x/wt",
       expect.stringContaining("claude "),
-      "cline"
+      "claude-code"
     );
     expect(kanbanStateModule.linkCardSessionAction).toHaveBeenCalledWith("ws-1", {
       path: "/x/a.md",
@@ -3671,7 +3671,7 @@ describe("launching a tool step", () => {
   it("names the launching profile for an agent tool, and none for a shell", async () => {
     await railOn("builtin:commit");
     await executeActions("ws-1", [{ kind: "launch", stepId: "t1" }]);
-    expect(vi.mocked(layoutStateModule.createSessionOnPage).mock.calls[0][4]).toBe("cline");
+    expect(vi.mocked(layoutStateModule.createSessionOnPage).mock.calls[0][4]).toBe("claude-code");
 
     vi.mocked(layoutStateModule.createSessionOnPage).mockClear();
     vi.mocked(layoutStateModule.profileIdForLaunch).mockClear();
@@ -3842,7 +3842,7 @@ describe("dropping onto a running stage", () => {
       "p1",
       "/x/wt",
       expect.stringContaining("claude "),
-      "cline"
+      "claude-code"
     );
     const dropped = get(orchestrations)["ws-1"].rails[0].stages[0].steps[2];
     expect(get(orchestrations)["ws-1"].stepRuns).toContainEqual({
@@ -4686,7 +4686,7 @@ describe("a rail armed from outside the app (a push carrying run state)", () => 
         "p1",
         "/x/wt",
         expect.stringContaining("claude"),
-        "cline"
+        "claude-code"
       )
     );
     expect(backend.setStepRun).toHaveBeenCalledWith("t1", "running", "sess-9", null, null, "/x/wt", 0, "ws-1");
@@ -5141,4 +5141,3 @@ describe("one scheduler per workspace, however many windows", () => {
     expect([...get(decoyEditsByWorkspace)["ws-1"]]).toEqual(["t1"]);
   });
 });
-

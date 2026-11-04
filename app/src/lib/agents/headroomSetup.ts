@@ -1,4 +1,4 @@
-﻿// Headroom's setup surfaces, as rules (`2026-09-28-headroom-design.md`,
+// Headroom's setup surfaces, as rules (`2026-09-28-headroom-design.md`,
 // "Detection and install", "The switch" and "Platforms").
 //
 // Three surfaces draw Headroom: the app-wide Settings section, the switch
@@ -397,7 +397,7 @@ export function headroomOptions(inherited: boolean): { value: string; label: str
 /// null for one that is (spec, "The recipes"; the daemon's `unroutable`).
 export function profileRecipeReason(profileId: string, customApiFamily: ApiFamily): string | null {
   switch (profileId) {
-    case "cline":
+    case "claude-code":
     case "codex":
     case "opencode":
     case "kimi-code":

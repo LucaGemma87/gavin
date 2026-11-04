@@ -89,15 +89,21 @@ export async function createSession(
 ): Promise<string> {
   const ask = { ...(workspaceAgent ? { workspaceAgent: true } : {}), ...(workspaceId ? { workspaceId } : {}) };
   const isPotentialAgentLaunch = Boolean(profileId || command || workspaceAgent);
+  const launchProfileId = typeof profileId === "object" ? profileId.profileId : profileId;
+  const evidence = isPotentialAgentLaunch
+    ? (await import("$lib/agents/launchEvidence")).launchEvidenceFor(launchProfileId)
+    : undefined;
   const approvedOnce = isPotentialAgentLaunch
     ? await (await import("$lib/agents/launchAuthorization")).authorizeLaunch(
         workspaceRoot,
         command,
         profileId,
         workspaceAgent,
-        workspaceId
+        workspaceId,
+        evidence
       )
     : false;
+  const evidenceArg = evidence ? { evidence } : {};
   if (typeof profileId === "object") {
     const { profileId: id, withoutHeadroom } = profileId;
     return invoke("create_session", {
@@ -107,10 +113,19 @@ export async function createSession(
       profileId: id,
       withoutHeadroom,
       approvedOnce,
+      ...evidenceArg,
       ...ask,
     });
   }
-  return invoke("create_session", { cwd, command, workspaceRoot, profileId, approvedOnce, ...ask });
+  return invoke("create_session", {
+    cwd,
+    command,
+    workspaceRoot,
+    profileId,
+    approvedOnce,
+    ...evidenceArg,
+    ...ask,
+  });
 }
 
 

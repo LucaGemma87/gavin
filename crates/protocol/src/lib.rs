@@ -1,4 +1,4 @@
-﻿use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::io::{BufRead, Read, Write};
@@ -121,6 +121,18 @@ pub const RUN_GIT_CAPPED_MIN_VERSION: u32 = 58;
 /// probe at all -- into actionable "restart the daemon" errors instead of
 /// mysteries (see the 2026-08-07 stale-daemon incident).
 ///
+/// v82 lets a launch carry the evidence that its route is already paid
+/// for (`launch_evidence`, ADR 0013 amendment). `CreateAuthorizedSession`
+/// gains `evidence`, `serde(default)`: the app reads a signed-in agent's
+/// subscription windows through the same probes the usage panel draws,
+/// and sends what it saw, where it saw it and when. The daemon alone
+/// decides whether that is still good (`launch_policy::classify`) and
+/// treats anything missing, stale or from a connection that is not the
+/// app as `Unknown`. Evidence can only ever clear a route to launch; an
+/// approval is still never an entitlement. No Request variant is new, so
+/// `min_version_for` cannot see it: the app owes
+/// `FEATURE_MIN_VERSION.launchEvidence`. `MIN_COMPATIBLE_VERSION` stands.
+///
 /// v80 is the Orchestrated plan (`feat-plan-orchestrates-nested-tasks.md`,
 /// ADR 0012): a plan whose `children: sequence | parallel` line runs each
 /// of its Nested tasks as its own session before the plan's own.
@@ -238,7 +250,7 @@ pub const RUN_GIT_CAPPED_MIN_VERSION: u32 = 58;
 ///
 /// v72 records what each shell call of an agent wrote
 /// (`feat-touched-files-shell-hook.md`): `RecordShellWrites`, sent by the
-/// `gavin-mcp shell-writes` hook a cline or kimi launch runs around
+/// `gavin-mcp shell-writes` hook a Claude Code or kimi launch runs around
 /// every shell call, and `ShellWrites`, which the Review tab reads so a
 /// command the hook watched is judged by what it changed rather than by
 /// the paths its text names. Two new TYPES, so `min_version_for` is the
@@ -246,7 +258,7 @@ pub const RUN_GIT_CAPPED_MIN_VERSION: u32 = 58;
 /// its record and the tab keeps today's reading.
 /// `FEATURE_MIN_VERSION.shellWrites` is the app's copy, read by the
 /// Review tab before it asks. The same version is also the daemon adding
-/// the hook to a cline launch line, which no request carries.
+/// the hook to a Claude Code launch line, which no request carries.
 ///
 /// v71 ranks a workspace's cards by meaning (`opts-gavin-get-tree-archived-
 /// cards.md`): `SearchCards`, gavin-mcp's `gavin_find_cards`, embeds every
@@ -730,7 +742,7 @@ pub const RUN_GIT_CAPPED_MIN_VERSION: u32 = 58;
 ///
 /// v38 widens `NameSession` with `agent_conversation_id`: an agent whose
 /// CLI mints its OWN conversation id (codex, gemini, opencode -- unlike
-/// cline, which gavin mints one for at launch) self-reports it once
+/// Claude Code, which gavin mints one for at launch) self-reports it once
 /// it exists, and the daemon stores it in the reporting session's
 /// `card_sessions.conversation_id`, exactly where a minted id already
 /// lives, so resume treats the two sources alike. `serde(default)` on an
@@ -1061,7 +1073,7 @@ pub const RUN_GIT_CAPPED_MIN_VERSION: u32 = 58;
 /// is untouched -- the gate that matters is the app's
 /// FEATURE_MIN_VERSION.groups, because a v14 daemon parses the request
 /// fine and then drops both fields on the floor.
-pub const PROTOCOL_VERSION: u32 = 81;
+pub const PROTOCOL_VERSION: u32 = 82;
 
 /// The first version that keeps the Workspace log and pushes
 /// `WorkspaceLogAppended` (v79). The daemon compares the watching app's
@@ -1115,6 +1127,12 @@ pub const CUSTOM_API_FAMILY_MIN_VERSION: u32 = 48;
 /// daemon's version with this (`FEATURE_MIN_VERSION.headroomFailures` in
 /// the app, and the host's `create_agent_session` behind it).
 pub const HEADROOM_FAILURES_MIN_VERSION: u32 = 50;
+
+/// The first daemon that reads `CreateAuthorizedSession.evidence` (v82).
+/// An older one drops the field and asks for an approval the desk had no
+/// reason to expect, so a client compares the daemon's version with this
+/// before sending it (`FEATURE_MIN_VERSION.launchEvidence` in the app).
+pub const LAUNCH_EVIDENCE_MIN_VERSION: u32 = 82;
 
 /// Where the daemon's dial to the Relay stands (v61).
 ///
@@ -1223,7 +1241,7 @@ pub enum Request {
         workspace_path: String,
         cwd: String,
         command: Option<String>,
-        /// The agent profile doing the launching (`cline`,
+        /// The agent profile doing the launching (`claude-code`,
         /// `codex`, …), or `None` for anything that is not an agent
         /// launch: a shell tab, a command tool, a setup script (v47).
         ///
@@ -1279,6 +1297,11 @@ pub enum Request {
         without_headroom: bool,
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         approved_once: bool,
+        /// Why the app believes this route is already paid for (v82).
+        /// Honoured only for a profile launch from the app or a local
+        /// client, and only while fresh; absent means `Unknown`.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        evidence: Option<LaunchEvidence>,
     },
     ListSessions,
     /// What every live session is costing right now: one sample of the
@@ -2261,7 +2284,7 @@ pub enum Request {
         /// The agent CLI's OWN native session/conversation id (v38),
         /// self-reported once the agent knows it -- codex, gemini and
         /// opencode each mint their own and cannot be handed one at
-        /// launch the way cline is (`session_id_args`). NEVER the
+        /// launch the way Claude Code is (`session_id_args`). NEVER the
         /// same thing as `session_id` above, which is *gavin's* tab/PTY
         /// session from `GAVIN_SESSION_ID`; keep the two spelled
         /// differently everywhere (MCP param, this field, code comments)
@@ -2757,7 +2780,7 @@ pub enum Request {
 ///
 /// `None` is a first-class variant, not an absent field: a connection may
 /// legitimately introduce itself as nobody in particular (a hand-started
-/// cline in a terminal) and still get the `local` role, and making
+/// Claude Code in a terminal) and still get the `local` role, and making
 /// that explicit keeps the daemon's `authorize` from having to treat "no
 /// auth" and "unparseable auth" alike.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -4416,6 +4439,28 @@ impl Default for LaunchCostPolicy {
     fn default() -> Self {
         Self::Ask
     }
+}
+
+/// What a verified source says a route's requests are charged against.
+/// Only the two answers that let a launch proceed without asking exist:
+/// a "this costs money" claim would only make the launch stricter, and
+/// the daemon already asks about everything it cannot place.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum EvidencedEntitlement {
+    FreeAllowance,
+    IncludedQuota,
+}
+
+/// A reading that a route is covered, with where it came from and when
+/// it was true. `observed_at` is epoch SECONDS of the data, not of the
+/// request; the daemon refuses it once it is old (`launch_policy`).
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct LaunchEvidence {
+    pub entitlement: EvidencedEntitlement,
+    pub source: String,
+    pub observed_at: u64,
 }
 
 /// One workspace's optional policy override. `None` inherits the app
@@ -7698,15 +7743,15 @@ mod tests {
             workspace_path: "/ws".into(),
             cwd: "/ws/tree".into(),
             command: Some("claude 'do it'".into()),
-            profile_id: Some("cline".into()),
+            profile_id: Some("claude-code".into()),
             api_family: None,
             without_headroom: false,
         };
         let written = serde_json::to_string(&launch).unwrap();
-        assert!(written.contains(r#""profile_id":"cline""#), "{written}");
+        assert!(written.contains(r#""profile_id":"claude-code""#), "{written}");
         match serde_json::from_str::<Request>(&written).unwrap() {
             Request::CreateSession { profile_id, .. } => {
-                assert_eq!(profile_id.as_deref(), Some("cline"));
+                assert_eq!(profile_id.as_deref(), Some("claude-code"));
             }
             other => panic!("wrong variant: {other:?}"),
         }
@@ -7746,7 +7791,7 @@ mod tests {
             workspace_path: "/ws".into(),
             cwd: "/ws".into(),
             command: Some("claude".into()),
-            profile_id: Some("cline".into()),
+            profile_id: Some("claude-code".into()),
             api_family: None,
             without_headroom: false,
         };
@@ -7777,7 +7822,7 @@ mod tests {
             workspace_path: "/ws".into(),
             cwd: "/ws".into(),
             command: Some("claude".into()),
-            profile_id: Some("cline".into()),
+            profile_id: Some("claude-code".into()),
             api_family: None,
             without_headroom: false,
         };
@@ -7910,7 +7955,7 @@ mod tests {
             workspace_path: "/ws".into(),
             cwd: "/ws".into(),
             command: Some("claude --resume abc".into()),
-            profile_id: Some("cline".into()),
+            profile_id: Some("claude-code".into()),
             api_family: None,
             without_headroom: true,
         };
@@ -7930,14 +7975,14 @@ mod tests {
             workspace_path: "/ws".into(),
             cwd: "/ws".into(),
             command: Some("claude --resume abc".into()),
-            profile_id: Some("cline".into()),
+            profile_id: Some("claude-code".into()),
             api_family: None,
             without_headroom: false,
         };
         assert!(!serde_json::to_string(&launch).unwrap().contains("without_headroom"));
 
         // What a v49 client sends.
-        let older = r#"{"type":"CreateSession","workspace_path":"/ws","cwd":"/ws","command":null,"profile_id":"cline"}"#;
+        let older = r#"{"type":"CreateSession","workspace_path":"/ws","cwd":"/ws","command":null,"profile_id":"claude-code"}"#;
         match serde_json::from_str::<Request>(older).unwrap() {
             Request::CreateSession { without_headroom, .. } => assert!(!without_headroom),
             other => panic!("wrong variant: {other:?}"),
@@ -8559,7 +8604,7 @@ mod tests {
             has_prd: false,
             config_warning: false,
             agent: Some(AgentConfig {
-                profile: Some("cline".to_string()),
+                profile: Some("claude-code".to_string()),
                 file: None,
                 command: Some("claude --model opus".to_string()),
                 mcp_file: None,
@@ -8579,7 +8624,7 @@ mod tests {
         assert_eq!(
             json["agent"],
             serde_json::json!({
-                "profile": "cline",
+                "profile": "claude-code",
                 "file": null,
                 "command": "claude --model opus",
                 "mcpFile": null,
@@ -8915,7 +8960,9 @@ mod tests {
         // FEATURE_MIN_VERSION.orchestratedPlans.
         // v81: authorization-bearing session launches and launch-policy
         // synchronization, plus the MCP spawn gate.
-        assert_eq!(PROTOCOL_VERSION, 81);
+        // v82: CreateAuthorizedSession.evidence -- launch entitlement
+        // evidence, behind FEATURE_MIN_VERSION.launchEvidence.
+        assert_eq!(PROTOCOL_VERSION, 82);
     }
 
     #[test]
@@ -9220,6 +9267,7 @@ mod tests {
                 api_family: None,
                 without_headroom: false,
                 approved_once: false,
+                evidence: None,
             },
             Request::ListSessions,
             Request::WriteInput { id: "s".into(), data: "d".into() },
@@ -9627,7 +9675,9 @@ mod tests {
         }
 
         let mut expected: HashMap<u32, usize> = HashMap::new();
-        expected.insert(1, 21);
+        // 20, not 21: SpawnAgentSession left this band for v81 when the
+        // MCP spawn became gated by the launch-cost policy.
+        expected.insert(1, 20);
         expected.insert(4, 2);
         expected.insert(5, 2);
         expected.insert(6, 1);

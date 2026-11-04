@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { isAwaitingFirstSubmit } from "$lib/agents/headroomMarkState";
 import { get, writable } from "svelte/store";
 import type { DaemonCompat } from "$lib/core/daemonCompat";

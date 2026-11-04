@@ -1,4 +1,4 @@
-﻿// Seam 2 for the settings screens: the desktop's own settings loaders and
+// Seam 2 for the settings screens: the desktop's own settings loaders and
 // writers (`layoutState.ts`, `agentPauseState.ts`, `launchQueue.ts`, the
 // theme) on one end of the channel, the Demo Workstation on the other, and
 // the wire read message by message.
@@ -95,10 +95,10 @@ describe("reading the settings", () => {
     const demo = createDemoWorkstation();
     demo.state.settings.autoCommit = true;
     demo.state.settings.terminalFontSize = 15;
-    demo.state.settings.agentModels = { "cline": "opus" };
+    demo.state.settings.agentModels = { "claude-code": "opus" };
     demo.state.settings.agentDefaults = {
       ...demo.state.settings.agentDefaults,
-      pauseCycles: { "cline": CYCLE },
+      pauseCycles: { "claude-code": CYCLE },
     };
     demo.state.settings.launch = {
       maxInFlight: 2,
@@ -130,9 +130,9 @@ describe("reading the settings", () => {
     );
     expect(get(autoCommitDefault)).toBe(true);
     expect(get(terminalFontSizeDefault)).toBe(15);
-    expect(get(agentModelDefaultsStore)).toEqual({ "cline": "opus" });
+    expect(get(agentModelDefaultsStore)).toEqual({ "claude-code": "opus" });
     // The cycles ride the agent defaults, per agent: no command of their own.
-    expect(get(agentPauseStore)).toEqual({ "cline": CYCLE });
+    expect(get(agentPauseStore)).toEqual({ "claude-code": CYCLE });
     expect(get(launchConfigStore)).toEqual({
       maxInFlight: 2,
       holdOnPressure: false,
@@ -140,7 +140,7 @@ describe("reading the settings", () => {
       costPolicy: "ask",
     });
     expect(get(agentProfilesStore).map((p) => [p.id, p.models])).toEqual([
-      ["cline", ["opus", "sonnet", "haiku"]],
+      ["claude-code", ["opus", "sonnet", "haiku"]],
       // The catalogue folded in, as the desk folds it in.
       ["codex", ["gpt-5-codex", "gpt-5"]],
     ]);
@@ -170,9 +170,9 @@ describe("changing an app-wide setting", () => {
     ["git tracking", () => setGitTrackingDefault(false), "set_git_tracking_default", { tracked: false }],
     [
       "an agent's model",
-      () => setAgentModelDefault("cline", "sonnet"),
+      () => setAgentModelDefault("claude-code", "sonnet"),
       "set_agent_model_default",
-      { profileId: "cline", model: "sonnet" },
+      { profileId: "claude-code", model: "sonnet" },
     ],
     [
       "the agent defaults",
@@ -197,9 +197,9 @@ describe("changing an app-wide setting", () => {
     ],
     [
       "an agent's pause cycle",
-      () => saveAgentPauseFor("cline", CYCLE),
+      () => saveAgentPauseFor("claude-code", CYCLE),
       "set_agent_defaults",
-      { agentDefaults: { ...EMPTY_AGENT_DEFAULTS, pauseCycles: { "cline": CYCLE } } },
+      { agentDefaults: { ...EMPTY_AGENT_DEFAULTS, pauseCycles: { "claude-code": CYCLE } } },
     ],
     [
       "the memory wall",
@@ -236,7 +236,7 @@ describe("changing an app-wide setting", () => {
   it("leaves the Workstation holding what was chosen", async () => {
     const demo = await connected();
     await saveSetting(() => setAutoCommitDefault(true));
-    await saveSetting(() => setAgentModelDefault("cline", "sonnet"));
+    await saveSetting(() => setAgentModelDefault("claude-code", "sonnet"));
     await saveSetting(() =>
       saveLaunchConfig({
         maxInFlight: 6,
@@ -247,18 +247,18 @@ describe("changing an app-wide setting", () => {
     );
 
     expect(demo.state.settings.autoCommit).toBe(true);
-    expect(demo.state.settings.agentModels).toEqual({ "cline": "sonnet" });
+    expect(demo.state.settings.agentModels).toEqual({ "claude-code": "sonnet" });
     expect(demo.state.settings.launch?.maxInFlight).toBe(6);
   });
 
   it("clears a setting back to gavin's default with null, and an empty model with nothing", async () => {
     const demo = createDemoWorkstation();
     demo.state.settings.terminalFontSize = 15;
-    demo.state.settings.agentModels = { "cline": "opus" };
+    demo.state.settings.agentModels = { "claude-code": "opus" };
     await connected(demo);
 
     await saveSetting(() => setTerminalFontSizeDefault(null));
-    await saveSetting(() => setAgentModelDefault("cline", ""));
+    await saveSetting(() => setAgentModelDefault("claude-code", ""));
 
     expect(demo.state.settings.terminalFontSize).toBeNull();
     expect(demo.state.settings.agentModels).toEqual({});
@@ -314,7 +314,7 @@ describe("changing an app-wide setting", () => {
     expect(get(saveProblem)).toContain("desktop app not running");
     expect(get(layoutState).status).toBe("ready");
 
-    await saveSetting(() => saveAgentPauseFor("cline", CYCLE));
+    await saveSetting(() => saveAgentPauseFor("claude-code", CYCLE));
     expect(get(saveProblem)).toContain("desktop app not running");
   });
 });
@@ -329,8 +329,8 @@ describe("changing a workspace's settings", () => {
     ["require review", () => setWorkspaceRequireReview(DEMO.atlas, true), { requireReview: true }],
     [
       "its pause for one agent",
-      () => setWorkspacePause(DEMO.atlas, "cline", CYCLE),
-      { pauseCycles: { "cline": CYCLE } },
+      () => setWorkspacePause(DEMO.atlas, "claude-code", CYCLE),
+      { pauseCycles: { "claude-code": CYCLE } },
     ],
     [
       "its prompt lines for one agent",
@@ -342,7 +342,7 @@ describe("changing a workspace's settings", () => {
       () => setWorkspacePromptParams(DEMO.atlas, "codex", "extraCliArgs", ["--flag"]),
       { extraCliArgs: { codex: ["--flag"] } },
     ],
-    ["its fallback chain", () => setWorkspaceFallback(DEMO.atlas, "cline", ["codex"]), { fallbackChains: { "cline": ["codex"] } }],
+    ["its fallback chain", () => setWorkspaceFallback(DEMO.atlas, "claude-code", ["codex"]), { fallbackChains: { "claude-code": ["codex"] } }],
     [
       "a notification",
       () => setWorkspaceFlag(DEMO.atlas, "notifyFinished", false),
@@ -356,10 +356,10 @@ describe("changing a workspace's settings", () => {
     [
       "its complexity table",
       () =>
-        setWorkspaceComplexityTable(DEMO.atlas, "cline", {
+        setWorkspaceComplexityTable(DEMO.atlas, "claude-code", {
           complex: { profile: "codex", model: "", effort: "high" },
         }),
-      { complexityTables: { "cline": { complex: { profile: "codex", model: "", effort: "high" } } } },
+      { complexityTables: { "claude-code": { complex: { profile: "codex", model: "", effort: "high" } } } },
     ],
     [
       "its local custom profiles",
@@ -454,8 +454,8 @@ describe("everything the settings screens send", () => {
     await saveSetting(() => setRequireReviewDefault(true));
     await saveSetting(() => setGitTrackingDefault(true));
     await saveSetting(() => setAgentModelDefault("codex", "gpt-5"));
-    await saveSetting(() => setAgentDefaults({ ...get(agentDefaultsStore), fallbackChains: { "cline": ["codex"] } }));
-    await saveSetting(() => saveAgentPauseFor("cline", CYCLE));
+    await saveSetting(() => setAgentDefaults({ ...get(agentDefaultsStore), fallbackChains: { "claude-code": ["codex"] } }));
+    await saveSetting(() => saveAgentPauseFor("claude-code", CYCLE));
     await saveSetting(() =>
       saveLaunchConfig({
         maxInFlight: 3,
@@ -467,8 +467,8 @@ describe("everything the settings screens send", () => {
     await saveSetting(() => renameWorkspace(DEMO.notes, "notes"));
     await saveSetting(() => setWorkspaceColor(DEMO.notes, "#60a5fa"));
     await saveSetting(() => setWorkspaceFontSize(DEMO.notes, 12));
-    await saveSetting(() => setWorkspacePause(DEMO.notes, "cline", null));
-    await saveSetting(() => setWorkspaceFallback(DEMO.notes, "cline", null));
+    await saveSetting(() => setWorkspacePause(DEMO.notes, "claude-code", null));
+    await saveSetting(() => setWorkspaceFallback(DEMO.notes, "claude-code", null));
     await saveSetting(() => setAgentField(DEMO.notes, "model", "opus"));
     await settle();
 

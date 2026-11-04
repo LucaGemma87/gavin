@@ -59,7 +59,7 @@ stated assumption, never a silent one.
 
 Look at your own skill list before the first question. If this workspace
 has Matt Pocock's skills — `grilling` and `domain-modeling` among the
-skills you can load (cline lists them under the `mattpocock-skills`
+skills you can load (Claude Code lists them under the `mattpocock-skills`
 plugin, other agents read them from wherever their skills live) — run
 this interview as **grill-with-docs**.
 
@@ -324,4 +324,3 @@ In this order, because the `kind:` decides what the rest of it means:
 Leave the status alone. The card stays where it is, developed and ready
 for the human to start; running it is their call, not yours. Say what
 you produced, and end there — the first item is not yours to tick.
-

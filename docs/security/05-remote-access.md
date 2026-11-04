@@ -1077,7 +1077,7 @@ it is not part of this design.
 1. Should an untokened same-uid connection keep full reach (`local` = `app`) after
    phase 1, or be narrowed to the `agent` role? — Default: keep full reach in phase 1;
    add a `require_local_token` switch in phase 2, off by default, so a hand-started
-   cline in a terminal keeps its tools.
+   Claude Code in a terminal keeps its tools.
 2. Should gavin run a public relay, or ship `gavin-relay` self-host-only? — Default:
    ship it self-hostable first and run one public instance; the QR carries the URL, so
    the human can point at their own.
@@ -1106,4 +1106,3 @@ it is not part of this design.
 12. Should a `tauri dev` build refuse to enable remote access? — Default: yes (AD-7);
     the dev build has a live vite server and an HMR socket, and a paired phone should
     never meet either.
-

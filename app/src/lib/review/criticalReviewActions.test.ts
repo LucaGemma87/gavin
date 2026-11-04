@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { get, writable } from "svelte/store";
 import type { CardView } from "$lib/core/planBoard";
 
@@ -337,7 +337,7 @@ describe("confirmCriticalReview", () => {
     expect(
       await confirmCriticalReview({
         base: "main",
-        reviewers: [{ profileId: "cline", model: "" }],
+        reviewers: [{ profileId: "claude-code", model: "" }],
       })
     ).toMatch(/at least two/);
     expect(createTiledPage).not.toHaveBeenCalled();

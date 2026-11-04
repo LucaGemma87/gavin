@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { get } from "svelte/store";
 
 vi.mock("$lib/core/backend", () => ({
@@ -91,8 +91,8 @@ vi.mock("$lib/core/layoutState", async () => {
     // new enough to read it (`compressedLaunch`).
     profileIdForLaunch: vi.fn((agent: { profileId: string }): string | undefined => agent.profileId),
     resolvedAgentFor: vi.fn(() => ({
-      profileId: "cline",
-      label: "cline",
+      profileId: "claude-code",
+      label: "Claude Code",
       file: "CLAUDE.md",
       command: "claude",
       launchCommand: "claude",
@@ -1872,4 +1872,3 @@ describe("a run another window watches", () => {
     expect(agentCommitPhase(get(gitStore)["ws"])).toBe("idle");
   });
 });
-

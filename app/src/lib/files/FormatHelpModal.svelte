@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
   import Modal from "$lib/core/Modal.svelte";
 
   interface Props {
@@ -49,7 +49,7 @@ order: 1024         # manual board position
     <pre>name = "auth"        # display name of the context
 # root config only:
 [agent]
-profile = "cline"
+profile = "claude-code"
 extra_contexts = ["/abs/folder"]  # contexts outside the workspace</pre>
   </div>
 </Modal>

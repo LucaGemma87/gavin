@@ -201,7 +201,7 @@ describe("a program copying through the terminal (OSC 52)", () => {
 
   it("puts what the program copied on the clipboard", () => {
     getOrCreateTerminal("o1", 13);
-    // cline over SSH has no pbcopy on the far side: this is its copy.
+    // Claude Code over SSH has no pbcopy on the far side: this is its copy.
     expect(oscHandlers.get(52)?.(`c;${b64("copied over ssh")}`)).toBe(true);
     expect(writeText).toHaveBeenCalledWith("copied over ssh");
     destroyTerminal("o1");
@@ -291,4 +291,3 @@ describe("what a terminal's typing sends", () => {
     destroyTerminal("t5");
   });
 });
-

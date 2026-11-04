@@ -1,4 +1,4 @@
-﻿//! The repo-declared setup a new worktree runs before it is usable.
+//! The repo-declared setup a new worktree runs before it is usable.
 //!
 //! A fresh `git worktree add` gives you a checkout with no `node_modules`,
 //! no `target/`, no `.env` — so the first agent launched in it spends its
@@ -71,7 +71,7 @@ mod tests {
     #[test]
     fn reads_the_declared_commands_in_file_order() {
         let dir = root_with(Some(
-            "version = 1\n\n[agent]\nprofile = \"cline\"\n\n[worktree]\nsetup = [\"npm install\", \"cargo fetch\"]\n",
+            "version = 1\n\n[agent]\nprofile = \"claude-code\"\n\n[worktree]\nsetup = [\"npm install\", \"cargo fetch\"]\n",
         ));
         assert_eq!(read_setup(dir.path()), vec!["npm install", "cargo fetch"]);
     }

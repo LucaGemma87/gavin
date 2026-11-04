@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   detectWarnings,
   foundAgentsSummary,
@@ -22,7 +22,7 @@ function row(
 }
 
 const SWEEP: DetectedAgent[] = [
-  row({ id: "cline", label: "cline", found: true }),
+  row({ id: "claude-code", label: "Claude Code", found: true }),
   row({ id: "codex", label: "Codex", found: false }),
   row({ id: "gemini", label: "Gemini", found: true }),
   row({ id: "cursor", label: "Cursor Agent", found: false }),
@@ -31,7 +31,7 @@ const SWEEP: DetectedAgent[] = [
 
 describe("foundProfileIds / isAgentFound", () => {
   it("lists only PATH hits", () => {
-    expect(foundProfileIds(SWEEP)).toEqual(["cline", "gemini", "opencode"]);
+    expect(foundProfileIds(SWEEP)).toEqual(["claude-code", "gemini", "opencode"]);
     expect(isAgentFound(SWEEP, "gemini")).toBe(true);
     expect(isAgentFound(SWEEP, "codex")).toBe(false);
     expect(isAgentFound(SWEEP, "custom")).toBe(false);
@@ -44,7 +44,7 @@ describe("suggestMainProfile", () => {
       suggestMainProfile({
         detected: SWEEP,
         currentProfileId: "codex",
-        appChains: { "cline": ["gemini"] },
+        appChains: { "claude-code": ["gemini"] },
         commandAlreadySet: true,
       })
     ).toBe("codex");
@@ -55,7 +55,7 @@ describe("suggestMainProfile", () => {
       suggestMainProfile({
         detected: SWEEP,
         currentProfileId: "opencode",
-        appChains: { "cline": ["gemini"] },
+        appChains: { "claude-code": ["gemini"] },
         commandAlreadySet: false,
       })
     ).toBe("opencode");
@@ -66,7 +66,7 @@ describe("suggestMainProfile", () => {
       suggestMainProfile({
         detected: SWEEP,
         currentProfileId: "codex",
-        appChains: { "cline": ["cursor"], gemini: ["gemini", "opencode"] },
+        appChains: { "claude-code": ["cursor"], gemini: ["gemini", "opencode"] },
         commandAlreadySet: false,
       })
     ).toBe("gemini");
@@ -77,10 +77,10 @@ describe("suggestMainProfile", () => {
       suggestMainProfile({
         detected: SWEEP,
         currentProfileId: "codex",
-        appChains: { "cline": ["cursor"] },
+        appChains: { "claude-code": ["cursor"] },
         commandAlreadySet: false,
       })
-    ).toBe("cline");
+    ).toBe("claude-code");
   });
 });
 
@@ -89,8 +89,8 @@ describe("suggestFallbackChain", () => {
     expect(
       suggestFallbackChain({
         detected: SWEEP,
-        mainProfileId: "cline",
-        appChains: { "cline": ["codex", "gemini"] },
+        mainProfileId: "claude-code",
+        appChains: { "claude-code": ["codex", "gemini"] },
       })
     ).toBeNull();
   });
@@ -99,7 +99,7 @@ describe("suggestFallbackChain", () => {
     expect(
       suggestFallbackChain({
         detected: SWEEP,
-        mainProfileId: "cline",
+        mainProfileId: "claude-code",
         appChains: {},
       })
     ).toEqual(["gemini", "opencode"]);
@@ -110,27 +110,27 @@ describe("suggestFallbackChain", () => {
       suggestFallbackChain({
         detected: SWEEP,
         mainProfileId: "gemini",
-        appChains: { "cline": ["codex"] },
+        appChains: { "claude-code": ["codex"] },
       })
-    ).toEqual(["cline", "opencode"]);
+    ).toEqual(["claude-code", "opencode"]);
   });
 });
 
 describe("missingFromAppFallback", () => {
   it("names ids in the main profile's chain the sweep marked missing", () => {
     expect(
-      missingFromAppFallback(SWEEP, { "cline": ["codex", "gemini", "cursor"] }, "cline")
+      missingFromAppFallback(SWEEP, { "claude-code": ["codex", "gemini", "cursor"] }, "claude-code")
     ).toEqual(["codex", "cursor"]);
   });
 
   it("says nothing for a primary with no chain", () => {
-    expect(missingFromAppFallback(SWEEP, { "cline": ["codex"] }, "gemini")).toEqual([]);
+    expect(missingFromAppFallback(SWEEP, { "claude-code": ["codex"] }, "gemini")).toEqual([]);
   });
 });
 
 describe("foundAgentsSummary", () => {
   it("lists found labels", () => {
-    expect(foundAgentsSummary(SWEEP)).toBe("Found: cline, Gemini, OpenCode.");
+    expect(foundAgentsSummary(SWEEP)).toBe("Found: Claude Code, Gemini, OpenCode.");
   });
 
   it("explains an empty sweep", () => {
@@ -144,7 +144,7 @@ describe("detectWarnings", () => {
   it("collects non-empty warnings from the sweep", () => {
     expect(
       detectWarnings([
-        row({ id: "cline", found: true }),
+        row({ id: "claude-code", found: true }),
         row({
           id: "gemini",
           found: true,
@@ -163,4 +163,3 @@ describe("detectWarnings", () => {
     ).toEqual([]);
   });
 });
-

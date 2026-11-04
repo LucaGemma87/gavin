@@ -12,7 +12,7 @@
 //!
 //! Two kinds of evidence, read the same way for every CLI:
 //!
-//!  - an EDIT-tool call names its file outright (cline's `Edit`,
+//!  - an EDIT-tool call names its file outright (Claude Code's `Edit`,
 //!    kimi's `Write`, codex's `apply_patch` headers);
 //!  - a SHELL command that may write names files in its text -- an agent
 //!    edits through `sed -i`, a heredoc'd script or `git mv` as often as
@@ -144,7 +144,7 @@ fn locate(conversation_id: &str) -> Option<(TokenLog, PathBuf)> {
 /// Every transcript the run's agents wrote, given the conversation's own.
 ///
 /// A subagent edits files too, and its calls are in ITS transcript, not
-/// the parent's: cline files them under
+/// the parent's: Claude Code files them under
 /// `<session id>/subagents/agent-*.jsonl` beside `<session id>.jsonl`,
 /// kimi as sibling `agents/<agent>/wire.jsonl`s. Reading only the main
 /// one would drop exactly the work a run delegated.
@@ -181,7 +181,7 @@ pub struct Evidence {
 /// One shell command of the run.
 #[derive(Debug, PartialEq)]
 pub struct ShellCommand {
-    /// The CLI's id for the call -- cline's `tool_use` id, kimi's
+    /// The CLI's id for the call -- Claude Code's `tool_use` id, kimi's
     /// `toolCallId` -- which the shell-write hook records under too.
     /// `None` where the transcript carries none worth matching (codex,
     /// which has no hook).
@@ -189,11 +189,11 @@ pub struct ShellCommand {
     pub text: String,
 }
 
-/// cline's edit tools and the input field each names its file in.
+/// Claude Code's edit tools and the input field each names its file in.
 const CLAUDE_EDIT_TOOLS: &[(&str, &str)] =
     &[("Edit", "file_path"), ("MultiEdit", "file_path"), ("Write", "file_path"), ("NotebookEdit", "notebook_path")];
 
-/// A cline transcript's evidence: every `tool_use` block of an
+/// A Claude Code transcript's evidence: every `tool_use` block of an
 /// `assistant` record whose tool is one of `CLAUDE_EDIT_TOOLS` or `Bash`.
 ///
 /// A call that was refused or failed is still read. The transcript says
@@ -691,4 +691,3 @@ mod tests {
         assert_eq!(gone, serde_json::json!({"kind": "unavailable", "reason": "r"}));
     }
 }
-

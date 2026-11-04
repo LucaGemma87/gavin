@@ -1,4 +1,4 @@
-﻿use crate::layout::LayoutNode;
+use crate::layout::LayoutNode;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -47,15 +47,6 @@ pub const UNFILED_WORKSPACE_ID: &str = "__unfiled__";
 /// configs are migrated on load by session::rename_legacy_unfiled.
 pub const SCRATCHPAD_WORKSPACE_NAME: &str = "Scratchpad";
 
-pub const CLINE: &str = "cline";
-
-/// Serde default helper for AgentDefaultsConfig::default_agent.
-/// Returns Some("cline") so a config.json written before this field
-/// existed is loaded as though it contained defaultAgent: "cline".
-fn default_agent_default() -> Option<String> {
-    Some(CLINE.to_owned())
-}
-
 /// The name SCRATCHPAD_WORKSPACE_NAME replaced. Only the migration reads
 /// it: a config whose pinned workspace says anything else was renamed by
 /// hand, and a hand-picked name outranks ours.
@@ -93,7 +84,7 @@ pub const LOCAL_PROFILE_PREFIX: &str = "local:";
 /// folds a legacy single fallback chain onto exactly these plus every
 /// custom id known at the time.
 pub const STOCK_PROFILE_IDS: [&str; 8] =
-    ["cline", "copilot", "claude-code", "codex", "gemini", "cursor", "opencode", "kimi-code"];
+    ["claude-code", "cline", "copilot", "codex", "gemini", "cursor", "opencode", "kimi-code"];
 
 /// Stock built-in profile ids. A custom slug must not use these; Headroom
 /// and `api_family_for_daemon` treat anything else as custom-like.
@@ -723,7 +714,7 @@ pub struct AgentPauseConfig {
     pub limit_enabled: bool,
 }
 
-/// Five hours, matching the window cline and Codex both meter
+/// Five hours, matching the window Claude Code and Codex both meter
 /// against, so a pause lands at the end of one window rather than
 /// straddling two.
 fn default_period_minutes() -> u32 {
@@ -905,10 +896,10 @@ pub struct AgentDefaultsConfig {
     #[serde(default, skip_serializing_if = "HashMap::is_empty")]
     pub extra_cli_args: HashMap<String, Vec<String>>,
     /// The app-wide default agent: the profile a workspace with no
-    /// `[agent] profile` of its own resolves to. New configs and older
-    /// configs without this field default to Cline; an explicit choice,
-    /// including Claude Code, is retained.
-    #[serde(default = "default_agent_default", skip_serializing_if = "Option::is_none")]
+    /// `[agent] profile` of its own resolves to. Absent — the shipped
+    /// state — means "claude-code", the hard-coded fallback every build
+    /// before this field used, so no migration is needed.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_agent: Option<String>,
     /// Legacy single fallback chain — one list walked no matter which
     /// agent was spent. Deserialized so `migrate_fallback_chains` can fold
@@ -960,7 +951,7 @@ impl Default for AgentDefaultsConfig {
             pause_cycles: HashMap::new(),
             prompt_extras: HashMap::new(),
             extra_cli_args: HashMap::new(),
-            default_agent: default_agent_default(),
+            default_agent: None,
             agent_fallback: Vec::new(),
             fallback_chains: HashMap::new(),
             fallback_thresholds: HashMap::new(),
@@ -2092,7 +2083,7 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let mut ws = sample_workspace();
         ws.fallback_chains = HashMap::from([(
-            "cline".to_string(),
+            "claude-code".to_string(),
             vec!["codex".to_string(), "gemini".to_string()],
         )]);
         ws.armed_agents = vec!["codex".to_string()];
@@ -2100,7 +2091,7 @@ mod tests {
         save(dir.path(), &AppConfig { workspaces: vec![ws], ..Default::default() }).unwrap();
         let loaded = load(dir.path()).unwrap();
         assert_eq!(
-            loaded.workspaces[0].fallback_chains.get("cline"),
+            loaded.workspaces[0].fallback_chains.get("claude-code"),
             Some(&vec!["codex".to_string(), "gemini".to_string()])
         );
         assert_eq!(loaded.workspaces[0].armed_agents, vec!["codex".to_string()]);
@@ -2224,7 +2215,7 @@ mod tests {
         // every known primary by `migrate_complexity_tables`.
         assert!(loaded.agent_defaults.complexity.is_empty());
         assert_eq!(
-            loaded.agent_defaults.complexity_tables["cline"]["intricate"].profile,
+            loaded.agent_defaults.complexity_tables["claude-code"]["intricate"].profile,
             MIGRATED_CUSTOM_PROFILE_ID
         );
         // The legacy single chain was rewritten, then folded onto every
@@ -2264,7 +2255,7 @@ mod tests {
         // primary, rewritten to the local profile id first.
         assert!(loaded.workspaces[0].complexity_agents.is_empty());
         assert_eq!(
-            loaded.workspaces[0].complexity_tables["cline"]["complex"].profile,
+            loaded.workspaces[0].complexity_tables["claude-code"]["complex"].profile,
             local_id
         );
         // The workspace's legacy chain folded onto every known primary:
@@ -2400,9 +2391,9 @@ mod tests {
             api_family: String::new(),
             resume_args: None,
         });
-        config.agent_defaults.agent_efforts.insert("cline".to_string(), "high".to_string());
+        config.agent_defaults.agent_efforts.insert("claude-code".to_string(), "high".to_string());
         config.agent_defaults.complexity_tables.insert(
-            "cline".to_string(),
+            "claude-code".to_string(),
             HashMap::from([(
                 "intricate".to_string(),
                 ComplexityAgent {
@@ -2416,13 +2407,13 @@ mod tests {
         save(dir.path(), &config).unwrap();
         let loaded = load(dir.path()).unwrap().agent_defaults;
         assert_eq!(loaded.custom_profiles[0].effort_flag, "--think=");
-        assert_eq!(loaded.agent_efforts.get("cline").map(String::as_str), Some("high"));
-        assert_eq!(loaded.complexity_tables["cline"]["intricate"].effort, "max");
-        assert_eq!(loaded.complexity_tables["cline"]["intricate"].advisor, "opus");
+        assert_eq!(loaded.agent_efforts.get("claude-code").map(String::as_str), Some("high"));
+        assert_eq!(loaded.complexity_tables["claude-code"]["intricate"].effort, "max");
+        assert_eq!(loaded.complexity_tables["claude-code"]["intricate"].advisor, "opus");
 
         config.agent_defaults = AgentDefaultsConfig::default();
         config.agent_defaults.complexity_tables.insert(
-            "cline".to_string(),
+            "claude-code".to_string(),
             HashMap::from([(
                 "simple".to_string(),
                 ComplexityAgent {
@@ -2447,8 +2438,8 @@ mod tests {
         // `complexity` map onto every known primary.
         let old = load(dir.path()).unwrap().agent_defaults;
         assert!(old.complexity.is_empty());
-        assert_eq!(old.complexity_tables["cline"]["complex"].effort, "");
-        assert_eq!(old.complexity_tables["cline"]["complex"].advisor, "");
+        assert_eq!(old.complexity_tables["claude-code"]["complex"].effort, "");
+        assert_eq!(old.complexity_tables["claude-code"]["complex"].advisor, "");
         assert_eq!(old.complexity_tables["codex"]["complex"].model, "gpt-5.1");
         assert!(old.agent_efforts.is_empty());
         assert!(old.custom_profiles.is_empty());
@@ -2461,41 +2452,36 @@ mod tests {
         config
             .agent_defaults
             .fallback_chains
-            .insert("cline".to_string(), vec!["codex".to_string()]);
-        config.agent_defaults.fallback_thresholds.insert("cline".to_string(), 80);
+            .insert("claude-code".to_string(), vec!["codex".to_string()]);
+        config.agent_defaults.fallback_thresholds.insert("claude-code".to_string(), 80);
         save(dir.path(), &config).unwrap();
         let loaded = load(dir.path()).unwrap().agent_defaults;
         assert_eq!(
-            loaded.fallback_chains.get("cline"),
+            loaded.fallback_chains.get("claude-code"),
             Some(&vec!["codex".to_string()])
         );
         assert!(loaded.agent_fallback.is_empty());
-        assert_eq!(loaded.fallback_thresholds.get("cline"), Some(&80));
+        assert_eq!(loaded.fallback_thresholds.get("claude-code"), Some(&80));
     }
 
-    /// Both fresh defaults and configs written before the field existed
-    /// resolve to Cline, while explicit supported profiles round-trip.
+    /// The app-wide default agent round-trips, and a config written before
+    /// the field existed reads as absent — which the frontend resolves to
+    /// "claude-code", the hard-coded fallback every older build used.
     #[test]
-    fn default_agent_defaults_to_cline_and_roundtrips_explicit_profiles() {
-        assert_eq!(
-            AgentDefaultsConfig::default().default_agent.as_deref(),
-            Some("cline")
-        );
+    fn default_agent_roundtrips_and_defaults_to_absent() {
+        assert_eq!(AgentDefaultsConfig::default().default_agent, None);
 
         let dir = tempfile::tempdir().unwrap();
         let mut config = AppConfig::default();
-        config.agent_defaults.default_agent = Some("claude-code".to_string());
+        config.agent_defaults.default_agent = Some("cline".to_string());
         save(dir.path(), &config).unwrap();
-        assert_eq!(
-            load(dir.path()).unwrap().agent_defaults.default_agent.as_deref(),
-            Some("claude-code")
-        );
-
-        std::fs::write(config_path(dir.path()), r#"{"workspaces":[],"agent_defaults":{"complexity":{}}}"#).unwrap();
         assert_eq!(
             load(dir.path()).unwrap().agent_defaults.default_agent.as_deref(),
             Some("cline")
         );
+
+        std::fs::write(config_path(dir.path()), r#"{"workspaces":[],"agent_defaults":{"complexity":{}}}"#).unwrap();
+        assert_eq!(load(dir.path()).unwrap().agent_defaults.default_agent, None);
     }
 
     /// The legacy single fallback chain — one list for every agent —

@@ -17,25 +17,25 @@ function found(id: string, isFound: boolean): DetectedAgent {
   return { id, label: id, command: id, found: isFound, path: isFound ? `/bin/${id}` : null };
 }
 
-const PROFILES = [profile("cline"), profile("codex"), profile("cursor"), profile("custom", ""), profile("mine")];
+const PROFILES = [profile("claude-code"), profile("codex"), profile("cursor"), profile("custom", ""), profile("mine")];
 
 describe("agentTabChoices", () => {
   it("drops built-ins the PATH sweep did not find, keeps customs it never swept", () => {
     const ids = agentTabChoices(
       PROFILES,
-      [found("cline", true), found("codex", false), found("cursor", true)],
-      "cline"
+      [found("claude-code", true), found("codex", false), found("cursor", true)],
+      "claude-code"
     ).map((p) => p.id);
-    expect(ids).toEqual(["cline", "cursor", "mine"]);
+    expect(ids).toEqual(["claude-code", "cursor", "mine"]);
   });
 
   it("never offers a profile with nothing to launch", () => {
-    expect(agentTabChoices(PROFILES, null, "cline").map((p) => p.id)).not.toContain("custom");
+    expect(agentTabChoices(PROFILES, null, "claude-code").map((p) => p.id)).not.toContain("custom");
   });
 
   it("offers every launchable profile when the sweep has no answer", () => {
-    expect(agentTabChoices(PROFILES, null, "cline").map((p) => p.id)).toEqual([
-      "cline",
+    expect(agentTabChoices(PROFILES, null, "claude-code").map((p) => p.id)).toEqual([
+      "claude-code",
       "codex",
       "cursor",
       "mine",
@@ -65,7 +65,7 @@ describe("newAgentTabEntries", () => {
 
   it("picks the row's profile id", () => {
     const onPick = vi.fn();
-    const items = newAgentTabEntries([profile("cline"), profile("codex")], "cline", onPick).filter(
+    const items = newAgentTabEntries([profile("claude-code"), profile("codex")], "claude-code", onPick).filter(
       isMenuItem
     );
     items[1].onPick?.();

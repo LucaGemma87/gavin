@@ -782,7 +782,7 @@
 
       <!-- What the agents the fleet runs have left to spend. One row per
            PROFILE, not per workspace: a limit belongs to the subscription,
-           and four workspaces on cline share one window between
+           and four workspaces on Claude Code share one window between
            them. Absence is never zero here -- a profile nobody has read
            yet, one that publishes nothing, and one at 0% are three
            different sentences (appHub's usageRowNote). -->
@@ -1689,4 +1689,3 @@
     color: var(--text-subtle);
   }
 </style>
-

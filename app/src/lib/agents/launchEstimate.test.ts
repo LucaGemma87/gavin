@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { estimateLines, launchEstimate, slotsNow, type EstimateInput } from "$lib/agents/launchEstimate";
 import { MIN_AGENT_RSS_BYTES, type SystemMemorySample } from "$lib/agents/memory";
 
@@ -20,7 +20,7 @@ function machine(over: Partial<SystemMemorySample> = {}): SystemMemorySample {
 function input(over: Partial<EstimateInput> = {}): EstimateInput {
   return {
     count: 11,
-    profileId: "cline",
+    profileId: "claude-code",
     means: {},
     storedMeans: {},
     measuredAgents: 0,
@@ -58,7 +58,7 @@ describe("launchEstimate", () => {
   // reboot.
   it("gives the whole sentence when everything is known", () => {
     const estimate = launchEstimate(
-      input({ means: { "cline": 1.5 * GB }, measuredAgents: 3 })
+      input({ means: { "claude-code": 1.5 * GB }, measuredAgents: 3 })
     );
     expect(estimate.line).toBe(
       "11 agents ≈ 17 GB (1.5 GB each, from the 3 running now) on top of 14 of 32 GB. 4 start now, 7 queue."
@@ -69,7 +69,7 @@ describe("launchEstimate", () => {
 
   it("drops the queue clause when everything fits under the ceiling", () => {
     const estimate = launchEstimate(
-      input({ count: 3, means: { "cline": 2 * GB }, measuredAgents: 2 })
+      input({ count: 3, means: { "claude-code": 2 * GB }, measuredAgents: 2 })
     );
     expect(estimate.line).toBe(
       "3 agents ≈ 6 GB (2 GB each, from the 2 running now) on top of 14 of 32 GB."
@@ -100,14 +100,14 @@ describe("launchEstimate", () => {
   // just-started agents must not authorise eleven more.
   it("never falls below the floor, whatever the sample says", () => {
     const estimate = launchEstimate(
-      input({ count: 1, means: { "cline": 100 * 1024 * 1024 }, measuredAgents: 1 })
+      input({ count: 1, means: { "claude-code": 100 * 1024 * 1024 }, measuredAgents: 1 })
     );
     expect(estimate.projectedBytes).toBe(MIN_AGENT_RSS_BYTES);
   });
 
   it("falls back to the stored mean before the floor", () => {
     const estimate = launchEstimate(
-      input({ count: 2, storedMeans: { "cline": 4 * GB } })
+      input({ count: 2, storedMeans: { "claude-code": 4 * GB } })
     );
     expect(estimate.projectedBytes).toBe(8 * GB);
   });
@@ -122,7 +122,7 @@ describe("the warning line", () => {
         count: 11,
         // 26 of 32 in use, so 6 free.
         sample: machine({ freePercent: 18.75 }),
-        means: { "cline": 3 * GB },
+        means: { "claude-code": 3 * GB },
         measuredAgents: 2,
       })
     );
@@ -139,7 +139,7 @@ describe("the warning line", () => {
       input({
         count: 11,
         sample: machine({ freePercent: 18.75 }),
-        means: { "cline": 1 * GB },
+        means: { "claude-code": 1 * GB },
         measuredAgents: 2,
         maxInFlight: 2,
       })

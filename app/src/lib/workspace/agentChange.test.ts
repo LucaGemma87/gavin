@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   AGENT_CHANGE_STEPS,
   agentChangeCommitsOnAdvance,
@@ -29,6 +29,6 @@ describe("agentChange steps", () => {
 
   it("treats the same profile as a re-run of setup, not a switch", () => {
     expect(agentChangeIsRerun("cursor", "cursor")).toBe(true);
-    expect(agentChangeIsRerun("cursor", "cline")).toBe(false);
+    expect(agentChangeIsRerun("cursor", "claude-code")).toBe(false);
   });
 });

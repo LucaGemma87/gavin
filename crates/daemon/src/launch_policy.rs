@@ -1,4 +1,4 @@
-use protocol::{LaunchCostPolicy, LaunchPolicyWorkspace};
+use protocol::{EvidencedEntitlement, LaunchCostPolicy, LaunchEvidence, LaunchPolicyWorkspace};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -30,6 +30,45 @@ pub fn verdict(policy: LaunchCostPolicy, entitlement: Entitlement, approved_once
             Verdict::ApprovalRequired
         }
         _ => Verdict::Allow,
+    }
+}
+
+/// How long a reading of a route's quota may be trusted. A subscription
+/// window is read off a CLI or an account endpoint; fifteen minutes is
+/// about one agent turn on a five-hour window, long enough to cover
+/// the gap between the panel's last probe and a click on Start, short
+/// enough that a plan cancelled or downgraded since stops counting.
+pub const MAX_EVIDENCE_AGE_SECS: u64 = 15 * 60;
+
+/// How far ahead of this daemon's clock a reading may claim to be. A
+/// little skew between the app's clock and ours is normal; a reading from
+/// the future is not evidence of anything.
+const MAX_EVIDENCE_SKEW_SECS: u64 = 60;
+
+const MAX_EVIDENCE_SOURCE_LEN: usize = 200;
+
+/// Places a route from the evidence a launch carried. Everything that
+/// cannot be vouched for is `Unknown`, never `Paid`: this function can
+/// only clear a launch, and a missing, stale, future-dated or anonymous
+/// reading clears nothing. Approval does not pass through here -- it stays
+/// a separate, one-launch answer to `Unknown` (ADR 0013).
+pub fn classify(evidence: Option<&LaunchEvidence>, now_secs: u64) -> Entitlement {
+    let Some(evidence) = evidence else {
+        return Entitlement::Unknown;
+    };
+    let source = evidence.source.trim();
+    if source.is_empty() || source.len() > MAX_EVIDENCE_SOURCE_LEN {
+        return Entitlement::Unknown;
+    }
+    if evidence.observed_at > now_secs.saturating_add(MAX_EVIDENCE_SKEW_SECS) {
+        return Entitlement::Unknown;
+    }
+    if now_secs.saturating_sub(evidence.observed_at) > MAX_EVIDENCE_AGE_SECS {
+        return Entitlement::Unknown;
+    }
+    match evidence.entitlement {
+        EvidencedEntitlement::FreeAllowance => Entitlement::FreeAllowance,
+        EvidencedEntitlement::IncludedQuota => Entitlement::IncludedQuota,
     }
 }
 
@@ -213,5 +252,61 @@ mod tests {
             .unwrap();
 
         assert_eq!(policy.policy_for(&root), LaunchCostPolicy::NoPaidRequests);
+    }
+
+    fn evidence(entitlement: EvidencedEntitlement, source: &str, observed_at: u64) -> LaunchEvidence {
+        LaunchEvidence { entitlement, source: source.into(), observed_at }
+    }
+
+    #[test]
+    fn fresh_evidence_places_the_route_and_nothing_else_does() {
+        let now = 1_000_000;
+        assert_eq!(classify(None, now), Entitlement::Unknown);
+        assert_eq!(
+            classify(Some(&evidence(EvidencedEntitlement::IncludedQuota, "claude-code usage windows", now - 30)), now),
+            Entitlement::IncludedQuota
+        );
+        assert_eq!(
+            classify(Some(&evidence(EvidencedEntitlement::FreeAllowance, "provider docs", now)), now),
+            Entitlement::FreeAllowance
+        );
+    }
+
+    #[test]
+    fn stale_future_or_anonymous_evidence_is_unknown() {
+        let now = 1_000_000;
+        let stale = now - MAX_EVIDENCE_AGE_SECS - 1;
+        let edge = now - MAX_EVIDENCE_AGE_SECS;
+        assert_eq!(
+            classify(Some(&evidence(EvidencedEntitlement::IncludedQuota, "x", stale)), now),
+            Entitlement::Unknown
+        );
+        assert_eq!(
+            classify(Some(&evidence(EvidencedEntitlement::IncludedQuota, "x", edge)), now),
+            Entitlement::IncludedQuota
+        );
+        assert_eq!(
+            classify(Some(&evidence(EvidencedEntitlement::IncludedQuota, "x", now + 61)), now),
+            Entitlement::Unknown
+        );
+        assert_eq!(
+            classify(Some(&evidence(EvidencedEntitlement::IncludedQuota, "  ", now)), now),
+            Entitlement::Unknown
+        );
+        let long = "s".repeat(MAX_EVIDENCE_SOURCE_LEN + 1);
+        assert_eq!(
+            classify(Some(&evidence(EvidencedEntitlement::IncludedQuota, &long, now)), now),
+            Entitlement::Unknown
+        );
+    }
+
+    #[test]
+    fn evidence_never_overrides_a_known_paid_route() {
+        // The verdict for Paid ignores evidence by construction: classify
+        // cannot return Paid, so the strict policy's block is untouched.
+        assert_eq!(
+            verdict(LaunchCostPolicy::NoPaidRequests, Entitlement::Paid, true),
+            Verdict::BlockedPaid
+        );
     }
 }

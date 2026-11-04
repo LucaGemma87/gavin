@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { HeadroomStatus } from "$lib/agents/compression";
 import {
   HEADROOM_INHERIT,
@@ -312,7 +312,7 @@ describe("the switch", () => {
   });
 
   it("gives the reason for each profile with no recipe", () => {
-    expect(profileRecipeReason("cline", "")).toBeNull();
+    expect(profileRecipeReason("claude-code", "")).toBeNull();
     expect(profileRecipeReason("codex", "")).toBeNull();
     expect(profileRecipeReason("opencode", "")).toBeNull();
     expect(profileRecipeReason("kimi-code", "")).toBeNull();
@@ -326,7 +326,7 @@ describe("the switch", () => {
     expect(profileRecipeReason("from-a-newer-app", "")).not.toBeNull();
   });
 
-  const base = { switchBlocked: null, profileId: "cline", customApiFamily: "" as const };
+  const base = { switchBlocked: null, profileId: "claude-code", customApiFamily: "" as const };
 
   it("is Unavailable and dark for an ssh workspace, whatever the machine has", () => {
     const view = headroomSwitchView({ ...base, reading: workspaceHeadroomReading(read(verified()), { ssh: {} }) });

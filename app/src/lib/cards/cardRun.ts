@@ -44,7 +44,7 @@ export interface CardPromptOptions {
 // can reopen this exact conversation later instead of writing a fresh
 // one from an account of it.
 //
-// A profile that mints its id up front (cline) or has no verified
+// A profile that mints its id up front (Claude Code) or has no verified
 // convention (codex, gemini, cursor, custom) has an empty
 // sessionIdDiscovery and gets the base completely unchanged --
 // the same no-fallback-BETWEEN-rows rule sessionIdArgs/resumeArgs
@@ -882,4 +882,3 @@ export function composeReviewLaunchPrompt(
     quoted_body: quoted,
   });
 }
-

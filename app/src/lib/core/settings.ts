@@ -1,4 +1,4 @@
-﻿import { composeAdvisor, composeEffort, composeLaunchCommand } from "$lib/agents/agentModel";
+import { composeAdvisor, composeEffort, composeLaunchCommand } from "$lib/agents/agentModel";
 import type { FailureCausePattern } from "$lib/agents/autoResume";
 import type { CustomProfile } from "$lib/cards/complexity";
 import type { ForeignMcpServer } from "$lib/core/backend";
@@ -396,7 +396,7 @@ export interface ResolvedAgent {
   headlessArgs: string;
   /// The launched-session prompt argv, or null where this agent takes no
   /// prompt. Same no-fallback-chain rule as headlessArgs below: this
-  /// describes the BINARY, and cline's argv on somebody else's
+  /// describes the BINARY, and claude-code's argv on somebody else's
   /// agent would be garbage.
   promptArgs: string | null;
   /// `promptArgs: null` without the refusal: this agent takes no prompt
@@ -518,16 +518,16 @@ export function isLeftoverCommand(
 /// The last-resort agent: the profile a workspace resolves to when it has
 /// no configured profile AND the app-wide default agent (`AgentDefaults.
 /// defaultAgent`) is empty or names nothing installed.
-export const FALLBACK_PROFILE = "cline";
-const FALLBACK_COMMAND = "cline";
-const FALLBACK_LABEL = "Cline CLI";
+export const FALLBACK_PROFILE = "claude-code";
+const FALLBACK_COMMAND = "claude";
+const FALLBACK_LABEL = "Claude Code";
 const FALLBACK_MODEL_FLAG = "--model";
-const FALLBACK_EFFORT_FLAG = "--thinking";
-const FALLBACK_PROMPT_ARGS = "--auto-approve false ";
-const FALLBACK_INSTRUCTIONS_FILE = "AGENTS.md";
+const FALLBACK_EFFORT_FLAG = "--effort";
+const FALLBACK_PROMPT_ARGS = "";
+const FALLBACK_INSTRUCTIONS_FILE = "CLAUDE.md";
 
 /// Explicit config beats the profile default beats the app-wide default
-/// agent (empty → cline; spec §4.2). Expressed once so the panel,
+/// agent (empty → claude-code; spec §4.2). Expressed once so the panel,
 /// the hub label, the home tile and the agent-file view can never disagree.
 ///
 /// Callers should pass `mergeAgentProfiles(builtIns, appCustoms,
@@ -555,7 +555,7 @@ export function resolveAgentConfig(
   /// launched with before it existed.
   globalEfforts: Record<string, string> = {},
   /// App-wide default agent when the workspace has no profile. Empty /
-  /// omitted means `cline`.
+  /// omitted means `claude-code`.
   appDefaultProfile: string = "",
   /// Cursor's foreign-server scan for the project root that launch will
   /// use as cwd (AG-07). When omitted on a cursor profile the resolve
@@ -579,8 +579,8 @@ export function resolveAgentConfig(
     nonEmpty(fallback?.command) ??
     FALLBACK_COMMAND;
   // Keyed by the RESOLVED profile, not the requested one: a config
-  // naming a profile that no longer exists runs cline, so it must
-  // inherit cline's default rather than a dead row's.
+  // naming a profile that no longer exists runs claude-code, so it must
+  // inherit claude-code's default rather than a dead row's.
   const model = nonEmpty(config?.model) ?? nonEmpty(globalModels[profileId]) ?? "";
   // Workspace flag, then the (possibly custom) profile entry's flag.
   // A workspace flag wins even on a stock profile -- it is the more
@@ -628,7 +628,7 @@ export function resolveAgentConfig(
     mcpSupported: Boolean(effective?.mcpSupported || customMcpFile),
     mcpConfigFile: nonEmpty(effective?.mcpConfigFile) ?? customMcpFile ?? "",
     // No fallback chain, unlike file/command: this argv describes the
-    // BINARY, and cline's flags on someone else's agent would be
+    // BINARY, and claude-code's flags on someone else's agent would be
     // garbage in its argv. Empty means "no headless run offered", the
     // same posture mcpSupported takes.
     headlessArgs: effective?.headlessArgs ?? "",
@@ -639,13 +639,13 @@ export function resolveAgentConfig(
     // Resume lives ON the (merged) profile entry for named customs.
     resumeArgs: effective?.resumeArgs ?? "",
     // Same no-fallback-BETWEEN-rows rule: a row that takes no prompt
-    // gets null, and cursor's null never becomes cline's "".
+    // gets null, and cursor's null never becomes claude-code's "".
     //
     // But an ABSENT table is a different case, and it has to answer the
     // way `command` two fields up already answered it: the table is
     // fetched asynchronously and its failure is swallowed, so an empty
-    // one is a state the app really reaches. Keep Cline's positional
-    // prompt and explicit approval mode available in that state too.
+    // one is a state the app really reaches. Keep the bare positional
+    // prompt (Claude Code's) available in that state too.
     promptArgs: effective ? effective.promptArgs : FALLBACK_PROMPT_ARGS,
     // A built-in says for itself (kimi-code's row). A named custom has
     // no verified prompt argv, but once the workspace names a usable MCP

@@ -779,6 +779,13 @@ export const FEATURE_MIN_VERSION = {
   // use CreateAuthorizedSession and MCP spawning is refused by older
   // daemons rather than silently bypassing the policy.
   launchPolicy: 81,
+  // A launch may carry the usage-window reading that places its route
+  // (`CreateAuthorizedSession.evidence`). The request type is unchanged,
+  // so `min_version_for` cannot see it; an older daemon drops the field
+  // and asks for an approval the desk had decided was not needed.
+  //
+  // Consumers: `launchEvidenceFor`, which sends no evidence below it.
+  launchEvidence: 82,
 } as const;
 
 export type Feature = keyof typeof FEATURE_MIN_VERSION;

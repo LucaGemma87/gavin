@@ -1,4 +1,4 @@
-﻿use protocol::{read_message, write_message, Board, Column, GitStatus, Label, Request, Response, SessionProcess, SessionSummary};
+use protocol::{read_message, write_message, Board, Column, GitStatus, Label, Request, Response, SessionProcess, SessionSummary};
 use crate::headroom::compress::{Decision, Launch};
 use crate::kanban::KanbanStore;
 use crate::osc::OscCwdScanner;
@@ -140,11 +140,11 @@ const SUSPEND_GAP_THRESHOLD: Duration = Duration::from_secs(30);
 ///     that page into `working` for two seconds.
 ///   - a focus report (`ESC [ I` / `ESC [ O`), which xterm sends whenever
 ///     its textarea gains or loses focus and the program has asked for
-///     them with DEC mode 1004 -- as cline does. Clicking from one
+///     them with DEC mode 1004 -- as Claude Code does. Clicking from one
 ///     session to another therefore repainted both.
 ///   - a mouse report (`is_mouse_report`), which xterm sends for every
 ///     cell the pointer crosses once the program asks for any-motion
-///     tracking -- as cline does since 2.1.x. Hovering its terminal
+///     tracking -- as Claude Code does since 2.1.x. Hovering its terminal
 ///     therefore repainted it continuously.
 ///
 /// Worse than the spinner: the same block clears `waiting_for_input`, and
@@ -174,7 +174,7 @@ fn is_focus_report(data: &[u8]) -> bool {
 
 /// Whether a write is nothing but mouse reports: what a terminal emulator
 /// sends about the POINTER once the program has asked for mouse tracking.
-/// cline asks for all of it at startup since 2.1.x (DEC 1000, 1002,
+/// Claude Code asks for all of it at startup since 2.1.x (DEC 1000, 1002,
 /// 1003 any-motion, 1006 SGR; verified against 2.1.283), so merely moving
 /// the mouse across its terminal sends a report per cell crossed.
 ///
@@ -777,7 +777,7 @@ fn headroom_reason() -> String {
 /// uncompressed into the login wall, or straight past a usage reset. The
 /// spec scopes the cause to the failure that "would be classified
 /// `network`". Every non-`network` row of every profile's
-/// `failure_causes` (`app/src-tauri/src/agent_setup.rs` -- cline's
+/// `failure_causes` (`app/src-tauri/src/agent_setup.rs` -- Claude Code's
 /// and Kimi Code's) is listed, pinned by
 /// `headroom_not_blamed_markers_cover_every_non_network_cause` there.
 pub const NOT_HEADROOMS_MARKERS: &[&str] = &[
@@ -855,7 +855,7 @@ fn failure_on_screen(manager: &Arc<SessionManager>, id: &str) -> Option<String> 
 
 /// The agent's line without the glyph its TUI painted in front of it.
 ///
-/// Measured, not imagined: cline prefixes its error line with
+/// Measured, not imagined: Claude Code prefixes its error line with
 /// `\u{23fa} ` and its status lines with `\u{273b} `, and a reason that
 /// starts with a bullet reads as a rendering artefact in every surface
 /// that shows it. Everything from the first alphanumeric character on is
@@ -2474,12 +2474,24 @@ impl SessionManager {
     }
 
     fn authorize_launch(&self, workspace_path: &str, approved_once: bool) -> anyhow::Result<()> {
+        self.authorize_launch_as(workspace_path, approved_once, crate::launch_policy::Entitlement::Unknown)
+    }
+
+    /// `authorize_launch` for a route the caller has already placed. The
+    /// entitlement comes from `launch_policy::classify` and nowhere else;
+    /// a route nobody placed is `Unknown`.
+    fn authorize_launch_as(
+        &self,
+        workspace_path: &str,
+        approved_once: bool,
+        entitlement: crate::launch_policy::Entitlement,
+    ) -> anyhow::Result<()> {
         let policy = self
             .launch_policy
             .get()
             .map(|switch| switch.policy_for(workspace_path))
             .unwrap_or_default();
-        match crate::launch_policy::verdict(policy, crate::launch_policy::Entitlement::Unknown, approved_once) {
+        match crate::launch_policy::verdict(policy, entitlement, approved_once) {
             crate::launch_policy::Verdict::Allow => Ok(()),
             crate::launch_policy::Verdict::ApprovalRequired => anyhow::bail!(
                 "launch blocked: Gavin cannot verify the route's cost; this launch needs fresh human approval"
@@ -4433,7 +4445,9 @@ impl SessionManager {
             .ok_or_else(|| anyhow::anyhow!("workspace not open in gavin"))?;
         // A spawn has no interactive approver (it comes through MCP), so
         // refuse it before changing trust state or creating a session.
-        self.authorize_launch(root_path, false)?;
+        self.authorize_launch(root_path, false).map_err(|error| {
+            anyhow::anyhow!("{error}; an agent-requested spawn has no approver, so start this session from the app")
+        })?;
         // The one kimi launch the app's `create_session` never sees, so
         // its folder-trust grant is made here, by the same rule.
         crate::kimi_trust::prepare_spawn(root_path, cwd, command);
@@ -4574,7 +4588,7 @@ impl SessionManager {
             self.decide_compression(workspace_path, launch, &id, command, without_headroom);
         // Codex's recipe hands its base URL over on the command line.
         let line = compression.command().or(command);
-        // And a cline launch is handed the shell-write hook the same
+        // And a Claude Code launch is handed the shell-write hook the same
         // way (`shell_writes`), whatever the recipe made of its line.
         let hooked = line.and_then(|line| {
             crate::shell_writes::with_claude_hooks(
@@ -5992,7 +6006,7 @@ impl SessionManager {
         // agent working: xterm sends one whenever its textarea gains or
         // loses focus, so clicking from one session to another used to
         // put a spinner on both. Written all the same -- the program
-        // asked for these, and cline uses them to decide whether a
+        // asked for these, and Claude Code uses them to decide whether a
         // notification is even worth sending.
         //
         // A mouse report is the same thing about the pointer, and it was
@@ -6877,7 +6891,7 @@ impl SessionManager {
 
                         // Scanned ahead of the output heuristic below,
                         // because one thing it finds changes what these
-                        // bytes mean to it: cline's idle reminder.
+                        // bytes mean to it: Claude Code's idle reminder.
                         // Applied after it, in the order they always were.
                         let status_events = status_scanner.feed(&buf[..n]);
                         let reminded = status_events.contains(&StatusEvent::IdleReminder);
@@ -6914,7 +6928,7 @@ impl SessionManager {
                                 // the notification bell) are untouched;
                                 // only the guess is suspended.
                             } else if reminded {
-                                // cline's idle reminder: the program
+                                // Claude Code's idle reminder: the program
                                 // saying, a minute late, that the turn is
                                 // over. Not the agent doing anything --
                                 // it is only sent to a session sitting at
@@ -7209,10 +7223,29 @@ pub fn handle_request(manager: &SessionManager, req: Request) -> Response {
             api_family,
             without_headroom,
             approved_once,
+            evidence,
         } => {
             let launch = Launch::requested(profile_id.as_deref(), api_family.as_deref());
-            let authorization = if profile_id.is_none() && command.is_some() {
-                manager.authorize_launch(&workspace_path, approved_once)
+            // Evidence places a stock profile's route, never an arbitrary
+            // command: a quota reading says nothing about what `command`
+            // will run when no profile owns it.
+            let entitlement = match (&profile_id, &evidence) {
+                (Some(_), Some(_)) => {
+                    let now = std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .map(|elapsed| elapsed.as_secs())
+                        .unwrap_or(0);
+                    crate::launch_policy::classify(evidence.as_ref(), now)
+                }
+                _ => crate::launch_policy::Entitlement::Unknown,
+            };
+            let placed = matches!(
+                entitlement,
+                crate::launch_policy::Entitlement::FreeAllowance
+                    | crate::launch_policy::Entitlement::IncludedQuota
+            );
+            let authorization = if profile_id.is_some() || command.is_some() {
+                manager.authorize_launch_as(&workspace_path, approved_once, entitlement)
             } else {
                 Ok(())
             };
@@ -7223,7 +7256,10 @@ pub fn handle_request(manager: &SessionManager, req: Request) -> Response {
                     command.as_deref(),
                     launch,
                     without_headroom,
-                    approved_once,
+                    // Already decided above. A placed route is cleared by
+                    // its evidence, so the Unknown check inside must not
+                    // ask for an approval nobody was shown.
+                    approved_once || placed,
                 )
             }).map(|created| Response::SessionCreated {
                     id: created.id,
@@ -8660,6 +8696,7 @@ mod launch_policy_privilege_tests {
                 api_family: None,
                 without_headroom: false,
                 approved_once: true,
+                evidence: None,
             },
             Request::SetLaunchPolicies {
                 app_policy: protocol::LaunchCostPolicy::NoPaidRequests,
@@ -9536,6 +9573,66 @@ mod tests {
     }
 
     #[test]
+    fn placed_routes_launch_without_approval_and_unplaced_ones_still_ask() {
+        use crate::launch_policy::Entitlement;
+        let dir = tempfile::tempdir().unwrap();
+        let manager = test_manager(&dir);
+        manager.set_launch_policy(crate::launch_policy::Switch::open(
+            dir.path(),
+            protocol::BuildProfile::Release,
+        ));
+        let workspace = dir.path().to_string_lossy().into_owned();
+
+        // A route the evidence placed needs no approval under either policy;
+        // one nobody placed asks, exactly as before.
+        assert!(manager
+            .authorize_launch_as(&workspace, false, Entitlement::IncludedQuota)
+            .is_ok());
+        assert!(manager
+            .authorize_launch_as(&workspace, false, Entitlement::Unknown)
+            .is_err());
+
+        // Evidence that is stale, or that rides a launch with no profile,
+        // never reaches the placed branch: the request is refused whole.
+        let stale = protocol::LaunchEvidence {
+            entitlement: protocol::EvidencedEntitlement::IncludedQuota,
+            source: "claude-code usage windows".into(),
+            observed_at: 1,
+        };
+        let fresh = protocol::LaunchEvidence {
+            observed_at: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
+            ..stale.clone()
+        };
+        for (profile_id, evidence) in [
+            (Some("claude-code".to_string()), stale),
+            (None, fresh),
+        ] {
+            match handle_request(
+                &manager,
+                Request::CreateAuthorizedSession {
+                    workspace_path: workspace.clone(),
+                    cwd: workspace.clone(),
+                    command: Some("custom-agent --run".into()),
+                    profile_id,
+                    api_family: None,
+                    without_headroom: false,
+                    approved_once: false,
+                    evidence: Some(evidence),
+                },
+            ) {
+                Response::Error { message } => {
+                    assert!(message.contains("fresh human approval"), "{message}");
+                }
+                other => panic!("expected launch policy refusal, got {other:?}"),
+            }
+        }
+        assert!(manager.sessions.lock().unwrap().is_empty());
+    }
+
+    #[test]
     fn unknown_agent_launches_do_not_create_sessions_without_one_launch_approval() {
         let dir = tempfile::tempdir().unwrap();
         let manager = test_manager(&dir);
@@ -9562,6 +9659,7 @@ mod tests {
                 api_family: None,
                 without_headroom: false,
                 approved_once: false,
+                evidence: None,
             },
         ] {
             match handle_request(&manager, request) {
@@ -10883,6 +10981,7 @@ mod tests {
                 api_family: None,
                 without_headroom: false,
                 approved_once: false,
+                evidence: None,
             },
             Request::SetLaunchPolicies {
                 app_policy: protocol::LaunchCostPolicy::Ask,
@@ -12318,6 +12417,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "MCP spawns are refused under every launch-cost policy until they have an approval path (ADR 0013)"]
     fn spawn_replies_session_id_and_pushes_on_the_watching_connection() {
         let (socket_path, _dir) = start_test_server();
         let ws_dir = tempfile::tempdir().unwrap();
@@ -12416,13 +12516,15 @@ mod tests {
 
         let resp = request(
             &mut cmd,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         let session_id = match resp {
@@ -12547,13 +12649,15 @@ mod tests {
 
         let resp = request(
             &mut cmd,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         let session_id = match resp {
@@ -12632,13 +12736,15 @@ mod tests {
 
         let resp = request(
             &mut cmd,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         let session_id = match resp {
@@ -13040,13 +13146,15 @@ mod tests {
 
         let created = request(
             &mut stream,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp/ws".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         let id = match created {
@@ -13334,13 +13442,15 @@ mod tests {
         let mut first = Stream::connect(&socket_path).unwrap();
         let id = match request(
             &mut first,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp/ws".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         ) {
             Response::SessionCreated { id, .. } => id,
@@ -13382,13 +13492,15 @@ mod tests {
         let mut stream = Stream::connect(&socket_path).unwrap();
         let id = match request(
             &mut stream,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp/ws".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         ) {
             Response::SessionCreated { id, .. } => id,
@@ -13588,13 +13700,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -13626,13 +13740,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -13673,13 +13789,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -13724,13 +13842,15 @@ mod tests {
 
         let resp = request(
             &mut stream,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp/ws".to_string(),
                 cwd: "/tmp/definitely-does-not-exist-xyz".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         assert!(matches!(resp, Response::Error { .. }));
@@ -17338,7 +17458,7 @@ mod tests {
     // ---- v21: a quiet agent that BROKE is not a finished one ----------
     //
     // The whole family this exists for was measured, not assumed, under a
-    // temp $HOME with the real cline CLI pointed at a fake API:
+    // temp $HOME with the real Claude Code CLI pointed at a fake API:
     //
     //   connection reset before a response   retries visibly, then
     //                                        "API Error: Connection dropped
@@ -17422,13 +17542,15 @@ mod tests {
         let mut stream = Stream::connect(socket_path).unwrap();
         let created = request(
             &mut stream,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp/ws".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         let id = match created {
@@ -17584,7 +17706,7 @@ mod tests {
         await_status(&mut reader, &id, "idle");
     }
 
-    // ---- the failures cline prints WITHOUT "API Error:" ---------
+    // ---- the failures Claude Code prints WITHOUT "API Error:" ---------
     //
     // Taken from this repo's own transcripts (2026-09), where the fake-API
     // measurement above never looked. Each is one line, verbatim, on a
@@ -17650,8 +17772,8 @@ mod tests {
     fn a_disabled_subscription_line_goes_failed_not_idle() {
         assert_pattern_fails_a_quiet_session(
             "disabled Claude subscription access",
-            "printf 'Your organization has disabled Claude subscription %s for cline \\302\\267 Use an Anthropic API key instead, or ask your admin to enable access\\n' access\n",
-            "Your organization has disabled Claude subscription access for cline",
+            "printf 'Your organization has disabled Claude subscription %s for Claude Code \\302\\267 Use an Anthropic API key instead, or ask your admin to enable access\\n' access\n",
+            "Your organization has disabled Claude subscription access for Claude Code",
         );
     }
 
@@ -17666,7 +17788,7 @@ mod tests {
 
     /// The reason is shown to a human on four surfaces, so it must be
     /// the agent's SENTENCE and not the bullet its TUI drew in front of
-    /// it. Both glyphs here were taken off a real cline screen.
+    /// it. Both glyphs here were taken off a real Claude Code screen.
     #[test]
     fn the_reason_drops_the_glyph_the_tui_painted_in_front_of_it() {
         assert_eq!(
@@ -17715,7 +17837,7 @@ mod tests {
         assert_eq!(HEADROOM_REASON_PREFIX, "Headroom stopped answering");
         assert!(headroom_reason().starts_with(HEADROOM_REASON_PREFIX));
         // An older app finds a cause by the agent lines a reason
-        // contains. None of cline's may be in this one, or that
+        // contains. None of Claude Code's may be in this one, or that
         // app resumes the fleet into the broken proxy.
         for line in ["API Error:", "Connection error", "ECONNRESET", "Overloaded", "/login"] {
             assert!(!headroom_reason().contains(line), "{line}");
@@ -17794,13 +17916,15 @@ mod tests {
 
         let created = request(
             &mut stream,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp/ws".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some("/bin/sh".to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         let id = match created {
@@ -17832,13 +17956,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -17869,13 +17995,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -17910,13 +18038,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -18037,13 +18167,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: repo_path.clone(),
                     cwd: repo_path.clone(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -18105,13 +18237,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -18154,13 +18288,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -18203,13 +18339,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -18243,7 +18381,7 @@ mod tests {
 
     #[test]
     fn relays_status_changed_when_pty_output_contains_an_osc777_notification() {
-        // The end-to-end path for the signal a real cline session
+        // The end-to-end path for the signal a real Claude Code session
         // actually emits when it needs the user: an OSC 777 desktop
         // notification (what it sends under TERM_PROGRAM=ghostty). The
         // bare-BEL test above covers only the Apple_Terminal case.
@@ -18253,13 +18391,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -18278,7 +18418,7 @@ mod tests {
             &mut stream2,
             &Request::WriteInput {
                 id: id.clone(),
-                data: "printf '\\033]777;notify;cline;Claude needs your permission\\007'; read _unused\n"
+                data: "printf '\\033]777;notify;Claude Code;Claude needs your permission\\007'; read _unused\n"
                     .to_string(),
             },
         )
@@ -18316,13 +18456,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -18412,13 +18554,15 @@ mod tests {
         let mut stream = Stream::connect(socket_path).unwrap();
         let created = request(
             &mut stream,
-            &Request::CreateSession {
+            &Request::CreateAuthorizedSession {
                 workspace_path: "/tmp/ws".to_string(),
                 cwd: "/tmp".to_string(),
                 command: Some(command.to_string()),
                 profile_id: None,
                 api_family: None,
                 without_headroom: false,
+                approved_once: true,
+                evidence: None,
             },
         );
         match created {
@@ -18532,7 +18676,7 @@ mod tests {
         // where there is a SIGWINCH to trap (see REPAINTS_ON_RESIZE).
         #[cfg(unix)]
         let command = "trap 'printf gavin_redraw' WINCH; \
-             printf '\\033]777;notify;cline;needs your permission\\007'; \
+             printf '\\033]777;notify;Claude Code;needs your permission\\007'; \
              while :; do read _unused; done";
         // The paint-then-wait before the bell is not padding. ConPTY
         // answers a session's FIRST output with a repaint of its own --
@@ -18549,7 +18693,7 @@ mod tests {
         // repaint follows the first WRITE, not the spawn.
         #[cfg(windows)]
         let command = "printf gavin_painted; sleep 1; \
-             printf '\\033]777;notify;cline;needs your permission\\007'; \
+             printf '\\033]777;notify;Claude Code;needs your permission\\007'; \
              while :; do read _unused; done";
         let id = create_session_with(&socket_path, command);
 
@@ -18588,7 +18732,7 @@ mod tests {
         // before the reminder, and on Windows it also takes ConPTY's
         // first-write repaint out of the way (see the test above).
         let command = "printf gavin_painted; sleep 4; \
-             printf '\\033]777;notify;cline;Claude is waiting for your input\\007'; \
+             printf '\\033]777;notify;Claude Code;Claude is waiting for your input\\007'; \
              while :; do read _unused; done";
         let id = create_session_with(&socket_path, command);
 
@@ -18614,7 +18758,7 @@ mod tests {
             }
         }
         assert!(
-            output.contains("\u{1b}]777;notify;cline;Claude is waiting for your input"),
+            output.contains("\u{1b}]777;notify;Claude Code;Claude is waiting for your input"),
             "the reminder never reached the session, so this proves nothing: {output:?}"
         );
         assert!(statuses.is_empty(), "the idle reminder changed the session's status: {statuses:?}");
@@ -18664,7 +18808,7 @@ mod tests {
     }
 
     /// A session whose program repaints when the terminal reports a
-    /// focus change into it -- what cline does (it enables DEC mode
+    /// focus change into it -- what Claude Code does (it enables DEC mode
     /// 1004 at startup; verified against the real CLI). `stty raw -echo`
     /// so the tty itself does not echo the report back, exactly as a TUI
     /// in raw mode leaves it: the only output is the program's own.
@@ -18749,7 +18893,7 @@ mod tests {
 
     /// What xterm sends for the pointer passing over a terminal whose
     /// program asked for any-motion tracking (DEC 1003) in SGR encoding
-    /// (DEC 1006) -- as cline does since 2.1.x, verified against
+    /// (DEC 1006) -- as Claude Code does since 2.1.x, verified against
     /// 2.1.283: button 3 ("none") plus the motion flag, 1-based column
     /// and row.
     const HOVER_REPORT: &str = "\u{1b}[<35;10;5M";
@@ -18787,7 +18931,7 @@ mod tests {
     }
 
     /// A session whose program repaints for every mouse report it reads,
-    /// the way cline redraws its fullscreen view under a moving
+    /// the way Claude Code redraws its fullscreen view under a moving
     /// pointer. Raw and unechoed for `REPAINTS_ON_FOCUS`' reason; reads
     /// exactly one report's worth so each report gets one repaint.
     #[cfg(unix)]
@@ -18842,7 +18986,7 @@ mod tests {
         let (socket_path, _dir) = start_test_server();
         let id = create_session_with(
             &socket_path,
-            &repaints_on_hover("printf '\\033]777;notify;cline;needs your permission\\007'; "),
+            &repaints_on_hover("printf '\\033]777;notify;Claude Code;needs your permission\\007'; "),
         );
 
         let mut attached = attach_reader(&socket_path, &id);
@@ -19018,13 +19162,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19094,13 +19240,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19154,13 +19302,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19203,13 +19353,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19283,13 +19435,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19384,13 +19538,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19448,13 +19604,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19508,13 +19666,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19564,13 +19724,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: repo_path.clone(),
                     cwd: repo_path.clone(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -19885,8 +20047,9 @@ mod tests {
         let manager = test_manager(&dir);
 
         let id = manager
-            .create_session("/tmp", "/tmp", Some("sleep 30"), Launch::Profile("cline"))
-            .unwrap();
+            .create_session_as("/tmp", "/tmp", Some("sleep 30"), Launch::Profile("claude-code"), false, true)
+            .unwrap()
+            .id;
 
         let summary = manager.list_sessions().unwrap().into_iter().find(|s| s.id == id).unwrap();
         assert!(!summary.compressed);
@@ -20891,13 +21054,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: plain_path.clone(),
                     cwd: plain_path.clone(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -21153,13 +21318,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             let created = request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: cwd.to_string(),
                     cwd: cwd.to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             );
             match created {
@@ -22025,13 +22192,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             match request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             ) {
                 Response::SessionCreated { id, .. } => id,
@@ -22121,13 +22290,15 @@ mod tests {
             let mut stream = Stream::connect(&socket_path).unwrap();
             match request(
                 &mut stream,
-                &Request::CreateSession {
+                &Request::CreateAuthorizedSession {
                     workspace_path: "/tmp/ws".to_string(),
                     cwd: "/tmp".to_string(),
                     command: Some("/bin/sh".to_string()),
                     profile_id: None,
                     api_family: None,
                     without_headroom: false,
+                    approved_once: true,
+                    evidence: None,
                 },
             ) {
                 Response::SessionCreated { id, .. } => id,

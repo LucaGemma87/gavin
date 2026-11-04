@@ -48,7 +48,7 @@ the app becomes a silent regression the day a CLI rewords its errors. A
 profile with no rows classifies every failure as `unknown`, which never
 resumes — today's behaviour, and the honest default.
 
-**The order is load-bearing.** cline's expired-token line is
+**The order is load-bearing.** Claude Code's expired-token line is
 
 ```
 Please run /login · API Error: 401 OAuth token has expired. Please run /login
@@ -211,4 +211,3 @@ whole by every call site.
   of `smokeChecklist.ts` is what that costs, and its last item — a
   two-step parallel stage, lid closed mid-run, reopened on a different
   network — is the one that matters.
-

@@ -10,7 +10,7 @@ the banner missing. It is worst for sessions running a coding agent.
 ## Why it happens
 
 A running agent CLI is a TUI that repaints in the **normal** screen buffer
-using **relative** cursor motion. A capture of a real cline session
+using **relative** cursor motion. A capture of a real Claude Code session
 (120x40, `TERM=xterm-256color`) shows no `\e[?1049h` anywhere and frames
 built out of `\e[2C\e[5A … \e[2D\e[5B`, `\e[103C\e[1A`, `\e[K`, `\e[2K`.
 Every one of those bytes means something only against the exact screen
@@ -109,4 +109,3 @@ enough to order them.
   cannot be repaired by cutting it more carefully.
 - **Restoring across a *daemon* restart.** The PTY is gone with the
   process; that non-goal is unchanged from the 2026-08-03 spec.
-

@@ -17,13 +17,15 @@ import { effectiveLaunchCostPolicy, launchPolicyVerdict, unknownLaunchReason } f
 import { launchPolicyError } from "$lib/agents/launchPolicyDriver";
 import type { LaunchProfile } from "$lib/agents/compression";
 import { launchPreviewLines, safeCommandSummary } from "$lib/agents/launchPreview";
+import type { LaunchEvidence } from "$lib/agents/launchEvidence";
 
 export async function authorizeLaunch(
   workspaceRoot: string | undefined,
   command?: string,
   launchProfile?: LaunchProfile,
   workspaceAgent?: boolean,
-  workspaceId?: string
+  workspaceId?: string,
+  evidence?: LaunchEvidence
 ): Promise<boolean> {
   const blocked = featureBlockedReason(get(daemonCompat), "launchPolicy");
   if (blocked) throw new Error(blocked);
@@ -41,10 +43,6 @@ export async function authorizeLaunch(
     workspace?.launchCostPolicy,
     get(launchConfigStore).costPolicy
   );
-  const verdict = launchPolicyVerdict(policy, "unknown", false);
-  if (verdict === "blocked_paid") {
-    throw new Error("Launch blocked by the no-paid-requests policy.");
-  }
   const requestedProfileId =
     typeof launchProfile === "string" ? launchProfile : launchProfile?.profileId;
   const primaryAgent = resolvedWorkspaceId ? resolvedAgentFor(resolvedWorkspaceId) : undefined;
@@ -73,6 +71,13 @@ export async function authorizeLaunch(
     !command?.trim() ||
     Boolean(selectedAgent?.launchCommand && command.startsWith(selectedAgent.launchCommand));
   const safeExecutable = commandMatchesAgent ? trustedExecutable : null;
+  // Evidence places the route only for the stock agent's own command: a
+  // quota reading says nothing about an arbitrary command line.
+  const placed = Boolean(evidence) && Boolean(safeExecutable);
+  const verdict = launchPolicyVerdict(policy, placed ? evidence!.entitlement : "unknown", false);
+  if (verdict === "blocked_paid") {
+    throw new Error("Launch blocked by the no-paid-requests policy.");
+  }
   const fallbackProfiles =
     resolvedWorkspaceId && primaryAgent
       ? effectiveFallbackChain(
@@ -107,6 +112,11 @@ export async function authorizeLaunch(
             policyNotReadyReason
               ? `${policyNotReadyReason} This route remains unknown; approval applies to this launch only.`
               : "Gavin has no current evidence to classify this route. Approval applies to this launch only.",
+          ]
+        : []),
+      ...(placed
+        ? [
+            `Economic status: ${evidence!.entitlement === "free_allowance" ? "free allowance" : "included quota"} (${evidence!.source}).`,
           ]
         : []),
       ...preview,

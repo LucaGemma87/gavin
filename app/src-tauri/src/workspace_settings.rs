@@ -1,4 +1,4 @@
-﻿//! The workspace state split (docs/adr/0006-workspace-settings-apart-from-layout.md).
+//! The workspace state split (docs/adr/0006-workspace-settings-apart-from-layout.md).
 //!
 //! A workspace record holds two things with two different owners:
 //!
@@ -385,7 +385,7 @@ mod tests {
             }),
             last_active_at: Some(n),
             agent_pause: None,
-            pause_cycles: HashMap::from([(s("cline"), AgentPauseConfig {
+            pause_cycles: HashMap::from([(s("claude-code"), AgentPauseConfig {
                 enabled: flavour == "a",
                 period_minutes: 300,
                 pause_minutes: 10 * n as u32,
@@ -393,11 +393,11 @@ mod tests {
                 limit_percent: 95.0,
                 limit_enabled: flavour == "a",
             })]),
-            prompt_extras: HashMap::from([(s("cline"), vec![s("prompt-line")])]),
-            extra_cli_args: HashMap::from([(s("cline"), vec![s("--flag")])]),
+            prompt_extras: HashMap::from([(s("claude-code"), vec![s("prompt-line")])]),
+            extra_cli_args: HashMap::from([(s("claude-code"), vec![s("--flag")])]),
             pinned_at: Some(10 * n),
             complexity_agents: HashMap::new(),
-            complexity_tables: HashMap::from([(s("cline"), HashMap::from([(
+            complexity_tables: HashMap::from([(s("claude-code"), HashMap::from([(
                 "complex".to_string(),
                 ComplexityAgent {
                     profile: s("profile"),
@@ -434,7 +434,7 @@ mod tests {
                 resume_args: None,
             }],
             agent_fallback: None,
-            fallback_chains: HashMap::from([(s("cline"), vec![s("fallback")])]),
+            fallback_chains: HashMap::from([(s("claude-code"), vec![s("fallback")])]),
             armed_agents: vec![s("armed")],
             declined_agents: vec![s("declined")],
             action_prompt_overrides: HashMap::from([("action:run-task".to_string(), s("prompt"))]),
@@ -744,7 +744,7 @@ mod tests {
                 "agentCommit": { "sessionId": "commit-1", "cwd": "/Users/me/gavin", "retries": 1, "startedAt": 1700000000001 }
               },
               "lastActiveAt": 1700000000002,
-              "pauseCycles": { "cline": { "enabled": true, "periodMinutes": 300, "pauseMinutes": 10, "anchorMs": 1700000000003, "limitPercent": 95.0, "limitEnabled": true } },
+              "pauseCycles": { "claude-code": { "enabled": true, "periodMinutes": 300, "pauseMinutes": 10, "anchorMs": 1700000000003, "limitPercent": 95.0, "limitEnabled": true } },
               "pinnedAt": 1700000000004,
               "complexityTables": { "cline": { "complex": { "profile": "claude-code", "model": "opus" } } },
               "gitTrackingAsked": true,
@@ -760,7 +760,7 @@ mod tests {
                 "modelFlag": "--model",
                 "resumeArgs": "--resume"
               }],
-              "fallbackChains": { "cline": ["codex"] },
+              "fallbackChains": { "claude-code": ["codex"] },
               "armedAgents": ["codex"],
               "declinedAgents": ["opencode"],
               "actionPromptOverrides": { "action:run-task": "Do it." }

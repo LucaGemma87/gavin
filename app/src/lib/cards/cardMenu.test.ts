@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { get, writable } from "svelte/store";
 
 vi.mock("@tauri-apps/api/event", () => ({
@@ -541,7 +541,7 @@ describe("best-of-N entries", () => {
           pageId: "pg",
           startedAt: 0,
           candidates: [
-            { sessionId: "a", label: "A", profileId: "cline", model: "", branch: "b1", worktreePath: "/w1", command: "", conversationId: null },
+            { sessionId: "a", label: "A", profileId: "claude-code", model: "", branch: "b1", worktreePath: "/w1", command: "", conversationId: null },
             { sessionId: "b", label: "B", profileId: "codex", model: "", branch: "b2", worktreePath: "/w2", command: "", conversationId: null },
           ],
         },
@@ -562,7 +562,7 @@ describe("best-of-N entries", () => {
           pageId: "pg",
           startedAt: 0,
           candidates: [
-            { sessionId: "a", label: "A", profileId: "cline", model: "", branch: "b1", worktreePath: "/w1", command: "", conversationId: null },
+            { sessionId: "a", label: "A", profileId: "claude-code", model: "", branch: "b1", worktreePath: "/w1", command: "", conversationId: null },
           ],
         },
       ],

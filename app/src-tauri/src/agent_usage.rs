@@ -1,4 +1,4 @@
-﻿//! Reading an agent's SUBSCRIPTION limits -- the windows the account is
+//! Reading an agent's SUBSCRIPTION limits -- the windows the account is
 //! spending against, not the tokens one conversation burned.
 //!
 //! Which agents can be asked at all, and by what route, is the profile
@@ -11,8 +11,8 @@
 //! Two constraints shape everything below.
 //!
 //! **The Anthropic endpoint rate-limits its own callers, hard.** Without
-//! a `cline/<version>` user-agent it lands in a bucket that answers
-//! 429 for hours (anthropics/cline#30930, #31021, #31637). So the
+//! a `claude-code/<version>` user-agent it lands in a bucket that answers
+//! 429 for hours (anthropics/claude-code#30930, #31021, #31637). So the
 //! probe sends one, caches every answer, refuses to call more often than
 //! `MIN_INTERVAL`, and backs off on its own when told to. A usage panel
 //! that polls per render is exactly how you lose the endpoint.
@@ -274,7 +274,7 @@ pub async fn agent_usage(
 }
 
 /// The probe a profile id may be asked through. Named customs answer
-/// None here even though `profile_by_id` would fall back to cline:
+/// None here even though `profile_by_id` would fall back to claude-code:
 /// a custom is not claude, and the Anthropic probe's answer cached under
 /// the custom's id would read it as spent whenever claude is.
 fn usage_probe_for(profile_id: &str) -> Option<UsageProbe> {
@@ -422,7 +422,7 @@ fn anthropic_usage(now: i64) -> (UsageReport, Option<i64>) {
         "url = \"{ANTHROPIC_USAGE_URL}\"\n\
          header = \"Authorization: Bearer {token}\"\n\
          header = \"anthropic-beta: {OAUTH_BETA}\"\n\
-         header = \"User-Agent: cline/{version}\"\n\
+         header = \"User-Agent: claude-code/{version}\"\n\
          header = \"Accept: application/json\"\n\
          silent\n\
          show-error\n\
@@ -2205,7 +2205,7 @@ mod tests {
     /// the migrated `custom-agent`, a user slug, a workspace `local:` id
     /// -- carries no probe at all: the command answers Unsupported
     /// through `usage_probe_for` (`stock_profile_by_id`), never
-    /// `profile_by_id`'s cline fallback, which would cache
+    /// `profile_by_id`'s claude-code fallback, which would cache
     /// claude's usage under the custom's id and read it as spent
     /// whenever claude is.
     #[test]

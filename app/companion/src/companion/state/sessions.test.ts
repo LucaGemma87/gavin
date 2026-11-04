@@ -1,4 +1,4 @@
-﻿// Opening, ending and landing on sessions from the phone, against the
+// Opening, ending and landing on sessions from the phone, against the
 // Demo Workstation and read at the wire.
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -189,7 +189,7 @@ describe("opening a session", () => {
       cwd: DEMO.atlasRoot,
       workspaceRoot: DEMO.atlasRoot,
       workspaceId: DEMO.atlas,
-      profileId: "cline",
+      profileId: "claude-code",
       approvedOnce: true,
     });
     expect(String(launched.command)).toMatch(/^claude\b/);

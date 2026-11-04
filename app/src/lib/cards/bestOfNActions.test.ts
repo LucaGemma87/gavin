@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { get, writable } from "svelte/store";
 import type { BestOfNRun, CandidatePlan } from "$lib/cards/bestOfN";
 import type { CardView } from "$lib/core/planBoard";

@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   abandonConfirm,
   candidateAgentConfig,
@@ -47,7 +47,7 @@ describe("naming a candidate", () => {
     // A dot-and-slash alias is the case that would otherwise produce a
     // branch git refuses -- or worse, one it accepts and nobody meant.
     expect(candidateSlug({ profileId: "codex", model: "gpt-5.1" })).toBe("codex-gpt-5-1");
-    expect(candidateSlug({ profileId: "cline", model: "" })).toBe("cline");
+    expect(candidateSlug({ profileId: "claude-code", model: "" })).toBe("claude-code");
   });
 });
 

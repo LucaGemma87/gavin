@@ -1,4 +1,4 @@
-﻿// What the Demo Workstation holds: a small, believable machine.
+// What the Demo Workstation holds: a small, believable machine.
 //
 // Typed against the DESKTOP's own wire types, deliberately. The demo is
 // the suites' fixture as well as the thing App Review explores, and a
@@ -130,7 +130,7 @@ function context(
     specs: [],
     hasPrd: kind === "root",
     configWarning: false,
-    agent: kind === "root" ? { profile: "cline", file: "CLAUDE.md", command: null } : null,
+    agent: kind === "root" ? { profile: "claude-code", file: "CLAUDE.md", command: null } : null,
     prd: null,
   };
 }
@@ -442,7 +442,7 @@ export function sampleSettings(): DemoSettings {
     customResumeArgs: null,
     agentModels: {},
     agentDefaults: {
-      defaultAgent: "cline",
+      defaultAgent: "claude-code",
       customProfiles: [
         {
           id: "demo-cli",

@@ -1,4 +1,4 @@
-﻿use crate::command_lane::{CommandLane, DaemonLanes, Redial};
+use crate::command_lane::{CommandLane, DaemonLanes, Redial};
 use crate::config::Workspace;
 use crate::layout::LayoutNode;
 use crate::stream_writer::StreamWriter;
@@ -864,7 +864,7 @@ mod workspaces_data_tests {
         complexity.insert(
             "intricate".to_string(),
             crate::config::ComplexityAgent {
-                profile: "cline".to_string(),
+                profile: "claude-code".to_string(),
                 model: "opus".to_string(),
                 effort: "max".to_string(),
                 advisor: "opus".to_string(),
@@ -883,19 +883,19 @@ mod workspaces_data_tests {
             custom_command: String::new(),
             custom_model_flag: String::new(),
             custom_effort_flag: String::new(),
-            agent_efforts: HashMap::from([("cline".to_string(), "high".to_string())]),
+            agent_efforts: HashMap::from([("claude-code".to_string(), "high".to_string())]),
             custom_api_family: String::new(),
             complexity: HashMap::new(),
-            complexity_tables: HashMap::from([("cline".to_string(), complexity)]),
+            complexity_tables: HashMap::from([("claude-code".to_string(), complexity)]),
             pause_cycles: HashMap::new(),
             prompt_extras: HashMap::new(),
             extra_cli_args: HashMap::new(),
             default_agent: Some("codex".to_string()),
             agent_fallback: Vec::new(),
-            fallback_chains: HashMap::from([("cline".to_string(), vec!["codex".to_string()])]),
+            fallback_chains: HashMap::from([("claude-code".to_string(), vec!["codex".to_string()])]),
             fallback_thresholds: {
                 let mut m = HashMap::new();
-                m.insert("cline".to_string(), 80);
+                m.insert("claude-code".to_string(), 80);
                 m
             },
             action_prompt_overrides: HashMap::new(),
@@ -1206,7 +1206,7 @@ mod workspaces_data_tests {
             action_prompt_overrides: HashMap::new(),
         };
         ws.complexity_tables.insert(
-            "cline".to_string(),
+            "claude-code".to_string(),
             HashMap::from([(
                 "trivial".to_string(),
                 crate::config::ComplexityAgent {
@@ -1374,7 +1374,7 @@ mod workspaces_data_tests {
             limit_enabled: true,
         };
         let defaults = crate::config::AgentDefaultsConfig {
-            pause_cycles: HashMap::from([("cline".to_string(), cycle.clone())]),
+            pause_cycles: HashMap::from([("claude-code".to_string(), cycle.clone())]),
             ..Default::default()
         };
         persist_workspaces(
@@ -1399,7 +1399,7 @@ mod workspaces_data_tests {
         )
         .unwrap();
         assert_eq!(
-            crate::config::load(dir.path()).unwrap().agent_defaults.pause_cycles.get("cline"),
+            crate::config::load(dir.path()).unwrap().agent_defaults.pause_cycles.get("claude-code"),
             Some(&cycle)
         );
     }
@@ -5272,13 +5272,13 @@ mod resolve_workspaces_tests {
             Some("/Users/alice/project-rail"),
             Some("/Users/alice/project"),
             Some("claude 'Read the card'"),
-            Some("cline"),
+            Some("claude-code"),
             None,
             "/Users/alice",
         ))
         .unwrap();
 
-        assert_eq!(the_profile_sent(&captured, 0).as_deref(), Some("cline"));
+        assert_eq!(the_profile_sent(&captured, 0).as_deref(), Some("claude-code"));
     }
 
     /// The new authorization-bearing request is gated by type, so an
@@ -5287,14 +5287,17 @@ mod resolve_workspaces_tests {
     fn an_older_daemon_is_never_sent_the_launching_profile() {
         let (client, captured, _dir) =
             fake_daemon_capturing_requests(vec![Response::SessionCreated { id: "s1".to_string(), compressed: false, uncompressed_reason: None }]);
-        let conn = lanes_at(client, compat_at(protocol::PROTOCOL_VERSION - 1));
+        // v80 is the last daemon before `CreateAuthorizedSession` (v81).
+        // Not `PROTOCOL_VERSION - 1`: that stops being older the moment a
+        // later bump (v82's launch evidence) widens a request instead.
+        let conn = lanes_at(client, compat_at(80));
 
         let error = block_on(create_fresh_session(
             &conn,
             Some("/tmp"),
             Some("/tmp"),
             Some("claude 'Read the card'"),
-            Some("cline"),
+            Some("claude-code"),
             None,
             "/home/t",
         ))
@@ -5306,8 +5309,8 @@ mod resolve_workspaces_tests {
     #[test]
     fn the_profile_is_sent_from_the_version_that_reads_it() {
         let at = protocol::COMPRESSED_LAUNCH_MIN_VERSION;
-        assert_eq!(profile_for_daemon(at - 1, Some("cline")), None);
-        assert_eq!(profile_for_daemon(at, Some("cline")).as_deref(), Some("cline"));
+        assert_eq!(profile_for_daemon(at - 1, Some("claude-code")), None);
+        assert_eq!(profile_for_daemon(at, Some("claude-code")).as_deref(), Some("claude-code"));
         assert_eq!(profile_for_daemon(at + 1, Some("codex")).as_deref(), Some("codex"));
         // Nothing to name is nothing to send, at any version.
         assert_eq!(profile_for_daemon(at, None), None);
@@ -5330,7 +5333,7 @@ mod resolve_workspaces_tests {
             Some("/definitely/does/not/exist/anywhere"),
             Some("/Users/alice/project"),
             Some("claude 'Read the card'"),
-            Some("cline"),
+            Some("claude-code"),
             None,
             false,
             true,
@@ -5339,7 +5342,7 @@ mod resolve_workspaces_tests {
         .unwrap_err();
 
         assert!(error.to_string().contains("fresh human approval"), "{error}");
-        assert_eq!(the_profile_sent(&captured, 0).as_deref(), Some("cline"));
+        assert_eq!(the_profile_sent(&captured, 0).as_deref(), Some("claude-code"));
         assert_eq!(the_profile_sent(&captured, 1), None);
         match &captured.lock().unwrap()[1] {
             Request::CreateAuthorizedSession { approved_once, command, .. } => {
@@ -5402,7 +5405,7 @@ mod resolve_workspaces_tests {
 
         assert_eq!(the_family_sent(&captured, 0), None);
         let sent = serde_json::to_value(&captured.lock().unwrap()[0]).unwrap();
-        assert!(sent.get("api_family").is_none(), "{sent}");
+        assert!(sent.get("api_family").map_or(true, |v| v.is_null()), "{sent}");
     }
 
     #[test]
@@ -5484,7 +5487,7 @@ mod resolve_workspaces_tests {
             Some("/tmp"),
             Some("/tmp"),
             Some("claude --resume abc"),
-            Some("cline"),
+            Some("claude-code"),
             None,
             true,
             false,
@@ -5523,20 +5526,22 @@ mod resolve_workspaces_tests {
             uncompressed_reason: None,
         }]);
         let conn = lanes_at(client, compat_at(at - 1));
-        block_on(create_agent_session(
+        // An agent launch is an authorized one (v81), so a daemon older
+        // than that is refused outright and never sees the override.
+        let error = block_on(create_agent_session(
             &conn,
             Some("/tmp"),
             Some("/tmp"),
             Some("claude --resume abc"),
-            Some("cline"),
+            Some("claude-code"),
             None,
             true,
             false,
             "/home/t",
         ))
-        .unwrap();
-        let sent = serde_json::to_value(&captured.lock().unwrap()[0]).unwrap();
-        assert!(sent.get("without_headroom").is_none(), "{sent}");
+        .unwrap_err();
+        assert!(error.to_string().contains("protocol v81"), "{error}");
+        assert!(captured.lock().unwrap().is_empty());
     }
 
     /// Every other launch goes on as the request it always was, and the
@@ -5554,7 +5559,7 @@ mod resolve_workspaces_tests {
             Some("/definitely/does/not/exist/anywhere"),
             Some("/Users/alice/project"),
             Some("claude --resume abc"),
-            Some("cline"),
+            Some("claude-code"),
             None,
             true,
             false,
@@ -6775,6 +6780,39 @@ pub(crate) async fn create_agent_session(
     approved_once: bool,
     home: &str,
 ) -> anyhow::Result<CreatedSession> {
+    create_agent_session_with_evidence(
+        lanes,
+        cwd,
+        workspace_root,
+        command,
+        profile_id,
+        api_family,
+        without_headroom,
+        approved_once,
+        None,
+        home,
+    )
+    .await
+}
+
+/// `create_agent_session`, with the entitlement evidence the desk read
+/// off the agent's own usage windows (v82). Evidence only travels to a
+/// daemon that reads it: an older one would drop the field and ask for an
+/// approval the desk had no reason to expect, so below
+/// `protocol::LAUNCH_EVIDENCE_MIN_VERSION` it is not sent at all.
+#[allow(clippy::too_many_arguments)]
+pub(crate) async fn create_agent_session_with_evidence(
+    lanes: &DaemonLanes,
+    cwd: Option<&str>,
+    workspace_root: Option<&str>,
+    command: Option<&str>,
+    profile_id: Option<&str>,
+    api_family: Option<&str>,
+    without_headroom: bool,
+    approved_once: bool,
+    evidence: Option<protocol::LaunchEvidence>,
+    home: &str,
+) -> anyhow::Result<CreatedSession> {
     let home = home.to_string();
     let target = cwd.map(str::to_string).unwrap_or_else(|| home.clone());
     let workspace = workspace_root.map(str::to_string).unwrap_or_else(|| target.clone());
@@ -6783,6 +6821,7 @@ pub(crate) async fn create_agent_session(
     let api_family = api_family_for_daemon(daemon_version, profile_id, api_family);
     let profile_id = profile_for_daemon(daemon_version, profile_id);
     let without_headroom = without_headroom_for_daemon(daemon_version, without_headroom);
+    let evidence = if daemon_version >= protocol::LAUNCH_EVIDENCE_MIN_VERSION { evidence } else { None };
 
     let request = if profile_id.is_some() || command.is_some() {
         Request::CreateAuthorizedSession {
@@ -6793,6 +6832,7 @@ pub(crate) async fn create_agent_session(
             api_family,
             without_headroom,
             approved_once,
+            evidence,
         }
     } else {
         Request::CreateSession {
@@ -6839,7 +6879,9 @@ pub(crate) async fn create_agent_session(
             profile_id: None,
             api_family: None,
             without_headroom: false,
-            approved_once: false,
+approved_once: false,
+            // No profile, so no route a quota reading could place.
+            evidence: None,
         }
     } else {
         Request::CreateSession {
@@ -6895,6 +6937,7 @@ pub async fn create_session(
     profile_id: Option<String>,
     without_headroom: Option<bool>,
     approved_once: Option<bool>,
+    evidence: Option<protocol::LaunchEvidence>,
     app_handle: AppHandle,
     command_state: State<'_, CommandConnection>,
     daemon_state: State<'_, DaemonConnection>,
@@ -6910,7 +6953,7 @@ pub async fn create_session(
     if let crate::remote::Route::Remote(link) =
         crate::remote::route_for_root(&app_handle, workspace_root.as_deref())?
     {
-        let created = create_agent_session(
+        let created = create_agent_session_with_evidence(
             &link.lanes(),
             cwd.as_deref(),
             workspace_root.as_deref(),
@@ -6919,6 +6962,7 @@ pub async fn create_session(
             api_family.as_deref(),
             without_headroom,
             approved_once,
+            evidence.clone(),
             &link.home,
         )
         .await
@@ -6944,7 +6988,7 @@ pub async fn create_session(
     {
         crate::agent_setup::prepare_kimi_launch(cwd.as_deref(), workspace_root.as_deref(), &local_home());
     }
-    let created = create_agent_session(
+    let created = create_agent_session_with_evidence(
         &command_state.lanes(compat),
         cwd.as_deref(),
         workspace_root.as_deref(),
@@ -6953,6 +6997,7 @@ pub async fn create_session(
         api_family.as_deref(),
         without_headroom,
         approved_once,
+        evidence,
         &local_home(),
     )
     .await

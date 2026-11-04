@@ -1,4 +1,4 @@
-﻿import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn(() => Promise.resolve("s1")) }));
 const { authorizeLaunch } = vi.hoisted(() => ({ authorizeLaunch: vi.fn(async () => true) }));
@@ -31,6 +31,7 @@ describe("createSession", () => {
       "/ws",
       "claude 'go'",
       "claude-code",
+      undefined,
       undefined,
       undefined
     );

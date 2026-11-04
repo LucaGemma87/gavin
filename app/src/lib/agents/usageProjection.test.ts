@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import type { AgentUsageReport, UsageWindow } from "$lib/agents/agentUsage";
 import {
   CLEAR_MARGIN,
@@ -89,64 +89,64 @@ describe("window classes", () => {
 
 describe("recording samples", () => {
   it("stores the first reading of a window", () => {
-    const next = recordUsage({}, "cline", ready([window()], T0));
-    expect(next["cline"].five_hour.samples).toEqual([{ atMs: T0, usedPercent: 40 }]);
+    const next = recordUsage({}, "claude-code", ready([window()], T0));
+    expect(next["claude-code"].five_hour.samples).toEqual([{ atMs: T0, usedPercent: 40 }]);
   });
 
   // The poller runs every 3 minutes against a 5-minute cadence, so most
   // readings must store nothing -- and say so by identity, which is what
   // keeps the store and localStorage from being rewritten every poll.
   it("returns the same object when the reading is inside the sampling interval", () => {
-    const first = recordUsage({}, "cline", ready([window()], T0));
+    const first = recordUsage({}, "claude-code", ready([window()], T0));
     const again = recordUsage(
       first,
-      "cline",
+      "claude-code",
       ready([window({ usedPercent: 41 })], T0 + 3 * MINUTE)
     );
     expect(again).toBe(first);
   });
 
   it("stores a reading once a full interval has passed", () => {
-    const first = recordUsage({}, "cline", ready([window()], T0));
+    const first = recordUsage({}, "claude-code", ready([window()], T0));
     const next = recordUsage(
       first,
-      "cline",
+      "claude-code",
       ready([window({ usedPercent: 45 })], T0 + 6 * MINUTE)
     );
-    expect(next["cline"].five_hour.samples).toHaveLength(2);
+    expect(next["claude-code"].five_hour.samples).toHaveLength(2);
   });
 
   // A cached report replays the reading it already gave, and the codex
   // route can hand back an event older than one already stored. Storing
   // either would flatten the measured span towards zero.
   it("ignores a reading no newer than the one it holds", () => {
-    const first = recordUsage({}, "cline", ready([window()], T0));
-    expect(recordUsage(first, "cline", ready([window()], T0))).toBe(first);
+    const first = recordUsage({}, "claude-code", ready([window()], T0));
+    expect(recordUsage(first, "claude-code", ready([window()], T0))).toBe(first);
     expect(
-      recordUsage(first, "cline", ready([window({ usedPercent: 39 })], T0 - HOUR))
+      recordUsage(first, "claude-code", ready([window({ usedPercent: 39 })], T0 - HOUR))
     ).toBe(first);
   });
 
   it("keeps nothing from a probe that could not answer", () => {
-    const first = recordUsage({}, "cline", ready([window()], T0));
+    const first = recordUsage({}, "claude-code", ready([window()], T0));
     const failed: AgentUsageReport = { state: "unavailable", reason: "offline", retryAfter: null };
-    expect(recordUsage(first, "cline", failed)).toBe(first);
+    expect(recordUsage(first, "claude-code", failed)).toBe(first);
   });
 
   it("drops a window the route stopped reporting", () => {
     const both = recordUsage(
       {},
-      "cline",
+      "claude-code",
       ready([window(), window({ id: "seven_day", label: "Weekly", usedPercent: 10 })], T0)
     );
-    const one = recordUsage(both, "cline", ready([window()], T0 + 6 * MINUTE));
-    expect(Object.keys(one["cline"])).toEqual(["five_hour"]);
+    const one = recordUsage(both, "claude-code", ready([window()], T0 + 6 * MINUTE));
+    expect(Object.keys(one["claude-code"])).toEqual(["five_hour"]);
   });
 
   it("keeps profiles apart", () => {
-    let h = recordUsage({}, "cline", ready([window()], T0));
+    let h = recordUsage({}, "claude-code", ready([window()], T0));
     h = recordUsage(h, "codex", ready([window({ id: "primary", usedPercent: 5 })], T0));
-    expect(h["cline"].five_hour.samples[0].usedPercent).toBe(40);
+    expect(h["claude-code"].five_hour.samples[0].usedPercent).toBe(40);
     expect(h.codex.primary.samples[0].usedPercent).toBe(5);
   });
 });
@@ -211,13 +211,13 @@ describe("epoch breaks", () => {
   });
 
   it("starts a fresh epoch through recordUsage when the window resets", () => {
-    const before = recordUsage({}, "cline", ready([window({ usedPercent: 90 })], T0));
+    const before = recordUsage({}, "claude-code", ready([window({ usedPercent: 90 })], T0));
     const after = recordUsage(
       before,
-      "cline",
+      "claude-code",
       ready([window({ usedPercent: 2, resetsAt: 99_999 })], T0 + 6 * MINUTE)
     );
-    expect(after["cline"].five_hour.samples).toEqual([
+    expect(after["claude-code"].five_hour.samples).toEqual([
       { atMs: T0 + 6 * MINUTE, usedPercent: 2 },
     ]);
   });
@@ -323,7 +323,7 @@ describe("the projection", () => {
     const p = projectWindow(
       window({ usedPercent: 40, resetsAt: resetsIn3h }),
       history(10, 40, HOUR, resetsIn3h),
-      "cline",
+      "claude-code",
       T0
     );
     expect(p.status).toBe("projected");
@@ -339,7 +339,7 @@ describe("the projection", () => {
     const p = projectWindow(
       window({ usedPercent: 40, resetsAt: resetsIn3h }),
       history(22, 40, HOUR, resetsIn3h),
-      "cline",
+      "claude-code",
       T0
     );
     expect(p.marginRatio).toBeGreaterThan(0);
@@ -351,7 +351,7 @@ describe("the projection", () => {
     const p = projectWindow(
       window({ usedPercent: 40, resetsAt: resetsIn3h }),
       history(35, 40, HOUR, resetsIn3h),
-      "cline",
+      "claude-code",
       T0
     );
     expect(p.marginRatio).toBeGreaterThan(CLEAR_MARGIN);
@@ -359,7 +359,7 @@ describe("the projection", () => {
   });
 
   it("draws nothing while it is still measuring a quiet window", () => {
-    const p = projectWindow(window({ usedPercent: 40 }), undefined, "cline", T0);
+    const p = projectWindow(window({ usedPercent: 40 }), undefined, "claude-code", T0);
     expect(p.status).toBe("measuring");
     expect(p.band).toBeNull();
   });
@@ -369,10 +369,10 @@ describe("the projection", () => {
   // whether or not a rate exists.
   it("still speaks while measuring when the level alone is loud", () => {
     expect(
-      projectWindow(window({ usedPercent: 80 }), undefined, "cline", T0).band
+      projectWindow(window({ usedPercent: 80 }), undefined, "claude-code", T0).band
     ).toBe("tight");
     expect(
-      projectWindow(window({ usedPercent: 93 }), undefined, "cline", T0).band
+      projectWindow(window({ usedPercent: 93 }), undefined, "claude-code", T0).band
     ).toBe("over");
   });
 
@@ -380,7 +380,7 @@ describe("the projection", () => {
     const p = projectWindow(
       window({ usedPercent: 40, resetsAt: resetsIn3h }),
       history(40, 40, 2 * HOUR, resetsIn3h),
-      "cline",
+      "claude-code",
       T0
     );
     expect(p.status).toBe("flat");
@@ -397,7 +397,7 @@ describe("the projection", () => {
     const p = projectWindow(
       window({ usedPercent: 96, resetsAt: resetsIn3h }),
       history(96, 96, 2 * HOUR, resetsIn3h),
-      "cline",
+      "claude-code",
       T0
     );
     expect(p.status).toBe("flat");
@@ -408,7 +408,7 @@ describe("the projection", () => {
     const p = projectWindow(
       window({ usedPercent: 100, resetsAt: resetsIn3h }),
       history(80, 100, HOUR, resetsIn3h),
-      "cline",
+      "claude-code",
       T0
     );
     expect(p.status).toBe("exhausted");
@@ -424,7 +424,7 @@ describe("the projection", () => {
     const p = projectWindow(
       window({ usedPercent: 40, resetsAt: resetsIn3h }),
       history(34, 40, HOUR, resetsIn3h),
-      "cline",
+      "claude-code",
       T0
     );
     // 6 points an hour with 3h to run: 40 + 18.
@@ -438,7 +438,7 @@ describe("the projection", () => {
     const p = projectWindow(
       window({ usedPercent: 99, resetsAt: Math.floor((T0 + HOUR) / 1000) }),
       history(98.2, 99, HOUR, Math.floor((T0 + HOUR) / 1000)),
-      "cline",
+      "claude-code",
       T0
     );
     expect(p.endPercent).toBeGreaterThan(99);
@@ -450,7 +450,7 @@ describe("the projection", () => {
     const p = projectWindow(
       window({ usedPercent: 40, resetsAt: null }),
       history(10, 40, HOUR, null),
-      "cline",
+      "claude-code",
       T0
     );
     expect(p.endPercent).toBeNull();
@@ -463,7 +463,7 @@ describe("the projection", () => {
     const p = projectWindow(
       window({ usedPercent: 40, resetsAt: resetsIn3h }),
       history(40, 40, 2 * HOUR, resetsIn3h),
-      "cline",
+      "claude-code",
       T0
     );
     expect(p.endPercent).toBe(40);
@@ -474,7 +474,7 @@ describe("the projection", () => {
     const p = projectWindow(
       window({ usedPercent: 40, resetsAt: null }),
       history(10, 40, HOUR, null),
-      "cline",
+      "claude-code",
       T0
     );
     expect(p.status).toBe("no-reset");
@@ -507,17 +507,17 @@ describe("choosing what one semaphore shows", () => {
 
   it("projects only the profiles in use, and only the ones with readings", () => {
     const reports: Record<string, AgentUsageReport> = {
-      "cline": ready([window(), window({ id: "seven_day", label: "Weekly", usedPercent: 20 })], T0),
+      "claude-code": ready([window(), window({ id: "seven_day", label: "Weekly", usedPercent: 20 })], T0),
       codex: { state: "unsupported" },
     };
     const rows = projectUsage({
-      profileIds: ["cline", "codex", "gemini"],
+      profileIds: ["claude-code", "codex", "gemini"],
       reports,
       history: {},
       nowMs: T0,
     });
     expect(rows.map((r) => r.windowId)).toEqual(["five_hour", "seven_day"]);
-    expect(rows.every((r) => r.profileId === "cline")).toBe(true);
+    expect(rows.every((r) => r.profileId === "claude-code")).toBe(true);
   });
 });
 
@@ -528,7 +528,7 @@ describe("the forecast on the bar", () => {
     const p = projectWindow(
       window({ usedPercent: 40, resetsAt: resetsIn3h }),
       history(34, 40, HOUR, resetsIn3h),
-      "cline",
+      "claude-code",
       T0
     );
     expect(forecastSpan(p)).toEqual({ startPercent: 40, widthPercent: 18 });
@@ -540,7 +540,7 @@ describe("the forecast on the bar", () => {
     const p = projectWindow(
       window({ usedPercent: 90, resetsAt: resetsIn3h }),
       history(60, 90, HOUR, resetsIn3h),
-      "cline",
+      "claude-code",
       T0
     );
     expect(p.endPercent).toBeGreaterThan(100);
@@ -549,14 +549,14 @@ describe("the forecast on the bar", () => {
 
   it("draws nothing while there is nothing forecast", () => {
     expect(
-      forecastSpan(projectWindow(window({ usedPercent: 40 }), undefined, "cline", T0))
+      forecastSpan(projectWindow(window({ usedPercent: 40 }), undefined, "claude-code", T0))
     ).toBeNull();
     expect(
       forecastSpan(
         projectWindow(
           window({ usedPercent: 100, resetsAt: resetsIn3h }),
           history(80, 100, HOUR, resetsIn3h),
-          "cline",
+          "claude-code",
           T0
         )
       )
@@ -575,10 +575,10 @@ describe("the words", () => {
     const p = projectWindow(
       window({ usedPercent: 40 }),
       history(10, 40, HOUR, window().resetsAt),
-      "cline",
+      "claude-code",
       T0
     );
-    expect(projectionTooltip(p, "cline", T0)).toMatch(/^cline · 5-hour 40% — /);
+    expect(projectionTooltip(p, "Claude Code", T0)).toMatch(/^Claude Code · 5-hour 40% — /);
   });
 
   // A clock, because the decision ("start the big rail now?") is made
@@ -612,7 +612,7 @@ describe("the words", () => {
     const p = projectWindow(
       window({ usedPercent: 40, resetsAt: resetsIn3h }),
       history(10, 40, HOUR, resetsIn3h),
-      "cline",
+      "claude-code",
       T0
     );
     // Gone in two hours, an hour before the window resets.
@@ -629,7 +629,7 @@ describe("the words", () => {
     const p = projectWindow(
       window({ usedPercent: 96, resetsAt: resetsIn3h }),
       history(95.7, 96, 2 * HOUR, resetsIn3h),
-      "cline",
+      "claude-code",
       T0
     );
     expect(p.band).toBe("over");
@@ -651,7 +651,7 @@ describe("the words", () => {
         ],
         resetsAt: null,
       },
-      "cline",
+      "claude-code",
       T0
     );
     expect(weekly.status).toBe("measuring");
@@ -665,7 +665,7 @@ describe("the words", () => {
     const weekly = projectWindow(
       window({ id: "seven_day", label: "Weekly", usedPercent: 20 }),
       { samples: [{ atMs: T0, usedPercent: 20 }], resetsAt: null },
-      "cline",
+      "claude-code",
       T0
     );
     expect(projectionSentence(weekly, T0)).toContain("30m");
@@ -685,7 +685,7 @@ describe("persistence", () => {
 
   it("round-trips a history", () => {
     const storage = fakeStorage();
-    const h = recordUsage({}, "cline", ready([window()], T0));
+    const h = recordUsage({}, "claude-code", ready([window()], T0));
     saveUsageHistory(h, storage);
     expect(loadUsageHistory(storage)).toEqual(h);
   });
@@ -712,7 +712,7 @@ describe("persistence", () => {
     expect(
       parseUsageHistory(
         JSON.stringify({
-          "cline": {
+          "claude-code": {
             five_hour: {
               resetsAt: "soon",
               samples: [
@@ -727,7 +727,7 @@ describe("persistence", () => {
         })
       )
     ).toEqual({
-      "cline": { five_hour: { resetsAt: null, samples: [{ atMs: T0, usedPercent: 10 }] } },
+      "claude-code": { five_hour: { resetsAt: null, samples: [{ atMs: T0, usedPercent: 10 }] } },
     });
   });
 
@@ -749,4 +749,3 @@ describe("persistence", () => {
     expect(parsed.p.five_hour.samples.map((s) => s.usedPercent)).toEqual([2, 9]);
   });
 });
-

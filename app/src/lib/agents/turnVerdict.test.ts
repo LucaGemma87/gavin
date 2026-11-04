@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   ACTIVE_NOUL_VETO,
   CAUSE_MIN_CONFIDENCE,
@@ -65,7 +65,7 @@ function read(over: Parameters<typeof body>[0] = {}, screen = "") {
   return readTurn(parseVerdictAnswers(body(over)), screen);
 }
 
-// cline's chrome around an agent message, which is what the
+// Claude Code's chrome around an agent message, which is what the
 // daemon's rendered tail actually looks like.
 function claudeScreen(...message: string[]): string {
   return [
@@ -82,7 +82,7 @@ describe("verdictRequest", () => {
   it("pins the measured model rather than jev-latest", () => {
     // The thresholds in this module were all fitted against this exact
     // model; floating it would move the boundary under them.
-    expect(verdictRequest("cline", "hello").model).toBe("jev-1.13.0");
+    expect(verdictRequest("claude-code", "hello").model).toBe("jev-1.13.0");
     expect(TYPESAFE_MODEL).toBe("jev-1.13.0");
   });
 
@@ -95,7 +95,7 @@ describe("verdictRequest", () => {
     // One request, not seven: they are independent judgements over the
     // same state, so TypeSafe runs them in parallel and the 2s budget
     // buys one round trip rather than seven.
-    expect(Object.keys(verdictRequest("cline", "x").questions).sort()).toEqual([
+    expect(Object.keys(verdictRequest("claude-code", "x").questions).sort()).toEqual([
       "cause",
       "n_active",
       "n_asks",
@@ -486,4 +486,3 @@ describe("blockedStepReason", () => {
     );
   });
 });
-

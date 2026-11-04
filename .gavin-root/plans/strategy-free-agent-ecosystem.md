@@ -1,5 +1,4 @@
 ---
-agent: copilot
 order: 6144
 kind: plan
 title: Rendere Gavin la scelta migliore per agenti e modelli gratuiti
@@ -25,13 +24,21 @@ Analisi di Gavin: [ricerca Gavin e agenti/modelli gratuiti](../../docs/research/
 
 **Il piano non è completato.** Nel codice ci sono policy di lancio, conferma per i costi sconosciuti, preview, letture di alcuni limiti d'uso e contatori di token. Manca ancora il dato che rende affidabile l'obiettivo del piano: una classificazione economica verificata per provider/modello, con fonte e freschezza, applicata alla policy e registrata sul run. Le caselle già spuntate nella fase P0 documentano decisioni e superfici implementate, non attestano che l'intero patto economico sia garantito.
 
+**Superfici effettivamente presenti:**
+
+- La policy `ask` / `no_paid_requests` esiste a livello app e workspace; il daemon controlla i lanci agent gestiti prima di creare la sessione. La preview redige i comandi e dichiara provider e stato economico non verificati.
+- Il daemon e la UI passano però sempre l'entitlement `Unknown`. I verdetti per quota gratuita/inclusa o pagata esistono come logica e test, ma non sono alimentati da un classificatore reale. Con `no_paid_requests`, un costo sconosciuto resta avviabile dopo approvazione monouso; il blocco dei costi noti come pagati non protegge da una route che non viene classificata.
+- Gavin legge finestre d'uso di alcuni CLI/account e scopre i cataloghi modello di Codex, OpenCode e Kimi. Questi probe/cataloghi attestano dati esposti dai rispettivi CLI, non provano che una specifica richiesta sia coperta da quota gratuita o abbonamento.
+- La cronologia legge token e modelli dai transcript supportati e mostra i token separatamente dai risparmi Headroom. Non è un ledger monetario e non attribuisce al run la policy o la provenienza economica.
+- `modelBenchmark.ts` definisce i tipi e le regole pure per soglie, freschezza e ordinamento. Non esegue task, non salva run e non fornisce raccomandazioni alla UI.
+
 | Fase | Stato nel codice |
 |---|---|
-| P0 — policy e preview | **Parziale.** Esistono policy globali/workspace, conferma monouso e controllo nel daemon; la preview dichiara lo stato sconosciuto. I lanci arrivano però alla policy come `Unknown`: Gavin non verifica se la via scelta sia gratuita, inclusa o a pagamento. Una conferma autorizza quindi una via dal costo non verificato e «nessuna richiesta a pagamento» non è una garanzia assoluta di blocco del pagamento. Mancano anche provenienza economica e policy nel record del run e test d'integrazione di tutti i percorsi. |
-| P1 — accesso cloud gratuito | **Parziale.** Alcuni CLI espongono cataloghi o limiti d'uso/account e Gavin li legge; non c'è ancora configurazione guidata né verifica end-to-end di quote gratuite documentate con ambito, fonte e data. |
-| P2 — catalogo e provenienza | **Parziale.** Esistono cataloghi di nomi modello per alcuni CLI e stati di probe non disponibili/non supportati. Il catalogo non porta ancora le capacità e i metadati economici verificati richiesti dal piano; un nome di modello non certifica che sia gratuito. |
-| P3 — quote e budget | **Parziale.** Ci sono contatori di token per alcuni run, probe di limiti selezionati e un limite di concorrenza generale. Non risultano un ledger monetario, budget per provider, prenotazione delle quote condivise o controllo economico di Best-of-N e fallback. |
-| P4 — benchmark | **Fondamenta soltanto.** `modelBenchmark.ts` contiene logica pura per freschezza, soglia e ordinamento; non risultano esecuzione dei benchmark, persistenza dei risultati o raccomandazioni collegate alla UI. Il riferimento `"local"` nel tipo non implementa inferenza locale, che resta fuori ambito. |
+| P0 — policy e preview | **Parziale.** App e workspace hanno una policy, la UI chiede conferma per `Unknown` e il daemon applica il gate ai lanci agent gestiti. La preview mostra comando redatto, profilo/modello quando riconoscibili, fallback, concorrenza e stato economico ignoto. Il classificatore runtime passa sempre `Unknown`, quindi le vie gratuite/incluse/pagate non sono distinte; un'approvazione monouso consente anche una route che potrebbe essere a pagamento. Mancano registrazione sul run e copertura d'integrazione di tutti i percorsi. |
+| P1 — accesso cloud gratuito | **Parziale.** Sono presenti probe di finestre d'uso per profili selezionati; non c'è una procedura guidata per configurare provider cloud gratuiti né una verifica end-to-end che mostri quota gratuita effettiva, ambito, fonte e aggiornamento. |
+| P2 — catalogo e provenienza | **Parziale.** Sono implementate discovery di modelli per Codex, OpenCode e Kimi. Mancano un catalogo integrato con capacità e metadati economici verificati, fonti e scadenze; la disponibilità di un modello non prova che la richiesta sia gratuita. |
+| P3 — quote e budget | **Parziale.** I probe d'uso e i token letti dai transcript sono misure separate; il limite di concorrenza è generale. Non risultano ledger monetario, budget per provider, prenotazione di quote condivise o controllo economico per fallback e fan-out Best-of-N. |
+| P4 — benchmark | **Solo logica di supporto.** Esistono tipi per task, candidati, risultati e raccomandazioni e funzioni per soglie, freschezza e ranking; mancano runner, suite di task eseguibile, persistenza e superficie UI. Il modello dati include anche lo stato `"local"`, ma non implementa inferenza locale, che resta fuori ambito. |
 
 Evidenze principali: [launchPolicy.ts](../../app/src/lib/agents/launchPolicy.ts), [launch_policy.rs](../../crates/daemon/src/launch_policy.rs), [launchPreview.ts](../../app/src/lib/agents/launchPreview.ts), [agentUsage.ts](../../app/src/lib/agents/agentUsage.ts), [agent_setup.rs](../../app/src-tauri/src/agent_setup.rs), [agent_tokens.rs](../../app/src-tauri/src/agent_tokens.rs), [modelBenchmark.ts](../../app/src/lib/agents/modelBenchmark.ts).
 

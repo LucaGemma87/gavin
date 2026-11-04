@@ -1,4 +1,4 @@
-﻿/// A card's own answer to "which agent, at which model does this run".
+/// A card's own answer to "which agent, at which model does this run".
 ///
 /// `complexity:` answers the same question by proxy -- the human rates
 /// the work once and a table turns each level into an agent -- and that
@@ -114,7 +114,7 @@ function attributionPhrase(
 /// sentences. A card can carry BOTH a level and an override, and the
 /// two controls sit next to each other saying different things -- so
 /// the line has to name the winner and say what it beat, or the human
-/// reads "intricate" beside "cline · haiku" and has no way to
+/// reads "intricate" beside "claude-code · haiku" and has no way to
 /// tell which one the run will use. Said only when the level actually
 /// attributes an agent: a level nothing maps to was never going to pick
 /// anything, and "overriding" it would be a claim about a fight that
