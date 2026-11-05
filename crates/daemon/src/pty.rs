@@ -545,8 +545,14 @@ impl PtySession {
     }
 
     pub fn kill(&mut self) -> anyhow::Result<()> {
-        self.child.lock().unwrap().kill()?;
-        Ok(())
+        // A child that already exited is what the caller asked for. On Unix
+        // that is ESRCH from kill(2): a short command can finish between the
+        // caller's last look at it and this signal, and reporting that as a
+        // failure turned a won race into an error.
+        match self.child.lock().unwrap().kill() {
+            Err(e) if cfg!(unix) && e.raw_os_error() == Some(3) => Ok(()),
+            other => Ok(other?),
+        }
     }
 
     /// Ends this session and hands the WAITING to a thread of its own.

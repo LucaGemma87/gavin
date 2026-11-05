@@ -5096,7 +5096,7 @@ mod resolve_workspaces_tests {
 
         assert_eq!(workspaces[0].pages[0].layout, leaf(&["fresh-b"]));
         let requests = captured.lock().unwrap();
-        let home = std::env::var("HOME").unwrap();
+        let home = local_home();
         match &requests[1] {
             Request::CreateSession { cwd, .. } => assert_eq!(cwd, &home),
             other => panic!("expected the second request to be CreateSession, got {other:?}"),
@@ -5126,7 +5126,7 @@ mod resolve_workspaces_tests {
         assert_eq!(workspaces[0].pages[0].layout, leaf(&["fresh-c"]));
         let requests = captured.lock().unwrap();
         assert_eq!(requests.len(), 3, "expected the rejected attempt plus a fallback retry at $HOME");
-        let home = std::env::var("HOME").unwrap();
+        let home = local_home();
         match &requests[1] {
             Request::CreateSession { cwd, .. } => assert_eq!(cwd, "/definitely/does/not/exist/anywhere"),
             other => panic!("expected the second request to be the rejected CreateSession, got {other:?}"),

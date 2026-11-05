@@ -6995,8 +6995,17 @@ mod tests {
         let _watcher =
             GavinWatcher::start("ws-1".to_string(), dir.path().to_path_buf(), Arc::new(Mutex::new(theirs)), Some(hook));
 
-        // Long enough for the initial scan's own reads to have woken it.
+        // Let the watcher settle: the initial scan's own events can arm a
+        // rescan that fires a floor later, and on a slow runner that lands
+        // after a fixed pause. Quiet for a whole floor means it is done.
         std::thread::sleep(Duration::from_secs(1));
+        loop {
+            let seen = scans.load(SeqCst);
+            std::thread::sleep(MIN_RESCAN_INTERVAL + RESCAN_DEBOUNCE * 2 + Duration::from_millis(500));
+            if scans.load(SeqCst) == seen {
+                break;
+            }
+        }
         scans.store(0, SeqCst);
         std::fs::read_to_string(&card).unwrap();
         // The woken rescan sleeps out the floor before it scans.

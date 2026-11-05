@@ -18,13 +18,27 @@ function noTauri() {
      * @param {string | undefined} importer
      */
     resolveId(id, importer) {
+      // `fileTypes.ts` asks the desktop's backend for the viewable
+      // extensions behind a dynamic import, and falls back to none when it
+      // fails. The shell never has a desktop to ask, so that one reach gets
+      // the empty answer instead of failing the build; every other path to
+      // the backend still does.
+      if (/core\/backend(\.ts)?$/.test(id) && importer?.replace(/\\/g, "/").endsWith("/src/lib/files/fileTypes.ts")) {
+        return NO_BACKEND;
+      }
       if (id.startsWith("@tauri-apps/")) {
         this.error(`${importer ?? "?"} imports ${id}: the Companion shell has no Tauri`);
       }
       return null;
     },
+    /** @param {string} id */
+    load(id) {
+      return id === NO_BACKEND ? "export const viewableExtensions = async () => [];" : null;
+    },
   };
 }
+
+const NO_BACKEND = "\0companion-shell:no-backend";
 
 /// Through `globalThis`: this file is type-checked without Node's types.
 const e2e = Boolean(/** @type {any} */ (globalThis).process?.env?.GAVIN_E2E);

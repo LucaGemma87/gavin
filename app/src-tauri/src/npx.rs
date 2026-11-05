@@ -622,6 +622,9 @@ mod tests {
         assert_eq!(startable(sh.clone(), false, |_| true), sh, "unix: the script IS the program");
     }
 
+    // Unix paths: `/Users/ada/...` is not absolute on Windows, which asks
+    // `where` instead of a login shell.
+    #[cfg(unix)]
     #[test]
     fn the_shell_answer_is_the_last_existing_path_after_any_banner() {
         let out = "Welcome back!\n/not/there/npx\n/Users/ada/.local/share/mise/installs/node/22/bin/npx\n";

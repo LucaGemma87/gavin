@@ -203,10 +203,12 @@ pub(crate) mod tests {
         let bare = tempfile::tempdir().unwrap();
         git(cwd(&src), &["clone", "-q", "--bare", ".", bare.path().to_str().unwrap()]);
         let clone = tempfile::tempdir().unwrap();
-        git(cwd(&src), &["clone", "-q", bare.path().to_str().unwrap(), clone.path().to_str().unwrap()]);
+        git(cwd(&src), &["clone", "-q", "-c", "core.autocrlf=false", bare.path().to_str().unwrap(), clone.path().to_str().unwrap()]);
         git(cwd(&clone), &["config", "user.email", "t@example.com"]);
         git(cwd(&clone), &["config", "user.name", "T"]);
         git(cwd(&clone), &["config", "commit.gpgsign", "false"]);
+        // Byte-exact checkouts regardless of the machine's autocrlf.
+        git(cwd(&clone), &["config", "core.autocrlf", "false"]);
         (bare, clone)
     }
 
@@ -254,10 +256,11 @@ pub(crate) mod tests {
         let (bare, clone) = remote_and_clone();
         // Someone else pushes a commit.
         let other = tempfile::tempdir().unwrap();
-        git(cwd(&clone), &["clone", "-q", bare.path().to_str().unwrap(), other.path().to_str().unwrap()]);
+        git(cwd(&clone), &["clone", "-q", "-c", "core.autocrlf=false", bare.path().to_str().unwrap(), other.path().to_str().unwrap()]);
         git(cwd(&other), &["config", "user.email", "o@example.com"]);
         git(cwd(&other), &["config", "user.name", "O"]);
         git(cwd(&other), &["config", "commit.gpgsign", "false"]);
+        git(cwd(&other), &["config", "core.autocrlf", "false"]);
         write(&other, "o.txt", "o\n");
         git(cwd(&other), &["add", "o.txt"]);
         git(cwd(&other), &["commit", "-q", "-m", "other"]);

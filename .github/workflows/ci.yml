@@ -3,12 +3,9 @@
 # hundred times a day and the other two are the ones that would silently
 # rot between releases.
 #
-# The two jobs are deliberately at different stages. Linux is DONE: its
-# suites are green and every step is a gate. Windows is a port in flight,
-# so only the thing that has been made to work is a gate -- that the three
-# Rust crates COMPILE for the target -- and everything past it reports
-# without failing the build, until the verification pass on a real Windows
-# machine turns each one into a gate.
+# Linux runs the app's own suites (the desktop, the Companion bundle and
+# the Companion shell); the Rust workspace is built and tested on Windows,
+# and every step of that job is a gate: none of them may fail quietly.
 #
 # Every third-party action below is pinned to a full commit SHA (tag noted
 # in a trailing comment) rather than a mutable tag -- a tag can be moved by
@@ -35,27 +32,10 @@ permissions:
 
 jobs:
   linux:
-    name: Linux (Rust + app)
+    name: Linux (app)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-
-      # `app/src-tauri` is a workspace member, so `cargo test --workspace`
-      # links against the whole WebKitGTK stack even though nothing here
-      # opens a window. This is the Tauri v2 Ubuntu list.
-      - name: Install the GTK/WebKit stack tauri links against
-        run: |
-          sudo apt-get update
-          sudo apt-get install --no-install-recommends -y \
-            libwebkit2gtk-4.1-dev \
-            build-essential \
-            curl \
-            wget \
-            file \
-            libxdo-dev \
-            libssl-dev \
-            libayatana-appindicator3-dev \
-            librsvg2-dev
 
       # The wasm target for the Companion shell's steps below: its build
       # and its tests carry the Companion core as a .wasm
@@ -75,53 +55,12 @@ jobs:
         working-directory: app
         run: npm ci
 
-      # `--locked` everywhere below: CI resolves exactly the Cargo.lock /
-      # package-lock.json committed to the branch, never a fresher
-      # dependency picked up because the lockfile happened to be stale.
-      - name: cargo build --workspace --locked
-        run: cargo build --workspace --locked
-
-      # The daemon's fs-watcher module first and by itself, retried a
-      # couple of times before it's allowed to fail the build. It is flaky
-      # under full-suite cargo parallelism -- watcher timing, not the code
-      # (CLAUDE.md says to re-run it alone before calling a failure a
-      # regression). Running it alone up front and excluding it from the
-      # sweep removes the CAUSE rather than retrying after the symptom, but
-      # the isolated run itself can still lose the odd race, so it gets the
-      # retry CLAUDE.md asks for on top of the isolation.
-      - name: cargo test — the fs-watcher module, alone (retried)
-        run: |
-          for attempt in 1 2 3; do
-            if cargo test -p gavin-daemon gavin:: --locked -- --test-threads=1; then
-              exit 0
-            fi
-            echo "fs-watcher module attempt $attempt failed" >&2
-          done
-          echo "fs-watcher module still red after 3 attempts" >&2
-          exit 1
-
-      # The headless shell the daemon launches per agent session, at the
-      # revision the pinned @playwright/mcp brings -- read from the one
-      # pin (`protocol::playwright::MCP_VERSION`) rather than repeated
-      # here. `--with-deps` installs the system libraries it needs, which
-      # is the only place a Linux machine can fail it. The daemon's
-      # `tests/playwright.rs` skips without a browser; GAVIN_REQUIRE_PLAYWRIGHT
-      # below turns that skip into a failure here.
-      - name: Install Playwright's headless shell
-        run: |
-          pin=$(sed -n 's/^pub const MCP_VERSION: &str = "\(.*\)";$/\1/p' crates/protocol/src/playwright.rs)
-          test -n "$pin"
-          npx -y "@playwright/mcp@$pin" install-browser --with-deps chromium-headless-shell
-
-      - name: cargo test --workspace --locked
-        env:
-          GAVIN_REQUIRE_PLAYWRIGHT: "1"
-        # Quoted: a plain YAML scalar can't end in a bare colon, and
-        # "--skip gavin::" does. Unquoted, this line fails to parse.
-        # `--no-fail-fast`: cargo otherwise stops at the first red test
-        # binary, and a failure in one crate hid the same failure in
-        # another for weeks -- every binary reports, then the step fails.
-        run: "cargo test --workspace --locked --no-fail-fast -- --skip gavin::"
+      # `sanitizeMarkdown.test.ts` globs the Companion's sources, and
+      # transforming one reads app/companion/tsconfig.json, which extends
+      # a file only `svelte-kit sync` writes. A fresh checkout has none.
+      - name: svelte-kit sync (companion)
+        working-directory: app/companion
+        run: npx svelte-kit sync
 
       - name: npm test
         working-directory: app
@@ -214,37 +153,33 @@ jobs:
       - name: cargo check — the Relay and the Companion core
         run: cargo check -p gavin-relay -p companion-core --all-features --locked
 
-      # The rest of this job was written to report rather than gate, so
-      # that an unfinished port could not block a push; each step becomes
-      # a gate as it goes green. Two `npm` steps and this one have, on
-      # 2026-09-11.
-      #
-      # A GATE now: the whole workspace, tests included, compiles for
-      # this target. Proved by more than `check` -- the full suite was
-      # built and RUN on Windows 11 that day, so the tauri-build and
-      # WebView2 chain this pulls in is known to link here and not only
-      # to parse.
+      # A GATE: the whole workspace, tests included, compiles for this
+      # target (tauri-build and the WebView2 chain link here).
       - name: cargo check --workspace --tests
         run: cargo check --workspace --tests --locked
 
-      # Same carve-out as the Linux job: the fs-watcher module is flaky
-      # under full-suite parallelism (watcher timing, not the code), so it
-      # runs alone and is skipped in the sweep. This job already reports
-      # instead of gating, so it doesn't need the Linux job's retry loop.
-      - name: cargo test — the fs-watcher module, alone
-        continue-on-error: true
+      # The daemon's fs-watcher module first and by itself, retried a
+      # couple of times before it fails the build: it is flaky under
+      # full-suite parallelism (watcher timing, not the code), so it runs
+      # alone here and is skipped in the sweep below, and the isolated run
+      # still gets the retry CLAUDE.md asks for.
+      - name: cargo test — the fs-watcher module, alone (retried)
+        shell: bash
         timeout-minutes: 20
-        # Quoted: "gavin:: --locked" contains a colon-space, which a plain
-        # YAML scalar can't carry without being mistaken for a mapping key.
-        run: "cargo test -p gavin-daemon gavin:: --locked -- --test-threads=1"
+        run: |
+          for attempt in 1 2 3; do
+            if cargo test -p gavin-daemon gavin:: --locked -- --test-threads=1; then
+              exit 0
+            fi
+            echo "fs-watcher module attempt $attempt failed" >&2
+          done
+          echo "fs-watcher module still red after 3 attempts" >&2
+          exit 1
 
       # The session browser (v65) on Windows: the launch, the proxy, a
-      # frame, and the browser gone with its session. Reports rather
-      # than gates until it has been seen green here, like every step of
-      # this job before it; `npx.cmd` and the headless shell's .exe are
-      # the parts only this runner can prove.
+      # frame, and the browser gone with its session. `npx.cmd` and the
+      # headless shell's .exe are the parts only this runner can prove.
       - name: Install Playwright's headless shell
-        continue-on-error: true
         shell: bash
         run: |
           pin=$(sed -n 's/^pub const MCP_VERSION: &str = "\(.*\)";$/\1/p' crates/protocol/src/playwright.rs)
@@ -252,26 +187,20 @@ jobs:
           npx -y "@playwright/mcp@$pin" install-browser chromium-headless-shell
 
       - name: cargo test — the session browser
-        continue-on-error: true
         timeout-minutes: 10
         env:
           GAVIN_REQUIRE_PLAYWRIGHT: "1"
         run: cargo test -p gavin-daemon --test playwright --locked
 
-      # `timeout-minutes` on both, and it is not belt-and-braces:
-      # `server::tests` DEADLOCKS on Windows -- observed twice on
-      # 2026-09-11, stalling at ~22 failures with 200+ threads and zero
-      # CPU, once with `--skip git_status --skip repo` so the slow
-      # fs-watcher tests are not the explanation. `continue-on-error`
-      # does not help with a hang: without a cap the step would sit here
-      # until the job's six-hour default, on every push, and still report
-      # nothing. A killed step reports the same "not finished yet" this
-      # job was built to report, in twenty minutes instead of six hours.
+      # `timeout-minutes` is not belt-and-braces: `server::tests` has
+      # DEADLOCKED on Windows (observed twice on 2026-09-11, stalling at
+      # ~22 failures with 200+ threads and zero CPU). Without a cap a hang
+      # would sit until the job's six-hour default; with one it fails in
+      # twenty minutes.
       - name: cargo test --workspace --locked
-        continue-on-error: true
         timeout-minutes: 20
-        # Quoted for the same reason as the Linux job's equivalent step: a
-        # plain scalar can't end in a bare colon, and this one does.
+        # Quoted: a plain YAML scalar can't end in a bare colon, and this
+        # one does.
         run: "cargo test --workspace --locked -- --skip gavin::"
 
       # A GATE now. Two things had kept it a report and both are gone.
@@ -286,6 +215,13 @@ jobs:
       # There is no longer a failure here this job did not cause, which
       # is the condition the old comment set for promoting it, so a red
       # here is a real regression in the app.
+      # `sanitizeMarkdown.test.ts` globs the Companion's sources, and
+      # transforming one reads app/companion/tsconfig.json, which extends
+      # a file only `svelte-kit sync` writes. A fresh checkout has none.
+      - name: svelte-kit sync (companion)
+        working-directory: app/companion
+        run: npx svelte-kit sync
+
       - name: npm test
         working-directory: app
         run: npm test
