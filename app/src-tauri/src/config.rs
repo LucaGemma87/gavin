@@ -2201,7 +2201,7 @@ mod tests {
     "agentEfforts": {"custom": "high"}
   }
 }"#
-        .replace("ROOT", &root.to_string_lossy());
+        .replace("ROOT", &root.to_string_lossy().replace('\\', "/"));
         std::fs::write(config_path(dir.path()), raw).unwrap();
 
         let loaded = load(dir.path()).unwrap();
